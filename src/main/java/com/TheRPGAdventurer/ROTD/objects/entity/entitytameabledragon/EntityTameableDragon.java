@@ -1,10 +1,14 @@
 package com.TheRPGAdventurer.ROTD.objects.entity.entitytameabledragon;
 
 import com.TheRPGAdventurer.ROTD.DragonMountsConfig;
+import com.TheRPGAdventurer.ROTD.objects.entity.entitytameabledragon.helper.DragonBodyHelper;
+import com.TheRPGAdventurer.ROTD.objects.entity.entitytameabledragon.helper.DragonHelper;
+import com.TheRPGAdventurer.ROTD.objects.entity.entitytameabledragon.inventoty.DragonInventory;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
+import net.minecraft.entity.item.EnderCrystalEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;
@@ -18,6 +22,8 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -72,15 +78,54 @@ public class EntityTameableDragon extends TameableEntity implements IForgeSheara
     private static final DataParameter<Boolean> SLEEP = EntityDataManager.defineId(EntityTameableDragon.class, DataSerializers.BOOLEAN);
     private static final DataParameter<String> DATA_BREATH_WEAPON_TARGET = EntityDataManager.defineId(EntityTameableDragon.class, DataSerializers.STRING);
     private static final DataParameter<Integer> DATA_BREATH_WEAPON_MODE = EntityDataManager.defineId(EntityTameableDragon.class, DataSerializers.INT);
+    private final DragonBodyHelper dragonBodyHelper = new DragonBodyHelper(this);
+    private final Map<Class<?>, DragonHelper> helpers = new HashMap<>();
+    public EnderCrystalEntity healingEnderCrystal;
+    public DragonInventory dragonInv;
+    public static int ticksShear;
+    public int inAirTicks;
+    public int roarTicks;
+    protected int ticksSinceLastAttack;
+    float damageReduction = (float) this.getArmorResistance() + 3.0F;
+    private boolean hasChestVarChanged = false;
+    private boolean isUsingBreathWeapon;
+    private boolean altBreathing;
+    private boolean isGoingDown;
+    private boolean isUnHovered;
+    private boolean yLocked;
+    private boolean followYaw;
 
     protected EntityTameableDragon(EntityType<? extends EntityTameableDragon> type, World world) {
         super(type, world);
+        this.maxUpStep = 1.0F;
 
     }
 
     @Nullable @Override
     public AgeableEntity getBreedOffspring(ServerWorld serverWorld, AgeableEntity entity) {
         return null;
+    }
+
+    public int getArmor() {
+        return this.entityData.get(ARMOR);
+    }
+
+    public void setArmor(int armorType) {
+        this.entityData.set(ARMOR, armorType);
+    }
+
+    public double getArmorResistance() {
+        switch (this.getArmor()) {
+            case 1:
+            case 4: return 1.5;
+            case 2: return 1.4;
+            case 3: return 1.7;
+            default: return 0;
+        }
+    }
+
+    public boolean isFlying() {
+        return this.entityData.get(DATA_FLYING);
     }
 
 }

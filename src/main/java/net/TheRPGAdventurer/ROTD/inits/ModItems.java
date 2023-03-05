@@ -1,8 +1,8 @@
-package com.TheRPGAdventurer.ROTD.inits;
+package net.TheRPGAdventurer.ROTD.inits;
 
-import com.TheRPGAdventurer.ROTD.DragonMounts;
-import com.TheRPGAdventurer.ROTD.objects.items.EnumItemBreedTypes;
-import com.TheRPGAdventurer.ROTD.objects.items.ItemDragonScales;
+import net.TheRPGAdventurer.ROTD.DragonMounts;
+import net.TheRPGAdventurer.ROTD.objects.items.EnumItemBreedTypes;
+import net.TheRPGAdventurer.ROTD.objects.items.ItemDragonScales;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;

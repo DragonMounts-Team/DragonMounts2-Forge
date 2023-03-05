@@ -1,6 +1,6 @@
-package com.TheRPGAdventurer.ROTD;
+package net.TheRPGAdventurer.ROTD;
 
-import com.TheRPGAdventurer.ROTD.inits.ModItems;
+import net.TheRPGAdventurer.ROTD.inits.ModItems;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;

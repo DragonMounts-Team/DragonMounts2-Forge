@@ -1,4 +1,4 @@
-package com.TheRPGAdventurer.ROTD;
+package net.TheRPGAdventurer.ROTD;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 

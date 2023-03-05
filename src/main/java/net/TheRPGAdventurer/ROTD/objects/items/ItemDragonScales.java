@@ -1,4 +1,4 @@
-package com.TheRPGAdventurer.ROTD.objects.items;
+package net.TheRPGAdventurer.ROTD.objects.items;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;

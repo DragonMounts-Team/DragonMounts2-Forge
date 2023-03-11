@@ -2,9 +2,12 @@ package net.dragonmounts3;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DragonMountsConfig {
 
-	public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+	private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 	public static final ForgeConfigSpec SPEC;
 
 	// config properties
@@ -47,8 +50,8 @@ public class DragonMountsConfig {
 	public static final ForgeConfigSpec.ConfigValue<Double> thirdPersonZoom;
 	public static final ForgeConfigSpec.ConfigValue<Double> maxFlightHeight;
 	public static final ForgeConfigSpec.ConfigValue<Boolean> useDimensionBlackList;
-	public static final ForgeConfigSpec.ConfigValue<int[]> dragonBlacklistedDimensions;
-	public static final ForgeConfigSpec.ConfigValue<int[]> dragonWhitelistedDimensions;
+	public static final ForgeConfigSpec.ConfigValue<List<? extends Integer>> dragonBlacklistedDimensions;
+	public static final ForgeConfigSpec.ConfigValue<List<? extends Integer>> dragonWhitelistedDimensions;
 
 	static {
 		BUILDER.push("Some config of Dragon Mount 3");
@@ -107,8 +110,13 @@ public class DragonMountsConfig {
 		thirdPersonZoom = BUILDER.comment("Zoom out for third person 2 while riding the the dragon and dragon carriages DO NOT EXAGGERATE IF YOU DON'T WANT CORRUPTED WORLDS").define("Third Person Zoom BACK", 20.0D);
 		maxFlightHeight = BUILDER.comment("Max flight for dragons circling players on a whistle").define("Max Flight Height", 20.0D);
 		useDimensionBlackList = BUILDER.comment("true to use dimensional blacklist, false to use the whitelist.").define("Use Dimension Blacklist", true);
-		dragonBlacklistedDimensions = BUILDER.comment("Dragons cannot spawn in these dimensions' IDs").define("Blacklisted Dragon Dimensions", new int[]{-1, 1});
-		dragonWhitelistedDimensions = BUILDER.comment("Dragons can only spawn in these dimensions' IDs").define("Whitelisted Dragon Dimensions", new int[]{0});
+		ArrayList<Integer> dragonBlacklistedDimensionsDefaultValue = new ArrayList<>();
+		dragonBlacklistedDimensionsDefaultValue.add(-1);
+		dragonBlacklistedDimensionsDefaultValue.add(1);
+		dragonBlacklistedDimensions = BUILDER.comment("Dragons cannot spawn in these dimensions' IDs").defineList("Blacklisted Dragon Dimensions", dragonBlacklistedDimensionsDefaultValue, i -> i instanceof Integer);
+		ArrayList<Integer> dragonWhitelistedDimensionsDefaultValue = new ArrayList<>();
+		dragonWhitelistedDimensionsDefaultValue.add(0);
+		dragonWhitelistedDimensions = BUILDER.comment("Dragons can only spawn in these dimensions' IDs").defineList("Whitelisted Dragon Dimensions", dragonWhitelistedDimensionsDefaultValue, i -> i instanceof Integer);
 		BUILDER.pop();
 		SPEC = BUILDER.build();
 	}

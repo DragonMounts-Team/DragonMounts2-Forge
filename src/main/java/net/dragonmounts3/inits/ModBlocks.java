@@ -18,7 +18,7 @@ public class ModBlocks {
 
     public static RegistryObject<Block> register(String name, Supplier<Block> block) {
         RegistryObject<Block> register = BLOCKS.register(name, block);
-        Item.Properties properties = new Item.Properties().tab(ModItems.MAIN_TAB);
+        Item.Properties properties = new Item.Properties().tab(ModItems.BLOCK_TAB);
         ModItems.ITEMS.register(name, () -> new BlockItem(register.get(), properties));
         return register;
     }

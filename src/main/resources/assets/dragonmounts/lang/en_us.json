@@ -1,6 +1,7 @@
 {
-  "itemGroup.main_tab" : "Dragon Mounts",
-  "itemGroup.armory_tab" : "Dragon Mounts Armory",
+  "itemGroup.dragonmounts.blocks" : "Dragon Mounts: Blocks",
+  "itemGroup.dragonmounts.items" : "Dragon Mounts: Items",
+  "itemGroup.dragonmounts.equipments" : "Dragon Mounts: Equipments",
 
   "dragon.forest" : "Forest",
   "dragon.forest2" : "Forest",
@@ -24,6 +25,16 @@
   "dragon.storm2" : "Storm",
   "dragon.zombie" : "Zombie",
   "dragon.terra" : "Terra",
-  "dragon.terra2" : "Terra"
+  "dragon.terra2" : "Terra",
 
+  "item.dragonmounts.dragonscales": "Dragon Scales",
+  "item.dragonmounts.dragon_sword": "Dragon Sword",
+  "item.dragonmounts.dragon_pickaxe": "Dragon Pickaxe",
+  "item.dragonmounts.dragon_axe": "Dragon Axe",
+  "item.dragonmounts.dragon_shovel": "Dragon Shovel",
+  "item.dragonmounts.dragon_hoe": "Dragon Hoe",
+  "item.dragonmounts.dragon_shield": "Dragon Shield",
+  "item.dragonmounts.dragon_bow": "Dragon Bow",
+
+  "block.dragonmounts.dragon_nest": "Nest Block"
 }

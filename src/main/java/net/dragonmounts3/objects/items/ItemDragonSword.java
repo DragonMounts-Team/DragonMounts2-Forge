@@ -12,7 +12,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static net.dragonmounts3.DragonMounts.MOD_ID;
+
 public class ItemDragonSword extends SwordItem {
+
+    private static final String TRANSLATION_KEY = "item." + MOD_ID + ".dragon_sword";
 
     public EnumDragonTypes type;
 
@@ -28,7 +32,12 @@ public class ItemDragonSword extends SwordItem {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> components, ITooltipFlag flag) {
-        components.add(new TranslationTextComponent("dragon." + type.toString().toLowerCase()).withStyle(this.type.color));
+    public void appendHoverText(@Nullable ItemStack stack, @Nullable World world, List<ITextComponent> components, @Nullable ITooltipFlag flag) {
+        components.add(type.getName());
+    }
+
+    @Override
+    public ITextComponent getName(@Nullable ItemStack pStack) {
+        return new TranslationTextComponent(TRANSLATION_KEY);
     }
 }

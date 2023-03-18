@@ -1,8 +1,8 @@
 package net.dragonmounts3.objects.items;
 
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.PickaxeItem;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -14,14 +14,19 @@ import java.util.List;
 
 import static net.dragonmounts3.DragonMounts.MOD_ID;
 
-public class ItemDragonScales extends Item {
+public class ItemDragonPickaxe extends PickaxeItem {
 
-    private static final String TRANSLATION_KEY = "item." + MOD_ID + ".dragonscales";
+    private static final String TRANSLATION_KEY = "item." + MOD_ID + ".dragon_pickaxe";
 
     public EnumDragonTypes type;
 
-    public ItemDragonScales(Properties properties, EnumDragonTypes type) {
-        super(properties);
+    public ItemDragonPickaxe(
+            EnumDragonTypes type,
+            int attackDamageModifier,
+            float attackSpeedModifier,
+            Properties properties
+    ) {
+        super(type, attackDamageModifier, attackSpeedModifier, properties);
         this.type = type;
     }
 

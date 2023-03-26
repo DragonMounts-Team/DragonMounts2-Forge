@@ -9,8 +9,7 @@
       "item": "minecraft:leather"
     },
     "X": {
-      "item": "minecraft:planks",
-      "data": 0
+      "item": "minecraft:oak_planks"
     }
   },
   "result": {

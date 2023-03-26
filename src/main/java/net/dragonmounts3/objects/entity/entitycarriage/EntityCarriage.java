@@ -8,6 +8,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class EntityCarriage extends Entity {
 
@@ -60,6 +61,7 @@ public class EntityCarriage extends Entity {
         this.entityData.define(DAMAGE, 0.0F);
         this.entityData.define(FORWARD_DIRECTION, 1);
         this.entityData.define(TIME_SINCE_HIT, 2);
+        this.entityData.define(TYPE, 0);
     }
 
     @Override
@@ -67,6 +69,7 @@ public class EntityCarriage extends Entity {
         this.entityData.set(DAMAGE, compound.getFloat("damage"));
         this.entityData.set(FORWARD_DIRECTION, compound.getInt("forward"));
         this.entityData.set(TIME_SINCE_HIT, compound.getInt("TimeSinceHit"));
+        this.entityData.define(TYPE, compound.getInt("Type"));
     }
 
     @Override
@@ -74,11 +77,16 @@ public class EntityCarriage extends Entity {
         compound.putFloat("damage", this.getDamage());
         compound.putInt("forward", this.getForwardDirection());
         compound.putInt("TimeSinceHit", this.getTimeSinceHit());
+        compound.putInt("Type", this.entityData.get(TYPE));
+    }
+
+    public EnumCarriageTypes getCarriageType() {
+        return EnumCarriageTypes.byId(this.entityData.get(TYPE));
     }
 
     @Override
     public IPacket<?> getAddEntityPacket() {
-        return null;
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
 }

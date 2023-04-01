@@ -22,6 +22,8 @@ import java.util.Locale;
 public class DragonMounts {
 
     public static final String MOD_ID = "dragonmounts";
+    private static final String ITEM_TRANSLATION_KEY_PREFIX = "item." + MOD_ID + '.';
+
     public IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     public static DamageSource DRAGONS_FIRE = new DamageSource("dragons_fire");
 
@@ -42,4 +44,7 @@ public class DragonMounts {
         return new ResourceLocation(MOD_ID, name.toLowerCase(Locale.ROOT));
     }
 
+    public static String getItemTranslationKey(String name) {
+        return ITEM_TRANSLATION_KEY_PREFIX + name;
+    }
 }

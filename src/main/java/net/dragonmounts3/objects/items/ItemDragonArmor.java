@@ -1,12 +1,13 @@
 package net.dragonmounts3.objects.items;
 
-import net.dragonmounts3.objects.EnumDragonType;
+import net.dragonmounts3.objects.DragonType;
+import net.dragonmounts3.objects.IDragonTypified;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -16,32 +17,43 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static net.dragonmounts3.DragonMounts.MOD_ID;
+import static net.dragonmounts3.DragonMounts.getItemTranslationKey;
 
-public class ItemDragonArmor extends ArmorItem {
-    private static String[] TRANSLATION_KEY_SUFFIX = new String[]{"_boots", "_leggings", "_chestplate", "_helmet"};
+public class ItemDragonArmor extends ArmorItem implements IDragonTypified {
+    private static final String[] TRANSLATION_KEY_SUFFIX = new String[]{"boots", "leggings", "chestplate", "helmet"};
     private final String translationKey;
 
-    public EnumDragonType type;
+    protected DragonType type;
 
     public ItemDragonArmor(
-            EnumDragonType type,
+            DragonScaleMaterial material,
             EquipmentSlotType slot,
             Properties properties
     ) {
-        super(type.material, slot, properties);
-        this.type = type;
-        this.translationKey = "item." + MOD_ID + ".dragonscale" + TRANSLATION_KEY_SUFFIX[slot.getIndex()];
+        super(material, slot, properties);
+        this.type = material.getDragonType();
+        this.translationKey = getItemTranslationKey("dragon_scale_" + TRANSLATION_KEY_SUFFIX[slot.getIndex()]);
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> components, @Nullable ITooltipFlag flag) {
-        components.add(type.getText());
+        components.add(this.type.getText());
+    }
+
+    @Override
+    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlotType slot, String type) {
+        return MOD_ID + ":textures/models/armor/" + this.type.name().toLowerCase() + (slot == EquipmentSlotType.LEGS ? "_layer_2.png" : "_layer_1.png");
     }
 
     @Nonnull
     @Override
-    public ITextComponent getName(@Nonnull ItemStack pStack) {
-        return new TranslationTextComponent(translationKey);
+    public String getOrCreateDescriptionId() {
+        return this.translationKey;
+    }
+
+    @Override
+    public DragonType getDragonType() {
+        return this.type;
     }
 }

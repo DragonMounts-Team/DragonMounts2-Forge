@@ -10,12 +10,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
 public class BlockDragonNest extends Block {
-
-    public static final DirectionProperty FACING = BlockStateProperties.FACING;
-
     public BlockDragonNest() {
         super(Properties.of(Material.STONE).strength(1.0F).sound(SoundType.WOOD));
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.UP));
     }
 
     @Override
@@ -26,10 +22,5 @@ public class BlockDragonNest extends Block {
     @Override
     public int getFireSpreadSpeed(BlockState state, IBlockReader world, BlockPos pos, Direction face) {
         return 77;
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(FACING);
     }
 }

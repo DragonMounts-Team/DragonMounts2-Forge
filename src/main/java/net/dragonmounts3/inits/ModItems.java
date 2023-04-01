@@ -2,7 +2,7 @@ package net.dragonmounts3.inits;
 
 import mcp.MethodsReturnNonnullByDefault;
 import net.dragonmounts3.DragonMounts;
-import net.dragonmounts3.objects.EnumDragonType;
+import net.dragonmounts3.objects.DragonType;
 import net.dragonmounts3.objects.items.*;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
@@ -26,166 +26,214 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DragonMounts.create(ForgeRegistries.ITEMS);
 
     //Scales Start
-    public static final RegistryObject<Item> FOREST_DRAGON_SCALES = createDragonScalesItem("forest_dragonscales", EnumDragonType.FOREST);
-    public static final RegistryObject<Item> FIRE_DRAGON_SCALES = createDragonScalesItem("fire_dragonscales", EnumDragonType.FIRE);
-    public static final RegistryObject<Item> ICE_DRAGON_SCALES = createDragonScalesItem("ice_dragonscales", EnumDragonType.ICE);
-    public static final RegistryObject<Item> WATER_DRAGON_SCALES = createDragonScalesItem("water_dragonscales", EnumDragonType.WATER);
-    public static final RegistryObject<Item> AETHER_DRAGON_SCALES = createDragonScalesItem("aether_dragonscales", EnumDragonType.AETHER);
-    public static final RegistryObject<Item> NETHER_DRAGON_SCALES = createDragonScalesItem("nether_dragonscales", EnumDragonType.NETHER);
-    public static final RegistryObject<Item> ENDER_DRAGON_SCALES = createDragonScalesItem("ender_dragonscales", EnumDragonType.ENDER);
-    public static final RegistryObject<Item> SUNLIGHT_DRAGON_SCALES = createDragonScalesItem("sunlight_dragonscales", EnumDragonType.SUNLIGHT);
-    public static final RegistryObject<Item> ENCHANT_DRAGON_SCALES = createDragonScalesItem("enchant_dragonscales", EnumDragonType.ENCHANT);
-    public static final RegistryObject<Item> STORM_DRAGON_SCALES = createDragonScalesItem("storm_dragonscales", EnumDragonType.STORM);
-    public static final RegistryObject<Item> TERRA_DRAGON_SCALES = createDragonScalesItem("terra_dragonscales", EnumDragonType.TERRA);
-    public static final RegistryObject<Item> ZOMBIE_DRAGON_SCALES = createDragonScalesItem("zombie_dragonscales", EnumDragonType.ZOMBIE);
-    public static final RegistryObject<Item> MOONLIGHT_DRAGON_SCALES = createDragonScalesItem("moonlight_dragonscales", EnumDragonType.MOONLIGHT);
+    public static final RegistryObject<Item> FOREST_DRAGON_SCALES = createDragonScalesItem("forest_dragon_scales", DragonType.FOREST);
+    public static final RegistryObject<Item> FIRE_DRAGON_SCALES = createDragonScalesItem("fire_dragon_scales", DragonType.FIRE);
+    public static final RegistryObject<Item> ICE_DRAGON_SCALES = createDragonScalesItem("ice_dragon_scales", DragonType.ICE);
+    public static final RegistryObject<Item> WATER_DRAGON_SCALES = createDragonScalesItem("water_dragon_scales", DragonType.WATER);
+    public static final RegistryObject<Item> AETHER_DRAGON_SCALES = createDragonScalesItem("aether_dragon_scales", DragonType.AETHER);
+    public static final RegistryObject<Item> NETHER_DRAGON_SCALES = createDragonScalesItem("nether_dragon_scales", DragonType.NETHER);
+    public static final RegistryObject<Item> ENDER_DRAGON_SCALES = createDragonScalesItem("ender_dragon_scales", DragonType.ENDER);
+    public static final RegistryObject<Item> SUNLIGHT_DRAGON_SCALES = createDragonScalesItem("sunlight_dragon_scales", DragonType.SUNLIGHT);
+    public static final RegistryObject<Item> ENCHANT_DRAGON_SCALES = createDragonScalesItem("enchant_dragon_scales", DragonType.ENCHANT);
+    public static final RegistryObject<Item> STORM_DRAGON_SCALES = createDragonScalesItem("storm_dragon_scales", DragonType.STORM);
+    public static final RegistryObject<Item> TERRA_DRAGON_SCALES = createDragonScalesItem("terra_dragon_scales", DragonType.TERRA);
+    public static final RegistryObject<Item> ZOMBIE_DRAGON_SCALES = createDragonScalesItem("zombie_dragon_scales", DragonType.ZOMBIE);
+    public static final RegistryObject<Item> MOONLIGHT_DRAGON_SCALES = createDragonScalesItem("moonlight_dragon_scales", DragonType.MOONLIGHT);
     //Aether Equipments
-    public static final RegistryObject<Item> AETHER_DRAGON_AXE = createDragonAxeItem("aether_dragon_axe", EnumDragonType.AETHER);
-    public static final RegistryObject<Item> AETHER_DRAGON_BOOTS = createDragonArmorItem("aether_dragonscale_boots", EnumDragonType.AETHER, EquipmentSlotType.FEET);
-    public static final RegistryObject<Item> AETHER_DRAGON_BOW = createDragonBowItem("aether_dragon_bow", EnumDragonType.AETHER);
-    public static final RegistryObject<Item> AETHER_DRAGON_CHESTPLATE = createDragonArmorItem("aether_dragonscale_chestplate", EnumDragonType.AETHER, EquipmentSlotType.CHEST);
-    public static final RegistryObject<Item> AETHER_DRAGON_HELMET = createDragonArmorItem("aether_dragonscale_helmet", EnumDragonType.AETHER, EquipmentSlotType.HEAD);
-    public static final RegistryObject<Item> AETHER_DRAGON_HOE = createDragonHoeItem("aether_dragon_hoe", EnumDragonType.AETHER);
-    public static final RegistryObject<Item> AETHER_DRAGON_LEGGINGS = createDragonArmorItem("aether_dragonscale_leggings", EnumDragonType.AETHER, EquipmentSlotType.LEGS);
-    public static final RegistryObject<Item> AETHER_DRAGON_PICKAXE = createDragonPickaxeItem("aether_dragon_pickaxe", EnumDragonType.AETHER);
-    public static final RegistryObject<Item> AETHER_DRAGON_SHIELD = createDragonShieldItem("aether_dragon_shield", EnumDragonType.AETHER);
-    public static final RegistryObject<Item> AETHER_DRAGON_SHOVEL = createDragonShovelItem("aether_dragon_shovel", EnumDragonType.AETHER);
-    public static final RegistryObject<Item> AETHER_DRAGON_SWORD = createDragonSwordItem("aether_dragon_sword", EnumDragonType.AETHER);
+    public static final RegistryObject<Item> AETHER_DRAGON_AXE = createDragonAxeItem("aether_dragon_axe", DragonScaleTier.AETHER);
+    public static final RegistryObject<Item> AETHER_DRAGON_BOOTS = createDragonArmorItem("aether_dragon_scale_boots", DragonScaleMaterial.AETHER, EquipmentSlotType.FEET);
+    public static final RegistryObject<Item> AETHER_DRAGON_BOW = createDragonBowItem("aether_dragon_bow", DragonScaleTier.AETHER);
+    public static final RegistryObject<Item> AETHER_DRAGON_CHESTPLATE = createDragonArmorItem("aether_dragon_scale_chestplate", DragonScaleMaterial.AETHER, EquipmentSlotType.CHEST);
+    public static final RegistryObject<Item> AETHER_DRAGON_HELMET = createDragonArmorItem("aether_dragon_scale_helmet", DragonScaleMaterial.AETHER, EquipmentSlotType.HEAD);
+    public static final RegistryObject<Item> AETHER_DRAGON_HOE = createDragonHoeItem("aether_dragon_hoe", DragonScaleTier.AETHER);
+    public static final RegistryObject<Item> AETHER_DRAGON_LEGGINGS = createDragonArmorItem("aether_dragon_scale_leggings", DragonScaleMaterial.AETHER, EquipmentSlotType.LEGS);
+    public static final RegistryObject<Item> AETHER_DRAGON_PICKAXE = createDragonPickaxeItem("aether_dragon_pickaxe", DragonScaleTier.AETHER);
+    public static final RegistryObject<Item> AETHER_DRAGON_SHIELD = createDragonShieldItem("aether_dragon_shield", DragonScaleMaterial.AETHER);
+    public static final RegistryObject<Item> AETHER_DRAGON_SHOVEL = createDragonShovelItem("aether_dragon_shovel", DragonScaleTier.AETHER);
+    public static final RegistryObject<Item> AETHER_DRAGON_SWORD = createDragonSwordItem("aether_dragon_sword", DragonScaleTier.AETHER);
     //Water Equipments
-    public static final RegistryObject<Item> WATER_DRAGON_AXE = createDragonAxeItem("water_dragon_axe", EnumDragonType.WATER);
-    public static final RegistryObject<Item> WATER_DRAGON_BOW = createDragonBowItem("water_dragon_bow", EnumDragonType.WATER);
-    public static final RegistryObject<Item> WATER_DRAGON_HOE = createDragonHoeItem("water_dragon_hoe", EnumDragonType.WATER);
-    public static final RegistryObject<Item> WATER_DRAGON_PICKAXE = createDragonPickaxeItem("water_dragon_pickaxe", EnumDragonType.WATER);
-    public static final RegistryObject<Item> WATER_DRAGON_SHIELD = createDragonShieldItem("water_dragon_shield", EnumDragonType.WATER);
-    public static final RegistryObject<Item> WATER_DRAGON_SHOVEL = createDragonShovelItem("water_dragon_shovel", EnumDragonType.WATER);
-    public static final RegistryObject<Item> WATER_DRAGON_SWORD = createDragonSwordItem("water_dragon_sword", EnumDragonType.WATER);
+    public static final RegistryObject<Item> WATER_DRAGON_AXE = createDragonAxeItem("water_dragon_axe", DragonScaleTier.WATER);
+    public static final RegistryObject<Item> WATER_DRAGON_BOOTS = createDragonArmorItem("water_dragon_scale_boots", DragonScaleMaterial.WATER, EquipmentSlotType.FEET);
+    public static final RegistryObject<Item> WATER_DRAGON_BOW = createDragonBowItem("water_dragon_bow", DragonScaleTier.WATER);
+    public static final RegistryObject<Item> WATER_DRAGON_CHESTPLATE = createDragonArmorItem("water_dragon_scale_chestplate", DragonScaleMaterial.WATER, EquipmentSlotType.CHEST);
+    public static final RegistryObject<Item> WATER_DRAGON_HELMET = createDragonArmorItem("water_dragon_scale_helmet", DragonScaleMaterial.WATER, EquipmentSlotType.HEAD);
+    public static final RegistryObject<Item> WATER_DRAGON_HOE = createDragonHoeItem("water_dragon_hoe", DragonScaleTier.WATER);
+    public static final RegistryObject<Item> WATER_DRAGON_LEGGINGS = createDragonArmorItem("water_dragon_scale_leggings", DragonScaleMaterial.WATER, EquipmentSlotType.LEGS);
+    public static final RegistryObject<Item> WATER_DRAGON_PICKAXE = createDragonPickaxeItem("water_dragon_pickaxe", DragonScaleTier.WATER);
+    public static final RegistryObject<Item> WATER_DRAGON_SHIELD = createDragonShieldItem("water_dragon_shield", DragonScaleMaterial.WATER);
+    public static final RegistryObject<Item> WATER_DRAGON_SHOVEL = createDragonShovelItem("water_dragon_shovel", DragonScaleTier.WATER);
+    public static final RegistryObject<Item> WATER_DRAGON_SWORD = createDragonSwordItem("water_dragon_sword", DragonScaleTier.WATER);
     //Ice Equipments
-    public static final RegistryObject<Item> ICE_DRAGON_AXE = createDragonAxeItem("ice_dragon_axe", EnumDragonType.ICE);
-    public static final RegistryObject<Item> ICE_DRAGON_BOW = createDragonBowItem("ice_dragon_bow", EnumDragonType.ICE);
-    public static final RegistryObject<Item> ICE_DRAGON_HOE = createDragonHoeItem("ice_dragon_hoe", EnumDragonType.ICE);
-    public static final RegistryObject<Item> ICE_DRAGON_PICKAXE = createDragonPickaxeItem("ice_dragon_pickaxe", EnumDragonType.ICE);
-    public static final RegistryObject<Item> ICE_DRAGON_SHIELD = createDragonShieldItem("ice_dragon_shield", EnumDragonType.ICE);
-    public static final RegistryObject<Item> ICE_DRAGON_SHOVEL = createDragonShovelItem("ice_dragon_shovel", EnumDragonType.ICE);
-    public static final RegistryObject<Item> ICE_DRAGON_SWORD = createDragonSwordItem("ice_dragon_sword", EnumDragonType.ICE);
+    public static final RegistryObject<Item> ICE_DRAGON_AXE = createDragonAxeItem("ice_dragon_axe", DragonScaleTier.ICE);
+    public static final RegistryObject<Item> ICE_DRAGON_BOOTS = createDragonArmorItem("ice_dragon_scale_boots", DragonScaleMaterial.ICE, EquipmentSlotType.FEET);
+    public static final RegistryObject<Item> ICE_DRAGON_BOW = createDragonBowItem("ice_dragon_bow", DragonScaleTier.ICE);
+    public static final RegistryObject<Item> ICE_DRAGON_CHESTPLATE = createDragonArmorItem("ice_dragon_scale_chestplate", DragonScaleMaterial.ICE, EquipmentSlotType.CHEST);
+    public static final RegistryObject<Item> ICE_DRAGON_HELMET = createDragonArmorItem("ice_dragon_scale_helmet", DragonScaleMaterial.ICE, EquipmentSlotType.HEAD);
+    public static final RegistryObject<Item> ICE_DRAGON_HOE = createDragonHoeItem("ice_dragon_hoe", DragonScaleTier.ICE);
+    public static final RegistryObject<Item> ICE_DRAGON_LEGGINGS = createDragonArmorItem("ice_dragon_scale_leggings", DragonScaleMaterial.ICE, EquipmentSlotType.LEGS);
+    public static final RegistryObject<Item> ICE_DRAGON_PICKAXE = createDragonPickaxeItem("ice_dragon_pickaxe", DragonScaleTier.ICE);
+    public static final RegistryObject<Item> ICE_DRAGON_SHIELD = createDragonShieldItem("ice_dragon_shield", DragonScaleMaterial.ICE);
+    public static final RegistryObject<Item> ICE_DRAGON_SHOVEL = createDragonShovelItem("ice_dragon_shovel", DragonScaleTier.ICE);
+    public static final RegistryObject<Item> ICE_DRAGON_SWORD = createDragonSwordItem("ice_dragon_sword", DragonScaleTier.ICE);
     //Fire Equipments
-    public static final RegistryObject<Item> FIRE_DRAGON_AXE = createDragonAxeItem("fire_dragon_axe", EnumDragonType.FIRE);
-    public static final RegistryObject<Item> FIRE_DRAGON_BOW = createDragonBowItem("fire_dragon_bow", EnumDragonType.FIRE);
-    public static final RegistryObject<Item> FIRE_DRAGON_HOE = createDragonHoeItem("fire_dragon_hoe", EnumDragonType.FIRE);
-    public static final RegistryObject<Item> FIRE_DRAGON_PICKAXE = createDragonPickaxeItem("fire_dragon_pickaxe", EnumDragonType.FIRE);
-    public static final RegistryObject<Item> FIRE_DRAGON_SHIELD = createDragonShieldItem("fire_dragon_shield", EnumDragonType.FIRE);
-    public static final RegistryObject<Item> FIRE_DRAGON_SHOVEL = createDragonShovelItem("fire_dragon_shovel", EnumDragonType.FIRE);
-    public static final RegistryObject<Item> FIRE_DRAGON_SWORD = createDragonSwordItem("fire_dragon_sword", EnumDragonType.FIRE);
+    public static final RegistryObject<Item> FIRE_DRAGON_AXE = createDragonAxeItem("fire_dragon_axe", DragonScaleTier.FIRE);
+    public static final RegistryObject<Item> FIRE_DRAGON_BOOTS = createDragonArmorItem("fire_dragon_scale_boots", DragonScaleMaterial.FIRE, EquipmentSlotType.FEET);
+    public static final RegistryObject<Item> FIRE_DRAGON_BOW = createDragonBowItem("fire_dragon_bow", DragonScaleTier.FIRE);
+    public static final RegistryObject<Item> FIRE_DRAGON_CHESTPLATE = createDragonArmorItem("fire_dragon_scale_chestplate", DragonScaleMaterial.FIRE, EquipmentSlotType.CHEST);
+    public static final RegistryObject<Item> FIRE_DRAGON_HELMET = createDragonArmorItem("fire_dragon_scale_helmet", DragonScaleMaterial.FIRE, EquipmentSlotType.HEAD);
+    public static final RegistryObject<Item> FIRE_DRAGON_HOE = createDragonHoeItem("fire_dragon_hoe", DragonScaleTier.FIRE);
+    public static final RegistryObject<Item> FIRE_DRAGON_LEGGINGS = createDragonArmorItem("fire_dragon_scale_leggings", DragonScaleMaterial.FIRE, EquipmentSlotType.LEGS);
+    public static final RegistryObject<Item> FIRE_DRAGON_PICKAXE = createDragonPickaxeItem("fire_dragon_pickaxe", DragonScaleTier.FIRE);
+    public static final RegistryObject<Item> FIRE_DRAGON_SHIELD = createDragonShieldItem("fire_dragon_shield", DragonScaleMaterial.FIRE);
+    public static final RegistryObject<Item> FIRE_DRAGON_SHOVEL = createDragonShovelItem("fire_dragon_shovel", DragonScaleTier.FIRE);
+    public static final RegistryObject<Item> FIRE_DRAGON_SWORD = createDragonSwordItem("fire_dragon_sword", DragonScaleTier.FIRE);
     //Forest Equipments
-    public static final RegistryObject<Item> FOREST_DRAGON_AXE = createDragonAxeItem("forest_dragon_axe", EnumDragonType.FOREST);
-    public static final RegistryObject<Item> FOREST_DRAGON_BOW = createDragonBowItem("forest_dragon_bow", EnumDragonType.FOREST);
-    public static final RegistryObject<Item> FOREST_DRAGON_HOE = createDragonHoeItem("forest_dragon_hoe", EnumDragonType.FOREST);
-    public static final RegistryObject<Item> FOREST_DRAGON_PICKAXE = createDragonPickaxeItem("forest_dragon_pickaxe", EnumDragonType.FOREST);
-    public static final RegistryObject<Item> FOREST_DRAGON_SHIELD = createDragonShieldItem("forest_dragon_shield", EnumDragonType.FOREST);
-    public static final RegistryObject<Item> FOREST_DRAGON_SHOVEL = createDragonShovelItem("forest_dragon_shovel", EnumDragonType.FOREST);
-    public static final RegistryObject<Item> FOREST_DRAGON_SWORD = createDragonSwordItem("forest_dragon_sword", EnumDragonType.FOREST);
+    public static final RegistryObject<Item> FOREST_DRAGON_AXE = createDragonAxeItem("forest_dragon_axe", DragonScaleTier.FOREST);
+    public static final RegistryObject<Item> FOREST_DRAGON_BOOTS = createDragonArmorItem("forest_dragon_scale_boots", DragonScaleMaterial.FOREST, EquipmentSlotType.FEET);
+    public static final RegistryObject<Item> FOREST_DRAGON_BOW = createDragonBowItem("forest_dragon_bow", DragonScaleTier.FOREST);
+    public static final RegistryObject<Item> FOREST_DRAGON_CHESTPLATE = createDragonArmorItem("forest_dragon_scale_chestplate", DragonScaleMaterial.FOREST, EquipmentSlotType.CHEST);
+    public static final RegistryObject<Item> FOREST_DRAGON_HELMET = createDragonArmorItem("forest_dragon_scale_helmet", DragonScaleMaterial.FOREST, EquipmentSlotType.HEAD);
+    public static final RegistryObject<Item> FOREST_DRAGON_HOE = createDragonHoeItem("forest_dragon_hoe", DragonScaleTier.FOREST);
+    public static final RegistryObject<Item> FOREST_DRAGON_LEGGINGS = createDragonArmorItem("forest_dragon_scale_leggings", DragonScaleMaterial.FOREST, EquipmentSlotType.LEGS);
+    public static final RegistryObject<Item> FOREST_DRAGON_PICKAXE = createDragonPickaxeItem("forest_dragon_pickaxe", DragonScaleTier.FOREST);
+    public static final RegistryObject<Item> FOREST_DRAGON_SHIELD = createDragonShieldItem("forest_dragon_shield", DragonScaleMaterial.FOREST);
+    public static final RegistryObject<Item> FOREST_DRAGON_SHOVEL = createDragonShovelItem("forest_dragon_shovel", DragonScaleTier.FOREST);
+    public static final RegistryObject<Item> FOREST_DRAGON_SWORD = createDragonSwordItem("forest_dragon_sword", DragonScaleTier.FOREST);
     //Nether Equipments
-    public static final RegistryObject<Item> NETHER_DRAGON_AXE = createDragonAxeItem("nether_dragon_axe", EnumDragonType.NETHER, 6.0F, -2.9F);
-    public static final RegistryObject<Item> NETHER_DRAGON_BOW = createDragonBowItem("nether_dragon_bow", EnumDragonType.NETHER);
-    public static final RegistryObject<Item> NETHER_DRAGON_HOE = createDragonHoeItem("nether_dragon_hoe", EnumDragonType.NETHER);
-    public static final RegistryObject<Item> NETHER_DRAGON_PICKAXE = createDragonPickaxeItem("nether_dragon_pickaxe", EnumDragonType.NETHER);
-    public static final RegistryObject<Item> NETHER_DRAGON_SHIELD = createDragonShieldItem("nether_dragon_shield", EnumDragonType.NETHER);
-    public static final RegistryObject<Item> NETHER_DRAGON_SHOVEL = createDragonShovelItem("nether_dragon_shovel", EnumDragonType.NETHER);
-    public static final RegistryObject<Item> NETHER_DRAGON_SWORD = createDragonSwordItem("nether_dragon_sword", EnumDragonType.NETHER);
+    public static final RegistryObject<Item> NETHER_DRAGON_AXE = createDragonAxeItem("nether_dragon_axe", DragonScaleTier.NETHER, 6.0F, -2.9F);
+    public static final RegistryObject<Item> NETHER_DRAGON_BOOTS = createDragonArmorItem("nether_dragon_scale_boots", DragonScaleMaterial.NETHER, EquipmentSlotType.FEET);
+    public static final RegistryObject<Item> NETHER_DRAGON_BOW = createDragonBowItem("nether_dragon_bow", DragonScaleTier.NETHER);
+    public static final RegistryObject<Item> NETHER_DRAGON_CHESTPLATE = createDragonArmorItem("nether_dragon_scale_chestplate", DragonScaleMaterial.NETHER, EquipmentSlotType.CHEST);
+    public static final RegistryObject<Item> NETHER_DRAGON_HELMET = createDragonArmorItem("nether_dragon_scale_helmet", DragonScaleMaterial.NETHER, EquipmentSlotType.HEAD);
+    public static final RegistryObject<Item> NETHER_DRAGON_HOE = createDragonHoeItem("nether_dragon_hoe", DragonScaleTier.NETHER);
+    public static final RegistryObject<Item> NETHER_DRAGON_LEGGINGS = createDragonArmorItem("nether_dragon_scale_leggings", DragonScaleMaterial.NETHER, EquipmentSlotType.LEGS);
+    public static final RegistryObject<Item> NETHER_DRAGON_PICKAXE = createDragonPickaxeItem("nether_dragon_pickaxe", DragonScaleTier.NETHER);
+    public static final RegistryObject<Item> NETHER_DRAGON_SHIELD = createDragonShieldItem("nether_dragon_shield", DragonScaleMaterial.NETHER);
+    public static final RegistryObject<Item> NETHER_DRAGON_SHOVEL = createDragonShovelItem("nether_dragon_shovel", DragonScaleTier.NETHER);
+    public static final RegistryObject<Item> NETHER_DRAGON_SWORD = createDragonSwordItem("nether_dragon_sword", DragonScaleTier.NETHER);
     //Ender Equipments
-    public static final RegistryObject<Item> ENDER_DRAGON_AXE = createDragonAxeItem("ender_dragon_axe", EnumDragonType.ENDER, 3.0F, -2.9F);
-    public static final RegistryObject<Item> ENDER_DRAGON_BOW = createDragonBowItem("ender_dragon_bow", EnumDragonType.ENDER);
-    public static final RegistryObject<Item> ENDER_DRAGON_HOE = createDragonHoeItem("ender_dragon_hoe", EnumDragonType.ENDER);
-    public static final RegistryObject<Item> ENDER_DRAGON_PICKAXE = createDragonPickaxeItem("ender_dragon_pickaxe", EnumDragonType.ENDER);
-    public static final RegistryObject<Item> ENDER_DRAGON_SHIELD = createDragonShieldItem("ender_dragon_shield", EnumDragonType.ENDER);
-    public static final RegistryObject<Item> ENDER_DRAGON_SHOVEL = createDragonShovelItem("ender_dragon_shovel", EnumDragonType.ENDER);
-    public static final RegistryObject<Item> ENDER_DRAGON_SWORD = createDragonSwordItem("ender_dragon_sword", EnumDragonType.ENDER);
+    public static final RegistryObject<Item> ENDER_DRAGON_AXE = createDragonAxeItem("ender_dragon_axe", DragonScaleTier.ENDER, 3.0F, -2.9F);
+    public static final RegistryObject<Item> ENDER_DRAGON_BOOTS = createDragonArmorItem("ender_dragon_scale_boots", DragonScaleMaterial.ENDER, EquipmentSlotType.FEET);
+    public static final RegistryObject<Item> ENDER_DRAGON_BOW = createDragonBowItem("ender_dragon_bow", DragonScaleTier.ENDER);
+    public static final RegistryObject<Item> ENDER_DRAGON_CHESTPLATE = createDragonArmorItem("ender_dragon_scale_chestplate", DragonScaleMaterial.ENDER, EquipmentSlotType.CHEST);
+    public static final RegistryObject<Item> ENDER_DRAGON_HELMET = createDragonArmorItem("ender_dragon_scale_helmet", DragonScaleMaterial.ENDER, EquipmentSlotType.HEAD);
+    public static final RegistryObject<Item> ENDER_DRAGON_HOE = createDragonHoeItem("ender_dragon_hoe", DragonScaleTier.ENDER);
+    public static final RegistryObject<Item> ENDER_DRAGON_LEGGINGS = createDragonArmorItem("ender_dragon_scale_leggings", DragonScaleMaterial.ENDER, EquipmentSlotType.LEGS);
+    public static final RegistryObject<Item> ENDER_DRAGON_PICKAXE = createDragonPickaxeItem("ender_dragon_pickaxe", DragonScaleTier.ENDER);
+    public static final RegistryObject<Item> ENDER_DRAGON_SHIELD = createDragonShieldItem("ender_dragon_shield", DragonScaleMaterial.ENDER);
+    public static final RegistryObject<Item> ENDER_DRAGON_SHOVEL = createDragonShovelItem("ender_dragon_shovel", DragonScaleTier.ENDER);
+    public static final RegistryObject<Item> ENDER_DRAGON_SWORD = createDragonSwordItem("ender_dragon_sword", DragonScaleTier.ENDER);
     //Enchant Equipments
-    public static final RegistryObject<Item> ENCHANT_DRAGON_AXE = createDragonAxeItem("enchant_dragon_axe", EnumDragonType.ENCHANT);
-    public static final RegistryObject<Item> ENCHANT_DRAGON_BOW = createDragonBowItem("enchant_dragon_bow", EnumDragonType.ENCHANT);
-    public static final RegistryObject<Item> ENCHANT_DRAGON_HOE = createDragonHoeItem("enchant_dragon_hoe", EnumDragonType.ENCHANT);
-    public static final RegistryObject<Item> ENCHANT_DRAGON_PICKAXE = createDragonPickaxeItem("enchant_dragon_pickaxe", EnumDragonType.ENCHANT);
-    public static final RegistryObject<Item> ENCHANT_DRAGON_SHIELD = createDragonShieldItem("enchant_dragon_shield", EnumDragonType.ENCHANT);
-    public static final RegistryObject<Item> ENCHANT_DRAGON_SHOVEL = createDragonShovelItem("enchant_dragon_shovel", EnumDragonType.ENCHANT);
-    public static final RegistryObject<Item> ENCHANT_DRAGON_SWORD = createDragonSwordItem("enchant_dragon_sword", EnumDragonType.ENCHANT);
+    public static final RegistryObject<Item> ENCHANT_DRAGON_AXE = createDragonAxeItem("enchant_dragon_axe", DragonScaleTier.ENCHANT);
+    public static final RegistryObject<Item> ENCHANT_DRAGON_BOOTS = createDragonArmorItem("enchant_dragon_scale_boots", DragonScaleMaterial.ENCHANT, EquipmentSlotType.FEET);
+    public static final RegistryObject<Item> ENCHANT_DRAGON_BOW = createDragonBowItem("enchant_dragon_bow", DragonScaleTier.ENCHANT);
+    public static final RegistryObject<Item> ENCHANT_DRAGON_CHESTPLATE = createDragonArmorItem("enchant_dragon_scale_chestplate", DragonScaleMaterial.ENCHANT, EquipmentSlotType.CHEST);
+    public static final RegistryObject<Item> ENCHANT_DRAGON_HELMET = createDragonArmorItem("enchant_dragon_scale_helmet", DragonScaleMaterial.ENCHANT, EquipmentSlotType.HEAD);
+    public static final RegistryObject<Item> ENCHANT_DRAGON_HOE = createDragonHoeItem("enchant_dragon_hoe", DragonScaleTier.ENCHANT);
+    public static final RegistryObject<Item> ENCHANT_DRAGON_LEGGINGS = createDragonArmorItem("enchant_dragon_scale_leggings", DragonScaleMaterial.ENCHANT, EquipmentSlotType.LEGS);
+    public static final RegistryObject<Item> ENCHANT_DRAGON_PICKAXE = createDragonPickaxeItem("enchant_dragon_pickaxe", DragonScaleTier.ENCHANT);
+    public static final RegistryObject<Item> ENCHANT_DRAGON_SHIELD = createDragonShieldItem("enchant_dragon_shield", DragonScaleMaterial.ENCHANT);
+    public static final RegistryObject<Item> ENCHANT_DRAGON_SHOVEL = createDragonShovelItem("enchant_dragon_shovel", DragonScaleTier.ENCHANT);
+    public static final RegistryObject<Item> ENCHANT_DRAGON_SWORD = createDragonSwordItem("enchant_dragon_sword", DragonScaleTier.ENCHANT);
     //Sunlight Equipments
-    public static final RegistryObject<Item> SUNLIGHT_DRAGON_AXE = createDragonAxeItem("sunlight_dragon_axe", EnumDragonType.SUNLIGHT);
-    public static final RegistryObject<Item> SUNLIGHT_DRAGON_BOW = createDragonBowItem("sunlight_dragon_bow", EnumDragonType.SUNLIGHT);
-    public static final RegistryObject<Item> SUNLIGHT_DRAGON_HOE = createDragonHoeItem("sunlight_dragon_hoe", EnumDragonType.SUNLIGHT);
-    public static final RegistryObject<Item> SUNLIGHT_DRAGON_PICKAXE = createDragonPickaxeItem("sunlight_dragon_pickaxe", EnumDragonType.SUNLIGHT);
-    public static final RegistryObject<Item> SUNLIGHT_DRAGON_SHIELD = createDragonShieldItem("sunlight_dragon_shield", EnumDragonType.SUNLIGHT);
-    public static final RegistryObject<Item> SUNLIGHT_DRAGON_SHOVEL = createDragonShovelItem("sunlight_dragon_shovel", EnumDragonType.SUNLIGHT);
-    public static final RegistryObject<Item> SUNLIGHT_DRAGON_SWORD = createDragonSwordItem("sunlight_dragon_sword", EnumDragonType.SUNLIGHT);
+    public static final RegistryObject<Item> SUNLIGHT_DRAGON_AXE = createDragonAxeItem("sunlight_dragon_axe", DragonScaleTier.SUNLIGHT);
+    public static final RegistryObject<Item> SUNLIGHT_DRAGON_BOOTS = createDragonArmorItem("sunlight_dragon_scale_boots", DragonScaleMaterial.SUNLIGHT, EquipmentSlotType.FEET);
+    public static final RegistryObject<Item> SUNLIGHT_DRAGON_BOW = createDragonBowItem("sunlight_dragon_bow", DragonScaleTier.SUNLIGHT);
+    public static final RegistryObject<Item> SUNLIGHT_DRAGON_CHESTPLATE = createDragonArmorItem("sunlight_dragon_scale_chestplate", DragonScaleMaterial.SUNLIGHT, EquipmentSlotType.CHEST);
+    public static final RegistryObject<Item> SUNLIGHT_DRAGON_HELMET = createDragonArmorItem("sunlight_dragon_scale_helmet", DragonScaleMaterial.SUNLIGHT, EquipmentSlotType.HEAD);
+    public static final RegistryObject<Item> SUNLIGHT_DRAGON_HOE = createDragonHoeItem("sunlight_dragon_hoe", DragonScaleTier.SUNLIGHT);
+    public static final RegistryObject<Item> SUNLIGHT_DRAGON_LEGGINGS = createDragonArmorItem("sunlight_dragon_scale_leggings", DragonScaleMaterial.SUNLIGHT, EquipmentSlotType.LEGS);
+    public static final RegistryObject<Item> SUNLIGHT_DRAGON_PICKAXE = createDragonPickaxeItem("sunlight_dragon_pickaxe", DragonScaleTier.SUNLIGHT);
+    public static final RegistryObject<Item> SUNLIGHT_DRAGON_SHIELD = createDragonShieldItem("sunlight_dragon_shield", DragonScaleMaterial.SUNLIGHT);
+    public static final RegistryObject<Item> SUNLIGHT_DRAGON_SHOVEL = createDragonShovelItem("sunlight_dragon_shovel", DragonScaleTier.SUNLIGHT);
+    public static final RegistryObject<Item> SUNLIGHT_DRAGON_SWORD = createDragonSwordItem("sunlight_dragon_sword", DragonScaleTier.SUNLIGHT);
     //Moonlight Equipments
-    public static final RegistryObject<Item> MOONLIGHT_DRAGON_AXE = createDragonAxeItem("moonlight_dragon_axe", EnumDragonType.MOONLIGHT);
-    public static final RegistryObject<Item> MOONLIGHT_DRAGON_BOW = createDragonBowItem("moonlight_dragon_bow", EnumDragonType.MOONLIGHT);
-    public static final RegistryObject<Item> MOONLIGHT_DRAGON_HOE = createDragonHoeItem("moonlight_dragon_hoe", EnumDragonType.MOONLIGHT);
-    public static final RegistryObject<Item> MOONLIGHT_DRAGON_PICKAXE = createDragonPickaxeItem("moonlight_dragon_pickaxe", EnumDragonType.MOONLIGHT);
-    public static final RegistryObject<Item> MOONLIGHT_DRAGON_SHIELD = createDragonShieldItem("moonlight_dragon_shield", EnumDragonType.MOONLIGHT);
-    public static final RegistryObject<Item> MOONLIGHT_DRAGON_SHOVEL = createDragonShovelItem("moonlight_dragon_shovel", EnumDragonType.MOONLIGHT);
-    public static final RegistryObject<Item> MOONLIGHT_DRAGON_SWORD = createDragonSwordItem("moonlight_dragon_sword", EnumDragonType.MOONLIGHT);
+    public static final RegistryObject<Item> MOONLIGHT_DRAGON_AXE = createDragonAxeItem("moonlight_dragon_axe", DragonScaleTier.MOONLIGHT);
+    public static final RegistryObject<Item> MOONLIGHT_DRAGON_BOOTS = createDragonArmorItem("moonlight_dragon_scale_boots", DragonScaleMaterial.MOONLIGHT, EquipmentSlotType.FEET);
+    public static final RegistryObject<Item> MOONLIGHT_DRAGON_BOW = createDragonBowItem("moonlight_dragon_bow", DragonScaleTier.MOONLIGHT);
+    public static final RegistryObject<Item> MOONLIGHT_DRAGON_CHESTPLATE = createDragonArmorItem("moonlight_dragon_scale_chestplate", DragonScaleMaterial.MOONLIGHT, EquipmentSlotType.CHEST);
+    public static final RegistryObject<Item> MOONLIGHT_DRAGON_HELMET = createDragonArmorItem("moonlight_dragon_scale_helmet", DragonScaleMaterial.MOONLIGHT, EquipmentSlotType.HEAD);
+    public static final RegistryObject<Item> MOONLIGHT_DRAGON_HOE = createDragonHoeItem("moonlight_dragon_hoe", DragonScaleTier.MOONLIGHT);
+    public static final RegistryObject<Item> MOONLIGHT_DRAGON_LEGGINGS = createDragonArmorItem("moonlight_dragon_scale_leggings", DragonScaleMaterial.MOONLIGHT, EquipmentSlotType.LEGS);
+    public static final RegistryObject<Item> MOONLIGHT_DRAGON_PICKAXE = createDragonPickaxeItem("moonlight_dragon_pickaxe", DragonScaleTier.MOONLIGHT);
+    public static final RegistryObject<Item> MOONLIGHT_DRAGON_SHIELD = createDragonShieldItem("moonlight_dragon_shield", DragonScaleMaterial.MOONLIGHT);
+    public static final RegistryObject<Item> MOONLIGHT_DRAGON_SHOVEL = createDragonShovelItem("moonlight_dragon_shovel", DragonScaleTier.MOONLIGHT);
+    public static final RegistryObject<Item> MOONLIGHT_DRAGON_SWORD = createDragonSwordItem("moonlight_dragon_sword", DragonScaleTier.MOONLIGHT);
     //Storm Equipments
-    public static final RegistryObject<Item> STORM_DRAGON_AXE = createDragonAxeItem("storm_dragon_axe", EnumDragonType.STORM);
-    public static final RegistryObject<Item> STORM_DRAGON_BOW = createDragonBowItem("storm_dragon_bow", EnumDragonType.STORM);
-    public static final RegistryObject<Item> STORM_DRAGON_HOE = createDragonHoeItem("storm_dragon_hoe", EnumDragonType.STORM);
-    public static final RegistryObject<Item> STORM_DRAGON_PICKAXE = createDragonPickaxeItem("storm_dragon_pickaxe", EnumDragonType.STORM);
-    public static final RegistryObject<Item> STORM_DRAGON_SHIELD = createDragonShieldItem("storm_dragon_shield", EnumDragonType.STORM);
-    public static final RegistryObject<Item> STORM_DRAGON_SHOVEL = createDragonShovelItem("storm_dragon_shovel", EnumDragonType.STORM);
-    public static final RegistryObject<Item> STORM_DRAGON_SWORD = createDragonSwordItem("storm_dragon_sword", EnumDragonType.STORM);
+    public static final RegistryObject<Item> STORM_DRAGON_AXE = createDragonAxeItem("storm_dragon_axe", DragonScaleTier.STORM);
+    public static final RegistryObject<Item> STORM_DRAGON_BOOTS = createDragonArmorItem("storm_dragon_scale_boots", DragonScaleMaterial.STORM, EquipmentSlotType.FEET);
+    public static final RegistryObject<Item> STORM_DRAGON_BOW = createDragonBowItem("storm_dragon_bow", DragonScaleTier.STORM);
+    public static final RegistryObject<Item> STORM_DRAGON_CHESTPLATE = createDragonArmorItem("storm_dragon_scale_chestplate", DragonScaleMaterial.STORM, EquipmentSlotType.CHEST);
+    public static final RegistryObject<Item> STORM_DRAGON_HELMET = createDragonArmorItem("storm_dragon_scale_helmet", DragonScaleMaterial.STORM, EquipmentSlotType.HEAD);
+    public static final RegistryObject<Item> STORM_DRAGON_HOE = createDragonHoeItem("storm_dragon_hoe", DragonScaleTier.STORM);
+    public static final RegistryObject<Item> STORM_DRAGON_LEGGINGS = createDragonArmorItem("storm_dragon_scale_leggings", DragonScaleMaterial.STORM, EquipmentSlotType.LEGS);
+    public static final RegistryObject<Item> STORM_DRAGON_PICKAXE = createDragonPickaxeItem("storm_dragon_pickaxe", DragonScaleTier.STORM);
+    public static final RegistryObject<Item> STORM_DRAGON_SHIELD = createDragonShieldItem("storm_dragon_shield", DragonScaleMaterial.STORM);
+    public static final RegistryObject<Item> STORM_DRAGON_SHOVEL = createDragonShovelItem("storm_dragon_shovel", DragonScaleTier.STORM);
+    public static final RegistryObject<Item> STORM_DRAGON_SWORD = createDragonSwordItem("storm_dragon_sword", DragonScaleTier.STORM);
     //Terra Equipments
-    public static final RegistryObject<Item> TERRA_DRAGON_AXE = createDragonAxeItem("terra_dragon_axe", EnumDragonType.TERRA);
-    public static final RegistryObject<Item> TERRA_DRAGON_BOW = createDragonBowItem("terra_dragon_bow", EnumDragonType.TERRA);
-    public static final RegistryObject<Item> TERRA_DRAGON_HOE = createDragonHoeItem("terra_dragon_hoe", EnumDragonType.TERRA);
-    public static final RegistryObject<Item> TERRA_DRAGON_PICKAXE = createDragonPickaxeItem("terra_dragon_pickaxe", EnumDragonType.TERRA);
-    public static final RegistryObject<Item> TERRA_DRAGON_SHIELD = createDragonShieldItem("terra_dragon_shield", EnumDragonType.TERRA);
-    public static final RegistryObject<Item> TERRA_DRAGON_SHOVEL = createDragonShovelItem("terra_dragon_shovel", EnumDragonType.TERRA);
-    public static final RegistryObject<Item> TERRA_DRAGON_SWORD = createDragonSwordItem("terra_dragon_sword", EnumDragonType.TERRA);
+    public static final RegistryObject<Item> TERRA_DRAGON_AXE = createDragonAxeItem("terra_dragon_axe", DragonScaleTier.TERRA);
+    public static final RegistryObject<Item> TERRA_DRAGON_BOOTS = createDragonArmorItem("terra_dragon_scale_boots", DragonScaleMaterial.TERRA, EquipmentSlotType.FEET);
+    public static final RegistryObject<Item> TERRA_DRAGON_BOW = createDragonBowItem("terra_dragon_bow", DragonScaleTier.TERRA);
+    public static final RegistryObject<Item> TERRA_DRAGON_CHESTPLATE = createDragonArmorItem("terra_dragon_scale_chestplate", DragonScaleMaterial.TERRA, EquipmentSlotType.CHEST);
+    public static final RegistryObject<Item> TERRA_DRAGON_HELMET = createDragonArmorItem("terra_dragon_scale_helmet", DragonScaleMaterial.TERRA, EquipmentSlotType.HEAD);
+    public static final RegistryObject<Item> TERRA_DRAGON_HOE = createDragonHoeItem("terra_dragon_hoe", DragonScaleTier.TERRA);
+    public static final RegistryObject<Item> TERRA_DRAGON_LEGGINGS = createDragonArmorItem("terra_dragon_scale_leggings", DragonScaleMaterial.TERRA, EquipmentSlotType.LEGS);
+    public static final RegistryObject<Item> TERRA_DRAGON_PICKAXE = createDragonPickaxeItem("terra_dragon_pickaxe", DragonScaleTier.TERRA);
+    public static final RegistryObject<Item> TERRA_DRAGON_SHIELD = createDragonShieldItem("terra_dragon_shield", DragonScaleMaterial.TERRA);
+    public static final RegistryObject<Item> TERRA_DRAGON_SHOVEL = createDragonShovelItem("terra_dragon_shovel", DragonScaleTier.TERRA);
+    public static final RegistryObject<Item> TERRA_DRAGON_SWORD = createDragonSwordItem("terra_dragon_sword", DragonScaleTier.TERRA);
     //Zombie Equipments
-    public static final RegistryObject<Item> ZOMBIE_DRAGON_AXE = createDragonAxeItem("zombie_dragon_axe", EnumDragonType.ZOMBIE);
-    public static final RegistryObject<Item> ZOMBIE_DRAGON_BOW = createDragonBowItem("zombie_dragon_bow", EnumDragonType.ZOMBIE);
-    public static final RegistryObject<Item> ZOMBIE_DRAGON_HOE = createDragonHoeItem("zombie_dragon_hoe", EnumDragonType.ZOMBIE);
-    public static final RegistryObject<Item> ZOMBIE_DRAGON_PICKAXE = createDragonPickaxeItem("zombie_dragon_pickaxe", EnumDragonType.ZOMBIE);
-    public static final RegistryObject<Item> ZOMBIE_DRAGON_SHIELD = createDragonShieldItem("zombie_dragon_shield", EnumDragonType.ZOMBIE);
-    public static final RegistryObject<Item> ZOMBIE_DRAGON_SHOVEL = createDragonShovelItem("zombie_dragon_shovel", EnumDragonType.ZOMBIE);
-    public static final RegistryObject<Item> ZOMBIE_DRAGON_SWORD = createDragonSwordItem("zombie_dragon_sword", EnumDragonType.ZOMBIE);
+    public static final RegistryObject<Item> ZOMBIE_DRAGON_AXE = createDragonAxeItem("zombie_dragon_axe", DragonScaleTier.ZOMBIE);
+    public static final RegistryObject<Item> ZOMBIE_DRAGON_BOOTS = createDragonArmorItem("zombie_dragon_scale_boots", DragonScaleMaterial.ZOMBIE, EquipmentSlotType.FEET);
+    public static final RegistryObject<Item> ZOMBIE_DRAGON_BOW = createDragonBowItem("zombie_dragon_bow", DragonScaleTier.ZOMBIE);
+    public static final RegistryObject<Item> ZOMBIE_DRAGON_CHESTPLATE = createDragonArmorItem("zombie_dragon_scale_chestplate", DragonScaleMaterial.ZOMBIE, EquipmentSlotType.CHEST);
+    public static final RegistryObject<Item> ZOMBIE_DRAGON_HELMET = createDragonArmorItem("zombie_dragon_scale_helmet", DragonScaleMaterial.ZOMBIE, EquipmentSlotType.HEAD);
+    public static final RegistryObject<Item> ZOMBIE_DRAGON_HOE = createDragonHoeItem("zombie_dragon_hoe", DragonScaleTier.ZOMBIE);
+    public static final RegistryObject<Item> ZOMBIE_DRAGON_LEGGINGS = createDragonArmorItem("zombie_dragon_scale_leggings", DragonScaleMaterial.ZOMBIE, EquipmentSlotType.LEGS);
+    public static final RegistryObject<Item> ZOMBIE_DRAGON_PICKAXE = createDragonPickaxeItem("zombie_dragon_pickaxe", DragonScaleTier.ZOMBIE);
+    public static final RegistryObject<Item> ZOMBIE_DRAGON_SHIELD = createDragonShieldItem("zombie_dragon_shield", DragonScaleMaterial.ZOMBIE);
+    public static final RegistryObject<Item> ZOMBIE_DRAGON_SHOVEL = createDragonShovelItem("zombie_dragon_shovel", DragonScaleTier.ZOMBIE);
+    public static final RegistryObject<Item> ZOMBIE_DRAGON_SWORD = createDragonSwordItem("zombie_dragon_sword", DragonScaleTier.ZOMBIE);
 
-    private static RegistryObject<Item> createDragonArmorItem(String name, EnumDragonType type, EquipmentSlotType slot) {
-        return ITEMS.register(name, () -> new ItemDragonArmor(type, slot, new Item.Properties().tab(EQUIPMENT_TAB)));
+    private static RegistryObject<Item> createDragonArmorItem(String name, DragonScaleMaterial material, EquipmentSlotType slot) {
+        return ITEMS.register(name, () -> new ItemDragonArmor(material, slot, new Item.Properties().tab(EQUIPMENT_TAB)));
     }
 
-    private static RegistryObject<Item> createDragonAxeItem(String name, EnumDragonType type, float attackDamageModifier, float attackSpeedModifier) {
-        return ITEMS.register(name, () -> new ItemDragonAxe(type, attackDamageModifier, attackSpeedModifier, new Item.Properties().tab(EQUIPMENT_TAB)));
+    private static RegistryObject<Item> createDragonAxeItem(String name, DragonScaleTier tier, float attackDamageModifier, float attackSpeedModifier) {
+        return ITEMS.register(name, () -> new ItemDragonAxe(tier, attackDamageModifier, attackSpeedModifier, new Item.Properties().tab(EQUIPMENT_TAB)));
     }
 
-    private static RegistryObject<Item> createDragonAxeItem(String name, EnumDragonType type) {
-        return ITEMS.register(name, () -> new ItemDragonAxe(type, 5.0F, -2.8F/*Minecraft: -3.0F*/, new Item.Properties().tab(EQUIPMENT_TAB)));
+    private static RegistryObject<Item> createDragonAxeItem(String name, DragonScaleTier tier) {
+        return ITEMS.register(name, () -> new ItemDragonAxe(tier, 5.0F, -2.8F/*Minecraft: -3.0F*/, new Item.Properties().tab(EQUIPMENT_TAB)));
     }
 
-    private static RegistryObject<Item> createDragonBowItem(String name, EnumDragonType type) {
-        return ITEMS.register(name, () -> new ItemDragonBow(type, new Item.Properties().defaultDurability(725).tab(EQUIPMENT_TAB)));
+    private static RegistryObject<Item> createDragonBowItem(String name, DragonScaleTier tier) {
+        return ITEMS.register(name, () -> new ItemDragonBow(tier, new Item.Properties().tab(EQUIPMENT_TAB)));
     }
 
-    private static RegistryObject<Item> createDragonHoeItem(String name, EnumDragonType type) {
-        return ITEMS.register(name, () -> new ItemDragonHoe(type, (int) -type.tier.getAttackDamageBonus(), type.tier.getAttackDamageBonus() - 3.0F, new Item.Properties().tab(EQUIPMENT_TAB)));
+    private static RegistryObject<Item> createDragonHoeItem(String name, DragonScaleTier tier) {
+        return ITEMS.register(name, () -> new ItemDragonHoe(tier, (int) -tier.getAttackDamageBonus(), tier.getAttackDamageBonus() - 3.0F, new Item.Properties().tab(EQUIPMENT_TAB)));
     }
 
-    private static RegistryObject<Item> createDragonPickaxeItem(String name, EnumDragonType type) {
-        return ITEMS.register(name, () -> new ItemDragonPickaxe(type, 1, -2.8F, new Item.Properties().tab(EQUIPMENT_TAB)));
+    private static RegistryObject<Item> createDragonPickaxeItem(String name, DragonScaleTier tier) {
+        return ITEMS.register(name, () -> new ItemDragonPickaxe(tier, 1, -2.8F, new Item.Properties().tab(EQUIPMENT_TAB)));
     }
 
-    private static RegistryObject<Item> createDragonScalesItem(String name, EnumDragonType type) {
-        return ITEMS.register(name, () -> new ItemDragonScales(new Item.Properties().tab(ITEM_TAB), type));
+    private static RegistryObject<Item> createDragonScalesItem(String name, DragonType type) {
+        return ITEMS.register(name, () -> new ItemDragonScales(type, new Item.Properties().tab(ITEM_TAB)));
     }
 
-    private static RegistryObject<Item> createDragonShieldItem(String name, EnumDragonType type) {
-        return ITEMS.register(name, () -> new ItemDragonShield(type, new Item.Properties().defaultDurability(2500).tab(EQUIPMENT_TAB)));
+    private static RegistryObject<Item> createDragonShieldItem(String name, DragonScaleMaterial material) {
+        return ITEMS.register(name, () -> new ItemDragonShield(material, new Item.Properties().tab(EQUIPMENT_TAB)));
     }
 
-    private static RegistryObject<Item> createDragonShovelItem(String name, EnumDragonType type) {
-        return ITEMS.register(name, () -> new ItemDragonShovel(type, 1.5F, -3.0F, new Item.Properties().tab(EQUIPMENT_TAB)));
+    private static RegistryObject<Item> createDragonShovelItem(String name, DragonScaleTier tier) {
+        return ITEMS.register(name, () -> new ItemDragonShovel(tier, 1.5F, -3.0F, new Item.Properties().tab(EQUIPMENT_TAB)));
     }
 
-    private static RegistryObject<Item> createDragonSwordItem(String name, EnumDragonType type) {
-        return ITEMS.register(name, () -> new ItemDragonSword(type, 3, -2.0F/*Minecraft: -2.4F*/, new Item.Properties().tab(EQUIPMENT_TAB)));
+    private static RegistryObject<Item> createDragonSwordItem(String name, DragonScaleTier tier) {
+        return ITEMS.register(name, () -> new ItemDragonSword(tier, 3, -2.0F/*Minecraft: -2.4F*/, new Item.Properties().tab(EQUIPMENT_TAB)));
     }
 
     public static final ItemGroup BLOCK_TAB = new ItemGroup(MOD_ID + ".blocks") {

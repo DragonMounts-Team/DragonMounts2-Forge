@@ -30,21 +30,21 @@
             "predicate": {
                 "pulling": 1
             },
-            "model": "dragonmounts:item/end_dragon_bow_0"
+            "model": "dragonmounts:item/ender_dragon_bow_0"
         },
         {
             "predicate": {
                 "pulling": 1,
                 "pull": 0.65
             },
-            "model": "dragonmounts:item/end_dragon_bow_1"
+            "model": "dragonmounts:item/ender_dragon_bow_1"
         },
         {
             "predicate": {
                 "pulling": 1,
                 "pull": 0.9
             },
-            "model": "dragonmounts:item/end_dragon_bow_2"
+            "model": "dragonmounts:item/ender_dragon_bow_2"
         }
     ]
 }

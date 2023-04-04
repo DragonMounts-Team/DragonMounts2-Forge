@@ -1,9 +1,6 @@
 package net.dragonmounts3;
 
-import net.dragonmounts3.inits.ModBlocks;
-import net.dragonmounts3.inits.ModEntities;
-import net.dragonmounts3.inits.ModItems;
-import net.dragonmounts3.inits.ModTileEntities;
+import net.dragonmounts3.inits.*;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -32,6 +29,7 @@ public class DragonMounts {
         ModBlocks.BLOCKS.register(this.eventBus);
         ModEntities.ENTITY_TYPES.register(this.eventBus);
         ModTileEntities.TILE_ENTITY.register(this.eventBus);
+        ModContainers.CONTAINERS.register(this.eventBus);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DragonMountsConfig.SPEC);
         MinecraftForge.EVENT_BUS.register(this);
     }

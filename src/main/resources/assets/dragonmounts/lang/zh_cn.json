@@ -1,5 +1,7 @@
 {
   "block.dragonmounts.dragon_nest": "龙巢方块",
+  "block.dragonmounts.dragon_shulker_box": "龙核心",
+  "container.dragonmounts.dragon_shulker_box": "龙核心",
   "dragon.aether": "以太",
   "dragon.enchant": "魔法",
   "dragon.ender": "末影",
@@ -16,6 +18,8 @@
   "dragon.water": "水属",
   "dragon.wither": "凋灵",
   "dragon.zombie": "僵尸",
+  "item.dragonmounts.diamond_dragon_armor": "钻石龙铠",
+  "item.dragonmounts.diamond_shears": "钻石剪刀",
   "item.dragonmounts.dragon_axe": "龙斧",
   "item.dragonmounts.dragon_bow": "龙弓",
   "item.dragonmounts.dragon_hoe": "龙锄",
@@ -28,6 +32,11 @@
   "item.dragonmounts.dragon_shield": "龙盾",
   "item.dragonmounts.dragon_shovel": "龙锹",
   "item.dragonmounts.dragon_sword": "龙剑",
+  "item.dragonmounts.emerald_dragon_armor": "绿宝石龙铠",
+  "item.dragonmounts.golden_dragon_armor": "金龙铠",
+  "item.dragonmounts.iron_dragon_armor": "铁龙铠",
+  "item.dragonmounts.netherite_dragon_armor": "下界合金龙铠",
+  "item.dragonmounts.netherite_shears": "下界合金剪刀",
   "itemGroup.dragonmounts.blocks": "龙骑士：方块",
   "itemGroup.dragonmounts.equipments": "龙骑士：装备",
   "itemGroup.dragonmounts.items": "龙骑士：物品"

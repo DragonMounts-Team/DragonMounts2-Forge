@@ -32,13 +32,6 @@
 	   "dragonmounts:mob/dragon/roar3"
     ]
   },
-      
-  "item.gender_switch": {
-  "category": "dragon_roar",
-    "sounds": [
-      "dragonmounts:item/gender_switch"
-    ]
-  },
   
   "mob.dragon.nethergrowl": {
   "category": "nether_dragon_growl",

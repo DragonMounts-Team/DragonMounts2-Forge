@@ -1,5 +1,7 @@
 {
   "block.dragonmounts.dragon_nest": "Nest Block",
+  "block.dragonmounts.dragon_shulker_box": "Dragon Core",
+  "container.dragonmounts.dragon_shulker_box": "Dragon Core",
   "dragon.aether": "Aether",
   "dragon.enchant": "Enchant",
   "dragon.ender": "Ender",
@@ -16,6 +18,8 @@
   "dragon.water": "Water",
   "dragon.wither": "Wither",
   "dragon.zombie": "Zombie",
+  "item.dragonmounts.diamond_dragon_armor": "Diamond Dragon Armor",
+  "item.dragonmounts.diamond_shears": "Diamond Shears",
   "item.dragonmounts.dragon_axe": "Dragon Axe",
   "item.dragonmounts.dragon_bow": "Dragon Bow",
   "item.dragonmounts.dragon_hoe": "Dragon Hoe",
@@ -28,6 +32,11 @@
   "item.dragonmounts.dragon_shield": "Dragon Shield",
   "item.dragonmounts.dragon_shovel": "Dragon Shovel",
   "item.dragonmounts.dragon_sword": "Dragon Sword",
+  "item.dragonmounts.emerald_dragon_armor": "Emerald Dragon Armor",
+  "item.dragonmounts.golden_dragon_armor": "Golden Dragon Armor",
+  "item.dragonmounts.iron_dragon_armor": "Iron Dragon Armor",
+  "item.dragonmounts.netherite_dragon_armor": "Netherite Dragon Armor",
+  "item.dragonmounts.netherite_shears": "Netherite Shears",
   "itemGroup.dragonmounts.blocks": "Dragon Mounts: Blocks",
   "itemGroup.dragonmounts.equipments": "Dragon Mounts: Equipments",
   "itemGroup.dragonmounts.items": "Dragon Mounts: Items"

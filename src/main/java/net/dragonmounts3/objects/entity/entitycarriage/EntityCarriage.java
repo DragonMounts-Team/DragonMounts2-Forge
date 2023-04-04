@@ -69,7 +69,7 @@ public class EntityCarriage extends Entity {
         this.entityData.set(DAMAGE, compound.getFloat("damage"));
         this.entityData.set(FORWARD_DIRECTION, compound.getInt("forward"));
         this.entityData.set(TIME_SINCE_HIT, compound.getInt("TimeSinceHit"));
-        this.entityData.define(TYPE, compound.getInt("Type"));
+        this.entityData.set(TYPE, compound.getInt("Type"));
     }
 
     @Override

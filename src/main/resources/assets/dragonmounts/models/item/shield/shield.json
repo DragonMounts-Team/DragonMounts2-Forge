@@ -342,7 +342,7 @@
             "predicate": {
                 "blocking": 1
             },
-            "model": "dragonmounts:item/shield/shield"
+            "model": "dragonmounts:item/shield/shield_blocking"
         }
     ]
 }

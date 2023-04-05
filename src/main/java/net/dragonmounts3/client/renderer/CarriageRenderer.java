@@ -4,8 +4,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.dragonmounts3.DragonMounts;
-import net.dragonmounts3.client.model.DragonCarriageModel;
-import net.dragonmounts3.objects.entity.entitycarriage.EntityCarriage;
+import net.dragonmounts3.client.model.CarriageModel;
+import net.dragonmounts3.objects.entity.carriage.EntityCarriage;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 import javax.annotation.Nonnull;
 
 public class CarriageRenderer extends EntityRenderer<EntityCarriage> {
-    protected final DragonCarriageModel model = new DragonCarriageModel();
+    protected final CarriageModel model = new CarriageModel();
 
     private static final ResourceLocation[] CARRIAGE_TEXTURES = new ResourceLocation[]{
             DragonMounts.prefix("textures/entities/dragon_carriage/carriage_oak.png"),

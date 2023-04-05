@@ -20,6 +20,7 @@ public class DragonMounts {
 
     public static final String MOD_ID = "dragonmounts";
     private static final String ITEM_TRANSLATION_KEY_PREFIX = "item." + MOD_ID + '.';
+    private static final String BLOCK_TRANSLATION_KEY_PREFIX = "block." + MOD_ID + '.';
 
     public IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     public static DamageSource DRAGONS_FIRE = new DamageSource("dragons_fire");
@@ -44,5 +45,9 @@ public class DragonMounts {
 
     public static String getItemTranslationKey(String name) {
         return ITEM_TRANSLATION_KEY_PREFIX + name;
+    }
+
+    public static String getBlockTranslationKey(String name) {
+        return BLOCK_TRANSLATION_KEY_PREFIX + name;
     }
 }

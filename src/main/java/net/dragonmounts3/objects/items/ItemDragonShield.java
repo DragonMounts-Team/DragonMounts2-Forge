@@ -61,7 +61,7 @@ public class ItemDragonShield extends ShieldItem implements IDragonTypified {
 
     @Nonnull
     @Override
-    public String getOrCreateDescriptionId() {
+    public String getDescriptionId() {
         return TRANSLATION_KEY;
     }
 

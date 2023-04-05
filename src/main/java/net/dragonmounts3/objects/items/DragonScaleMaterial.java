@@ -21,6 +21,7 @@ public enum DragonScaleMaterial implements IArmorMaterial, IDragonTypified {
     ICE(DragonType.ICE, 50, new int[]{4, 7, 8, 4}, 11, SoundEvents.ARMOR_EQUIP_GOLD, 7.0F, 0),
     MOONLIGHT(DragonType.MOONLIGHT, 50, new int[]{3, 7, 8, 3}, 11, SoundEvents.ARMOR_EQUIP_GOLD, 7.0F, 0),
     NETHER(DragonType.NETHER, 55, new int[]{4, 7, 9, 4}, 11, SoundEvents.ARMOR_EQUIP_GOLD, 8.0F, 0),
+    SCULK(DragonType.SCULK, 70, new int[]{4, 7, 9, 4}, 11, SoundEvents.ARMOR_EQUIP_GOLD, 9.0F, 0),
     STORM(DragonType.STORM, 50, new int[]{3, 7, 8, 3}, 11, SoundEvents.ARMOR_EQUIP_GOLD, 7.0F, 0),
     SUNLIGHT(DragonType.SUNLIGHT, 50, new int[]{4, 7, 8, 4}, 11, SoundEvents.ARMOR_EQUIP_GOLD, 7.0F, 0),
     TERRA(DragonType.TERRA, 50, new int[]{3, 7, 8, 3}, 11, SoundEvents.ARMOR_EQUIP_GOLD, 7.0F, 0),

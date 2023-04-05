@@ -39,7 +39,7 @@ public class ItemDragonShovel extends ShovelItem implements IDragonTypified {
 
     @Nonnull
     @Override
-    public String getOrCreateDescriptionId() {
+    public String getDescriptionId() {
         return TRANSLATION_KEY;
     }
 

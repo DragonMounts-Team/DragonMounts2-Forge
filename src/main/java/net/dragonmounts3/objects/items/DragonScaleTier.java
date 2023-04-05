@@ -18,6 +18,7 @@ public enum DragonScaleTier implements IItemTier, IDragonTypified {
     ICE(DragonType.ICE, 4, 2700, 8.0F, 5.0F, 11),
     MOONLIGHT(DragonType.MOONLIGHT, 4, 2700, 8.0F, 5.0F, 11),
     NETHER(DragonType.NETHER, 5, 2700, 8.0F, 6.0F, 11),
+    SCULK(DragonType.SCULK, 5, 3000, 8.0F, 6.0F, 11),
     STORM(DragonType.STORM, 4, 2700, 8.0F, 5.0F, 11),
     SUNLIGHT(DragonType.SUNLIGHT, 4, 2700, 8.0F, 5.0F, 11),
     TERRA(DragonType.TERRA, 4, 2700, 8.0F, 5.0F, 11),

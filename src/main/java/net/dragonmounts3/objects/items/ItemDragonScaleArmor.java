@@ -48,7 +48,7 @@ public class ItemDragonScaleArmor extends ArmorItem implements IDragonTypified {
 
     @Nonnull
     @Override
-    public String getOrCreateDescriptionId() {
+    public String getDescriptionId() {
         return this.translationKey;
     }
 

@@ -74,7 +74,6 @@ public class TileEntityDragonShulkerBox extends LockableLootTileEntity implement
                     if (this.level != null) {
                         this.level.levelEvent(2003, this.worldPosition.above(), 0);
                         this.level.destroyBlock(this.worldPosition, true);
-                        level.levelEvent(2003, this.worldPosition.above(), 0);
                     }
                     this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.CLOSED;
                 }

@@ -34,7 +34,7 @@ public class ItemDragonScales extends Item implements IDragonTypified {
 
     @Nonnull
     @Override
-    public String getOrCreateDescriptionId() {
+    public String getDescriptionId() {
         return TRANSLATION_KEY;
     }
 

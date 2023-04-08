@@ -35,7 +35,7 @@ public class ModItemGroups {
     };
 
     public static Properties none() {
-        return new Properties().tab(ITEM_TAB);
+        return new Properties();
     }
 
     public static Properties block() {

@@ -45,7 +45,7 @@ public enum DragonScaleMaterial implements IArmorMaterial, IDragonTypified {
         this.sound = sound;
         this.toughness = toughness;
         this.knockbackResistance = knockbackResistance;
-        this.repairIngredient = new LazyValue<>(() -> Ingredient.of(new ItemStack(type.getItem())));
+        this.repairIngredient = new LazyValue<>(() -> Ingredient.of(new ItemStack(type.getScales())));
     }
 
     private static final int[] HEALTH_PER_SLOT = new int[]{13, 15, 16, 11};

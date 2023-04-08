@@ -1,6 +1,8 @@
 package net.dragonmounts3.objects.entity.dragon;
 
 import net.dragonmounts3.DragonMountsConfig;
+import net.dragonmounts3.objects.DragonType;
+import net.dragonmounts3.objects.IDragonTypified;
 import net.dragonmounts3.objects.entity.dragon.helper.DragonBodyHelper;
 import net.dragonmounts3.objects.entity.dragon.helper.DragonHelper;
 import net.dragonmounts3.objects.entity.dragon.inventoty.DragonInventory;
@@ -28,8 +30,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @ParametersAreNonnullByDefault
-public class EntityTameableDragon extends TameableEntity implements IForgeShearable {
-
+public class EntityTameableDragon extends TameableEntity implements IForgeShearable, IDragonTypified {
+    protected DragonType type;
     // base attributes
     public static final double BASE_GROUND_SPEED = 0.4;
     public static final double BASE_AIR_SPEED = 0.9;
@@ -118,9 +120,12 @@ public class EntityTameableDragon extends TameableEntity implements IForgeSheara
         switch (this.getArmor()) {
             case 1:
             case 4: return 1.5;
-            case 2: return 1.4;
-            case 3: return 1.7;
-            default: return 0;
+            case 2:
+                return 1.4;
+            case 3:
+                return 1.7;
+            default:
+                return 0;
         }
     }
 
@@ -128,4 +133,8 @@ public class EntityTameableDragon extends TameableEntity implements IForgeSheara
         return this.entityData.get(DATA_FLYING);
     }
 
+    @Override
+    public DragonType getDragonType() {
+        return this.type;
+    }
 }

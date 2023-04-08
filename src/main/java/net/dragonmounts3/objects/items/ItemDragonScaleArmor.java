@@ -37,7 +37,7 @@ public class ItemDragonScaleArmor extends ArmorItem implements IDragonTypified {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> components, @Nullable ITooltipFlag flag) {
+    public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
         components.add(this.type.getText());
     }
 

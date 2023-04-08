@@ -4,6 +4,8 @@ import net.dragonmounts3.client.renderer.CarriageRenderer;
 import net.dragonmounts3.inits.ModContainers;
 import net.dragonmounts3.inits.ModItems;
 import net.dragonmounts3.inits.ModTileEntities;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -14,6 +16,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import static net.dragonmounts3.DragonMounts.MOD_ID;
 import static net.dragonmounts3.inits.ModEntities.ENTITY_CARRIAGE;
+import static net.dragonmounts3.inits.ModItems.DRAGON_WHISTLE;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
@@ -29,6 +32,12 @@ public class ModClientEvents {
             event.enqueueWork(ModBusEvents::onFMLClientSetupEnqueueWork);
             RenderingRegistry.registerEntityRenderingHandler(ENTITY_CARRIAGE.get(), CarriageRenderer::new);
             ModTileEntities.registerTileEntityRenders();
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                CompoundNBT tag = stack.getTag();
+                if (tag != null && tag.contains("Color") && tintIndex == 1)
+                    return tag.getInt("Color");
+                return 0xFFFFFF;
+            }, DRAGON_WHISTLE::get);
         }
 
         @SubscribeEvent

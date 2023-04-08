@@ -1,11 +1,14 @@
 package net.dragonmounts3.data.provider;
 
 import net.dragonmounts3.DragonMounts;
+import net.dragonmounts3.inits.ModItems;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class DMItemTagsProvider extends ItemTagsProvider {
@@ -16,7 +19,8 @@ public class DMItemTagsProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags() {
-
+        this.tag(Tags.Items.SHEARS)
+                .add(ModItems.DIAMOND_SHEARS.get())
+                .add(ModItems.NETHERITE_SHEARS.get());
     }
-
 }

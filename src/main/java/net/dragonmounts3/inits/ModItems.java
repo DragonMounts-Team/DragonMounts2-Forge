@@ -20,8 +20,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static net.dragonmounts3.inits.ModItemGroups.equipment;
-import static net.dragonmounts3.inits.ModItemGroups.item;
+import static net.dragonmounts3.inits.ModItemGroups.*;
 
 @MethodsReturnNonnullByDefault
 public class ModItems {
@@ -58,7 +57,7 @@ public class ModItems {
     public static final RegistryObject<Item> AETHER_DRAGON_HOE = createDragonHoeItem("aether_dragon_hoe", DragonScaleTier.AETHER, equipment());
     public static final RegistryObject<Item> AETHER_DRAGON_LEGGINGS = createDragonScaleArmorItem("aether_dragon_scale_leggings", DragonScaleMaterial.AETHER, EquipmentSlotType.LEGS, equipment());
     public static final RegistryObject<Item> AETHER_DRAGON_PICKAXE = createDragonPickaxeItem("aether_dragon_pickaxe", DragonScaleTier.AETHER, equipment());
-    public static final RegistryObject<Item> AETHER_DRAGON_SHIELD = createDragonShieldItem("aether_dragon_shield", DragonScaleMaterial.AETHER, equipment());
+    public static final RegistryObject<ItemDragonScaleShield> AETHER_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("aether_dragon_scale_shield", DragonScaleMaterial.AETHER, equipment());
     public static final RegistryObject<Item> AETHER_DRAGON_SHOVEL = createDragonShovelItem("aether_dragon_shovel", DragonScaleTier.AETHER, equipment());
     public static final RegistryObject<Item> AETHER_DRAGON_SWORD = createDragonSwordItem("aether_dragon_sword", DragonScaleTier.AETHER, equipment());
     //Water Equipments
@@ -70,7 +69,7 @@ public class ModItems {
     public static final RegistryObject<Item> WATER_DRAGON_HOE = createDragonHoeItem("water_dragon_hoe", DragonScaleTier.WATER, equipment());
     public static final RegistryObject<Item> WATER_DRAGON_LEGGINGS = createDragonScaleArmorItem("water_dragon_scale_leggings", DragonScaleMaterial.WATER, EquipmentSlotType.LEGS, equipment());
     public static final RegistryObject<Item> WATER_DRAGON_PICKAXE = createDragonPickaxeItem("water_dragon_pickaxe", DragonScaleTier.WATER, equipment());
-    public static final RegistryObject<Item> WATER_DRAGON_SHIELD = createDragonShieldItem("water_dragon_shield", DragonScaleMaterial.WATER, equipment());
+    public static final RegistryObject<ItemDragonScaleShield> WATER_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("water_dragon_scale_shield", DragonScaleMaterial.WATER, equipment());
     public static final RegistryObject<Item> WATER_DRAGON_SHOVEL = createDragonShovelItem("water_dragon_shovel", DragonScaleTier.WATER, equipment());
     public static final RegistryObject<Item> WATER_DRAGON_SWORD = createDragonSwordItem("water_dragon_sword", DragonScaleTier.WATER, equipment());
     //Ice Equipments
@@ -82,7 +81,7 @@ public class ModItems {
     public static final RegistryObject<Item> ICE_DRAGON_HOE = createDragonHoeItem("ice_dragon_hoe", DragonScaleTier.ICE, equipment());
     public static final RegistryObject<Item> ICE_DRAGON_LEGGINGS = createDragonScaleArmorItem("ice_dragon_scale_leggings", DragonScaleMaterial.ICE, EquipmentSlotType.LEGS, equipment());
     public static final RegistryObject<Item> ICE_DRAGON_PICKAXE = createDragonPickaxeItem("ice_dragon_pickaxe", DragonScaleTier.ICE, equipment());
-    public static final RegistryObject<Item> ICE_DRAGON_SHIELD = createDragonShieldItem("ice_dragon_shield", DragonScaleMaterial.ICE, equipment());
+    public static final RegistryObject<ItemDragonScaleShield> ICE_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("ice_dragon_scale_shield", DragonScaleMaterial.ICE, equipment());
     public static final RegistryObject<Item> ICE_DRAGON_SHOVEL = createDragonShovelItem("ice_dragon_shovel", DragonScaleTier.ICE, equipment());
     public static final RegistryObject<Item> ICE_DRAGON_SWORD = createDragonSwordItem("ice_dragon_sword", DragonScaleTier.ICE, equipment());
     //Fire Equipments
@@ -94,7 +93,7 @@ public class ModItems {
     public static final RegistryObject<Item> FIRE_DRAGON_HOE = createDragonHoeItem("fire_dragon_hoe", DragonScaleTier.FIRE, equipment());
     public static final RegistryObject<Item> FIRE_DRAGON_LEGGINGS = createDragonScaleArmorItem("fire_dragon_scale_leggings", DragonScaleMaterial.FIRE, EquipmentSlotType.LEGS, equipment());
     public static final RegistryObject<Item> FIRE_DRAGON_PICKAXE = createDragonPickaxeItem("fire_dragon_pickaxe", DragonScaleTier.FIRE, equipment());
-    public static final RegistryObject<Item> FIRE_DRAGON_SHIELD = createDragonShieldItem("fire_dragon_shield", DragonScaleMaterial.FIRE, equipment());
+    public static final RegistryObject<ItemDragonScaleShield> FIRE_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("fire_dragon_scale_shield", DragonScaleMaterial.FIRE, equipment());
     public static final RegistryObject<Item> FIRE_DRAGON_SHOVEL = createDragonShovelItem("fire_dragon_shovel", DragonScaleTier.FIRE, equipment());
     public static final RegistryObject<Item> FIRE_DRAGON_SWORD = createDragonSwordItem("fire_dragon_sword", DragonScaleTier.FIRE, equipment());
     //Forest Equipments
@@ -106,7 +105,7 @@ public class ModItems {
     public static final RegistryObject<Item> FOREST_DRAGON_HOE = createDragonHoeItem("forest_dragon_hoe", DragonScaleTier.FOREST, equipment());
     public static final RegistryObject<Item> FOREST_DRAGON_LEGGINGS = createDragonScaleArmorItem("forest_dragon_scale_leggings", DragonScaleMaterial.FOREST, EquipmentSlotType.LEGS, equipment());
     public static final RegistryObject<Item> FOREST_DRAGON_PICKAXE = createDragonPickaxeItem("forest_dragon_pickaxe", DragonScaleTier.FOREST, equipment());
-    public static final RegistryObject<Item> FOREST_DRAGON_SHIELD = createDragonShieldItem("forest_dragon_shield", DragonScaleMaterial.FOREST, equipment());
+    public static final RegistryObject<ItemDragonScaleShield> FOREST_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("forest_dragon_scale_shield", DragonScaleMaterial.FOREST, equipment());
     public static final RegistryObject<Item> FOREST_DRAGON_SHOVEL = createDragonShovelItem("forest_dragon_shovel", DragonScaleTier.FOREST, equipment());
     public static final RegistryObject<Item> FOREST_DRAGON_SWORD = createDragonSwordItem("forest_dragon_sword", DragonScaleTier.FOREST, equipment());
     //Nether Equipments
@@ -118,7 +117,7 @@ public class ModItems {
     public static final RegistryObject<Item> NETHER_DRAGON_HOE = createDragonHoeItem("nether_dragon_hoe", DragonScaleTier.NETHER, equipment());
     public static final RegistryObject<Item> NETHER_DRAGON_LEGGINGS = createDragonScaleArmorItem("nether_dragon_scale_leggings", DragonScaleMaterial.NETHER, EquipmentSlotType.LEGS, equipment());
     public static final RegistryObject<Item> NETHER_DRAGON_PICKAXE = createDragonPickaxeItem("nether_dragon_pickaxe", DragonScaleTier.NETHER, equipment());
-    public static final RegistryObject<Item> NETHER_DRAGON_SHIELD = createDragonShieldItem("nether_dragon_shield", DragonScaleMaterial.NETHER, equipment());
+    public static final RegistryObject<ItemDragonScaleShield> NETHER_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("nether_dragon_scale_shield", DragonScaleMaterial.NETHER, equipment());
     public static final RegistryObject<Item> NETHER_DRAGON_SHOVEL = createDragonShovelItem("nether_dragon_shovel", DragonScaleTier.NETHER, equipment());
     public static final RegistryObject<Item> NETHER_DRAGON_SWORD = createDragonSwordItem("nether_dragon_sword", DragonScaleTier.NETHER, equipment());
     //Ender Equipments
@@ -130,7 +129,7 @@ public class ModItems {
     public static final RegistryObject<Item> ENDER_DRAGON_HOE = createDragonHoeItem("ender_dragon_hoe", DragonScaleTier.ENDER, equipment());
     public static final RegistryObject<Item> ENDER_DRAGON_LEGGINGS = createDragonScaleArmorItem("ender_dragon_scale_leggings", DragonScaleMaterial.ENDER, EquipmentSlotType.LEGS, equipment());
     public static final RegistryObject<Item> ENDER_DRAGON_PICKAXE = createDragonPickaxeItem("ender_dragon_pickaxe", DragonScaleTier.ENDER, equipment());
-    public static final RegistryObject<Item> ENDER_DRAGON_SHIELD = createDragonShieldItem("ender_dragon_shield", DragonScaleMaterial.ENDER, equipment());
+    public static final RegistryObject<ItemDragonScaleShield> ENDER_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("ender_dragon_scale_shield", DragonScaleMaterial.ENDER, equipment());
     public static final RegistryObject<Item> ENDER_DRAGON_SHOVEL = createDragonShovelItem("ender_dragon_shovel", DragonScaleTier.ENDER, equipment());
     public static final RegistryObject<Item> ENDER_DRAGON_SWORD = createDragonSwordItem("ender_dragon_sword", DragonScaleTier.ENDER, equipment());
     //Enchant Equipments
@@ -142,7 +141,7 @@ public class ModItems {
     public static final RegistryObject<Item> ENCHANT_DRAGON_HOE = createDragonHoeItem("enchant_dragon_hoe", DragonScaleTier.ENCHANT, equipment());
     public static final RegistryObject<Item> ENCHANT_DRAGON_LEGGINGS = createDragonScaleArmorItem("enchant_dragon_scale_leggings", DragonScaleMaterial.ENCHANT, EquipmentSlotType.LEGS, equipment());
     public static final RegistryObject<Item> ENCHANT_DRAGON_PICKAXE = createDragonPickaxeItem("enchant_dragon_pickaxe", DragonScaleTier.ENCHANT, equipment());
-    public static final RegistryObject<Item> ENCHANT_DRAGON_SHIELD = createDragonShieldItem("enchant_dragon_shield", DragonScaleMaterial.ENCHANT, equipment());
+    public static final RegistryObject<ItemDragonScaleShield> ENCHANT_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("enchant_dragon_scale_shield", DragonScaleMaterial.ENCHANT, equipment());
     public static final RegistryObject<Item> ENCHANT_DRAGON_SHOVEL = createDragonShovelItem("enchant_dragon_shovel", DragonScaleTier.ENCHANT, equipment());
     public static final RegistryObject<Item> ENCHANT_DRAGON_SWORD = createDragonSwordItem("enchant_dragon_sword", DragonScaleTier.ENCHANT, equipment());
     //Sunlight Equipments
@@ -154,7 +153,7 @@ public class ModItems {
     public static final RegistryObject<Item> SUNLIGHT_DRAGON_HOE = createDragonHoeItem("sunlight_dragon_hoe", DragonScaleTier.SUNLIGHT, equipment());
     public static final RegistryObject<Item> SUNLIGHT_DRAGON_LEGGINGS = createDragonScaleArmorItem("sunlight_dragon_scale_leggings", DragonScaleMaterial.SUNLIGHT, EquipmentSlotType.LEGS, equipment());
     public static final RegistryObject<Item> SUNLIGHT_DRAGON_PICKAXE = createDragonPickaxeItem("sunlight_dragon_pickaxe", DragonScaleTier.SUNLIGHT, equipment());
-    public static final RegistryObject<Item> SUNLIGHT_DRAGON_SHIELD = createDragonShieldItem("sunlight_dragon_shield", DragonScaleMaterial.SUNLIGHT, equipment());
+    public static final RegistryObject<ItemDragonScaleShield> SUNLIGHT_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("sunlight_dragon_scale_shield", DragonScaleMaterial.SUNLIGHT, equipment());
     public static final RegistryObject<Item> SUNLIGHT_DRAGON_SHOVEL = createDragonShovelItem("sunlight_dragon_shovel", DragonScaleTier.SUNLIGHT, equipment());
     public static final RegistryObject<Item> SUNLIGHT_DRAGON_SWORD = createDragonSwordItem("sunlight_dragon_sword", DragonScaleTier.SUNLIGHT, equipment());
     //Moonlight Equipments
@@ -166,7 +165,7 @@ public class ModItems {
     public static final RegistryObject<Item> MOONLIGHT_DRAGON_HOE = createDragonHoeItem("moonlight_dragon_hoe", DragonScaleTier.MOONLIGHT, equipment());
     public static final RegistryObject<Item> MOONLIGHT_DRAGON_LEGGINGS = createDragonScaleArmorItem("moonlight_dragon_scale_leggings", DragonScaleMaterial.MOONLIGHT, EquipmentSlotType.LEGS, equipment());
     public static final RegistryObject<Item> MOONLIGHT_DRAGON_PICKAXE = createDragonPickaxeItem("moonlight_dragon_pickaxe", DragonScaleTier.MOONLIGHT, equipment());
-    public static final RegistryObject<Item> MOONLIGHT_DRAGON_SHIELD = createDragonShieldItem("moonlight_dragon_shield", DragonScaleMaterial.MOONLIGHT, equipment());
+    public static final RegistryObject<ItemDragonScaleShield> MOONLIGHT_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("moonlight_dragon_scale_shield", DragonScaleMaterial.MOONLIGHT, equipment());
     public static final RegistryObject<Item> MOONLIGHT_DRAGON_SHOVEL = createDragonShovelItem("moonlight_dragon_shovel", DragonScaleTier.MOONLIGHT, equipment());
     public static final RegistryObject<Item> MOONLIGHT_DRAGON_SWORD = createDragonSwordItem("moonlight_dragon_sword", DragonScaleTier.MOONLIGHT, equipment());
     //Storm Equipments
@@ -178,7 +177,7 @@ public class ModItems {
     public static final RegistryObject<Item> STORM_DRAGON_HOE = createDragonHoeItem("storm_dragon_hoe", DragonScaleTier.STORM, equipment());
     public static final RegistryObject<Item> STORM_DRAGON_LEGGINGS = createDragonScaleArmorItem("storm_dragon_scale_leggings", DragonScaleMaterial.STORM, EquipmentSlotType.LEGS, equipment());
     public static final RegistryObject<Item> STORM_DRAGON_PICKAXE = createDragonPickaxeItem("storm_dragon_pickaxe", DragonScaleTier.STORM, equipment());
-    public static final RegistryObject<Item> STORM_DRAGON_SHIELD = createDragonShieldItem("storm_dragon_shield", DragonScaleMaterial.STORM, equipment());
+    public static final RegistryObject<ItemDragonScaleShield> STORM_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("storm_dragon_scale_shield", DragonScaleMaterial.STORM, equipment());
     public static final RegistryObject<Item> STORM_DRAGON_SHOVEL = createDragonShovelItem("storm_dragon_shovel", DragonScaleTier.STORM, equipment());
     public static final RegistryObject<Item> STORM_DRAGON_SWORD = createDragonSwordItem("storm_dragon_sword", DragonScaleTier.STORM, equipment());
     //Terra Equipments
@@ -190,7 +189,7 @@ public class ModItems {
     public static final RegistryObject<Item> TERRA_DRAGON_HOE = createDragonHoeItem("terra_dragon_hoe", DragonScaleTier.TERRA, equipment());
     public static final RegistryObject<Item> TERRA_DRAGON_LEGGINGS = createDragonScaleArmorItem("terra_dragon_scale_leggings", DragonScaleMaterial.TERRA, EquipmentSlotType.LEGS, equipment());
     public static final RegistryObject<Item> TERRA_DRAGON_PICKAXE = createDragonPickaxeItem("terra_dragon_pickaxe", DragonScaleTier.TERRA, equipment());
-    public static final RegistryObject<Item> TERRA_DRAGON_SHIELD = createDragonShieldItem("terra_dragon_shield", DragonScaleMaterial.TERRA, equipment());
+    public static final RegistryObject<ItemDragonScaleShield> TERRA_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("terra_dragon_scale_shield", DragonScaleMaterial.TERRA, equipment());
     public static final RegistryObject<Item> TERRA_DRAGON_SHOVEL = createDragonShovelItem("terra_dragon_shovel", DragonScaleTier.TERRA, equipment());
     public static final RegistryObject<Item> TERRA_DRAGON_SWORD = createDragonSwordItem("terra_dragon_sword", DragonScaleTier.TERRA, equipment());
     //Zombie Equipments
@@ -202,7 +201,7 @@ public class ModItems {
     public static final RegistryObject<Item> ZOMBIE_DRAGON_HOE = createDragonHoeItem("zombie_dragon_hoe", DragonScaleTier.ZOMBIE, equipment());
     public static final RegistryObject<Item> ZOMBIE_DRAGON_LEGGINGS = createDragonScaleArmorItem("zombie_dragon_scale_leggings", DragonScaleMaterial.ZOMBIE, EquipmentSlotType.LEGS, equipment());
     public static final RegistryObject<Item> ZOMBIE_DRAGON_PICKAXE = createDragonPickaxeItem("zombie_dragon_pickaxe", DragonScaleTier.ZOMBIE, equipment());
-    public static final RegistryObject<Item> ZOMBIE_DRAGON_SHIELD = createDragonShieldItem("zombie_dragon_shield", DragonScaleMaterial.ZOMBIE, equipment());
+    public static final RegistryObject<ItemDragonScaleShield> ZOMBIE_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("zombie_dragon_scale_shield", DragonScaleMaterial.ZOMBIE, equipment());
     public static final RegistryObject<Item> ZOMBIE_DRAGON_SHOVEL = createDragonShovelItem("zombie_dragon_shovel", DragonScaleTier.ZOMBIE, equipment());
     public static final RegistryObject<Item> ZOMBIE_DRAGON_SWORD = createDragonSwordItem("zombie_dragon_sword", DragonScaleTier.ZOMBIE, equipment());
     //Sculk Equipments
@@ -214,7 +213,7 @@ public class ModItems {
     public static final RegistryObject<Item> SCULK_DRAGON_HOE = createDragonHoeItem("sculk_dragon_hoe", DragonScaleTier.SCULK, equipment().fireResistant());
     public static final RegistryObject<Item> SCULK_DRAGON_LEGGINGS = createDragonScaleArmorItem("sculk_dragon_scale_leggings", DragonScaleMaterial.SCULK, EquipmentSlotType.LEGS, equipment().fireResistant());
     public static final RegistryObject<Item> SCULK_DRAGON_PICKAXE = createDragonPickaxeItem("sculk_dragon_pickaxe", DragonScaleTier.SCULK, equipment().fireResistant());
-    public static final RegistryObject<Item> SCULK_DRAGON_SHIELD = createDragonShieldItem("sculk_dragon_shield", DragonScaleMaterial.SCULK, equipment().fireResistant());
+    public static final RegistryObject<ItemDragonScaleShield> SCULK_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("sculk_dragon_scale_shield", DragonScaleMaterial.SCULK, equipment().fireResistant());
     public static final RegistryObject<Item> SCULK_DRAGON_SHOVEL = createDragonShovelItem("sculk_dragon_shovel", DragonScaleTier.SCULK, equipment().fireResistant());
     public static final RegistryObject<Item> SCULK_DRAGON_SWORD = createDragonSwordItem("sculk_dragon_sword", DragonScaleTier.SCULK, equipment().fireResistant());
     //Shears
@@ -227,11 +226,49 @@ public class ModItems {
     public static final RegistryObject<Item> JUNGLE_CARRIAGE = createCarriageItem("jungle_carriage", CarriageType.JUNGLE, item());
     public static final RegistryObject<Item> OAK_CARRIAGE = createCarriageItem("oak_carriage", CarriageType.OAK, item());
     public static final RegistryObject<Item> SPRUCE_CARRIAGE = createCarriageItem("spruce_carriage", CarriageType.SPRUCE, item());
-
+    //Amulet
+    public static final RegistryObject<Item> DRAGON_AMULET = ITEMS.register("dragon_amulet", () -> new ItemBaseDragonAmulet(item()));
+    public static final RegistryObject<ItemDragonAmulet> FOREST_DRAGON_AMULET = createDragonAmuletItem("forest_dragon_amulet", DragonType.FOREST, none());
+    public static final RegistryObject<ItemDragonAmulet> FIRE_DRAGON_AMULET = createDragonAmuletItem("fire_dragon_amulet", DragonType.FIRE, none());
+    public static final RegistryObject<ItemDragonAmulet> ICE_DRAGON_AMULET = createDragonAmuletItem("ice_dragon_amulet", DragonType.ICE, none());
+    public static final RegistryObject<ItemDragonAmulet> WATER_DRAGON_AMULET = createDragonAmuletItem("water_dragon_amulet", DragonType.WATER, none());
+    public static final RegistryObject<ItemDragonAmulet> AETHER_DRAGON_AMULET = createDragonAmuletItem("aether_dragon_amulet", DragonType.AETHER, none());
+    public static final RegistryObject<ItemDragonAmulet> NETHER_DRAGON_AMULET = createDragonAmuletItem("nether_dragon_amulet", DragonType.NETHER, none());
+    public static final RegistryObject<ItemDragonAmulet> ENDER_DRAGON_AMULET = createDragonAmuletItem("ender_dragon_amulet", DragonType.ENDER, none());
+    public static final RegistryObject<ItemDragonAmulet> SUNLIGHT_DRAGON_AMULET = createDragonAmuletItem("sunlight_dragon_amulet", DragonType.SUNLIGHT, none());
+    public static final RegistryObject<ItemDragonAmulet> ENCHANT_DRAGON_AMULET = createDragonAmuletItem("enchant_dragon_amulet", DragonType.ENCHANT, none());
+    public static final RegistryObject<ItemDragonAmulet> STORM_DRAGON_AMULET = createDragonAmuletItem("storm_dragon_amulet", DragonType.STORM, none());
+    public static final RegistryObject<ItemDragonAmulet> TERRA_DRAGON_AMULET = createDragonAmuletItem("terra_dragon_amulet", DragonType.TERRA, none());
+    public static final RegistryObject<ItemDragonAmulet> ZOMBIE_DRAGON_AMULET = createDragonAmuletItem("zombie_dragon_amulet", DragonType.ZOMBIE, none());
+    public static final RegistryObject<ItemDragonAmulet> MOONLIGHT_DRAGON_AMULET = createDragonAmuletItem("moonlight_dragon_amulet", DragonType.MOONLIGHT, none());
+    public static final RegistryObject<ItemDragonAmulet> SCULK_DRAGON_AMULET = createDragonAmuletItem("sculk_dragon_amulet", DragonType.SCULK, none().fireResistant());
+    public static final RegistryObject<ItemDragonAmulet> SKELETON_DRAGON_AMULET = createDragonAmuletItem("skeleton_dragon_amulet", DragonType.SKELETON, none());
+    public static final RegistryObject<ItemDragonAmulet> WITHER_DRAGON_AMULET = createDragonAmuletItem("wither_dragon_amulet", DragonType.WITHER, none());
+    //Essences
+    public static final RegistryObject<Item> FOREST_DRAGON_ESSENCE = createDragonEssenceItem("forest_dragon_essence", DragonType.FOREST, none());
+    public static final RegistryObject<Item> FIRE_DRAGON_ESSENCE = createDragonEssenceItem("fire_dragon_essence", DragonType.FIRE, none());
+    public static final RegistryObject<Item> ICE_DRAGON_ESSENCE = createDragonEssenceItem("ice_dragon_essence", DragonType.ICE, none());
+    public static final RegistryObject<Item> WATER_DRAGON_ESSENCE = createDragonEssenceItem("water_dragon_essence", DragonType.WATER, none());
+    public static final RegistryObject<Item> AETHER_DRAGON_ESSENCE = createDragonEssenceItem("aether_dragon_essence", DragonType.AETHER, none());
+    public static final RegistryObject<Item> NETHER_DRAGON_ESSENCE = createDragonEssenceItem("nether_dragon_essence", DragonType.NETHER, none());
+    public static final RegistryObject<Item> ENDER_DRAGON_ESSENCE = createDragonEssenceItem("ender_dragon_essence", DragonType.ENDER, none());
+    public static final RegistryObject<Item> SUNLIGHT_DRAGON_ESSENCE = createDragonEssenceItem("sunlight_dragon_essence", DragonType.SUNLIGHT, none());
+    public static final RegistryObject<Item> ENCHANT_DRAGON_ESSENCE = createDragonEssenceItem("enchant_dragon_essence", DragonType.ENCHANT, none());
+    public static final RegistryObject<Item> STORM_DRAGON_ESSENCE = createDragonEssenceItem("storm_dragon_essence", DragonType.STORM, none());
+    public static final RegistryObject<Item> TERRA_DRAGON_ESSENCE = createDragonEssenceItem("terra_dragon_essence", DragonType.TERRA, none());
+    public static final RegistryObject<Item> ZOMBIE_DRAGON_ESSENCE = createDragonEssenceItem("zombie_dragon_essence", DragonType.ZOMBIE, none());
+    public static final RegistryObject<Item> MOONLIGHT_DRAGON_ESSENCE = createDragonEssenceItem("moonlight_dragon_essence", DragonType.MOONLIGHT, none());
+    public static final RegistryObject<Item> SCULK_DRAGON_ESSENCE = createDragonEssenceItem("sculk_dragon_essence", DragonType.SCULK, none().fireResistant());
+    public static final RegistryObject<Item> SKELETON_DRAGON_ESSENCE = createDragonEssenceItem("skeleton_dragon_essence", DragonType.SKELETON, none());
+    public static final RegistryObject<Item> WITHER_DRAGON_ESSENCE = createDragonEssenceItem("wither_dragon_essence", DragonType.WITHER, none());
     public static final RegistryObject<Item> DRAGON_WHISTLE = ITEMS.register("dragon_whistle", () -> new ItemDragonWhistle(item()));
 
     private static RegistryObject<Item> createCarriageItem(String name, CarriageType type, Properties properties) {
         return ITEMS.register(name, () -> new ItemCarriage(type, properties));
+    }
+
+    private static RegistryObject<ItemDragonAmulet> createDragonAmuletItem(String name, DragonType type, Properties properties) {
+        return ITEMS.register(name, () -> new ItemDragonAmulet(type, properties));
     }
 
     private static RegistryObject<Item> createDragonArmorItem(String name, int protection, Properties properties) {
@@ -250,6 +287,10 @@ public class ModItems {
         return ITEMS.register(name, () -> new ItemDragonBow(tier, properties));
     }
 
+    private static RegistryObject<Item> createDragonEssenceItem(String name, DragonType type, Properties properties) {
+        return ITEMS.register(name, () -> new ItemDragonEssence(type, properties));
+    }
+
     private static RegistryObject<Item> createDragonHoeItem(String name, DragonScaleTier tier, Properties properties) {
         return ITEMS.register(name, () -> new ItemDragonHoe(tier, (int) -tier.getAttackDamageBonus(), tier.getAttackDamageBonus() - 3.0F, properties));
     }
@@ -266,8 +307,8 @@ public class ModItems {
         return ITEMS.register(name, () -> new ItemDragonScales(type, properties));
     }
 
-    private static RegistryObject<Item> createDragonShieldItem(String name, DragonScaleMaterial material, Properties properties) {
-        return ITEMS.register(name, () -> new ItemDragonShield(material, properties));
+    private static RegistryObject<ItemDragonScaleShield> createDragonScaleShieldItem(String name, DragonScaleMaterial material, Properties properties) {
+        return ITEMS.register(name, () -> new ItemDragonScaleShield(material, properties));
     }
 
     private static RegistryObject<Item> createDragonShovelItem(String name, DragonScaleTier tier, Properties properties) {
@@ -303,45 +344,45 @@ public class ModItems {
     public static void addItemModelProperties() {
         ItemModelsProperties.register(AETHER_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(AETHER_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(AETHER_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(AETHER_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
         ItemModelsProperties.register(WATER_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(WATER_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(WATER_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(WATER_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
         ItemModelsProperties.register(ICE_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(ICE_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(ICE_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(ICE_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
         ItemModelsProperties.register(FIRE_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(FIRE_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(FIRE_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(FIRE_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
         ItemModelsProperties.register(FOREST_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(FOREST_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(FOREST_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(FOREST_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
         ItemModelsProperties.register(NETHER_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(NETHER_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(NETHER_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(NETHER_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
         ItemModelsProperties.register(ENDER_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(ENDER_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(ENDER_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(ENDER_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
         ItemModelsProperties.register(ENCHANT_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(ENCHANT_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(ENCHANT_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(ENCHANT_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
         ItemModelsProperties.register(SUNLIGHT_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(SUNLIGHT_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(SUNLIGHT_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(SUNLIGHT_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
         ItemModelsProperties.register(MOONLIGHT_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(MOONLIGHT_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(MOONLIGHT_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(MOONLIGHT_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
         ItemModelsProperties.register(STORM_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(STORM_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(STORM_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(STORM_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
         ItemModelsProperties.register(TERRA_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(TERRA_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(TERRA_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(TERRA_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
         ItemModelsProperties.register(ZOMBIE_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(ZOMBIE_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(ZOMBIE_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(ZOMBIE_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
         ItemModelsProperties.register(SCULK_DRAGON_BOW.get(), new ResourceLocation("pull"), ModItems::getPullItemProperty);
         ItemModelsProperties.register(SCULK_DRAGON_BOW.get(), new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
-        ItemModelsProperties.register(SCULK_DRAGON_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+        ItemModelsProperties.register(SCULK_DRAGON_SCALE_SHIELD.get(), new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
     }
 }

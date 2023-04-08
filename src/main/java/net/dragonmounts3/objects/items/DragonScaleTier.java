@@ -39,7 +39,7 @@ public enum DragonScaleTier implements IItemTier, IDragonTypified {
         this.speed = speed;
         this.damage = damage;
         this.enchantmentValue = enchantmentValue;
-        this.repairIngredient = new LazyValue<>(() -> Ingredient.of(new ItemStack(type.getItem())));
+        this.repairIngredient = new LazyValue<>(() -> Ingredient.of(new ItemStack(type.getScales())));
     }
 
     private final DragonType type;

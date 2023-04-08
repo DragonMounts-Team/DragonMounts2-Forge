@@ -1,8 +1,8 @@
 package net.dragonmounts3.client.renderer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.dragonmounts3.client.renderer.block.DragonShulkerBoxRenderer;
-import net.dragonmounts3.objects.blocks.BlockDragonShulkerBox;
+import net.dragonmounts3.client.renderer.block.DragonCoreRenderer;
+import net.dragonmounts3.objects.blocks.BlockDragonCore;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.model.ShulkerModel;
@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
 
 @OnlyIn(Dist.CLIENT)
 public class ModItemStackTileEntityRenderer extends ItemStackTileEntityRenderer {
-    private static final ShulkerModel<?> DRAGON_SHULKER_BOX_MODEL = new ShulkerModel<>();
+    private static final ShulkerModel<?> DRAGON_CORE_MODEL = new ShulkerModel<>();
     public static final ModItemStackTileEntityRenderer INSTANCE = new ModItemStackTileEntityRenderer();
 
     public static ModItemStackTileEntityRenderer getInstance() {
@@ -34,8 +34,8 @@ public class ModItemStackTileEntityRenderer extends ItemStackTileEntityRenderer 
         Item item = itemStack.getItem();
         if (item instanceof BlockItem) {
             Block block = ((BlockItem) item).getBlock();
-            if (block instanceof BlockDragonShulkerBox) {
-                DragonShulkerBoxRenderer.render(Direction.SOUTH, DRAGON_SHULKER_BOX_MODEL, 0.0F, matrixStack, buffer, combinedLight, combinedOverlay);
+            if (block instanceof BlockDragonCore) {
+                DragonCoreRenderer.render(Direction.SOUTH, DRAGON_CORE_MODEL, 0.0F, matrixStack, buffer, combinedLight, combinedOverlay);
             }/* else {
                 TileEntityRendererDispatcher.instance.renderItem(tileEntity, matrixStack, buffer, combinedLight, combinedOverlay);
             }*/

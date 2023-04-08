@@ -1,5 +1,6 @@
 package net.dragonmounts3.objects.items;
 
+import net.dragonmounts3.objects.DragonType;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,6 +37,7 @@ public class ItemDragonWhistle extends Item {
         tag.putUUID(DRAGON_UUID_KEY, entity.getUUID());
         tag.putString("Type", entity.getType().getDescriptionId());
         tag.putString("OwnerName", player.getDisplayName().getString());
+        tag.putInt("Color", DragonType.ENDER.style.getColor());
         stack.setTag(tag);
         player.setItemSlot(hand == Hand.MAIN_HAND ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND, stack);
         return ActionResultType.SUCCESS;
@@ -54,11 +56,11 @@ public class ItemDragonWhistle extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, @Nonnull List<ITextComponent> components, @Nullable ITooltipFlag flag) {
+    public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, @Nonnull List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
         CompoundNBT tag = this.getDragonData(stack);
         if (tag != null) {
-            components.add(new TranslationTextComponent("item.info.dragon_name", new TranslationTextComponent(tag.getString("Type"))).withStyle(TextFormatting.GRAY));
-            components.add(new TranslationTextComponent("item.info.owner_name", tag.getString("OwnerName")).withStyle(TextFormatting.GRAY));
+            components.add(new TranslationTextComponent("tooltip.dragonmounts.type", new TranslationTextComponent(tag.getString("Type"))).withStyle(TextFormatting.GRAY));
+            components.add(new TranslationTextComponent("tooltip.dragonmounts.owner_name", tag.getString("OwnerName")).withStyle(TextFormatting.GRAY));
         }
     }
 }

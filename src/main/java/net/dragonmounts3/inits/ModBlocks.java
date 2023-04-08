@@ -5,7 +5,7 @@ import net.dragonmounts3.client.renderer.ModItemStackTileEntityRenderer;
 import net.dragonmounts3.objects.DragonType;
 import net.dragonmounts3.objects.blocks.BlockDragonEgg;
 import net.dragonmounts3.objects.blocks.BlockDragonNest;
-import net.dragonmounts3.objects.blocks.BlockDragonShulkerBox;
+import net.dragonmounts3.objects.blocks.BlockDragonCore;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item.Properties;
@@ -16,11 +16,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.function.Supplier;
 
 import static net.dragonmounts3.inits.ModItemGroups.block;
+import static net.dragonmounts3.inits.ModItemGroups.none;
 
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DragonMounts.create(ForgeRegistries.BLOCKS);
     public static final RegistryObject<Block> DRAGON_NEST = register("dragon_nest", BlockDragonNest::new, block());
-    public static final RegistryObject<Block> DRAGON_SHULKER_BOX = register("dragon_shulker_box", BlockDragonShulkerBox::new, block().setISTER(() -> ModItemStackTileEntityRenderer::getInstance));
+    public static final RegistryObject<Block> DRAGON_CORE = register("dragon_core", BlockDragonCore::new, none().setISTER(() -> ModItemStackTileEntityRenderer::getInstance));
     public static final RegistryObject<Block> AETHER_DRAGON_EGG = register("aether_dragon_egg", () -> new BlockDragonEgg(DragonType.AETHER), block());
     public static final RegistryObject<Block> ENCHANT_DRAGON_EGG = register("enchant_dragon_egg", () -> new BlockDragonEgg(DragonType.ENCHANT), block());
     public static final RegistryObject<Block> ENDER_DRAGON_EGG = register("ender_dragon_egg", () -> new BlockDragonEgg(DragonType.ENDER), block());

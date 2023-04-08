@@ -14,7 +14,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
-version = '1.0'
+version = 'Preview ' + Calendar.instance.get(Calendar.YEAR) % 100 + 'w' + Calendar.instance.get(Calendar.WEEK_OF_YEAR) + 'a'
 group = 'com.TheRPGAdventurer.ROTD'
 archivesBaseName = 'DragonMounts'
 
@@ -71,7 +71,12 @@ minecraft {
     }
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+sourceSets.main.resources {
+    srcDirs += [
+            'src/generated/resources',
+            'src/main/generated'
+    ]
+}
 
 dependencies {
 

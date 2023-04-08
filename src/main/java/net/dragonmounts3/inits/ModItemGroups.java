@@ -26,7 +26,7 @@ public class ModItemGroups {
         }
     };
 
-    public static final ItemGroup EQUIPMENT_TAB = new ItemGroup(MOD_ID + ".equipments") {
+    public static final ItemGroup TOOL_TAB = new ItemGroup(MOD_ID + ".tools") {
         @Nonnull
         @Override
         public ItemStack makeIcon() {
@@ -46,7 +46,7 @@ public class ModItemGroups {
         return new Properties().tab(ITEM_TAB);
     }
 
-    public static Properties equipment() {
-        return new Properties().tab(EQUIPMENT_TAB);
+    public static Properties tool() {
+        return new Properties().tab(TOOL_TAB);
     }
 }

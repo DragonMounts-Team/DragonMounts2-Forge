@@ -53,8 +53,8 @@
   "item.dragonmounts.spruce_carriage": "云杉木运载坐垫",
   "item.modifiers.equipped": "装备后：",
   "itemGroup.dragonmounts.blocks": "龙骑士：方块",
-  "itemGroup.dragonmounts.equipments": "龙骑士：装备",
-  "itemGroup.dragonmounts.items": "龙骑士：物品",
+  "itemGroup.dragonmounts.tools": "龙骑士：战斗用品与工具",
+  "itemGroup.dragonmounts.items": "龙骑士：实用物品与原材料",
   "tooltip.dragonmounts.owner_name": "主人：%s",
   "tooltip.dragonmounts.type": "种类：%s"
 }

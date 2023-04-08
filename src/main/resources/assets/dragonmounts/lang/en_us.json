@@ -53,8 +53,8 @@
   "item.dragonmounts.spruce_carriage": "Spruce CargoBob",
   "item.modifiers.equipped": "When equipped:",
   "itemGroup.dragonmounts.blocks": "Dragon Mounts: Blocks",
-  "itemGroup.dragonmounts.equipments": "Dragon Mounts: Equipments",
-  "itemGroup.dragonmounts.items": "Dragon Mounts: Items",
+  "itemGroup.dragonmounts.tools": "Dragon Mounts: Combat & Tools",
+  "itemGroup.dragonmounts.items": "Dragon Mounts: Utilities & Ingredients",
   "tooltip.dragonmounts.owner_name": "Owner：%s",
   "tooltip.dragonmounts.type": "Type：%s"
 }

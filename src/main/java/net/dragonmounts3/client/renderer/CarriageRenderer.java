@@ -5,7 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.dragonmounts3.DragonMounts;
 import net.dragonmounts3.client.model.CarriageModel;
-import net.dragonmounts3.objects.entity.carriage.EntityCarriage;
+import net.dragonmounts3.entity.carriage.CarriageEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nonnull;
 
-public class CarriageRenderer extends EntityRenderer<EntityCarriage> {
+public class CarriageRenderer extends EntityRenderer<CarriageEntity> {
     protected final CarriageModel model = new CarriageModel();
 
     private static final ResourceLocation[] CARRIAGE_TEXTURES = new ResourceLocation[]{
@@ -34,7 +34,7 @@ public class CarriageRenderer extends EntityRenderer<EntityCarriage> {
     }
 
     @Override
-    public void render(@Nonnull EntityCarriage entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLight) {
+    public void render(@Nonnull CarriageEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLight) {
         matrixStack.pushPose();
         matrixStack.scale(-1.0F, -1.0F, 1.0F);
         //this.setupRotation(entity, matrixStack, entityYaw, partialTicks);
@@ -48,7 +48,7 @@ public class CarriageRenderer extends EntityRenderer<EntityCarriage> {
     }
 
     @SuppressWarnings("deprecation")
-    private void setupRotation(EntityCarriage entity, MatrixStack matrixStack, float entityYaw, float partialTicks) {
+    private void setupRotation(CarriageEntity entity, MatrixStack matrixStack, float entityYaw, float partialTicks) {
         RenderSystem.rotatef(90.0F - entityYaw, 0.0F, 1.0F, 0.0F);
         float f = (float) entity.getTimeSinceHit() - partialTicks;
         float f1 = entity.getDamage() - partialTicks;
@@ -66,8 +66,8 @@ public class CarriageRenderer extends EntityRenderer<EntityCarriage> {
 
     @Nonnull
     @Override
-    public ResourceLocation getTextureLocation(EntityCarriage entity) {
-        return CARRIAGE_TEXTURES[entity.getCarriageType().ordinal()];
+    public ResourceLocation getTextureLocation(CarriageEntity entity) {
+        return CARRIAGE_TEXTURES[entity.getCarriageTypeId()];
     }
 
 }

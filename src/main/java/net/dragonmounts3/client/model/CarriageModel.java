@@ -2,13 +2,13 @@ package net.dragonmounts3.client.model;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.dragonmounts3.objects.entity.carriage.EntityCarriage;
+import net.dragonmounts3.entity.carriage.CarriageEntity;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 
 import static net.dragonmounts3.util.ModelUtil.setRotateAngle;
 
-public class CarriageModel extends EntityModel<EntityCarriage> {
+public class CarriageModel extends EntityModel<CarriageEntity> {
 
     public ModelRenderer field_78154_a2;
     public ModelRenderer field_78154_a3;
@@ -44,7 +44,7 @@ public class CarriageModel extends EntityModel<EntityCarriage> {
     }
 
     @Override
-    public void setupAnim(EntityCarriage entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(CarriageEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 
     }
 

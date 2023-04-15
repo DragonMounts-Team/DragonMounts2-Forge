@@ -2,6 +2,7 @@ package net.dragonmounts3.data.provider;
 
 import net.dragonmounts3.data.tags.DMItemTags;
 import net.dragonmounts3.inits.ModItems;
+import net.dragonmounts3.objects.DragonType;
 import net.minecraft.data.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -25,17 +26,55 @@ public class DMRecipeProvider extends RecipeProvider {
     protected void buildShapelessRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
         netheriteSmithing(consumer, ModItems.DIAMOND_DRAGON_ARMOR.get(), ModItems.NETHERITE_DRAGON_ARMOR.get());
         netheriteSmithing(consumer, ModItems.DIAMOND_SHEARS.get(), ModItems.NETHERITE_SHEARS.get());
-        dragonScaleAxe(consumer, ModItems.SCULK_DRAGON_SCALES.get(), ModItems.SCULK_DRAGON_AXE.get());
-        dragonScaleBoots(consumer, ModItems.SCULK_DRAGON_SCALES.get(), ModItems.SCULK_DRAGON_BOOTS.get());
-        dragonScaleBow(consumer, ModItems.SCULK_DRAGON_SCALES.get(), ModItems.SCULK_DRAGON_BOW.get());
-        dragonScaleChestplate(consumer, ModItems.SCULK_DRAGON_SCALES.get(), ModItems.SCULK_DRAGON_CHESTPLATE.get());
-        dragonScaleHelmet(consumer, ModItems.SCULK_DRAGON_SCALES.get(), ModItems.SCULK_DRAGON_HELMET.get());
-        dragonScaleHoe(consumer, ModItems.SCULK_DRAGON_SCALES.get(), ModItems.SCULK_DRAGON_HOE.get());
-        dragonScaleLeggings(consumer, ModItems.SCULK_DRAGON_SCALES.get(), ModItems.SCULK_DRAGON_LEGGINGS.get());
-        dragonScalePickaxe(consumer, ModItems.SCULK_DRAGON_SCALES.get(), ModItems.SCULK_DRAGON_PICKAXE.get());
-        dragonScaleShovel(consumer, ModItems.SCULK_DRAGON_SCALES.get(), ModItems.SCULK_DRAGON_SHOVEL.get());
-        dragonScaleShield(consumer, ModItems.SCULK_DRAGON_SCALES.get(), ModItems.SCULK_DRAGON_SCALE_SHIELD.get());
-        dragonScaleSword(consumer, ModItems.SCULK_DRAGON_SCALES.get(), ModItems.SCULK_DRAGON_SWORD.get());
+        for (DragonType type : DragonType.values()) {
+            Item scale = ModItems.DRAGON_SCALES.get(type);
+            if (scale != null) {
+                Item item = ModItems.DRAGON_SCALE_AXE.get(type);
+                if (item != null) {
+                    dragonScaleAxe(consumer, scale, item);
+                }
+                item = ModItems.DRAGON_SCALE_BOOTS.get(type);
+                if (item != null) {
+                    dragonScaleBoots(consumer, scale, item);
+                }
+                item = ModItems.DRAGON_SCALE_BOW.get(type);
+                if (item != null) {
+                    dragonScaleBow(consumer, scale, item);
+                }
+                item = ModItems.DRAGON_SCALE_CHESTPLATE.get(type);
+                if (item != null) {
+                    dragonScaleChestplate(consumer, scale, item);
+                }
+                item = ModItems.DRAGON_SCALE_HELMET.get(type);
+                if (item != null) {
+                    dragonScaleHelmet(consumer, scale, item);
+                }
+                item = ModItems.DRAGON_SCALE_HOE.get(type);
+                if (item != null) {
+                    dragonScaleHoe(consumer, scale, item);
+                }
+                item = ModItems.DRAGON_SCALE_LEGGINGS.get(type);
+                if (item != null) {
+                    dragonScaleLeggings(consumer, scale, item);
+                }
+                item = ModItems.DRAGON_SCALE_PICKAXE.get(type);
+                if (item != null) {
+                    dragonScalePickaxe(consumer, scale, item);
+                }
+                item = ModItems.DRAGON_SCALE_SHOVEL.get(type);
+                if (item != null) {
+                    dragonScaleShovel(consumer, scale, item);
+                }
+                item = ModItems.DRAGON_SCALE_SHIELD.get(type);
+                if (item != null) {
+                    dragonScaleShield(consumer, scale, item);
+                }
+                item = ModItems.DRAGON_SCALE_SWORDS.get(type);
+                if (item != null) {
+                    dragonScaleSword(consumer, scale, item);
+                }
+            }
+        }
     }
 
     private static void dragonScaleAxe(Consumer<IFinishedRecipe> consumer, Item scales, Item result) {

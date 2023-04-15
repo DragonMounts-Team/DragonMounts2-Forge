@@ -2,7 +2,7 @@ package net.dragonmounts3.inits;
 
 import net.dragonmounts3.DragonMounts;
 import net.dragonmounts3.client.renderer.block.DragonCoreRenderer;
-import net.dragonmounts3.objects.blocks.entity.TileEntityDragonCore;
+import net.dragonmounts3.block.entity.DragonCoreBlockEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -15,7 +15,7 @@ public class ModTileEntities {
 
     public static final DeferredRegister<TileEntityType<?>> TILE_ENTITY = DragonMounts.create(ForgeRegistries.TILE_ENTITIES);
 
-    public static final RegistryObject<TileEntityType<TileEntityDragonCore>> DRAGON_CORE = TILE_ENTITY.register("dragon_core", () -> TileEntityType.Builder.of(TileEntityDragonCore::new, ModBlocks.DRAGON_CORE.get()).build(null));
+    public static final RegistryObject<TileEntityType<DragonCoreBlockEntity>> DRAGON_CORE = TILE_ENTITY.register("dragon_core", () -> TileEntityType.Builder.of(DragonCoreBlockEntity::new, ModBlocks.DRAGON_CORE.get()).build(null));
 
     @OnlyIn(Dist.CLIENT)
     public static void registerTileEntityRenders() {

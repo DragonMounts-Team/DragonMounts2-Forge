@@ -1,7 +1,7 @@
 package net.dragonmounts3.inits;
 
 import net.dragonmounts3.DragonMounts;
-import net.dragonmounts3.client.gui.ScreenDragonCore;
+import net.dragonmounts3.client.gui.DragonCoreScreen;
 import net.dragonmounts3.inventory.ContainerDragonCore;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.inventory.container.Container;
@@ -21,6 +21,6 @@ public class ModContainers {
     }
 
     public static void registerScreens() {
-        ScreenManager.register(DRAGON_CORE.get(), ScreenDragonCore::new);
+        ScreenManager.register(DRAGON_CORE.get(), DragonCoreScreen::new);
     }
 }

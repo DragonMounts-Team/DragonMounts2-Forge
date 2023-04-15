@@ -2,7 +2,7 @@ package net.dragonmounts3.client.renderer.block;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.dragonmounts3.objects.blocks.entity.TileEntityDragonCore;
+import net.dragonmounts3.block.entity.DragonCoreBlockEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.model.ShulkerModel;
@@ -17,13 +17,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 
 import static net.dragonmounts3.DragonMounts.prefix;
-import static net.dragonmounts3.objects.blocks.BlockDragonCore.FACING;
+import static net.dragonmounts3.block.DragonCoreBlock.FACING;
 
 /**
  * @see net.minecraft.client.renderer.tileentity.ShulkerBoxTileEntityRenderer
  */
 @OnlyIn(Dist.CLIENT)
-public class DragonCoreRenderer extends TileEntityRenderer<TileEntityDragonCore> {
+public class DragonCoreRenderer extends TileEntityRenderer<DragonCoreBlockEntity> {
     private static final ResourceLocation TEXTURE_LOCATION = prefix("textures/blocks/dragon_core.png");
     private final ShulkerModel<?> model = new ShulkerModel<>();
 
@@ -32,7 +32,7 @@ public class DragonCoreRenderer extends TileEntityRenderer<TileEntityDragonCore>
     }
 
     @Override
-    public void render(@Nonnull TileEntityDragonCore blockEntity, float partialTicks, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+    public void render(@Nonnull DragonCoreBlockEntity blockEntity, float partialTicks, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
         render(blockEntity.getBlockState().getValue(FACING), this.model, blockEntity.getProgress(partialTicks), matrixStack, buffer, combinedLight, combinedOverlay);
     }
 

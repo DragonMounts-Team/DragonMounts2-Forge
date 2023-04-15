@@ -2,7 +2,7 @@ package net.dragonmounts3.client.renderer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.dragonmounts3.client.renderer.block.DragonCoreRenderer;
-import net.dragonmounts3.objects.blocks.BlockDragonCore;
+import net.dragonmounts3.block.DragonCoreBlock;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.model.ShulkerModel;
@@ -34,7 +34,7 @@ public class ModItemStackTileEntityRenderer extends ItemStackTileEntityRenderer 
         Item item = itemStack.getItem();
         if (item instanceof BlockItem) {
             Block block = ((BlockItem) item).getBlock();
-            if (block instanceof BlockDragonCore) {
+            if (block instanceof DragonCoreBlock) {
                 DragonCoreRenderer.render(Direction.SOUTH, DRAGON_CORE_MODEL, 0.0F, matrixStack, buffer, combinedLight, combinedOverlay);
             }/* else {
                 TileEntityRendererDispatcher.instance.renderItem(tileEntity, matrixStack, buffer, combinedLight, combinedOverlay);

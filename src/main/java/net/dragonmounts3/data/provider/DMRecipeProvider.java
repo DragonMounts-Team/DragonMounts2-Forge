@@ -69,7 +69,7 @@ public class DMRecipeProvider extends RecipeProvider {
                 if (item != null) {
                     dragonScaleShield(consumer, scale, item);
                 }
-                item = ModItems.DRAGON_SCALE_SWORDS.get(type);
+                item = ModItems.DRAGON_SCALE_SWORD.get(type);
                 if (item != null) {
                     dragonScaleSword(consumer, scale, item);
                 }

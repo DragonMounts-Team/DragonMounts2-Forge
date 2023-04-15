@@ -26,12 +26,13 @@ public class DragonMounts {
     public static DamageSource DRAGONS_FIRE = new DamageSource("dragons_fire");
 
     public DragonMounts() {
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DragonMountsConfig.SPEC);
+        ModAttributes.ATTRIBUTES.register(this.eventBus);
         ModItems.ITEMS.register(this.eventBus);
         ModBlocks.BLOCKS.register(this.eventBus);
         ModEntities.ENTITY_TYPES.register(this.eventBus);
         ModTileEntities.TILE_ENTITY.register(this.eventBus);
         ModContainers.CONTAINERS.register(this.eventBus);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DragonMountsConfig.SPEC);
         MinecraftForge.EVENT_BUS.register(this);
     }
 

@@ -3,7 +3,6 @@ package net.dragonmounts3.inits;
 import net.minecraft.item.Item.Properties;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 
 import javax.annotation.Nonnull;
 
@@ -14,7 +13,7 @@ public class ModItemGroups {
         @Nonnull
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(Items.BARRIER);
+            return new ItemStack(ModBlocks.ENDER_DRAGON_EGG.get());
         }
     };
 
@@ -22,7 +21,7 @@ public class ModItemGroups {
         @Nonnull
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(Items.BARRIER);
+            return new ItemStack(ModItems.ENDER_DRAGON_SCALES.get());
         }
     };
 
@@ -30,7 +29,7 @@ public class ModItemGroups {
         @Nonnull
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(Items.BARRIER);
+            return new ItemStack(ModItems.ENDER_DRAGON_SCALE_SWORD.get());
         }
     };
 

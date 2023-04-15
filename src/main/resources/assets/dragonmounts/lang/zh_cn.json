@@ -1,4 +1,5 @@
 {
+  "attribute.name.dragon.movement_speed_air": "Movement Speed Air",
   "block.dragonmounts.dragon_core": "龙核心",
   "block.dragonmounts.dragon_egg": "龙蛋",
   "block.dragonmounts.dragon_nest": "龙巢方块",
@@ -20,6 +21,8 @@
   "dragon.wither": "凋灵",
   "dragon.zombie": "僵尸",
   "entity.dragonmounts.carriage": "运载坐垫",
+  "entity.dragonmounts.dragon_egg": "龙蛋",
+  "entity.dragonmounts.dragon": "龙",
   "item.dragonmounts.acacia_carriage": "金合欢木运载坐垫",
   "item.dragonmounts.bamboo_carriage": "竹运载坐垫",
   "item.dragonmounts.birch_carriage": "白桦木运载坐垫",

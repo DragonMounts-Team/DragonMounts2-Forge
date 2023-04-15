@@ -5,7 +5,6 @@ import net.dragonmounts3.entity.dragon.config.sound.SoundEffectNames;
 import net.dragonmounts3.inits.ModSounds;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.minecraft.block.Block;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.DamageSource;
@@ -162,7 +161,7 @@ public abstract class DragonConfig {
         dragon.getBreathHelper().getEmitter().spawnBreathParticles(world, power, tickCounter);
     }*/
 
-    public double getMaxHealth(AttributeModifierMap.MutableAttribute attributes) {
+    public double getMaxHealth() {
         return DragonMountsConfig.BASE_HEALTH.get();
     }
 }

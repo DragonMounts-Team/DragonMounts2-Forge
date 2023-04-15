@@ -7,16 +7,18 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
+import static net.dragonmounts3.DragonMounts.prefix;
+
 public class TameableDragonRenderer extends EntityRenderer<TameableDragonEntity> {
 
 
-    protected TameableDragonRenderer(EntityRendererManager entityRenderDispatcher) {
+    public TameableDragonRenderer(EntityRendererManager entityRenderDispatcher) {
         super(entityRenderDispatcher);
     }
 
     @Nonnull
     @Override
     public ResourceLocation getTextureLocation(@Nonnull TameableDragonEntity entity) {
-        return null;
+        return prefix("textures/entities/dragon/ender/bodyfm.png");//temp
     }
 }

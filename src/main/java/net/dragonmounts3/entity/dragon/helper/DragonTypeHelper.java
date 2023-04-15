@@ -5,7 +5,7 @@ import net.minecraft.network.datasync.DataParameter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DragonBreedHelper extends DragonHelper {
+public class DragonTypeHelper extends DragonHelper {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int BLOCK_RANGE = 2;
@@ -20,7 +20,7 @@ public class DragonBreedHelper extends DragonHelper {
     private static final String NBT_BREED_POINTS = "breedPoints";
     private final DataParameter<String> DATA_BREED;
 
-    public DragonBreedHelper(TameableDragonEntity dragon, DataParameter<String> DATA_BREED) {
+    public DragonTypeHelper(TameableDragonEntity dragon, DataParameter<String> DATA_BREED) {
         super(dragon);
         this.DATA_BREED = DATA_BREED;
         if (!dragon.level.isClientSide) {

@@ -1,4 +1,5 @@
 {
+  "attribute.name.dragon.movement_speed_air": "Movement Speed Air",
   "block.dragonmounts.dragon_core": "Dragon Core",
   "block.dragonmounts.dragon_egg": "Dragon Egg",
   "block.dragonmounts.dragon_nest": "Nest Block",
@@ -20,6 +21,8 @@
   "dragon.wither": "Wither",
   "dragon.zombie": "Zombie",
   "entity.dragonmounts.carriage": "CargoBob",
+  "entity.dragonmounts.dragon_egg": "Dragon Egg",
+  "entity.dragonmounts.dragon": "Dragon",
   "item.dragonmounts.acacia_carriage": "Acacia CargoBob",
   "item.dragonmounts.bamboo_carriage": "Bamboo CargoBob",
   "item.dragonmounts.birch_carriage": "Birch CargoBob",

@@ -1,5 +1,6 @@
 package net.dragonmounts3.objects;
 
+import net.dragonmounts3.entity.dragon.config.AetherDragonConfig;
 import net.dragonmounts3.entity.dragon.config.DragonConfig;
 import net.dragonmounts3.entity.dragon.config.EnderDragonConfig;
 import net.minecraft.util.IStringSerializable;
@@ -10,7 +11,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import javax.annotation.Nonnull;
 
 public enum DragonType implements IStringSerializable {
-    AETHER(TextFormatting.AQUA, new EnderDragonConfig()),
+    AETHER(TextFormatting.AQUA, new AetherDragonConfig()),
     ENCHANT(TextFormatting.LIGHT_PURPLE, new EnderDragonConfig()),
     ENDER(TextFormatting.DARK_PURPLE, new EnderDragonConfig()),
     FIRE(TextFormatting.RED, new EnderDragonConfig()),

@@ -2,6 +2,7 @@ package net.dragonmounts3.client;
 
 import net.dragonmounts3.client.renderer.CarriageRenderer;
 import net.dragonmounts3.client.renderer.DragonEggRenderer;
+import net.dragonmounts3.client.renderer.TameableDragonRenderer;
 import net.dragonmounts3.inits.ModContainers;
 import net.dragonmounts3.inits.ModItems;
 import net.dragonmounts3.inits.ModTileEntities;
@@ -31,8 +32,9 @@ public class ModClientEvents {
         @SubscribeEvent
         public static void onFMLClientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(ModBusEvents::onFMLClientSetupEnqueueWork);
-            RenderingRegistry.registerEntityRenderingHandler(ENTITY_CARRIAGE.get(), CarriageRenderer::new);
-            RenderingRegistry.registerEntityRenderingHandler(ENTITY_DRAGON_EGG.get(), DragonEggRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(CARRIAGE.get(), CarriageRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(DRAGON_EGG.get(), DragonEggRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(TAMEABLE_DRAGON.get(), TameableDragonRenderer::new);
             ModTileEntities.registerTileEntityRenders();
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 CompoundNBT tag = stack.getTag();

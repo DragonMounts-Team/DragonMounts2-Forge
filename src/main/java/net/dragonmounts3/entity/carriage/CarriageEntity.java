@@ -39,11 +39,11 @@ public class CarriageEntity extends Entity {
     }
 
     public CarriageEntity(World world) {
-        this(ModEntities.ENTITY_CARRIAGE.get(), world);
+        this(ModEntities.CARRIAGE.get(), world);
     }
 
     public CarriageEntity(World world, double x, double y, double z) {
-        this(ModEntities.ENTITY_CARRIAGE.get(), world);
+        this(ModEntities.CARRIAGE.get(), world);
         this.setPos(x, y, z);
         this.setDeltaMovement(0.0D, 0.0D, 0.0D);
         this.xo = x;

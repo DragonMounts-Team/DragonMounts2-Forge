@@ -2,7 +2,6 @@ package net.dragonmounts3.entity.dragon.config;
 
 import net.dragonmounts3.inits.ModSounds;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
@@ -65,8 +64,8 @@ public class EnderDragonConfig extends DragonConfig {
     }*/
 
     @Override
-    public double getMaxHealth(AttributeModifierMap.MutableAttribute attributes) {
-        return super.getMaxHealth(attributes) + 10D;
+    public double getMaxHealth() {
+        return super.getMaxHealth() + 10D;
     }
 
     public BasicParticleType getSneezeParticle() {

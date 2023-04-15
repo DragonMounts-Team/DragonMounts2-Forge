@@ -4,13 +4,15 @@ import net.dragonmounts3.DragonMountsConfig;
 import net.dragonmounts3.entity.dragon.helper.DragonBodyHelper;
 import net.dragonmounts3.entity.dragon.helper.DragonHelper;
 import net.dragonmounts3.entity.dragon.inventoty.DragonInventory;
+import net.dragonmounts3.inits.ModAttributes;
 import net.dragonmounts3.inits.ModEntities;
 import net.dragonmounts3.objects.DragonType;
 import net.dragonmounts3.objects.IDragonTypified;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.RangedAttribute;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.item.EnderCrystalEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.item.ItemStack;
@@ -25,10 +27,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @ParametersAreNonnullByDefault
 public class TameableDragonEntity extends TameableEntity implements IForgeShearable, IDragonTypified {
@@ -36,8 +35,6 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
     // base attributes
     public static final double BASE_GROUND_SPEED = 0.4;
     public static final double BASE_AIR_SPEED = 0.9;
-    public static final Attribute MOVEMENT_SPEED_AIR = new RangedAttribute("generic.movementSpeedAir",
-            0.9, 0.0, Double.MAX_VALUE).setRegistryName("Movement Speed Air").setSyncable(true);
     public static final double BASE_DAMAGE = DragonMountsConfig.BASE_DAMAGE.get();
     public static final double BASE_ARMOR = DragonMountsConfig.ARMOR.get();
     public static final double BASE_TOUGHNESS = 30.0D;
@@ -59,7 +56,6 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
     private static final DataParameter<Boolean> ALLOW_OTHER_PLAYERS = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> BOOSTING = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> IS_MALE = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<Integer> ARMOR = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.INT);
     private static final DataParameter<Boolean> HOVER_CANCELLED = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> Y_LOCKED = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> ALT_TEXTURE = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
@@ -89,7 +85,6 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
     public int inAirTicks;
     public int roarTicks;
     protected int ticksSinceLastAttack;
-    float damageReduction = (float) this.getArmorResistance() + 3.0F;
     private boolean hasChestVarChanged = false;
     private boolean isUsingBreathWeapon;
     private boolean altBreathing;
@@ -100,40 +95,32 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
 
     public TameableDragonEntity(EntityType<? extends TameableDragonEntity> type, World world) {
         super(type, world);
+        final double health = this.getDragonType().getConfig().getMaxHealth();
+        Objects.requireNonNull(this.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(health);
+        this.setHealth((float) health);
         this.maxUpStep = 1.0F;
         this.blocksBuilding = true;
-
     }
 
     public TameableDragonEntity(World world) {
-        this(ModEntities.ENTITY_TAMEABLE_DRAGON.get(), world);
+        this(ModEntities.TAMEABLE_DRAGON.get(), world);
+    }
+
+    public static AttributeModifierMap.MutableAttribute registerAttributes() {
+        return LivingEntity.createLivingAttributes()
+                .add(ModAttributes.MOVEMENT_SPEED_AIR.get(), BASE_AIR_SPEED)
+                .add(Attributes.MOVEMENT_SPEED, BASE_GROUND_SPEED)
+                .add(Attributes.ATTACK_DAMAGE, BASE_DAMAGE)
+                .add(Attributes.FOLLOW_RANGE, BASE_FOLLOW_RANGE)
+                .add(Attributes.KNOCKBACK_RESISTANCE, RESISTANCE)
+                .add(Attributes.ARMOR, BASE_ARMOR)
+                .add(Attributes.ARMOR_TOUGHNESS, BASE_TOUGHNESS);
     }
 
     @Nullable
     @Override
     public AgeableEntity getBreedOffspring(ServerWorld serverWorld, AgeableEntity entity) {
         return null;
-    }
-
-    public int getArmor() {
-        return this.entityData.get(ARMOR);
-    }
-
-    public void setArmor(int armorType) {
-        this.entityData.set(ARMOR, armorType);
-    }
-
-    public double getArmorResistance() {
-        switch (this.getArmor()) {
-            case 1:
-            case 4: return 1.5;
-            case 2:
-                return 1.4;
-            case 3:
-                return 1.7;
-            default:
-                return 0;
-        }
     }
 
     public boolean isFlying() {

@@ -2,10 +2,10 @@ package net.dragonmounts3.inits;
 
 import mcp.MethodsReturnNonnullByDefault;
 import net.dragonmounts3.DragonMounts;
+import net.dragonmounts3.entity.carriage.CarriageType;
 import net.dragonmounts3.item.*;
 import net.dragonmounts3.objects.DragonType;
 import net.dragonmounts3.objects.DragonTypifiedObjectHolder;
-import net.dragonmounts3.entity.carriage.CarriageType;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -84,7 +84,7 @@ public class ModItems {
     public static final RegistryObject<DragonScaleAxeItem> FIRE_DRAGON_SCALE_AXE = createDragonScaleAxeItem("fire_dragon_axe", DragonScaleTier.FIRE, tool());
     public static final RegistryObject<DragonScaleAxeItem> FOREST_DRAGON_SCALE_AXE = createDragonScaleAxeItem("forest_dragon_axe", DragonScaleTier.FOREST, tool());
     public static final RegistryObject<DragonScaleAxeItem> NETHER_DRAGON_SCALE_AXE = createDragonScaleAxeItem("nether_dragon_axe", DragonScaleTier.NETHER, 6.0F, -2.9F, tool());
-    public static final RegistryObject<DragonScaleAxeItem> ENDER_DRAGON_SCALE_AXE = createDragonScaleAxeItem("ender_dragon_axe", DragonScaleTier.ENDER, 3.0F, -2.9F, tool());
+    public static final RegistryObject<DragonScaleAxeItem> ENDER_DRAGON_SCALE_AXE = createDragonScaleAxeItem("ender_dragon_axe", DragonScaleTier.ENDER, 6.0F, -2.9F, tool());
     public static final RegistryObject<DragonScaleAxeItem> ENCHANT_DRAGON_SCALE_AXE = createDragonScaleAxeItem("enchant_dragon_axe", DragonScaleTier.ENCHANT, tool());
     public static final RegistryObject<DragonScaleAxeItem> SUNLIGHT_DRAGON_SCALE_AXE = createDragonScaleAxeItem("sunlight_dragon_axe", DragonScaleTier.SUNLIGHT, tool());
     public static final RegistryObject<DragonScaleAxeItem> MOONLIGHT_DRAGON_SCALE_AXE = createDragonScaleAxeItem("moonlight_dragon_axe", DragonScaleTier.MOONLIGHT, tool());

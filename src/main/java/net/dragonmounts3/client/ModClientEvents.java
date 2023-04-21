@@ -33,7 +33,7 @@ public class ModClientEvents {
         public static void onFMLClientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(ModBusEvents::onFMLClientSetupEnqueueWork);
             RenderingRegistry.registerEntityRenderingHandler(CARRIAGE.get(), CarriageRenderer::new);
-            RenderingRegistry.registerEntityRenderingHandler(DRAGON_EGG.get(), DragonEggRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(HATCHABLE_DRAGON_EGG.get(), DragonEggRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(TAMEABLE_DRAGON.get(), TameableDragonRenderer::new);
             ModTileEntities.registerTileEntityRenders();
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {

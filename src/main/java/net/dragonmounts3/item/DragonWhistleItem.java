@@ -1,6 +1,6 @@
 package net.dragonmounts3.item;
 
-import net.dragonmounts3.objects.DragonType;
+import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,14 +33,17 @@ public class DragonWhistleItem extends Item {
     @Override
     public ActionResultType interactLivingEntity(@Nonnull ItemStack stack, @Nonnull PlayerEntity player, LivingEntity entity, @Nonnull Hand hand) {
         if (entity.level.isClientSide) return ActionResultType.PASS;
-        CompoundNBT tag = new CompoundNBT();
-        tag.putUUID(DRAGON_UUID_KEY, entity.getUUID());
-        tag.putString("Type", entity.getType().getDescriptionId());
-        tag.putString("OwnerName", player.getDisplayName().getString());
-        tag.putInt("Color", DragonType.ENDER.style.getColor());
-        stack.setTag(tag);
-        player.setItemSlot(hand == Hand.MAIN_HAND ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND, stack);
-        return ActionResultType.SUCCESS;
+        if (entity instanceof HatchableDragonEggEntity) {//test
+            CompoundNBT tag = new CompoundNBT();
+            tag.putUUID(DRAGON_UUID_KEY, entity.getUUID());
+            tag.putString("Type", entity.getType().getDescriptionId());
+            tag.putString("OwnerName", player.getDisplayName().getString());
+            tag.putInt("Color", ((HatchableDragonEggEntity) entity).getDragonType().getColor());
+            stack.setTag(tag);
+            player.setItemSlot(hand == Hand.MAIN_HAND ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND, stack);
+            return ActionResultType.SUCCESS;
+        }
+        return ActionResultType.PASS;
     }
 
     @Nullable

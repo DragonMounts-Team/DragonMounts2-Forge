@@ -10,7 +10,7 @@
       "item": "dragonmounts:forest_dragon_scales"
     },
     "X": {
-      "item": "minecraft:string"
+      "tag": "forge:string"
     }
   },
   "result": {

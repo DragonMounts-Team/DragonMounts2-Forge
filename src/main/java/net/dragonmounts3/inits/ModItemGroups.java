@@ -33,6 +33,12 @@ public class ModItemGroups {
         }
     };
 
+    static {
+        BLOCK_TAB.setRecipeFolderName(MOD_ID + "/blocks");
+        ITEM_TAB.setRecipeFolderName(MOD_ID + "/items");
+        TOOL_TAB.setRecipeFolderName(MOD_ID + "/tools");
+    }
+
     public static Properties none() {
         return new Properties();
     }

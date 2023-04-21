@@ -2,7 +2,7 @@ package net.dragonmounts3.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.dragonmounts3.inventory.ContainerDragonCore;
+import net.dragonmounts3.inventory.DragonCoreContainer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -18,10 +18,10 @@ import static net.dragonmounts3.DragonMounts.prefix;
  * @see net.minecraft.client.gui.screen.inventory.ShulkerBoxScreen
  */
 @OnlyIn(Dist.CLIENT)
-public class DragonCoreScreen extends ContainerScreen<ContainerDragonCore> {
+public class DragonCoreScreen extends ContainerScreen<DragonCoreContainer> {
     private static final ResourceLocation TEXTURE_LOCATION = prefix("textures/gui/dragon_core.png");
 
-    public DragonCoreScreen(ContainerDragonCore menu, PlayerInventory playerInventory, ITextComponent title) {
+    public DragonCoreScreen(DragonCoreContainer menu, PlayerInventory playerInventory, ITextComponent title) {
         super(menu, playerInventory, title);
     }
 

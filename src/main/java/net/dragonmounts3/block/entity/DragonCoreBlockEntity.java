@@ -2,7 +2,7 @@ package net.dragonmounts3.block.entity;
 
 import net.dragonmounts3.block.DragonCoreBlock;
 import net.dragonmounts3.inits.ModTileEntities;
-import net.dragonmounts3.inventory.ContainerDragonCore;
+import net.dragonmounts3.inventory.DragonCoreContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.Entity;
@@ -208,7 +208,7 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
     @Nonnull
     @Override
     protected Container createMenu(int id, @Nonnull PlayerInventory player) {
-        return new ContainerDragonCore(id, player, this);
+        return new DragonCoreContainer(id, player, this);
     }
 
     public boolean isClosed() {

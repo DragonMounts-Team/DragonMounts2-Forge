@@ -7,7 +7,7 @@ import net.minecraft.util.DamageSource;
 public class AetherDragonConfig extends DragonConfig {
 
     public AetherDragonConfig() {
-        super(0x0294bd);
+        super();
         setImmunity(DamageSource.MAGIC);
         setImmunity(DamageSource.HOT_FLOOR);
         setImmunity(DamageSource.LIGHTNING_BOLT);

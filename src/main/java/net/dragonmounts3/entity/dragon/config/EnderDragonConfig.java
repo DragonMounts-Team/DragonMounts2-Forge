@@ -1,7 +1,7 @@
 package net.dragonmounts3.entity.dragon.config;
 
-import net.dragonmounts3.inits.ModSounds;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
+import net.dragonmounts3.inits.ModSounds;
 import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
@@ -10,7 +10,7 @@ import net.minecraft.util.SoundEvents;
 
 public class EnderDragonConfig extends DragonConfig {
     public EnderDragonConfig() {
-        super(0xab39be);
+        super();
         setImmunity(DamageSource.MAGIC);
         setImmunity(DamageSource.HOT_FLOOR);
         setImmunity(DamageSource.LIGHTNING_BOLT);
@@ -68,7 +68,13 @@ public class EnderDragonConfig extends DragonConfig {
         return super.getMaxHealth() + 10D;
     }
 
+    @Override
     public BasicParticleType getSneezeParticle() {
+        return ParticleTypes.PORTAL;
+    }
+
+    @Override
+    public BasicParticleType getEggParticle() {
         return ParticleTypes.PORTAL;
     }
 }

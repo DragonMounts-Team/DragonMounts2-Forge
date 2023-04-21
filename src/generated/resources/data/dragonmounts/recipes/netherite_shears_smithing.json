@@ -4,7 +4,7 @@
     "item": "dragonmounts:diamond_shears"
   },
   "addition": {
-    "item": "minecraft:netherite_ingot"
+    "tag": "forge:ingots/netherite"
   },
   "result": {
     "item": "dragonmounts:netherite_shears"

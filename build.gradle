@@ -72,10 +72,7 @@ minecraft {
 }
 
 sourceSets.main.resources {
-    srcDirs += [
-            'src/generated/resources',
-            'src/main/generated'
-    ]
+    srcDirs += 'src/generated/resources'
 }
 
 dependencies {

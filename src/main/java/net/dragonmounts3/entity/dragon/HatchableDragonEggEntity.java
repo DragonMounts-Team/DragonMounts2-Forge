@@ -24,29 +24,31 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Random;
 
 import static net.minecraftforge.event.ForgeEventFactory.onLivingConvert;
 
 @ParametersAreNonnullByDefault
 public class HatchableDragonEggEntity extends LivingEntity implements IDragonTypified {
     private static final DataParameter<Integer> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DataSerializers.INT);
-    private static final DataParameter<Integer> DATA_AGE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DataSerializers.INT);
     public static final String AGE_DATA_PARAMETER_KEY = "Age";
     private static final float EGG_CRACK_THRESHOLD = 0.9f;
-    private static final float EGG_WIGGLE_THRESHOLD = 0.75f;
-    private static final float EGG_WIGGLE_BASE_CHANCE = 20;
+    private static final float EGG_WRIGGLE_THRESHOLD = 0.75f;
+    private static final float EGG_WRIGGLE_BASE_CHANCE = 20;
     private static final int MIN_HATCHING_TIME = 36000;
     private static final int MAX_HATCHING_TIME = 48000;
-    private int eggWiggleX = 10;
-    private int eggWiggleZ = 10;
+    protected int wriggleX = 0;
+    protected int wriggleZ = 0;
+    protected int age = 0;
 
     public HatchableDragonEggEntity(EntityType<? extends HatchableDragonEggEntity> type, World world) {
         super(type, world);
@@ -67,14 +69,13 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_DRAGON_TYPE, DragonType.ENDER.ordinal());
-        this.entityData.define(DATA_AGE, 0);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundNBT compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt(DragonType.DATA_PARAMETER_KEY, this.entityData.get(DATA_DRAGON_TYPE));
-        compound.putInt(AGE_DATA_PARAMETER_KEY, this.entityData.get(DATA_AGE));
+        compound.putInt(AGE_DATA_PARAMETER_KEY, this.age);
     }
 
     @Override
@@ -82,27 +83,52 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
         super.readAdditionalSaveData(compound);
         if (compound.contains(DragonType.DATA_PARAMETER_KEY)) {
             this.entityData.set(DATA_DRAGON_TYPE, compound.getInt(DragonType.DATA_PARAMETER_KEY));
-            this.entityData.set(DATA_AGE, compound.getInt(AGE_DATA_PARAMETER_KEY));
+        }
+        if (compound.contains(AGE_DATA_PARAMETER_KEY)) {
+            this.age = compound.getInt(AGE_DATA_PARAMETER_KEY);
         }
     }
 
-    protected void tryCrack(int age) {
-        if (age >= MIN_HATCHING_TIME && isAlive()) {
-            TameableDragonEntity dragon = ModEntities.TAMEABLE_DRAGON.get().create(this.level);
-            if (dragon != null) {
-                dragon.copyPosition(this);
-                if (this.hasCustomName()) {
-                    dragon.setCustomName(this.getCustomName());
-                    dragon.setCustomNameVisible(this.isCustomNameVisible());
-                }
-                dragon.setInvulnerable(this.isInvulnerable());
-                this.playEggCrackEffect();
-                this.level.addFreshEntity(dragon);
-                this.remove();
-                onLivingConvert(this, dragon);
+    protected void crack() {
+        HatchableDragonEggBlock block = ModBlocks.HATCHABLE_DRAGON_EGG.get(getDragonType());
+        if (block != null) {
+            this.level.levelEvent(2001, blockPosition(), Block.getId(block.defaultBlockState()));
+        }
+        this.level.playSound(null, blockPosition(), ModSounds.DRAGON_HATCHING, SoundCategory.BLOCKS, +1.0F, 1.0F);
+    }
+
+    public void hatch() {
+        this.crack();
+        TameableDragonEntity dragon = ModEntities.TAMEABLE_DRAGON.get().create(this.level);
+        if (dragon != null) {
+            dragon.copyPosition(this);
+            if (this.hasCustomName()) {
+                dragon.setCustomName(this.getCustomName());
+                dragon.setCustomNameVisible(this.isCustomNameVisible());
+            }
+            dragon.setInvulnerable(this.isInvulnerable());
+            this.crack();
+            this.level.addFreshEntity(dragon);
+            this.remove();
+            onLivingConvert(this, dragon);
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public void handleEntityEvent(byte id) {
+        if (id > 16 && id < 32) {
+            if ((id & 0B0010) == 0B0010) {
+                this.wriggleX = 20;
+            } else if ((id & 0B0001) == 0B0001) {
+                this.wriggleX = 10;
+            }
+            if ((id & 0B1000) == 0B1000) {
+                this.wriggleZ = 20;
+            } else if ((id & 0B0100) == 0B0100) {
+                this.wriggleZ = 10;
             }
         } else {
-            this.playEggCrackEffect();
+            super.handleEntityEvent(id);
         }
     }
 
@@ -148,43 +174,69 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
     @Override
     public void tick() {
         super.tick();
-        Random random = getRandom();
-        int age = this.getAge() + 1;
-        if (age >= MAX_HATCHING_TIME) {
-            this.tryCrack(age);
+        if (this.level.isClientSide) {
+            if (this.wriggleX > 0) {
+                --this.wriggleX;
+            }
+            if (this.wriggleZ > 0) {
+                --this.wriggleZ;
+            }
+            // spawn generic particles
+            double px = getX() + (this.random.nextDouble() - 0.5);
+            double py = getY() + (this.random.nextDouble() - 0.3);
+            double pz = getZ() + (this.random.nextDouble() - 0.5);
+            double ox = (this.random.nextDouble() - 0.5) * 2;
+            double oy = (this.random.nextDouble() - 0.3) * 2;
+            double oz = (this.random.nextDouble() - 0.5) * 2;
+            this.level.addParticle(this.getDragonType().getConfig().getEggParticle(), px, py, pz, ox, oy, oz);
         } else {
-            // animate egg wiggle based on the time the eggs take to hatch
+            int age = this.getAge() + 1;
+            // animate egg wriggle based on the time the eggs take to hatch
             float progress = (float) age / MIN_HATCHING_TIME;
             // wait until the egg is nearly hatched
-            if (progress > EGG_WIGGLE_THRESHOLD) {
-                float wiggleChance = (progress - EGG_WIGGLE_THRESHOLD) / EGG_WIGGLE_BASE_CHANCE * (1 - EGG_WIGGLE_THRESHOLD);
-                if (eggWiggleX > 0) {
-                    eggWiggleX--;
-                } else if (random.nextFloat() < wiggleChance) {
-                    eggWiggleX = random.nextBoolean() ? 10 : 20;
-                    if (progress > EGG_CRACK_THRESHOLD) {
-                        this.tryCrack(age);
+            if (progress > EGG_WRIGGLE_THRESHOLD) {
+                float chance = (progress - EGG_WRIGGLE_THRESHOLD) / EGG_WRIGGLE_BASE_CHANCE * (1 - EGG_WRIGGLE_THRESHOLD);
+                if (age >= MAX_HATCHING_TIME || age >= MIN_HATCHING_TIME && this.random.nextFloat() < chance) {
+                    this.hatch();
+                } else {
+                    byte state = 0B10000;//16
+                    if (this.wriggleX > 0) {
+                        --this.wriggleX;
+                    } else if (this.random.nextFloat() < chance) {
+                        if (this.random.nextBoolean()) {
+                            this.wriggleX = 10;
+                            state |= 0B0100;
+                        } else {
+                            this.wriggleX = 20;
+                            state |= 0B1000;
+                        }
                     }
-                }
-                if (eggWiggleZ > 0) {
-                    eggWiggleZ--;
-                } else if (random.nextFloat() < wiggleChance) {
-                    eggWiggleZ = random.nextBoolean() ? 10 : 20;
-                    if (progress > EGG_CRACK_THRESHOLD) {
-                        this.tryCrack(age);
+                    if (this.wriggleZ > 0) {
+                        --this.wriggleZ;
+                    } else if (this.random.nextFloat() < chance) {
+                        if (this.random.nextBoolean()) {
+                            this.wriggleZ = 10;
+                            state |= 0B0001;
+                        } else {
+                            this.wriggleZ = 20;
+                            state |= 0B0010;
+                        }
+                    }
+                    if (state != 0B10000) {
+                        this.level.broadcastEntityEvent(this, state);
+                        if (progress > EGG_CRACK_THRESHOLD) {
+                            this.crack();
+                        }
                     }
                 }
             }
+            this.setAge(age);
         }
-        // spawn generic particles
-        double px = getX() + (random.nextDouble() - 0.5);
-        double py = getY() + (random.nextDouble() - 0.3);
-        double pz = getZ() + (random.nextDouble() - 0.5);
-        double ox = (random.nextDouble() - 0.5) * 2;
-        double oy = (random.nextDouble() - 0.3) * 2;
-        double oz = (random.nextDouble() - 0.5) * 2;
-        this.level.addParticle(this.getDragonType().getConfig().getEggParticle(), px, py, pz, ox, oy, oz);
-        this.setAge(age);
+    }
+
+    @Override
+    public ItemStack getPickedResult(RayTraceResult target) {
+        return new ItemStack(ModBlocks.HATCHABLE_DRAGON_EGG.get(getDragonType()));
     }
 
     @Override
@@ -198,23 +250,23 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
     }
 
     @Override
-    public void push(Entity pEntity) {
-    }
-
-    public void playEggCrackEffect() {
-        HatchableDragonEggBlock block = ModBlocks.HATCHABLE_DRAGON_EGG.get(getDragonType());
-        if (block != null) {
-            this.level.levelEvent(2001, blockPosition(), Block.getId(block.defaultBlockState()));
-        }
-        this.level.playSound(null, blockPosition(), ModSounds.DRAGON_HATCHING, SoundCategory.BLOCKS, +1.0F, 1.0F);
+    public void push(Entity entity) {
     }
 
     public void setAge(int age) {
-        this.entityData.set(DATA_AGE, age);
+        this.age = age;
     }
 
     public int getAge() {
-        return this.entityData.get(DATA_AGE);
+        return this.age;
+    }
+
+    public int getWriggleX() {
+        return this.wriggleX;
+    }
+
+    public int getWriggleZ() {
+        return this.wriggleZ;
     }
 
     public void setDragonType(DragonType type, boolean reset) {

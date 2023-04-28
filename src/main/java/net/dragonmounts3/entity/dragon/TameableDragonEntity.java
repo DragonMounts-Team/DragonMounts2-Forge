@@ -5,7 +5,7 @@ import net.dragonmounts3.entity.dragon.helper.DragonBodyHelper;
 import net.dragonmounts3.entity.dragon.helper.DragonHelper;
 import net.dragonmounts3.inits.ModAttributes;
 import net.dragonmounts3.inits.ModEntities;
-import net.dragonmounts3.inventory.DragonInventory;
+import net.dragonmounts3.inventory.DragonInventoryContainer;
 import net.dragonmounts3.objects.DragonType;
 import net.dragonmounts3.objects.IDragonTypified;
 import net.minecraft.entity.AgeableEntity;
@@ -15,13 +15,11 @@ import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.item.EnderCrystalEntity;
 import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.IInventoryChangedListener;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -41,7 +39,7 @@ import java.util.*;
  * @see net.minecraft.entity.passive.horse.HorseEntity
  */
 @ParametersAreNonnullByDefault
-public class TameableDragonEntity extends TameableEntity implements IInventoryChangedListener, IForgeShearable, IDragonTypified {
+public class TameableDragonEntity extends TameableEntity implements IInventory, IForgeShearable, IDragonTypified {
     // base attributes
     public static final double BASE_GROUND_SPEED = 0.4;
     public static final double BASE_AIR_SPEED = 0.9;
@@ -90,7 +88,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventoryCh
     private final DragonBodyHelper dragonBodyHelper = new DragonBodyHelper(this);
     private final Map<Class<?>, DragonHelper> helpers = new HashMap<>();
     public EnderCrystalEntity healingEnderCrystal;
-    protected DragonInventory inventory;
+    protected DragonInventoryContainer inventory;
     public static int ticksShear;
     public int inAirTicks;
     public int roarTicks;
@@ -131,6 +129,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventoryCh
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
+        this.entityData.define(DATA_CHESTED, false);
         this.entityData.define(DATA_DRAGON_TYPE, DragonType.ENDER.ordinal());
         this.entityData.define(DATA_FLYING, false);
         this.entityData.define(DATA_SADDLED, false);
@@ -142,7 +141,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventoryCh
         compound.putInt(DragonType.DATA_PARAMETER_KEY, this.entityData.get(DATA_DRAGON_TYPE));
         compound.putBoolean("Flying", this.entityData.get(DATA_FLYING));
         if (this.hasChest()) {
-            compound.putBoolean("Chested", true);
+            /*compound.putBoolean("Chested", true);
             ListNBT listnbt = new ListNBT();
             for (int i = 2; i < this.inventory.getContainerSize(); ++i) {
                 ItemStack itemstack = this.inventory.getItem(i);
@@ -153,7 +152,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventoryCh
                     listnbt.add(compoundnbt);
                 }
             }
-            compound.put("Items", listnbt);
+            compound.put("Items", listnbt);*/
         } else {
             compound.putBoolean("Chested", false);
         }
@@ -197,7 +196,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventoryCh
 
     protected void updateContainerEquipment() {
         if (!this.level.isClientSide) {
-            this.entityData.set(DATA_SADDLED, !this.inventory.getItem(0).isEmpty());
+            //this.entityData.set(DATA_SADDLED, !this.inventory.getItem(0).isEmpty());
         }
     }
 
@@ -211,8 +210,8 @@ public class TameableDragonEntity extends TameableEntity implements IInventoryCh
     }
 
     protected void createInventory() {
-        Inventory inventory = this.inventory;
-        this.inventory = new DragonInventory(44, this);
+        /*Inventory inventory = this.inventory;
+        this.inventory = new DragonInventoryContainer(44, this);
         if (inventory != null) {
             int i = Math.min(inventory.getContainerSize(), this.inventory.getContainerSize());
             for (int j = 0; j < i; ++j) {
@@ -221,7 +220,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventoryCh
                     this.inventory.setItem(j, itemstack.copy());
                 }
             }
-        }
+        }*/
         //this.updateContainerEquipment();
         //this.itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new net.minecraftforge.items.wrapper.InvWrapper(this.inventory));
     }
@@ -247,5 +246,52 @@ public class TameableDragonEntity extends TameableEntity implements IInventoryCh
     @Override
     public boolean isPersistenceRequired() {
         return true;
+    }
+
+    //IInventory
+
+    @Override
+    public int getContainerSize() {
+        return 0;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public ItemStack getItem(int pIndex) {
+        return null;
+    }
+
+    @Override
+    public ItemStack removeItem(int pIndex, int pCount) {
+        return null;
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int pIndex) {
+        return null;
+    }
+
+    @Override
+    public void setItem(int pIndex, ItemStack pStack) {
+
+    }
+
+    @Override
+    public void setChanged() {
+
+    }
+
+    @Override
+    public boolean stillValid(PlayerEntity pPlayer) {
+        return false;
+    }
+
+    @Override
+    public void clearContent() {
+
     }
 }

@@ -11,7 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
+
+import static net.dragonmounts3.util.BlockEntityUtil.getInventory;
 
 /**
  * @see net.minecraft.inventory.container.ShulkerBoxContainer
@@ -20,7 +21,7 @@ public class DragonCoreContainer extends Container {
     private final IInventory container;
 
     public DragonCoreContainer(int containerId, PlayerInventory playerInventory, PacketBuffer extraData) {
-        this(containerId, playerInventory, (IInventory) Objects.requireNonNull(playerInventory.player.level.getBlockEntity(extraData.readBlockPos())));
+        this(containerId, playerInventory, getInventory(playerInventory.player, extraData, 1));
     }
 
     public DragonCoreContainer(int containerId, PlayerInventory playerInventory, IInventory container) {
@@ -28,7 +29,7 @@ public class DragonCoreContainer extends Container {
         this.container = container;
         PlayerEntity player = playerInventory.player;
         container.startOpen(player);
-        this.addSlot(new FurnaceResultSlot(player, container, 0, 80, 36));
+        this.addSlot(new FurnaceResultSlot(player, container, 0, 80, 35));
         for (int i = 0; i < 3; ++i) {
             for (int k = 0; k < 9; ++k) {
                 this.addSlot(new Slot(playerInventory, k + i * 9 + 9, 8 + k * 18, 84 + i * 18));

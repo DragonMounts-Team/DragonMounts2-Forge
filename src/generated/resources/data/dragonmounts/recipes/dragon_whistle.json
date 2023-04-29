@@ -3,21 +3,19 @@
   "pattern": [
     "P#",
     "#X"
-	
   ],
   "key": {
-    "#": {
-      "item": "minecraft:stick"
-    },
     "P": {
-     "item": "minecraft:ender_pearl"
-	},
+      "tag": "forge:rods/wooden"
+    },
+    "#": {
+      "tag": "forge:ender_pearls"
+    },
     "X": {
-     "item": "minecraft:string"
-	}
+      "tag": "forge:string"
+    }
   },
   "result": {
     "item": "dragonmounts:dragon_whistle"
-    }
+  }
 }
-

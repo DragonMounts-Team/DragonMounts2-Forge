@@ -3,9 +3,11 @@ package net.dragonmounts3.entity.dragon;
 import net.dragonmounts3.block.HatchableDragonEggBlock;
 import net.dragonmounts3.inits.ModBlocks;
 import net.dragonmounts3.inits.ModEntities;
+import net.dragonmounts3.inits.ModItems;
 import net.dragonmounts3.inits.ModSounds;
-import net.dragonmounts3.objects.DragonType;
-import net.dragonmounts3.objects.IDragonTypified;
+import net.dragonmounts3.item.DragonScalesItem;
+import net.dragonmounts3.registry.DragonType;
+import net.dragonmounts3.registry.IDragonTypified;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -19,12 +21,10 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -89,16 +89,21 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
         }
     }
 
-    protected void crack() {
-        HatchableDragonEggBlock block = ModBlocks.HATCHABLE_DRAGON_EGG.get(getDragonType());
+    protected void crack(int amount) {
+        DragonType type = this.getDragonType();
+        HatchableDragonEggBlock block = ModBlocks.HATCHABLE_DRAGON_EGG.get(type);
+        DragonScalesItem scales = ModItems.DRAGON_SCALES.get(type);
         if (block != null) {
             this.level.levelEvent(2001, blockPosition(), Block.getId(block.defaultBlockState()));
         }
-        this.level.playSound(null, blockPosition(), ModSounds.DRAGON_HATCHING, SoundCategory.BLOCKS, +1.0F, 1.0F);
+        if (scales != null && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+            this.spawnAtLocation(new ItemStack(scales, amount), 1);
+        }
+        this.level.playSound(null, blockPosition(), ModSounds.DRAGON_HATCHING.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
 
     public void hatch() {
-        this.crack();
+        this.crack(this.random.nextInt(4) + 4);
         TameableDragonEntity dragon = ModEntities.TAMEABLE_DRAGON.get().create(this.level);
         if (dragon != null) {
             dragon.copyPosition(this);
@@ -107,7 +112,6 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
                 dragon.setCustomNameVisible(this.isCustomNameVisible());
             }
             dragon.setInvulnerable(this.isInvulnerable());
-            this.crack();
             this.level.addFreshEntity(dragon);
             this.remove();
             onLivingConvert(this, dragon);
@@ -225,7 +229,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
                     if (state != 0B10000) {
                         this.level.broadcastEntityEvent(this, state);
                         if (progress > EGG_CRACK_THRESHOLD) {
-                            this.crack();
+                            this.crack(1);
                         }
                     }
                 }
@@ -237,6 +241,11 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
     @Override
     public ItemStack getPickedResult(RayTraceResult target) {
         return new ItemStack(ModBlocks.HATCHABLE_DRAGON_EGG.get(getDragonType()));
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource source) {
+        return super.isInvulnerableTo(source) || this.getDragonType().getConfig().isInvulnerableTo(source);
     }
 
     @Override

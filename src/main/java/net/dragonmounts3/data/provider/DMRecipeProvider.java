@@ -1,13 +1,15 @@
 package net.dragonmounts3.data.provider;
 
+import net.dragonmounts3.entity.carriage.CarriageType;
+import net.dragonmounts3.inits.ModBlocks;
 import net.dragonmounts3.inits.ModItems;
-import net.dragonmounts3.objects.DragonType;
+import net.dragonmounts3.registry.DragonType;
+import net.minecraft.block.Block;
 import net.minecraft.data.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -41,6 +43,57 @@ public class DMRecipeProvider extends RecipeProvider {
                 dragonScaleSword(consumer, scale, ModItems.DRAGON_SCALE_SWORD.get(type));
             }
         }
+        for (CarriageType type : CarriageType.values()) {
+            Item carriage = ModItems.CARRIAGE.get(type);
+            if (carriage != null) {
+                Block block = type.getPlanks();
+                ShapedRecipeBuilder.shaped(carriage)
+                        .define('X', block)
+                        .define('#', Tags.Items.LEATHER)
+                        .pattern("X X")
+                        .pattern("###")
+                        .unlockedBy("has_leather", has(Tags.Items.LEATHER))
+                        .save(consumer);
+            }
+
+        }
+        ShapedRecipeBuilder.shaped(ModItems.DIAMOND_SHEARS.get())
+                .define('X', Tags.Items.GEMS_DIAMOND)
+                .pattern(" X")
+                .pattern("X ")
+                .unlockedBy("has_diamond", has(Tags.Items.GEMS_DIAMOND))
+                .save(consumer);
+        ShapedRecipeBuilder.shaped(ModItems.DRAGON_AMULET.get())
+                .define('#', Tags.Items.STRING)
+                .define('Y', Tags.Items.COBBLESTONE)
+                .define('X', Tags.Items.ENDER_PEARLS)
+                .pattern(" Y ")
+                .pattern("#X#")
+                .pattern(" # ")
+                .unlockedBy("has_pearls", has(Tags.Items.ENDER_PEARLS))
+                .save(consumer);
+        ShapedRecipeBuilder.shaped(ModBlocks.DRAGON_NEST.get())
+                .define('X', Tags.Items.RODS_WOODEN)
+                .pattern("XXX")
+                .pattern("XXX")
+                .pattern("XXX")
+                .unlockedBy("has_sticks", has(Tags.Items.RODS_WOODEN))
+                .save(consumer);
+        ShapedRecipeBuilder.shaped(ModItems.DRAGON_WHISTLE.get())
+                .define('P', Tags.Items.RODS_WOODEN)
+                .define('#', Tags.Items.ENDER_PEARLS)
+                .define('X', Tags.Items.STRING)
+                .pattern("P#")
+                .pattern("#X")
+                .unlockedBy("has_pearls", has(Tags.Items.ENDER_PEARLS))
+                .save(consumer);
+        ShapedRecipeBuilder.shaped(Items.SADDLE)
+                .define('X', Tags.Items.LEATHER)
+                .define('#', Tags.Items.INGOTS_IRON)
+                .pattern("XXX")
+                .pattern("X#X")
+                .unlockedBy("easter_egg", has(Items.SADDLE))
+                .save(consumer, prefix("easter_egg"));
     }
 
     private static void dragonScaleAxe(Consumer<IFinishedRecipe> consumer, Item scales, Item result) {
@@ -99,6 +152,6 @@ public class DMRecipeProvider extends RecipeProvider {
     }
 
     private static void netheriteSmithing(Consumer<IFinishedRecipe> consumer, Item ingredient, Item result) {
-        SmithingRecipeBuilder.smithing(Ingredient.of(ingredient), Ingredient.of(Tags.Items.INGOTS_NETHERITE), result).unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT)).save(consumer, prefix(Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(result.asItem())).getPath() + "_smithing"));
+        SmithingRecipeBuilder.smithing(Ingredient.of(ingredient), Ingredient.of(Tags.Items.INGOTS_NETHERITE), result).unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT)).save(consumer, prefix(Objects.requireNonNull(result.getRegistryName()).getPath() + "_smithing"));
     }
 }

@@ -1,8 +1,8 @@
 package net.dragonmounts3.item;
 
-import net.dragonmounts3.inits.ModItems;
-import net.dragonmounts3.objects.DragonType;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
+import net.dragonmounts3.inits.ModItems;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -13,7 +13,6 @@ import net.minecraft.util.Hand;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
-
 import java.util.Objects;
 
 import static net.dragonmounts3.DragonMounts.getItemTranslationKey;

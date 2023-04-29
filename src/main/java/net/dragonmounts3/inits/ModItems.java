@@ -4,8 +4,9 @@ import mcp.MethodsReturnNonnullByDefault;
 import net.dragonmounts3.DragonMounts;
 import net.dragonmounts3.entity.carriage.CarriageType;
 import net.dragonmounts3.item.*;
-import net.dragonmounts3.objects.DragonType;
-import net.dragonmounts3.objects.DragonTypifiedObjectHolder;
+import net.dragonmounts3.registry.DragonType;
+import net.dragonmounts3.registry.DragonTypifiedObjectHolder;
+import net.dragonmounts3.registry.ObjectHolder;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -27,6 +28,7 @@ import static net.dragonmounts3.inits.ModItemGroups.*;
 public class ModItems {
 
     public static final DeferredRegister<Item> ITEMS = DragonMounts.create(ForgeRegistries.ITEMS);
+    public static final ObjectHolder<CarriageType, CarriageItem> CARRIAGE = new ObjectHolder<>();
     public static final DragonTypifiedObjectHolder<DragonEssenceItem> DRAGON_ESSENCE = new DragonTypifiedObjectHolder<>();
     public static final DragonTypifiedObjectHolder<DragonScalesItem> DRAGON_SCALES = new DragonTypifiedObjectHolder<>();
     public static final DragonTypifiedObjectHolder<DragonScaleAxeItem> DRAGON_SCALE_AXE = new DragonTypifiedObjectHolder<>();
@@ -40,6 +42,7 @@ public class ModItems {
     public static final DragonTypifiedObjectHolder<DragonScaleShieldItem> DRAGON_SCALE_SHIELD = new DragonTypifiedObjectHolder<>();
     public static final DragonTypifiedObjectHolder<DragonScaleShovelItem> DRAGON_SCALE_SHOVEL = new DragonTypifiedObjectHolder<>();
     public static final DragonTypifiedObjectHolder<DragonScaleSwordItem> DRAGON_SCALE_SWORD = new DragonTypifiedObjectHolder<>();
+    public static final DragonTypifiedObjectHolder<DragonSpawnEggItem> DRAGON_SPAWN_EGG = new DragonTypifiedObjectHolder<>();
     public static final DragonTypifiedObjectHolder<FilledDragonAmuletItem> FILLED_DRAGON_AMULET = new DragonTypifiedObjectHolder<>();
     //Scales Start
     public static final RegistryObject<DragonScalesItem> FOREST_DRAGON_SCALES = createDragonScalesItem("forest_dragon_scales", DragonType.FOREST, item());
@@ -248,18 +251,35 @@ public class ModItems {
     public static final RegistryObject<DragonScaleArmorItem> SCULK_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("sculk_dragon_scale_chestplate", DragonScaleMaterial.SCULK, tool().fireResistant());
     public static final RegistryObject<DragonScaleArmorItem> SCULK_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("sculk_dragon_scale_leggings", DragonScaleMaterial.SCULK, tool().fireResistant());
     public static final RegistryObject<DragonScaleArmorItem> SCULK_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("sculk_dragon_scale_boots", DragonScaleMaterial.SCULK, tool().fireResistant());
-    //Dragon Scale Armors - Shears
+    //Dragon Spawn Eggs
+    public static final RegistryObject<DragonSpawnEggItem> AETHER_DRAGON_SPAWN_EGG = createDragonSpawnEgg("aether_dragon_spawn_egg", DragonType.AETHER, 0x05C3D2, 0x281EE8, item());
+    public static final RegistryObject<DragonSpawnEggItem> ENCHANT_DRAGON_SPAWN_EGG = createDragonSpawnEgg("enchant_dragon_spawn_egg", DragonType.ENCHANT, 0xCC0DE0, 0xFFFFFF, item());
+    public static final RegistryObject<DragonSpawnEggItem> ENDER_DRAGON_SPAWN_EGG = createDragonSpawnEgg("ender_dragon_spawn_egg", DragonType.ENDER, 0x08080C, 0x79087E, item());
+    public static final RegistryObject<DragonSpawnEggItem> FIRE_DRAGON_SPAWN_EGG = createDragonSpawnEgg("fire_dragon_spawn_egg", DragonType.FIRE, 0x620508, 0xF7A502, item());
+    public static final RegistryObject<DragonSpawnEggItem> FOREST_DRAGON_SPAWN_EGG = createDragonSpawnEgg("forest_dragon_spawn_egg", DragonType.FOREST, 0x0C9613, 0x036408, item());
+    public static final RegistryObject<DragonSpawnEggItem> ICE_DRAGON_SPAWN_EGG = createDragonSpawnEgg("ice_dragon_spawn_egg", DragonType.ICE, 0xFFFFFF, 0x02D0EE, item());
+    public static final RegistryObject<DragonSpawnEggItem> MOONLIGHT_DRAGON_SPAWN_EGG = createDragonSpawnEgg("moonlight_dragon_spawn_egg", DragonType.MOONLIGHT, 0x00164E, 0xFEFEFE, item());
+    public static final RegistryObject<DragonSpawnEggItem> NETHER_DRAGON_SPAWN_EGG = createDragonSpawnEgg("nether_dragon_spawn_egg", DragonType.NETHER, 0x632F1B, 0xE7A621, item());
+    public static final RegistryObject<DragonSpawnEggItem> SCULK_DRAGON_SPAWN_EGG = createDragonSpawnEgg("sculk_dragon_spawn_egg", DragonType.SCULK, 0x0F4649, 0x39D6E0, item());
+    public static final RegistryObject<DragonSpawnEggItem> SKELETON_DRAGON_SPAWN_EGG = createDragonSpawnEgg("skeleton_dragon_spawn_egg", DragonType.SKELETON, 0xFFFFFF, 0x474F51, item());
+    public static final RegistryObject<DragonSpawnEggItem> STORM_DRAGON_SPAWN_EGG = createDragonSpawnEgg("storm_dragon_spawn_egg", DragonType.STORM, 0x010B0F, 0x0FA8CE, item());
+    public static final RegistryObject<DragonSpawnEggItem> SUNLIGHT_DRAGON_SPAWN_EGG = createDragonSpawnEgg("sunlight_dragon_spawn_egg", DragonType.SUNLIGHT, 0xF4950D, 0xF4E10D, item());
+    public static final RegistryObject<DragonSpawnEggItem> TERRA_DRAGON_SPAWN_EGG = createDragonSpawnEgg("terra_dragon_spawn_egg", DragonType.TERRA, 0x674517, 0xE6B10D, item());
+    public static final RegistryObject<DragonSpawnEggItem> WATER_DRAGON_SPAWN_EGG = createDragonSpawnEgg("water_dragon_spawn_egg", DragonType.WATER, 0x546FAD, 0x2B427E, item());
+    public static final RegistryObject<DragonSpawnEggItem> WITHER_DRAGON_SPAWN_EGG = createDragonSpawnEgg("wither_dragon_spawn_egg", DragonType.WITHER, 0x8A9999, 0x474F51, item());
+    public static final RegistryObject<DragonSpawnEggItem> ZOMBIE_DRAGON_SPAWN_EGG = createDragonSpawnEgg("zombie_dragon_spawn_egg", DragonType.ZOMBIE, 0x66664B, 0xB6D035, item());
+    //Shears
     public static final RegistryObject<Item> DIAMOND_SHEARS = createTieredShearsItem("diamond_shears", ItemTier.DIAMOND, item());
     public static final RegistryObject<Item> NETHERITE_SHEARS = createTieredShearsItem("netherite_shears", ItemTier.NETHERITE, item().fireResistant());
-    //Dragon Scale Armors - Carriages
-    public static final RegistryObject<Item> ACACIA_CARRIAGE = createCarriageItem("acacia_carriage", CarriageType.ACACIA, item());
-    public static final RegistryObject<Item> BIRCH_CARRIAGE = createCarriageItem("birch_carriage", CarriageType.BIRCH, item());
-    public static final RegistryObject<Item> DARK_OAK_CARRIAGE = createCarriageItem("dark_oak_carriage", CarriageType.DARK_OAK, item());
-    public static final RegistryObject<Item> JUNGLE_CARRIAGE = createCarriageItem("jungle_carriage", CarriageType.JUNGLE, item());
-    public static final RegistryObject<Item> OAK_CARRIAGE = createCarriageItem("oak_carriage", CarriageType.OAK, item());
-    public static final RegistryObject<Item> SPRUCE_CARRIAGE = createCarriageItem("spruce_carriage", CarriageType.SPRUCE, item());
-    //Dragon Amulet
-    public static final RegistryObject<Item> DRAGON_AMULET = ITEMS.register("dragon_amulet", () -> new DragonAmuletItem(item()));
+    //Carriages
+    public static final RegistryObject<CarriageItem> ACACIA_CARRIAGE = createCarriageItem("acacia_carriage", CarriageType.ACACIA, item());
+    public static final RegistryObject<CarriageItem> BIRCH_CARRIAGE = createCarriageItem("birch_carriage", CarriageType.BIRCH, item());
+    public static final RegistryObject<CarriageItem> DARK_OAK_CARRIAGE = createCarriageItem("dark_oak_carriage", CarriageType.DARK_OAK, item());
+    public static final RegistryObject<CarriageItem> JUNGLE_CARRIAGE = createCarriageItem("jungle_carriage", CarriageType.JUNGLE, item());
+    public static final RegistryObject<CarriageItem> OAK_CARRIAGE = createCarriageItem("oak_carriage", CarriageType.OAK, item());
+    public static final RegistryObject<CarriageItem> SPRUCE_CARRIAGE = createCarriageItem("spruce_carriage", CarriageType.SPRUCE, item());
+    //Dragon Amulets
+    public static final RegistryObject<DragonAmuletItem> DRAGON_AMULET = ITEMS.register("dragon_amulet", () -> new DragonAmuletItem(item()));
     public static final RegistryObject<FilledDragonAmuletItem> FOREST_DRAGON_AMULET = createDragonAmuletItem("forest_dragon_amulet", DragonType.FOREST, none());
     public static final RegistryObject<FilledDragonAmuletItem> FIRE_DRAGON_AMULET = createDragonAmuletItem("fire_dragon_amulet", DragonType.FIRE, none());
     public static final RegistryObject<FilledDragonAmuletItem> ICE_DRAGON_AMULET = createDragonAmuletItem("ice_dragon_amulet", DragonType.ICE, none());
@@ -295,8 +315,8 @@ public class ModItems {
     public static final RegistryObject<DragonEssenceItem> WITHER_DRAGON_ESSENCE = createDragonEssenceItem("wither_dragon_essence", DragonType.WITHER, none());
     public static final RegistryObject<Item> DRAGON_WHISTLE = ITEMS.register("dragon_whistle", () -> new DragonWhistleItem(item()));
 
-    private static RegistryObject<Item> createCarriageItem(String name, CarriageType type, Properties properties) {
-        return ITEMS.register(name, () -> new CarriageItem(type, properties));
+    private static RegistryObject<CarriageItem> createCarriageItem(String name, CarriageType type, Properties properties) {
+        return CARRIAGE.register(ITEMS, name, type, new CarriageItem(type, properties));
     }
 
     private static RegistryObject<FilledDragonAmuletItem> createDragonAmuletItem(String name, DragonType type, Properties properties) {
@@ -361,6 +381,10 @@ public class ModItems {
 
     private static RegistryObject<DragonScaleSwordItem> createDragonScaleSwordItem(String name, DragonScaleTier tier, Properties properties) {
         return DRAGON_SCALE_SWORD.register(ITEMS, name, new DragonScaleSwordItem(tier, 3, -2.0F/*Minecraft: -2.4F*/, properties));
+    }
+
+    private static RegistryObject<DragonSpawnEggItem> createDragonSpawnEgg(String name, DragonType type, int backgroundColor, int highlightColor, Properties properties) {
+        return DRAGON_SPAWN_EGG.register(ITEMS, name, new DragonSpawnEggItem(type, backgroundColor, highlightColor, properties));
     }
 
     private static RegistryObject<Item> createTieredShearsItem(String name, IItemTier tier, Properties properties) {

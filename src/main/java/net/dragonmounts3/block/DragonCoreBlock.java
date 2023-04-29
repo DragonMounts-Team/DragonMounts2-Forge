@@ -7,7 +7,6 @@ import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.piglin.PiglinTasks;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.Container;
@@ -30,7 +29,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.ForgeSoundType;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import java.util.Random;
@@ -88,7 +86,7 @@ public class DragonCoreBlock extends ContainerBlock {
                 DragonCoreBlockEntity dragonCoreBlockEntity = (DragonCoreBlockEntity) blockEntity;
                 ShulkerBoxTileEntity.AnimationStatus status = dragonCoreBlockEntity.getAnimationStatus();
                 if (status != ShulkerBoxTileEntity.AnimationStatus.CLOSING && (status != ShulkerBoxTileEntity.AnimationStatus.CLOSED || level.noCollision(ShulkerAABBHelper.openBoundingBox(pos, Direction.UP)))) {
-                    NetworkHooks.openGui((ServerPlayerEntity) player, dragonCoreBlockEntity, pos);
+                    player.openMenu(dragonCoreBlockEntity);
                     player.awardStat(Stats.OPEN_SHULKER_BOX);
                     PiglinTasks.angerNearbyPiglins(player, true);
                 }

@@ -1,8 +1,8 @@
 package net.dragonmounts3.client.renderer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.dragonmounts3.client.renderer.block.DragonCoreRenderer;
 import net.dragonmounts3.block.DragonCoreBlock;
+import net.dragonmounts3.client.renderer.block.DragonCoreRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.model.ShulkerModel;

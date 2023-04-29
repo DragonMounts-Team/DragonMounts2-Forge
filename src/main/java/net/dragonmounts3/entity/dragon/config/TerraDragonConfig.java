@@ -12,11 +12,11 @@ public class TerraDragonConfig extends DragonConfig {
         //setHabitatBiome(Biomes.MUTATED_MESA_CLEAR_ROCK);
         //setHabitatBiome(Biomes.MUTATED_MESA_ROCK);
         //setHabitatBlock(Blocks.HARDENED_CLAY);
-        setHabitatBlock(Blocks.SAND);
-        setHabitatBlock(Blocks.SANDSTONE);
-        setHabitatBlock(Blocks.SANDSTONE_STAIRS);
-        setHabitatBlock(Blocks.RED_SANDSTONE);
-        setHabitatBlock(Blocks.RED_SANDSTONE_STAIRS);
+        addHabitatBlock(Blocks.SAND);
+        addHabitatBlock(Blocks.SANDSTONE);
+        addHabitatBlock(Blocks.SANDSTONE_STAIRS);
+        addHabitatBlock(Blocks.RED_SANDSTONE);
+        addHabitatBlock(Blocks.RED_SANDSTONE_STAIRS);
     }
 
     @Override

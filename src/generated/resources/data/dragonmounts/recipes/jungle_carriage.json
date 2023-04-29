@@ -3,18 +3,16 @@
   "pattern": [
     "X X",
     "###"
-  
   ],
   "key": {
-    "#": {
-      "item": "minecraft:leather"
-    },
     "X": {
       "item": "minecraft:jungle_planks"
+    },
+    "#": {
+      "tag": "forge:leather"
     }
   },
   "result": {
     "item": "dragonmounts:jungle_carriage"
   }
 }
-

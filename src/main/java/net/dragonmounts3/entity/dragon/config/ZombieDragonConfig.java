@@ -8,15 +8,15 @@ import net.minecraft.util.DamageSource;
 public class ZombieDragonConfig extends DragonConfig {
     public ZombieDragonConfig() {
         super();
-        setImmunity(DamageSource.MAGIC);
-        setImmunity(DamageSource.HOT_FLOOR);
-        setImmunity(DamageSource.LIGHTNING_BOLT);
-        setImmunity(DamageSource.WITHER);
+        addImmunity(DamageSource.MAGIC);
+        addImmunity(DamageSource.HOT_FLOOR);
+        addImmunity(DamageSource.LIGHTNING_BOLT);
+        addImmunity(DamageSource.WITHER);
 
-        setHabitatBlock(Blocks.SOUL_SAND);
-        setHabitatBlock(Blocks.SOUL_SOIL);
-        setHabitatBlock(Blocks.NETHER_WART_BLOCK);
-        setHabitatBlock(Blocks.WARPED_WART_BLOCK);
+        addHabitatBlock(Blocks.SOUL_SAND);
+        addHabitatBlock(Blocks.SOUL_SOIL);
+        addHabitatBlock(Blocks.NETHER_WART_BLOCK);
+        addHabitatBlock(Blocks.WARPED_WART_BLOCK);
     }
 
     @Override

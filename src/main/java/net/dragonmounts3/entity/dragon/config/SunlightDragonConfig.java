@@ -6,9 +6,9 @@ import net.minecraft.block.Blocks;
 public class SunlightDragonConfig extends DragonConfig {
     public SunlightDragonConfig() {
         super();
-        setHabitatBlock(Blocks.DAYLIGHT_DETECTOR);
-        setHabitatBlock(Blocks.GLOWSTONE);
-        setHabitatBlock(Blocks.YELLOW_GLAZED_TERRACOTTA);
+        addHabitatBlock(Blocks.DAYLIGHT_DETECTOR);
+        addHabitatBlock(Blocks.GLOWSTONE);
+        addHabitatBlock(Blocks.YELLOW_GLAZED_TERRACOTTA);
     }
 
     @Override

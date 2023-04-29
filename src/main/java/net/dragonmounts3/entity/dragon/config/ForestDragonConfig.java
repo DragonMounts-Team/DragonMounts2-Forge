@@ -8,21 +8,21 @@ import net.minecraft.world.biome.Biomes;
 public class ForestDragonConfig extends DragonConfig {
     public ForestDragonConfig() {
         super();
-        setImmunity(DamageSource.MAGIC);
-        setImmunity(DamageSource.HOT_FLOOR);
-        setImmunity(DamageSource.LIGHTNING_BOLT);
-        setImmunity(DamageSource.WITHER);
+        addImmunity(DamageSource.MAGIC);
+        addImmunity(DamageSource.HOT_FLOOR);
+        addImmunity(DamageSource.LIGHTNING_BOLT);
+        addImmunity(DamageSource.WITHER);
 
         //setHabitatBlock(Blocks.YELLOW_FLOWER);
         //setHabitatBlock(Blocks.RED_FLOWER);
-        setHabitatBlock(Blocks.MOSSY_COBBLESTONE);
-        setHabitatBlock(Blocks.VINE);
+        addHabitatBlock(Blocks.MOSSY_COBBLESTONE);
+        addHabitatBlock(Blocks.VINE);
         //setHabitatBlock(Blocks.SAPLING);
         //setHabitatBlock(Blocks.LEAVES);
         //setHabitatBlock(Blocks.LEAVES2);
 
-        setHabitatBiome(Biomes.JUNGLE);
-        setHabitatBiome(Biomes.JUNGLE_HILLS);
+        addHabitatBiome(Biomes.JUNGLE);
+        addHabitatBiome(Biomes.JUNGLE_HILLS);
     }
 
     @Override

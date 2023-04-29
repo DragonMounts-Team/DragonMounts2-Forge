@@ -8,9 +8,9 @@ import net.minecraft.util.DamageSource;
 public class SkeletonDragonConfig extends DragonConfig {
     public SkeletonDragonConfig() {
         super();
-        setHabitatBlock(Blocks.BONE_BLOCK);
-        setImmunity(DamageSource.LIGHTNING_BOLT);
-        setImmunity(DamageSource.WITHER);
+        addHabitatBlock(Blocks.BONE_BLOCK);
+        addImmunity(DamageSource.LIGHTNING_BOLT);
+        addImmunity(DamageSource.WITHER);
     }
 
     @Override

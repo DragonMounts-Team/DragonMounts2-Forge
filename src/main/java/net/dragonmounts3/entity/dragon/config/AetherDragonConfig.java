@@ -8,13 +8,13 @@ public class AetherDragonConfig extends DragonConfig {
 
     public AetherDragonConfig() {
         super();
-        setImmunity(DamageSource.MAGIC);
-        setImmunity(DamageSource.HOT_FLOOR);
-        setImmunity(DamageSource.LIGHTNING_BOLT);
-        setImmunity(DamageSource.WITHER);
+        addImmunity(DamageSource.MAGIC);
+        addImmunity(DamageSource.HOT_FLOOR);
+        addImmunity(DamageSource.LIGHTNING_BOLT);
+        addImmunity(DamageSource.WITHER);
 
-        setHabitatBlock(Blocks.LAPIS_BLOCK);
-        setHabitatBlock(Blocks.LAPIS_ORE);
+        addHabitatBlock(Blocks.LAPIS_BLOCK);
+        addHabitatBlock(Blocks.LAPIS_ORE);
     }
 
     @Override

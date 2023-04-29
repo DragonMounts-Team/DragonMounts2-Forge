@@ -1,8 +1,8 @@
 package net.dragonmounts3.block;
 
 import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
-import net.dragonmounts3.objects.DragonType;
-import net.dragonmounts3.objects.IDragonTypified;
+import net.dragonmounts3.registry.DragonType;
+import net.dragonmounts3.registry.IDragonTypified;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DragonEggBlock;

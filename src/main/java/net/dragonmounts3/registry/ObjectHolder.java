@@ -1,4 +1,4 @@
-package net.dragonmounts3.objects;
+package net.dragonmounts3.registry;
 
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -12,34 +12,34 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 @ParametersAreNonnullByDefault
-public final class DragonTypifiedObjectHolder<T extends IForgeRegistryEntry<? super T> & IDragonTypified> implements Iterable<T> {
-    private final HashMap<DragonType, T> map = new HashMap<>();
+public class ObjectHolder<K, E extends IForgeRegistryEntry<? super E>> implements Iterable<E> {
+    private final HashMap<K, E> map = new HashMap<>();
 
-    public RegistryObject<T> register(
-            final DeferredRegister<? super T> register,
+    public final RegistryObject<E> register(
+            final DeferredRegister<? super E> register,
             final String name,
-            final T value
+            final K key,
+            final E value
     ) {
-        final DragonType type = value.getDragonType();
-        if (map.containsKey(type)) {
+        if (map.containsKey(key)) {
             throw new IllegalArgumentException();
         }
-        map.put(type, value);
+        map.put(key, value);
         return register.register(name, () -> value);
     }
 
     @Nullable
-    public T get(DragonType type) {
+    public final E get(K type) {
         return map.get(type);
     }
 
-    public Collection<T> values() {
+    public final Collection<E> values() {
         return map.values();
     }
 
     @Nonnull
     @Override
-    public Iterator<T> iterator() {
+    public final Iterator<E> iterator() {
         return map.values().iterator();
     }
 }

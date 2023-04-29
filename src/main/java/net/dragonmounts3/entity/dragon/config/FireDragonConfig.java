@@ -7,14 +7,14 @@ import net.minecraft.util.DamageSource;
 public class FireDragonConfig extends DragonConfig {
     public FireDragonConfig() {
         super();
-        setImmunity(DamageSource.MAGIC);
-        setImmunity(DamageSource.HOT_FLOOR);
-        setImmunity(DamageSource.LIGHTNING_BOLT);
-        setImmunity(DamageSource.WITHER);
+        addImmunity(DamageSource.MAGIC);
+        addImmunity(DamageSource.HOT_FLOOR);
+        addImmunity(DamageSource.LIGHTNING_BOLT);
+        addImmunity(DamageSource.WITHER);
 
-        setHabitatBlock(Blocks.FIRE);
+        addHabitatBlock(Blocks.FIRE);
         //setHabitatBlock(Blocks.LIT_FURNACE);
-        setHabitatBlock(Blocks.LAVA);
+        addHabitatBlock(Blocks.LAVA);
         //setHabitatBlock(Blocks.FLOWING_LAVA);
     }
 

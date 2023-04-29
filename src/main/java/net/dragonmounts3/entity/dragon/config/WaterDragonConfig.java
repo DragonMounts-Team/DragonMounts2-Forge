@@ -9,16 +9,16 @@ import net.minecraft.world.biome.Biomes;
 public class WaterDragonConfig extends DragonConfig {
     public WaterDragonConfig() {
         super();
-        setImmunity(DamageSource.DROWN);
-        setImmunity(DamageSource.MAGIC);
-        setImmunity(DamageSource.HOT_FLOOR);
-        setImmunity(DamageSource.LIGHTNING_BOLT);
-        setImmunity(DamageSource.WITHER);
+        addImmunity(DamageSource.DROWN);
+        addImmunity(DamageSource.MAGIC);
+        addImmunity(DamageSource.HOT_FLOOR);
+        addImmunity(DamageSource.LIGHTNING_BOLT);
+        addImmunity(DamageSource.WITHER);
 
-        setHabitatBlock(Blocks.WATER);
+        addHabitatBlock(Blocks.WATER);
 
-        setHabitatBiome(Biomes.OCEAN);
-        setHabitatBiome(Biomes.RIVER);
+        addHabitatBiome(Biomes.OCEAN);
+        addHabitatBiome(Biomes.RIVER);
     }
 
     @Override

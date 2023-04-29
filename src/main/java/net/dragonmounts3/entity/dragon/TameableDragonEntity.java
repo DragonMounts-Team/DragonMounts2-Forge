@@ -6,9 +6,10 @@ import net.dragonmounts3.entity.dragon.helper.DragonHelper;
 import net.dragonmounts3.inits.ModAttributes;
 import net.dragonmounts3.inits.ModEntities;
 import net.dragonmounts3.inventory.DragonInventoryContainer;
-import net.dragonmounts3.objects.DragonType;
-import net.dragonmounts3.objects.IDragonTypified;
+import net.dragonmounts3.registry.DragonType;
+import net.dragonmounts3.registry.IDragonTypified;
 import net.minecraft.entity.AgeableEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -23,6 +24,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -223,6 +225,22 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
         }*/
         //this.updateContainerEquipment();
         //this.itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new net.minecraftforge.items.wrapper.InvWrapper(this.inventory));
+    }
+
+    @Override
+    public boolean hurt(DamageSource pSource, float pAmount) {
+        return super.hurt(pSource, pAmount);
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource source) {
+        Entity entity = source.getEntity();
+        if (entity != null) {
+            if (entity == this || this.hasPassenger(entity)) {
+                return true;
+            }
+        }
+        return super.isInvulnerableTo(source) || this.getDragonType().getConfig().isInvulnerableTo(source);
     }
 
     public void setDragonType(DragonType type, boolean reset) {

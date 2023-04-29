@@ -1,16 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " X",
-    "X "
+    "XXX",
+    "XXX",
+    "XXX"
   ],
   "key": {
     "X": {
-      "item": "minecraft:diamond"
+      "tag": "forge:rods/wooden"
     }
   },
   "result": {
-    "item": "dragonmounts:diamond_shears"
+    "item": "dragonmounts:dragon_nest"
   }
 }
-

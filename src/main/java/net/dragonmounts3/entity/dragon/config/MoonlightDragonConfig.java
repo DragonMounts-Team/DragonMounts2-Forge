@@ -8,7 +8,7 @@ public class MoonlightDragonConfig extends DragonConfig {
     public MoonlightDragonConfig() {
         super();
         //setHabitatBlock(Blocks.DAYLIGHT_DETECTOR_INVERTED);
-        setHabitatBlock(Blocks.BLUE_GLAZED_TERRACOTTA);
+        addHabitatBlock(Blocks.BLUE_GLAZED_TERRACOTTA);
     }
 
     @Override

@@ -27,6 +27,7 @@ public class DragonMounts {
 
     public DragonMounts() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DragonMountsConfig.SPEC);
+        ModSounds.SOUNDS.register(this.eventBus);
         ModAttributes.ATTRIBUTES.register(this.eventBus);
         ModItems.ITEMS.register(this.eventBus);
         ModBlocks.BLOCKS.register(this.eventBus);

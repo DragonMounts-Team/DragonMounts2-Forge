@@ -5,15 +5,14 @@
     "###"
   ],
   "key": {
-    "#": {
-      "item": "minecraft:leather"
-    },
     "X": {
       "item": "minecraft:birch_planks"
+    },
+    "#": {
+      "tag": "forge:leather"
     }
   },
   "result": {
     "item": "dragonmounts:birch_carriage"
   }
 }
-

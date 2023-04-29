@@ -20,35 +20,34 @@ import java.util.Set;
 
 public abstract class DragonConfig {
     public static SoundEffectNames[] soundEffectNames;
-    private final Set<String> immunities = new HashSet<>();
+    private final Set<DamageSource> immunities = new HashSet<>();
     private final Set<Block> breedBlocks = new HashSet<>();
     private final Set<RegistryKey<Biome>> biomes = new HashSet<>();
 
     DragonConfig() {
         // ignore suffocation damage
-        this.setImmunity(DamageSource.DROWN);
-        this.setImmunity(DamageSource.IN_WALL);
-        this.setImmunity(DamageSource.ON_FIRE);
-        this.setImmunity(DamageSource.IN_FIRE);
-        this.setImmunity(DamageSource.LAVA);
-        this.setImmunity(DamageSource.HOT_FLOOR);
-        this.setImmunity(DamageSource.CACTUS); // assume that cactus needles don't do much damage to animals with horned scales
-        this.setImmunity(DamageSource.DRAGON_BREATH); // ignore damage from vanilla ender dragon. I kinda disabled this because it wouldn't make any sense, feel free to re enable
+        this.addImmunity(DamageSource.DROWN);
+        this.addImmunity(DamageSource.IN_WALL);
+        this.addImmunity(DamageSource.ON_FIRE);
+        this.addImmunity(DamageSource.IN_FIRE);
+        this.addImmunity(DamageSource.LAVA);
+        this.addImmunity(DamageSource.HOT_FLOOR);
+        this.addImmunity(DamageSource.CACTUS); // assume that cactus needles don't do much damage to animals with horned scales
+        this.addImmunity(DamageSource.DRAGON_BREATH); // ignore damage from vanilla ender dragon. I kinda disabled this because it wouldn't make any sense, feel free to re enable
     }
 
-    protected final void setImmunity(DamageSource dmg) {
-        immunities.add(dmg.msgId);
+    protected final void addImmunity(DamageSource source) {
+        immunities.add(source);
     }
 
-    public boolean isImmuneToDamage(DamageSource dmg) {
+    public boolean isInvulnerableTo(DamageSource source) {
         if (immunities.isEmpty()) {
             return false;
         }
-
-        return immunities.contains(dmg.msgId);
+        return immunities.contains(source);
     }
 
-    protected final void setHabitatBlock(Block block) {
+    protected final void addHabitatBlock(Block block) {
         breedBlocks.add(block);
     }
 
@@ -56,7 +55,7 @@ public abstract class DragonConfig {
         return breedBlocks.contains(block);
     }
 
-    protected final void setHabitatBiome(RegistryKey<Biome> biome) {
+    protected final void addHabitatBiome(RegistryKey<Biome> biome) {
         biomes.add(biome);
     }
 
@@ -88,18 +87,18 @@ public abstract class DragonConfig {
 
     public SoundEvent getLivingSound(TameableDragonEntity dragon) {
         if (dragon.isBaby()) {
-            return ModSounds.ENTITY_DRAGON_HATCHLING_GROWL;
+            return ModSounds.ENTITY_DRAGON_HATCHLING_GROWL.get();
         } else {
             if (dragon.getRandom().nextInt(3) == 0) {
-                return ModSounds.ENTITY_DRAGON_GROWL;
+                return ModSounds.ENTITY_DRAGON_GROWL.get();
             } else {
-                return ModSounds.ENTITY_DRAGON_BREATHE;
+                return ModSounds.ENTITY_DRAGON_BREATHE.get();
             }
         }
     }
 
     public SoundEvent getRoarSoundEvent(TameableDragonEntity dragon) {
-        return dragon.isBaby() ? ModSounds.HATCHLING_DRAGON_ROAR : ModSounds.DRAGON_ROAR;
+        return dragon.isBaby() ? ModSounds.HATCHLING_DRAGON_ROAR.get() : ModSounds.DRAGON_ROAR.get();
     }
 
     public SoundEvent getHurtSound() {
@@ -107,7 +106,7 @@ public abstract class DragonConfig {
     }
 
     public SoundEvent getDeathSound() {
-        return ModSounds.ENTITY_DRAGON_DEATH;
+        return ModSounds.ENTITY_DRAGON_DEATH.get();
     }
 
     public SoundEvent getWingsSound() {
@@ -115,7 +114,7 @@ public abstract class DragonConfig {
     }
 
     public SoundEvent getStepSound() {
-        return ModSounds.ENTITY_DRAGON_STEP;
+        return ModSounds.ENTITY_DRAGON_STEP.get();
     }
 
     public SoundEvent getEatSound() {

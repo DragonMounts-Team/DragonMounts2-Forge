@@ -7,17 +7,16 @@
   ],
   "key": {
     "#": {
-      "item": "minecraft:string"
+      "tag": "forge:string"
     },
-	"Y": {
-      "item": "minecraft:cobblestone"
+    "Y": {
+      "tag": "forge:cobblestone"
     },
     "X": {
-      "item": "minecraft:ender_pearl"
+      "tag": "forge:ender_pearls"
     }
   },
   "result": {
     "item": "dragonmounts:dragon_amulet"
   }
 }
-

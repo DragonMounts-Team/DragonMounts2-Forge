@@ -5,15 +5,14 @@
     "X#X"
   ],
   "key": {
-    "#": {
-      "item": "minecraft:iron_ingot"
-    },
     "X": {
-      "item": "minecraft:leather"
+      "tag": "forge:leather"
+    },
+    "#": {
+      "tag": "forge:ingots/iron"
     }
   },
   "result": {
     "item": "minecraft:saddle"
   }
 }
-

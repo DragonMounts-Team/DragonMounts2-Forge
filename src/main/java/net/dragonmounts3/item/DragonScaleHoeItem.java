@@ -1,7 +1,7 @@
 package net.dragonmounts3.item;
 
-import net.dragonmounts3.objects.DragonType;
-import net.dragonmounts3.objects.IDragonTypified;
+import net.dragonmounts3.registry.DragonType;
+import net.dragonmounts3.registry.IDragonTypified;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.HoeItem;
 import net.minecraft.item.ItemStack;

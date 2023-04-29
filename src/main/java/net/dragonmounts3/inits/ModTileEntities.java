@@ -1,8 +1,8 @@
 package net.dragonmounts3.inits;
 
 import net.dragonmounts3.DragonMounts;
-import net.dragonmounts3.client.renderer.block.DragonCoreRenderer;
 import net.dragonmounts3.block.entity.DragonCoreBlockEntity;
+import net.dragonmounts3.client.renderer.block.DragonCoreRenderer;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

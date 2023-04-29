@@ -130,10 +130,6 @@ public class MathX {
         return (value < min ? min : (Math.min(value, max)));
     }
 
-    public static int clamps(int value, int min, int max) {
-        return (value < min ? min : (Math.min(value, max)));
-    }
-
     public static float updateRotation(float r1, float r2, float step) {
         return r1 + clamp(normDeg(r2 - r1), -step, step);
     }

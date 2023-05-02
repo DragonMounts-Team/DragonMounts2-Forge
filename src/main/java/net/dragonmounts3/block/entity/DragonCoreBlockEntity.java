@@ -1,7 +1,7 @@
 package net.dragonmounts3.block.entity;
 
 import net.dragonmounts3.block.DragonCoreBlock;
-import net.dragonmounts3.inits.ModTileEntities;
+import net.dragonmounts3.inits.ModBlockEntities;
 import net.dragonmounts3.inventory.DragonCoreContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.PushReaction;
@@ -41,7 +41,7 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
     private float progressOld;
 
     public DragonCoreBlockEntity() {
-        super(ModTileEntities.DRAGON_CORE.get());
+        super(ModBlockEntities.DRAGON_CORE.get());
     }
 
     @Override

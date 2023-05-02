@@ -31,11 +31,23 @@ public enum DragonType implements IStringSerializable {
         this.style = Style.EMPTY.withColor(Color.fromRgb(color));
         this.color = color;
         this.config = config;
-        this.name = name().toLowerCase();
-        this.text = "dragon." + this.name;
+        this.name = this.name().toLowerCase();
+        this.text = "dragon.type." + this.name;
     }
 
     public static final String DATA_PARAMETER_KEY = "DragonType";
+
+    public static DragonType byId(int id) {
+        DragonType[] values = DragonType.values();
+        if (id < 0 || id >= values.length) {
+            return DragonType.ENDER;
+        }
+        return values[id];
+    }
+
+    public static boolean isSkeleton(DragonType type) {
+        return type == DragonType.SKELETON || type == DragonType.WITHER;
+    }
 
     public final Style style;
     public final DragonConfig config;

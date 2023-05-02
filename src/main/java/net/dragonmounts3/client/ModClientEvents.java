@@ -3,9 +3,9 @@ package net.dragonmounts3.client;
 import net.dragonmounts3.client.renderer.CarriageRenderer;
 import net.dragonmounts3.client.renderer.DragonEggRenderer;
 import net.dragonmounts3.client.renderer.TameableDragonRenderer;
+import net.dragonmounts3.inits.ModBlockEntities;
 import net.dragonmounts3.inits.ModContainers;
 import net.dragonmounts3.inits.ModItems;
-import net.dragonmounts3.inits.ModTileEntities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;
@@ -35,7 +35,7 @@ public class ModClientEvents {
             RenderingRegistry.registerEntityRenderingHandler(CARRIAGE.get(), CarriageRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(HATCHABLE_DRAGON_EGG.get(), DragonEggRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(TAMEABLE_DRAGON.get(), TameableDragonRenderer::new);
-            ModTileEntities.registerTileEntityRenders();
+            ModBlockEntities.registerBlockEntityRenders();
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 CompoundNBT tag = stack.getTag();
                 if (tag != null && tag.contains("Color") && tintIndex == 1)

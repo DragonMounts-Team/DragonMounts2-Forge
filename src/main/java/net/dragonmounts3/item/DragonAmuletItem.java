@@ -10,10 +10,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
 
 import static net.dragonmounts3.DragonMounts.getItemTranslationKey;
 
@@ -31,35 +31,28 @@ public class DragonAmuletItem extends Item {
         if (entity instanceof TameableDragonEntity) {
             if (!isClientSide) {
                 TameableDragonEntity dragon = (TameableDragonEntity) entity;
-                DragonType type = dragon.getDragonType();
-                Item amulet = ModItems.FILLED_DRAGON_AMULET.get(type);
-                if (amulet != null) {
-                    CompoundNBT tag = new CompoundNBT();
-                    tag.putString("Type", entity.getType().getDescriptionId());
-                    tag.putString("TypeID", Objects.requireNonNull(ForgeRegistries.ENTITIES.getKey(entity.getType())).toString());
-                    tag.putString("OwnerName", player.getDisplayName().getString());
-                    ItemStack newStack = new ItemStack(amulet);
-                    newStack.setTag(tag);
-                    player.setItemInHand(hand, newStack);
-                    dragon.remove(false);
+                if (dragon.isOwnedBy(player)) {
+                    DragonType type = dragon.getDragonType();
+                    Item amulet = ModItems.FILLED_DRAGON_AMULET.get(type);
+                    if (amulet != null) {
+                        CompoundNBT compound = dragon.getData();
+                        compound.putString("OwnerName", ITextComponent.Serializer.toJson(player.getName()));
+                        ItemStack newStack = new ItemStack(amulet);
+                        newStack.setTag(compound);
+                        player.setItemInHand(hand, newStack);
+                        dragon.remove(false);
+                    } else {
+                        return ActionResultType.FAIL;
+                    }
+                    return ActionResultType.CONSUME;
                 } else {
+                    player.displayClientMessage(new TranslationTextComponent("message.dragonmounts.not_owner"), true);
                     return ActionResultType.FAIL;
                 }
             }
-            return ActionResultType.sidedSuccess(isClientSide);
-        } else {//test
-            Item amulet = ModItems.ENDER_DRAGON_AMULET.get();
-            CompoundNBT tag = new CompoundNBT();
-            tag.putString("Type", entity.getType().getDescriptionId());
-            tag.putString("TypeID", Objects.requireNonNull(ForgeRegistries.ENTITIES.getKey(entity.getType())).toString());
-            tag.putString("OwnerName", player.getDisplayName().getString());
-            ItemStack newStack = new ItemStack(amulet);
-            newStack.setTag(tag);
-            player.setItemInHand(hand, newStack);
-            entity.remove(false);
-            return ActionResultType.sidedSuccess(isClientSide);
+            return ActionResultType.SUCCESS;
         }
-        //return ActionResultType.PASS;
+        return ActionResultType.PASS;
     }
 
     @Nonnull

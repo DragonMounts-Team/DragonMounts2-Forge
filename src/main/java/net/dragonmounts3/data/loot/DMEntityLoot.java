@@ -1,6 +1,5 @@
 package net.dragonmounts3.data.loot;
 
-import com.google.common.collect.Sets;
 import net.minecraft.data.loot.EntityLootTables;
 import net.minecraft.entity.EntityType;
 import net.minecraft.loot.LootTable;
@@ -8,6 +7,8 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nonnull;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -18,9 +19,9 @@ public class DMEntityLoot extends EntityLootTables {
 
     }
 
-    public void accept(BiConsumer<ResourceLocation, LootTable.Builder> biConsumer) {
+    public void accept(@Nonnull BiConsumer<ResourceLocation, LootTable.Builder> biConsumer) {
         this.addTables();
-        Set<ResourceLocation> set = Sets.newHashSet();
+        Set<ResourceLocation> set = new HashSet<>();
         for (EntityType<?> entityType : ForgeRegistries.ENTITIES) {
             ResourceLocation resource = entityType.getDefaultLootTable();
             if (!isNonLiving(entityType) && resource != LootTables.EMPTY && set.add(resource)) {
@@ -31,7 +32,7 @@ public class DMEntityLoot extends EntityLootTables {
             }
         }
 
-        this.map.forEach(biConsumer::accept);
+        this.map.forEach(biConsumer);
     }
 
 }

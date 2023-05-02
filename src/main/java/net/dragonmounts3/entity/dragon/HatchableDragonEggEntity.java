@@ -1,13 +1,14 @@
 package net.dragonmounts3.entity.dragon;
 
 import net.dragonmounts3.block.HatchableDragonEggBlock;
+import net.dragonmounts3.entity.dragon.config.DragonLifeStage;
 import net.dragonmounts3.inits.ModBlocks;
 import net.dragonmounts3.inits.ModEntities;
 import net.dragonmounts3.inits.ModItems;
 import net.dragonmounts3.inits.ModSounds;
 import net.dragonmounts3.item.DragonScalesItem;
 import net.dragonmounts3.registry.DragonType;
-import net.dragonmounts3.registry.IDragonTypified;
+import net.dragonmounts3.registry.IMutableDragonTypified;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -38,7 +39,7 @@ import java.util.Objects;
 import static net.minecraftforge.event.ForgeEventFactory.onLivingConvert;
 
 @ParametersAreNonnullByDefault
-public class HatchableDragonEggEntity extends LivingEntity implements IDragonTypified {
+public class HatchableDragonEggEntity extends LivingEntity implements IMutableDragonTypified {
     private static final DataParameter<Integer> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DataSerializers.INT);
     public static final String AGE_DATA_PARAMETER_KEY = "Age";
     private static final float EGG_CRACK_THRESHOLD = 0.9f;
@@ -92,30 +93,32 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
     protected void crack(int amount) {
         DragonType type = this.getDragonType();
         HatchableDragonEggBlock block = ModBlocks.HATCHABLE_DRAGON_EGG.get(type);
-        DragonScalesItem scales = ModItems.DRAGON_SCALES.get(type);
         if (block != null) {
             this.level.levelEvent(2001, blockPosition(), Block.getId(block.defaultBlockState()));
         }
-        if (scales != null && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-            this.spawnAtLocation(new ItemStack(scales, amount), 1);
+        if (amount > 0) {
+            DragonScalesItem scales = ModItems.DRAGON_SCALES.get(type);
+            if (scales != null && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+                this.spawnAtLocation(new ItemStack(scales, amount), 1.25f);
+            }
         }
         this.level.playSound(null, blockPosition(), ModSounds.DRAGON_HATCHING.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
 
     public void hatch() {
         this.crack(this.random.nextInt(4) + 4);
-        TameableDragonEntity dragon = ModEntities.TAMEABLE_DRAGON.get().create(this.level);
-        if (dragon != null) {
-            dragon.copyPosition(this);
-            if (this.hasCustomName()) {
-                dragon.setCustomName(this.getCustomName());
-                dragon.setCustomNameVisible(this.isCustomNameVisible());
-            }
-            dragon.setInvulnerable(this.isInvulnerable());
-            this.level.addFreshEntity(dragon);
-            this.remove();
-            onLivingConvert(this, dragon);
+        TameableDragonEntity dragon = new TameableDragonEntity(this.level);
+        dragon.setDragonType(this.getDragonType(), true);
+        dragon.setLifeStage(DragonLifeStage.NEWBORN);
+        dragon.copyPosition(this);
+        if (this.hasCustomName()) {
+            dragon.setCustomName(this.getCustomName());
+            dragon.setCustomNameVisible(this.isCustomNameVisible());
         }
+        dragon.setInvulnerable(this.isInvulnerable());
+        this.level.addFreshEntity(dragon);
+        this.remove();
+        onLivingConvert(this, dragon);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -287,12 +290,13 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
         }
     }
 
-    public int getDragonTypeId() {
-        return this.entityData.get(DATA_DRAGON_TYPE);
+    @Override
+    public void setDragonType(DragonType type) {
+        this.setDragonType(type, false);
     }
 
     @Override
     public DragonType getDragonType() {
-        return DragonType.values()[this.getDragonTypeId()];
+        return DragonType.byId(this.entityData.get(DATA_DRAGON_TYPE));
     }
 }

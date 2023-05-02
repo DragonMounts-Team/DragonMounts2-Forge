@@ -1,10 +1,13 @@
 package net.dragonmounts3;
 
+import net.dragonmounts3.command.DMCommand;
 import net.dragonmounts3.inits.*;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -32,9 +35,14 @@ public class DragonMounts {
         ModItems.ITEMS.register(this.eventBus);
         ModBlocks.BLOCKS.register(this.eventBus);
         ModEntities.ENTITY_TYPES.register(this.eventBus);
-        ModTileEntities.TILE_ENTITY.register(this.eventBus);
+        ModBlockEntities.BLOCK_ENTITY.register(this.eventBus);
         ModContainers.CONTAINERS.register(this.eventBus);
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void registerCommands(RegisterCommandsEvent event) {
+        DMCommand.register(event.getDispatcher());
     }
 
     public static <B extends IForgeRegistryEntry<B>> DeferredRegister<B> create(IForgeRegistry<B> reg) {

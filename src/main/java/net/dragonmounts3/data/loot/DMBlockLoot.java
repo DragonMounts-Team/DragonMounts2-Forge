@@ -1,12 +1,13 @@
 package net.dragonmounts3.data.loot;
 
-import com.google.common.collect.Sets;
 import net.minecraft.block.Block;
 import net.minecraft.data.loot.BlockLootTables;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -17,9 +18,9 @@ public class DMBlockLoot extends BlockLootTables {
 
     }
 
-    public void accept(BiConsumer<ResourceLocation, LootTable.Builder> biConsumer) {
+    public void accept(@Nonnull BiConsumer<ResourceLocation, LootTable.Builder> biConsumer) {
         this.addTables();
-        Set<ResourceLocation> set = Sets.newHashSet();
+        Set<ResourceLocation> set = new HashSet<>();
         for (Block block : getKnownBlocks()) {
             ResourceLocation resource = block.getLootTable();
             if (resource != LootTables.EMPTY && set.add(resource)) {

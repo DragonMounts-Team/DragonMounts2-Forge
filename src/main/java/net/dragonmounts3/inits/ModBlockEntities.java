@@ -11,14 +11,14 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class ModTileEntities {
+public class ModBlockEntities {
 
-    public static final DeferredRegister<TileEntityType<?>> TILE_ENTITY = DragonMounts.create(ForgeRegistries.TILE_ENTITIES);
+    public static final DeferredRegister<TileEntityType<?>> BLOCK_ENTITY = DragonMounts.create(ForgeRegistries.TILE_ENTITIES);
 
-    public static final RegistryObject<TileEntityType<DragonCoreBlockEntity>> DRAGON_CORE = TILE_ENTITY.register("dragon_core", () -> TileEntityType.Builder.of(DragonCoreBlockEntity::new, ModBlocks.DRAGON_CORE.get()).build(null));
+    public static final RegistryObject<TileEntityType<DragonCoreBlockEntity>> DRAGON_CORE = BLOCK_ENTITY.register("dragon_core", () -> TileEntityType.Builder.of(DragonCoreBlockEntity::new, ModBlocks.DRAGON_CORE.get()).build(null));
 
     @OnlyIn(Dist.CLIENT)
-    public static void registerTileEntityRenders() {
+    public static void registerBlockEntityRenders() {
         ClientRegistry.bindTileEntityRenderer(DRAGON_CORE.get(), DragonCoreRenderer::new);
     }
 }

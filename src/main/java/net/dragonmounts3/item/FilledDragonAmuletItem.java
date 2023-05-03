@@ -23,6 +23,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
@@ -60,12 +61,16 @@ public class FilledDragonAmuletItem extends DragonAmuletItem implements IDragonT
             return ActionResult.pass(stack);
         } else if (resultType == RayTraceResult.Type.BLOCK) {
             if (!level.isClientSide) {
-                CompoundNBT tag = stack.getTag();
+                CompoundNBT compound = stack.getTag();
                 BlockPos pos = rayTraceResult.getBlockPos().relative(rayTraceResult.getDirection());
                 TameableDragonEntity dragon = new TameableDragonEntity(level);
-                if (tag != null) {
-                    dragon.load(tag);
-                    dragon.readAdditionalSaveData(tag);
+                if (compound != null) {
+                    if (compound.hasUUID("UUID")) {
+                        if (((ServerWorld) level).findAddedOrPendingEntity(compound.getUUID("UUID")) != null) {
+                            compound.remove("UUID");
+                        }
+                    }
+                    dragon.load(compound);
                 }
                 dragon.setPos(pos.getX(), pos.getY(), pos.getZ());
                 level.addFreshEntity(dragon);

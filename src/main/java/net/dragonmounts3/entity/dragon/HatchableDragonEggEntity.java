@@ -22,11 +22,16 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.scoreboard.Score;
+import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -34,14 +39,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 
-import static net.minecraftforge.event.ForgeEventFactory.onLivingConvert;
+import static net.dragonmounts3.entity.dragon.TameableDragonEntity.AGE_DATA_PARAMETER_KEY;
 
 @ParametersAreNonnullByDefault
 public class HatchableDragonEggEntity extends LivingEntity implements IMutableDragonTypified {
     private static final DataParameter<Integer> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DataSerializers.INT);
-    public static final String AGE_DATA_PARAMETER_KEY = "Age";
     private static final float EGG_CRACK_THRESHOLD = 0.9f;
     private static final float EGG_WRIGGLE_THRESHOLD = 0.75f;
     private static final float EGG_WRIGGLE_BASE_CHANCE = 20;
@@ -50,6 +55,9 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     protected int wriggleX = 0;
     protected int wriggleZ = 0;
     protected int age = 0;
+    protected boolean hatched = false;//to keep uuid
+    protected Map<ScoreObjective, Score> scores = null;//to keep score
+    protected ScorePlayerTeam team = null;//to keep team
 
     public HatchableDragonEggEntity(EntityType<? extends HatchableDragonEggEntity> type, World world) {
         super(type, world);
@@ -96,29 +104,47 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         if (block != null) {
             this.level.levelEvent(2001, blockPosition(), Block.getId(block.defaultBlockState()));
         }
-        if (amount > 0) {
+        if (amount > 0 && !this.level.isClientSide) {
             DragonScalesItem scales = ModItems.DRAGON_SCALES.get(type);
             if (scales != null && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
                 this.spawnAtLocation(new ItemStack(scales, amount), 1.25f);
             }
         }
-        this.level.playSound(null, blockPosition(), ModSounds.DRAGON_HATCHING.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+        this.level.playSound(null, this, ModSounds.DRAGON_HATCHING.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
 
     public void hatch() {
         this.crack(this.random.nextInt(4) + 4);
-        TameableDragonEntity dragon = new TameableDragonEntity(this.level);
-        dragon.setDragonType(this.getDragonType(), true);
-        dragon.setLifeStage(DragonLifeStage.NEWBORN);
-        dragon.copyPosition(this);
-        if (this.hasCustomName()) {
-            dragon.setCustomName(this.getCustomName());
-            dragon.setCustomNameVisible(this.isCustomNameVisible());
+        if (!this.level.isClientSide) {
+            String scoreboardName = this.getScoreboardName();
+            Scoreboard scoreboard = this.level.getScoreboard();
+            this.scores = scoreboard.getPlayerScores(scoreboardName);
+            this.team = scoreboard.getPlayersTeam(scoreboardName);
+            this.hatched = true;
         }
-        dragon.setInvulnerable(this.isInvulnerable());
-        this.level.addFreshEntity(dragon);
         this.remove();
-        onLivingConvert(this, dragon);
+    }
+
+    @Override
+    public void onRemovedFromWorld() {
+        super.onRemovedFromWorld();
+        if (this.hatched && !this.level.isClientSide) {
+            ServerWorld world = (ServerWorld) level;
+            Scoreboard scoreboard = world.getScoreboard();
+            TameableDragonEntity dragon = new TameableDragonEntity(world);
+            String scoreboardName = dragon.getScoreboardName();
+            CompoundNBT compound = this.saveWithoutId(new CompoundNBT());
+            compound.remove(AGE_DATA_PARAMETER_KEY);
+            compound.putInt(DragonLifeStage.DATA_PARAMETER_KEY, DragonLifeStage.NEWBORN.ordinal());
+            dragon.load(compound);
+            if (this.team != null) {
+                scoreboard.addPlayerToTeam(scoreboardName, this.team);
+            }
+            for (Map.Entry<ScoreObjective, Score> entry : this.scores.entrySet()) {
+                scoreboard.getOrCreatePlayerScore(scoreboardName, entry.getKey()).setScore(entry.getValue().getScore());
+            }
+            world.addFreshEntity(dragon);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)

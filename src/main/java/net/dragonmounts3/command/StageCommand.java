@@ -10,9 +10,12 @@ import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.command.arguments.EntitySelector;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.server.ServerWorld;
 
 import static net.dragonmounts3.command.DMCommand.createClassCastException;
+import static net.dragonmounts3.entity.dragon.TameableDragonEntity.AGE_DATA_PARAMETER_KEY;
 import static net.dragonmounts3.entity.dragon.config.DragonLifeStage.EGG_TRANSLATION_KEY;
 
 public class StageCommand {
@@ -36,16 +39,13 @@ public class StageCommand {
 
     private static int egg(CommandSource source, Entity target) {
         if (target instanceof TameableDragonEntity) {
+            ServerWorld level = source.getLevel();
             HatchableDragonEggEntity egg = new HatchableDragonEggEntity(target.level);
-            egg.setDragonType(((TameableDragonEntity) target).getDragonType(), true);
-            egg.copyPosition(target);
-            if (target.hasCustomName()) {
-                egg.setCustomName(target.getCustomName());
-                egg.setCustomNameVisible(target.isCustomNameVisible());
-            }
-            egg.setInvulnerable(target.isInvulnerable());
-            target.level.addFreshEntity(egg);
-            target.remove();
+            CompoundNBT compound = target.saveWithoutId(new CompoundNBT());
+            compound.remove(AGE_DATA_PARAMETER_KEY);
+            egg.load(compound);
+            level.removeEntity(target, false);
+            level.addFreshEntity(egg);
         } else if (!(target instanceof HatchableDragonEggEntity)) {
             source.sendFailure(createClassCastException(target, TameableDragonEntity.class));
             return 0;
@@ -56,7 +56,7 @@ public class StageCommand {
 
     private static int get(CommandSource source, Entity target) {
         if (target instanceof TameableDragonEntity) {
-            source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.stage.get", target.getClass().getCanonicalName(), ((TameableDragonEntity) target).getLifeStage().getText()), true);
+            source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.stage.get", target.getDisplayName(), ((TameableDragonEntity) target).getLifeStage().getText()), true);
         } else if (target instanceof HatchableDragonEggEntity) {
             source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.stage.get", target.getDisplayName(), new TranslationTextComponent(EGG_TRANSLATION_KEY)), true);
         } else {
@@ -71,17 +71,14 @@ public class StageCommand {
             TameableDragonEntity dragon = (TameableDragonEntity) target;
             dragon.setLifeStage(stage);
         } else if (target instanceof HatchableDragonEggEntity) {
+            ServerWorld level = source.getLevel();
             TameableDragonEntity dragon = new TameableDragonEntity(target.level);
-            dragon.setDragonType(((HatchableDragonEggEntity) target).getDragonType(), true);
-            dragon.setLifeStage(stage);
-            dragon.copyPosition(target);
-            if (target.hasCustomName()) {
-                dragon.setCustomName(target.getCustomName());
-                dragon.setCustomNameVisible(target.isCustomNameVisible());
-            }
-            dragon.setInvulnerable(target.isInvulnerable());
-            target.level.addFreshEntity(dragon);
-            target.remove();
+            CompoundNBT compound = target.saveWithoutId(new CompoundNBT());
+            compound.putInt(DragonLifeStage.DATA_PARAMETER_KEY, stage.ordinal());
+            //TODO: reset age
+            dragon.load(compound);
+            level.removeEntity(target, false);
+            level.addFreshEntity(dragon);
         } else {
             source.sendFailure(createClassCastException(target, TameableDragonEntity.class));
             return 0;

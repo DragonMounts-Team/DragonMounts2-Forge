@@ -80,6 +80,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     //private static final DataParameter<Boolean> SLEEP = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<String> DATA_BREATH_WEAPON_TARGET = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.STRING);
     private static final DataParameter<Integer> DATA_BREATH_WEAPON_MODE = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.INT);
+    public static final String AGE_DATA_PARAMETER_KEY = "Age";
     public static final String FLYING_DATA_PARAMETER_KEY = "Flying";
     public static final String SADDLE_DATA_PARAMETER_KEY = "Saddle";
     private final DragonBodyHelper dragonBodyHelper = new DragonBodyHelper(this);
@@ -135,7 +136,6 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
 
     public CompoundNBT getData() {
         CompoundNBT compound = this.saveWithoutId(new CompoundNBT());
-        this.addAdditionalSaveData(compound);
         compound.remove(FLYING_DATA_PARAMETER_KEY);
         compound.remove("Air");
         compound.remove("DeathTime");

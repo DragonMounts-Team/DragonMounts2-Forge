@@ -46,9 +46,12 @@ public class StageCommand {
             egg.load(compound);
             level.removeEntity(target, false);
             level.addFreshEntity(egg);
-        } else if (!(target instanceof HatchableDragonEggEntity)) {
+        } else if (target instanceof HatchableDragonEggEntity) {
+            ((HatchableDragonEggEntity) target).setAge(0);
+        } else {
             source.sendFailure(createClassCastException(target, TameableDragonEntity.class));
             return 0;
+
         }
         source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.stage.set", target.getDisplayName(), new TranslationTextComponent(EGG_TRANSLATION_KEY)), true);
         return 1;

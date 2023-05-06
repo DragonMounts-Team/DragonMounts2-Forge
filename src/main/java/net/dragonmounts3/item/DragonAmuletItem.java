@@ -8,12 +8,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.scoreboard.Score;
+import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
 
 import static net.dragonmounts3.DragonMounts.getItemTranslationKey;
 
@@ -27,30 +30,49 @@ public class DragonAmuletItem extends Item {
     @Nonnull
     @Override
     public ActionResultType interactLivingEntity(@Nonnull ItemStack stack, @Nonnull PlayerEntity player, @Nonnull LivingEntity entity, @Nonnull Hand hand) {
-        boolean isClientSide = player.level.isClientSide;
         if (entity instanceof TameableDragonEntity) {
-            if (!isClientSide) {
-                TameableDragonEntity dragon = (TameableDragonEntity) entity;
-                if (dragon.isOwnedBy(player)) {
-                    DragonType type = dragon.getDragonType();
-                    Item amulet = ModItems.FILLED_DRAGON_AMULET.get(type);
-                    if (amulet != null) {
-                        CompoundNBT compound = dragon.getData();
-                        compound.putString("OwnerName", ITextComponent.Serializer.toJson(player.getName()));
-                        ItemStack newStack = new ItemStack(amulet);
-                        newStack.setTag(compound);
-                        player.setItemInHand(hand, newStack);
-                        dragon.remove(false);
-                    } else {
-                        return ActionResultType.FAIL;
-                    }
-                    return ActionResultType.CONSUME;
-                } else {
-                    player.displayClientMessage(new TranslationTextComponent("message.dragonmounts.not_owner"), true);
+            if (player.level.isClientSide) {
+                return ActionResultType.SUCCESS;
+            }
+            TameableDragonEntity dragon = (TameableDragonEntity) entity;
+            if (dragon.isOwnedBy(player)) {
+                DragonType type = dragon.getDragonType();
+                Item amulet = ModItems.FILLED_DRAGON_AMULET.get(type);
+                if (amulet == null) {
                     return ActionResultType.FAIL;
                 }
+                CompoundNBT compound = dragon.getData();
+                Map<ScoreObjective, Score> scores = player.level.getScoreboard().getPlayerScores(dragon.getScoreboardName());
+                if (!scores.isEmpty()) {
+                    CompoundNBT scoresTag = new CompoundNBT();
+                    CompoundNBT lockedScoresTag = new CompoundNBT();
+                    Score cache;
+                    for (Map.Entry<ScoreObjective, Score> entry : scores.entrySet()) {
+                        cache = entry.getValue();
+                        if (cache.isLocked()) {
+                            lockedScoresTag.putInt(entry.getKey().getName(), cache.getScore());
+                        } else {
+                            scoresTag.putInt(entry.getKey().getName(), cache.getScore());
+                        }
+                    }
+                    if (!scoresTag.isEmpty()) {
+                        compound.put("Scores", scoresTag);
+                    }
+                    if (!lockedScoresTag.isEmpty()) {
+                        compound.put("LockedScores", lockedScoresTag);
+                    }
+                }
+                compound.putString("OwnerName", ITextComponent.Serializer.toJson(player.getName()));
+                compound.remove("UUID");
+                ItemStack newStack = new ItemStack(amulet);
+                newStack.setTag(compound);
+                player.setItemInHand(hand, newStack);
+                dragon.remove(false);
+                return ActionResultType.CONSUME;
+            } else {
+                player.displayClientMessage(new TranslationTextComponent("message.dragonmounts.not_owner"), true);
+                return ActionResultType.FAIL;
             }
-            return ActionResultType.SUCCESS;
         }
         return ActionResultType.PASS;
     }

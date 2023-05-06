@@ -140,8 +140,15 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
             if (this.team != null) {
                 scoreboard.addPlayerToTeam(scoreboardName, this.team);
             }
-            for (Map.Entry<ScoreObjective, Score> entry : this.scores.entrySet()) {
-                scoreboard.getOrCreatePlayerScore(scoreboardName, entry.getKey()).setScore(entry.getValue().getScore());
+            if (this.scores != null) {
+                Score target;
+                Score cache;
+                for (Map.Entry<ScoreObjective, Score> entry : this.scores.entrySet()) {
+                    cache = entry.getValue();
+                    target = scoreboard.getOrCreatePlayerScore(scoreboardName, entry.getKey());
+                    target.setScore(cache.getScore());
+                    target.setLocked(cache.isLocked());
+                }
             }
             world.addFreshEntity(dragon);
         }

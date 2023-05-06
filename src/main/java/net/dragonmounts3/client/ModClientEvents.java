@@ -2,10 +2,11 @@ package net.dragonmounts3.client;
 
 import net.dragonmounts3.client.renderer.CarriageRenderer;
 import net.dragonmounts3.client.renderer.DragonEggRenderer;
-import net.dragonmounts3.client.renderer.TameableDragonRenderer;
+import net.dragonmounts3.client.renderer.dragon.TameableDragonRenderer;
 import net.dragonmounts3.inits.ModBlockEntities;
 import net.dragonmounts3.inits.ModContainers;
 import net.dragonmounts3.inits.ModItems;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;
@@ -38,8 +39,8 @@ public class ModClientEvents {
             ModBlockEntities.registerBlockEntityRenders();
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 CompoundNBT tag = stack.getTag();
-                if (tag != null && tag.contains("Color") && tintIndex == 1)
-                    return tag.getInt("Color");
+                if (tag != null && tag.contains("Type") && tintIndex == 1)
+                    return DragonType.byId(tag.getInt("Type")).getColor();
                 return 0xFFFFFF;
             }, DRAGON_WHISTLE::get);
         }

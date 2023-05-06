@@ -1,6 +1,7 @@
 package net.dragonmounts3.item;
 
-import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
+import net.dragonmounts3.entity.dragon.TameableDragonEntity;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,15 +17,15 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class DragonWhistleItem extends Item {
-    private static final String DRAGON_UUID_KEY = "DragonUUID";
-
-
+    private static final Logger LOGGER = LogManager.getLogger();
     public DragonWhistleItem(Properties properties) {
         super(properties.stacksTo(1));
     }
@@ -32,38 +33,43 @@ public class DragonWhistleItem extends Item {
     @Nonnull
     @Override
     public ActionResultType interactLivingEntity(@Nonnull ItemStack stack, @Nonnull PlayerEntity player, LivingEntity entity, @Nonnull Hand hand) {
-        if (entity.level.isClientSide) return ActionResultType.PASS;
-        if (entity instanceof HatchableDragonEggEntity) {//test
-            CompoundNBT tag = new CompoundNBT();
-            tag.putUUID(DRAGON_UUID_KEY, entity.getUUID());
-            tag.putString("Type", entity.getType().getDescriptionId());
-            tag.putString("OwnerName", player.getDisplayName().getString());
-            tag.putInt("Color", ((HatchableDragonEggEntity) entity).getDragonType().getColor());
-            stack.setTag(tag);
-            player.setItemSlot(hand == Hand.MAIN_HAND ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND, stack);
-            return ActionResultType.SUCCESS;
-        }
-        return ActionResultType.PASS;
-    }
-
-    @Nullable
-    private CompoundNBT getDragonData(ItemStack stack) {
-        if (stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
-            if (tag != null && tag.hasUUID(DRAGON_UUID_KEY)) {
-                return tag;
+        if (entity instanceof TameableDragonEntity) {
+            if (player.level.isClientSide) {
+                return ActionResultType.SUCCESS;
+            }
+            TameableDragonEntity dragon = (TameableDragonEntity) entity;
+            if (dragon.isOwnedBy(player)) {
+                CompoundNBT compound = new CompoundNBT();
+                compound.putUUID("UUID", dragon.getUUID());
+                compound.putInt("Type", dragon.getDragonType().ordinal());
+                compound.putString("OwnerName", ITextComponent.Serializer.toJson(player.getName()));
+                stack.setTag(compound);
+                player.setItemSlot(hand == Hand.MAIN_HAND ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND, stack);
+                return ActionResultType.CONSUME;
+            } else {
+                player.displayClientMessage(new TranslationTextComponent("message.dragonmounts.not_owner"), true);
+                return ActionResultType.FAIL;
             }
         }
-        return null;
+        return ActionResultType.PASS;
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, @Nonnull List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
-        CompoundNBT tag = this.getDragonData(stack);
-        if (tag != null) {
-            components.add(new TranslationTextComponent("tooltip.dragonmounts.type", new TranslationTextComponent(tag.getString("Type"))).withStyle(TextFormatting.GRAY));
-            components.add(new TranslationTextComponent("tooltip.dragonmounts.owner_name", tag.getString("OwnerName")).withStyle(TextFormatting.GRAY));
+        CompoundNBT compound = stack.getTag();
+        if (compound != null && compound.contains("UUID")) {
+            if (compound.contains("Type")) {
+                components.add(new TranslationTextComponent("tooltip.dragonmounts.type", DragonType.byId(compound.getInt("Type")).getText()).withStyle(TextFormatting.GRAY));
+            }
+            try {
+                String string = compound.getString("OwnerName");
+                if (!string.equals("")) {
+                    components.add(new TranslationTextComponent("tooltip.dragonmounts.owner_name", ITextComponent.Serializer.fromJson(string)).withStyle(TextFormatting.GRAY));
+                }
+            } catch (Exception exception) {
+                LOGGER.warn(exception);
+            }
         }
     }
 }

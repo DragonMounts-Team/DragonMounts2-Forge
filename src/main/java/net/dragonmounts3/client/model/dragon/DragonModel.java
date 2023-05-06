@@ -8,8 +8,6 @@ import net.minecraft.client.renderer.entity.model.EntityModel;
 
 import javax.annotation.Nonnull;
 
-import static net.dragonmounts3.registry.DragonType.isSkeleton;
-
 public class DragonModel extends EntityModel<TameableDragonEntity> {
     protected DragonHeadModelPart head;
     protected DragonNeckModelPart neck;
@@ -18,7 +16,6 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
     protected DragonWingModelPart wing;
     protected DragonLegModelPart foreLeg;
     protected DragonLegModelPart hindLeg;
-    protected DragonType typeSnapshot = null;
 
     public DragonModel() {
         this.texWidth = 256;
@@ -32,19 +29,7 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
 
     @Override
     public void prepareMobModel(@Nonnull TameableDragonEntity entity, float limbSwing, float limbSwingAmount, float partialTick) {
-        DragonType type = entity.getDragonType();
-        if (type != this.typeSnapshot) {
-            boolean newIsSkeleton = isSkeleton(type);
-            boolean oldIsSkeleton = isSkeleton(this.typeSnapshot);
-            if (newIsSkeleton && !oldIsSkeleton) {
-                this.foreLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.SKELETON, false);
-                this.hindLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.SKELETON, true);
-            } else if (!newIsSkeleton && oldIsSkeleton) {
-                this.foreLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, false);
-                this.hindLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, true);
-            }
-            this.typeSnapshot = type;
-        }
+
     }
 
     @Override
@@ -61,5 +46,17 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
         this.wing.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         this.foreLeg.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         this.hindLeg.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);*/
+    }
+
+    public void onTypeChanged(DragonType old, DragonType now) {
+        boolean wasSkeleton = DragonType.isSkeleton(old);
+        boolean isSkeleton = DragonType.isSkeleton(now);
+        if (isSkeleton && !wasSkeleton) {
+            this.foreLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.SKELETON, false);
+            this.hindLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.SKELETON, true);
+        } else if (!isSkeleton && wasSkeleton) {
+            this.foreLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, false);
+            this.hindLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, true);
+        }
     }
 }

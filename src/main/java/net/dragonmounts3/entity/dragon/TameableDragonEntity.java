@@ -22,6 +22,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.scoreboard.Score;
+import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
@@ -155,6 +158,36 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
         compound.remove("SleepingZ");
         compound.remove("TicksFrozen");
         return compound;
+    }
+
+    public void loadScores(CompoundNBT compound) {
+        Scoreboard scoreboard = this.level.getScoreboard();
+        String scoreboardName = this.getScoreboardName();
+        Map<ScoreObjective, Score> existingScores = level.getScoreboard().getPlayerScores(scoreboardName);
+        CompoundNBT scores;
+        ScoreObjective objective;
+        Score score;
+        if (compound.contains("Scores")) {
+            scores = compound.getCompound("Scores");
+            for (String name : scores.getAllKeys()) {
+                objective = scoreboard.getOrCreateObjective(name);
+                if (!existingScores.containsKey(objective)) {
+                    score = scoreboard.getOrCreatePlayerScore(scoreboardName, objective);
+                    score.setScore(scores.getInt(name));
+                    score.setLocked(false);
+                }
+            }
+        }
+        if (compound.contains("LockedScores")) {
+            scores = compound.getCompound("LockedScores");
+            for (String name : scores.getAllKeys()) {
+                objective = scoreboard.getOrCreateObjective(name);
+                if (!existingScores.containsKey(objective)) {
+                    score = scoreboard.getOrCreatePlayerScore(scoreboardName, objective);
+                    score.setScore(scores.getInt(name));
+                }
+            }
+        }
     }
 
     protected void saveChestData(CompoundNBT compound) {

@@ -76,7 +76,6 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     private static final DataParameter<String> DATA_BREED = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.STRING);
     private static final DataParameter<String> FOREST_TEXTURES = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.STRING);
     private static final DataParameter<Integer> DATA_REPO_COUNT = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.INT);
-    private static final DataParameter<Integer> DATA_TICKS_SINCE_CREATION = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.INT);
     private static final DataParameter<Byte> DRAGON_SCALES = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BYTE);
     private static final DataParameter<Boolean> HAS_ADJUDICATOR_STONE = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> HAS_ELDER_STONE = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
@@ -135,29 +134,6 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
         this.entityData.define(DATA_LIFE_STAGE, DragonLifeStage.ADULT.ordinal());
         this.entityData.define(DATA_FLYING, false);
         this.entityData.define(DATA_SADDLED, false);
-    }
-
-    public CompoundNBT getData() {
-        CompoundNBT compound = this.saveWithoutId(new CompoundNBT());
-        compound.remove(FLYING_DATA_PARAMETER_KEY);
-        compound.remove("Air");
-        compound.remove("DeathTime");
-        compound.remove("FallDistance");
-        compound.remove("FallFlying");
-        compound.remove("Fire");
-        compound.remove("HurtByTimestamp");
-        compound.remove("HurtTime");
-        compound.remove("Leash");
-        compound.remove("Motion");
-        compound.remove("OnGround");
-        compound.remove("PortalCooldown");
-        compound.remove("Pos");
-        compound.remove("Rotation");
-        compound.remove("SleepingX");
-        compound.remove("SleepingY");
-        compound.remove("SleepingZ");
-        compound.remove("TicksFrozen");
-        return compound;
     }
 
     public void loadScores(CompoundNBT compound) {
@@ -337,6 +313,16 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
 
     public void setLifeStage(DragonLifeStage stage) {
         this.entityData.set(DATA_LIFE_STAGE, stage.ordinal());
+        switch (stage) {
+            case NEWBORN:
+            case INFANT:
+                this.setAge(-stage.duration);
+                break;
+            case PREJUVENILE:
+            case JUVENILE:
+                this.setAge(stage.duration);
+                break;
+        }
         this.refreshDimensions();
         this.reapplyPosition();
     }
@@ -414,5 +400,28 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     @Override
     public void clearContent() {
 
+    }
+
+    public static CompoundNBT simplifyData(CompoundNBT compound) {
+        compound.remove(FLYING_DATA_PARAMETER_KEY);
+        compound.remove("Air");
+        compound.remove("DeathTime");
+        compound.remove("FallDistance");
+        compound.remove("FallFlying");
+        compound.remove("Fire");
+        compound.remove("HurtByTimestamp");
+        compound.remove("HurtTime");
+        compound.remove("InLove");
+        compound.remove("Leash");
+        compound.remove("Motion");
+        compound.remove("OnGround");
+        compound.remove("PortalCooldown");
+        compound.remove("Pos");
+        compound.remove("Rotation");
+        compound.remove("SleepingX");
+        compound.remove("SleepingY");
+        compound.remove("SleepingZ");
+        compound.remove("TicksFrozen");
+        return compound;
     }
 }

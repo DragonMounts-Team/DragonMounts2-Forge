@@ -17,7 +17,7 @@ import java.util.List;
 import static net.dragonmounts3.DragonMounts.getItemTranslationKey;
 
 public class DragonScalePickaxeItem extends PickaxeItem implements IDragonTypified {
-    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_pickaxe");
+    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_scale_pickaxe");
 
     protected DragonType type;
 

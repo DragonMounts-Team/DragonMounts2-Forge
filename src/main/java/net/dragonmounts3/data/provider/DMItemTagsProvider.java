@@ -3,6 +3,7 @@ package net.dragonmounts3.data.provider;
 import net.dragonmounts3.DragonMounts;
 import net.dragonmounts3.data.tags.DMItemTags;
 import net.dragonmounts3.inits.ModItems;
+import net.dragonmounts3.item.DragonScaleBowItem;
 import net.dragonmounts3.item.DragonScalesItem;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
@@ -25,6 +26,10 @@ public class DMItemTagsProvider extends ItemTagsProvider {
         this.tag(Tags.Items.SHEARS)
                 .add(ModItems.DIAMOND_SHEARS.get())
                 .add(ModItems.NETHERITE_SHEARS.get());
+        TagsProvider.Builder<Item> dragonScaleBow = this.tag(DMItemTags.DRAGON_SCALE_BOW);
+        for (DragonScaleBowItem item : ModItems.DRAGON_SCALE_BOW) {
+            dragonScaleBow.add(item);
+        }
         TagsProvider.Builder<Item> dragonScales = this.tag(DMItemTags.DRAGON_SCALES);
         for (DragonScalesItem item : ModItems.DRAGON_SCALES) {
             dragonScales.add(item);

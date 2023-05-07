@@ -17,7 +17,7 @@ import java.util.List;
 import static net.dragonmounts3.DragonMounts.getItemTranslationKey;
 
 public class DragonScaleShovelItem extends ShovelItem implements IDragonTypified {
-    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_shovel");
+    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_scale_shovel");
 
     protected DragonType type;
 

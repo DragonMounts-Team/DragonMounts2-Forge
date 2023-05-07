@@ -41,7 +41,7 @@ public class DragonAmuletItem extends Item {
                 if (amulet == null) {
                     return ActionResultType.FAIL;
                 }
-                CompoundNBT compound = dragon.getData();
+                CompoundNBT compound = TameableDragonEntity.simplifyData(dragon.saveWithoutId(new CompoundNBT()));
                 Map<ScoreObjective, Score> scores = player.level.getScoreboard().getPlayerScores(dragon.getScoreboardName());
                 if (!scores.isEmpty()) {
                     CompoundNBT scoresTag = new CompoundNBT();
@@ -63,6 +63,7 @@ public class DragonAmuletItem extends Item {
                     }
                 }
                 compound.putString("OwnerName", ITextComponent.Serializer.toJson(player.getName()));
+                compound.remove(DragonType.DATA_PARAMETER_KEY);
                 compound.remove("UUID");
                 ItemStack newStack = new ItemStack(amulet);
                 newStack.setTag(compound);

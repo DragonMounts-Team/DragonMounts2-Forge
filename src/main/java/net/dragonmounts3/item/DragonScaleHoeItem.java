@@ -17,7 +17,7 @@ import java.util.List;
 import static net.dragonmounts3.DragonMounts.getItemTranslationKey;
 
 public class DragonScaleHoeItem extends HoeItem implements IDragonTypified {
-    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_hoe");
+    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_scale_hoe");
 
     protected DragonType type;
 

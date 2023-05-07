@@ -18,7 +18,7 @@ import java.util.List;
 import static net.dragonmounts3.DragonMounts.getItemTranslationKey;
 
 public class DragonScaleBowItem extends BowItem implements IDragonTypified {
-    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_bow");
+    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_scale_bow");
 
     protected DragonType type;
 

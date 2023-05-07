@@ -66,6 +66,9 @@ public class FilledDragonAmuletItem extends DragonAmuletItem implements IDragonT
                 if (compound != null) {
                     dragon.load(compound);
                     dragon.loadScores(compound);
+                    dragon.setDragonType(this.type, false);
+                } else {
+                    dragon.setDragonType(this.type, true);
                 }
                 dragon.setPos(pos.getX(), pos.getY(), pos.getZ());
                 level.addFreshEntity(dragon);

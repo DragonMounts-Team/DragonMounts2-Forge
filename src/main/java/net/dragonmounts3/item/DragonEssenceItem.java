@@ -1,16 +1,20 @@
 package net.dragonmounts3.item;
 
+import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.registry.DragonType;
 import net.dragonmounts3.registry.IDragonTypified;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Util;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -33,34 +37,31 @@ public class DragonEssenceItem extends Item implements IDragonTypified {
 
     @Nonnull
     @Override
-    @SuppressWarnings("CommentedOutCode")
-    public ActionResultType useOn(ItemUseContext context) {
-        PlayerEntity player = context.getPlayer();
-        if (player != null) {
-            /*
-            BlockPos pos = context.getClickedPos();
-            World world = context.getLevel();
-
-        if (world.isRemote || !player.isServerWorld()) return EnumActionResult.FAIL;
-        ItemStack stack = player.getHeldItem(hand);
-        if (!stack.hasTagCompound()) return EnumActionResult.FAIL;
-
-        EntityTameableDragon dragon = new EntityTameableDragon(world);
-        dragon.readFromNBT(stack.getTagCompound());
-
-        if (dragon.isAllowed(player)) {
-            dragon.setPosition(pos.getX(), pos.getY() + 1, pos.getZ());
-            world.spawnEntity(dragon);
-            //debug
-            System.out.println(dragon.getUniqueID());
-            player.setHeldItem(hand, ItemStack.EMPTY);
-            dragon.world.playSound(x, y, z, SoundEvents.ITEM_SHIELD_BREAK, SoundCategory.PLAYERS, 1, 1, false);
-            dragon.world.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK, x + dragon.getRNG().nextInt(5), y + dragon.getRNG().nextInt(5), z + dragon.getRNG().nextInt(5), 1, 1, 1, 0);
-        } else player.sendStatusMessage(new TextComponentTranslation("dragon.notOwned"), true);
-        */
-            player.sendMessage(new StringTextComponent("Uncompleted"), Util.NIL_UUID);
+    public ActionResult<ItemStack> use(@Nonnull World level, @Nonnull PlayerEntity player, @Nonnull Hand hand) {
+        BlockRayTraceResult rayTraceResult = getPlayerPOVHitResult(level, player, RayTraceContext.FluidMode.NONE);
+        ItemStack stack = player.getItemInHand(hand);
+        RayTraceResult.Type resultType = rayTraceResult.getType();
+        if (resultType == RayTraceResult.Type.MISS) {
+            return ActionResult.pass(stack);
+        } else if (resultType == RayTraceResult.Type.BLOCK) {
+            if (!level.isClientSide) {
+                CompoundNBT compound = stack.getTag();
+                BlockPos pos = rayTraceResult.getBlockPos().relative(rayTraceResult.getDirection());
+                TameableDragonEntity dragon = new TameableDragonEntity(level);
+                if (compound != null) {
+                    dragon.load(compound);
+                }
+                dragon.setDragonType(this.type, true);
+                dragon.setPos(pos.getX(), pos.getY(), pos.getZ());
+                level.addFreshEntity(dragon);
+                if (!player.abilities.instabuild) {
+                    stack.shrink(1);
+                }
+                return ActionResult.success(stack);
+            }
+            return ActionResult.consume(stack);
         }
-        return super.useOn(context);
+        return ActionResult.fail(stack);
     }
 
     @Override

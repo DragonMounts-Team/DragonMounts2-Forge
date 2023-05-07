@@ -17,7 +17,7 @@ import java.util.List;
 import static net.dragonmounts3.DragonMounts.getItemTranslationKey;
 
 public class DragonScaleAxeItem extends AxeItem implements IDragonTypified {
-    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_axe");
+    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_scale_axe");
 
     protected DragonType type;
 

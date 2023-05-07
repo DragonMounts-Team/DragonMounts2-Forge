@@ -1,5 +1,6 @@
 package net.dragonmounts3.data.provider;
 
+import net.dragonmounts3.data.tags.DMItemTags;
 import net.dragonmounts3.entity.carriage.CarriageType;
 import net.dragonmounts3.inits.ModBlocks;
 import net.dragonmounts3.inits.ModItems;
@@ -63,6 +64,15 @@ public class DMRecipeProvider extends RecipeProvider {
                 .pattern("X ")
                 .unlockedBy("has_diamond", has(Tags.Items.GEMS_DIAMOND))
                 .save(consumer);
+        ShapedRecipeBuilder.shaped(Items.DISPENSER)
+                .define('R', Tags.Items.DUSTS_REDSTONE)
+                .define('#', Tags.Items.COBBLESTONE)
+                .define('X', DMItemTags.DRAGON_SCALE_BOW)
+                .pattern("###")
+                .pattern("#X#")
+                .pattern("#R#")
+                .unlockedBy("has_bow", has(DMItemTags.DRAGON_SCALE_BOW))
+                .save(consumer, prefix(Objects.requireNonNull(Items.DISPENSER.getRegistryName()).getPath()));
         ShapedRecipeBuilder.shaped(ModItems.DRAGON_AMULET.get())
                 .define('#', Tags.Items.STRING)
                 .define('Y', Tags.Items.COBBLESTONE)

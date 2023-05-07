@@ -22,6 +22,7 @@ import static net.dragonmounts3.DragonMounts.getItemTranslationKey;
 public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified {
     private static final String[] TRANSLATION_KEY_SUFFIX = new String[]{"boots", "leggings", "chestplate", "helmet"};
     private final String translationKey;
+    private final String armorTexture;
 
     protected DragonType type;
 
@@ -33,6 +34,7 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified {
         super(material, slot, properties);
         this.type = material.getDragonType();
         this.translationKey = getItemTranslationKey("dragon_scale_" + TRANSLATION_KEY_SUFFIX[slot.getIndex()]);
+        this.armorTexture = MOD_ID + ":textures/models/armor/" + this.type.getSerializedName() + (slot == EquipmentSlotType.LEGS ? "_layer_2.png" : "_layer_1.png");
     }
 
     @Override
@@ -43,7 +45,7 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified {
 
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlotType slot, String type) {
-        return MOD_ID + ":textures/models/armor/" + this.type.name().toLowerCase() + (slot == EquipmentSlotType.LEGS ? "_layer_2.png" : "_layer_1.png");
+        return this.armorTexture;
     }
 
     @Nonnull

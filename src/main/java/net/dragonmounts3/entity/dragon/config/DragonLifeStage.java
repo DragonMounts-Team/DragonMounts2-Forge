@@ -17,7 +17,7 @@ public enum DragonLifeStage implements IStringSerializable {
     JUVENILE(60 * TICKS_PER_GAME_HOUR, 0.61f, 0.99f);
     public static final String DATA_PARAMETER_KEY = "LifeStage";
     public static final String EGG_TRANSLATION_KEY = "dragon.life_stage.egg";
-    private final int duration;
+    public final int duration;
     private final float startSize;
     private final float endSize;
     private final String name;
@@ -50,6 +50,6 @@ public enum DragonLifeStage implements IStringSerializable {
     }
 
     public static float getSize(DragonLifeStage stage, int age) {
-        return stage == ADULT ? 1.00f : MathHelper.lerp(stage.startSize, stage.endSize, (float) Math.abs(age) / stage.duration);
+        return stage.duration == 0 ? 1.00f : MathHelper.lerp(stage.startSize, stage.endSize, (float) Math.abs(age) / stage.duration);
     }
 }

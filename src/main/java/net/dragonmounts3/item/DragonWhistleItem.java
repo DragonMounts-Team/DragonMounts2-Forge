@@ -32,7 +32,7 @@ public class DragonWhistleItem extends Item {
 
     @Nonnull
     @Override
-    public ActionResultType interactLivingEntity(@Nonnull ItemStack stack, @Nonnull PlayerEntity player, LivingEntity entity, @Nonnull Hand hand) {
+    public ActionResultType interactLivingEntity(@Nonnull ItemStack stack, @Nonnull PlayerEntity player, @Nonnull LivingEntity entity, @Nonnull Hand hand) {
         if (entity instanceof TameableDragonEntity) {
             if (player.level.isClientSide) {
                 return ActionResultType.SUCCESS;

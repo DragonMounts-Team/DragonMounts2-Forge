@@ -51,7 +51,6 @@ public class StageCommand {
         } else {
             source.sendFailure(createClassCastException(target, TameableDragonEntity.class));
             return 0;
-
         }
         source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.stage.set", target.getDisplayName(), new TranslationTextComponent(EGG_TRANSLATION_KEY)), true);
         return 1;
@@ -77,9 +76,8 @@ public class StageCommand {
             ServerWorld level = source.getLevel();
             TameableDragonEntity dragon = new TameableDragonEntity(target.level);
             CompoundNBT compound = target.saveWithoutId(new CompoundNBT());
-            compound.putInt(DragonLifeStage.DATA_PARAMETER_KEY, stage.ordinal());
-            //TODO: reset age
             dragon.load(compound);
+            dragon.setLifeStage(stage);
             level.removeEntity(target, false);
             level.addFreshEntity(dragon);
         } else {

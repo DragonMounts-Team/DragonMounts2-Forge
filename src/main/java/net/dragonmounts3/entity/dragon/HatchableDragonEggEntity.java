@@ -135,8 +135,8 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
             String scoreboardName = dragon.getScoreboardName();
             CompoundNBT compound = this.saveWithoutId(new CompoundNBT());
             compound.remove(AGE_DATA_PARAMETER_KEY);
-            compound.putInt(DragonLifeStage.DATA_PARAMETER_KEY, DragonLifeStage.NEWBORN.ordinal());
             dragon.load(compound);
+            dragon.setLifeStage(DragonLifeStage.NEWBORN);
             if (this.team != null) {
                 scoreboard.addPlayerToTeam(scoreboardName, this.team);
             }

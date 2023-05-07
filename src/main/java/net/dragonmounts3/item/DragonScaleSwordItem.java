@@ -17,7 +17,7 @@ import java.util.List;
 import static net.dragonmounts3.DragonMounts.getItemTranslationKey;
 
 public class DragonScaleSwordItem extends SwordItem implements IDragonTypified {
-    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_sword");
+    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_scale_sword");
 
     protected DragonType type;
 

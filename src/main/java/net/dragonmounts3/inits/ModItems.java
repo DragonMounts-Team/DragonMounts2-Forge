@@ -96,20 +96,20 @@ public class ModItems {
     public static final RegistryObject<DragonScaleAxeItem> ZOMBIE_DRAGON_SCALE_AXE = createDragonScaleAxeItem("zombie_dragon_axe", DragonScaleTier.ZOMBIE, tool());
     public static final RegistryObject<DragonScaleAxeItem> SCULK_DRAGON_SCALE_AXE = createDragonScaleAxeItem("sculk_dragon_axe", DragonScaleTier.SCULK, tool().fireResistant());
     //Dragon Scale Bows
-    public static final RegistryObject<DragonScaleBowItem> AETHER_DRAGON_SCALE_BOW = createDragonScaleBowItem("aether_dragon_bow", DragonScaleTier.AETHER, tool());
-    public static final RegistryObject<DragonScaleBowItem> WATER_DRAGON_SCALE_BOW = createDragonScaleBowItem("water_dragon_bow", DragonScaleTier.WATER, tool());
-    public static final RegistryObject<DragonScaleBowItem> ICE_DRAGON_SCALE_BOW = createDragonScaleBowItem("ice_dragon_bow", DragonScaleTier.ICE, tool());
-    public static final RegistryObject<DragonScaleBowItem> FIRE_DRAGON_SCALE_BOW = createDragonScaleBowItem("fire_dragon_bow", DragonScaleTier.FIRE, tool());
-    public static final RegistryObject<DragonScaleBowItem> FOREST_DRAGON_SCALE_BOW = createDragonScaleBowItem("forest_dragon_bow", DragonScaleTier.FOREST, tool());
-    public static final RegistryObject<DragonScaleBowItem> NETHER_DRAGON_SCALE_BOW = createDragonScaleBowItem("nether_dragon_bow", DragonScaleTier.NETHER, tool());
-    public static final RegistryObject<DragonScaleBowItem> ENDER_DRAGON_SCALE_BOW = createDragonScaleBowItem("ender_dragon_bow", DragonScaleTier.ENDER, tool());
-    public static final RegistryObject<DragonScaleBowItem> ENCHANT_DRAGON_SCALE_BOW = createDragonScaleBowItem("enchant_dragon_bow", DragonScaleTier.ENCHANT, tool());
-    public static final RegistryObject<DragonScaleBowItem> SUNLIGHT_DRAGON_SCALE_BOW = createDragonScaleBowItem("sunlight_dragon_bow", DragonScaleTier.SUNLIGHT, tool());
-    public static final RegistryObject<DragonScaleBowItem> MOONLIGHT_DRAGON_SCALE_BOW = createDragonScaleBowItem("moonlight_dragon_bow", DragonScaleTier.MOONLIGHT, tool());
-    public static final RegistryObject<DragonScaleBowItem> STORM_DRAGON_SCALE_BOW = createDragonScaleBowItem("storm_dragon_bow", DragonScaleTier.STORM, tool());
-    public static final RegistryObject<DragonScaleBowItem> TERRA_DRAGON_SCALE_BOW = createDragonScaleBowItem("terra_dragon_bow", DragonScaleTier.TERRA, tool());
-    public static final RegistryObject<DragonScaleBowItem> ZOMBIE_DRAGON_SCALE_BOW = createDragonScaleBowItem("zombie_dragon_bow", DragonScaleTier.ZOMBIE, tool());
-    public static final RegistryObject<DragonScaleBowItem> SCULK_DRAGON_SCALE_BOW = createDragonScaleBowItem("sculk_dragon_bow", DragonScaleTier.SCULK, tool().fireResistant());
+    public static final RegistryObject<DragonScaleBowItem> AETHER_DRAGON_SCALE_BOW = createDragonScaleBowItem("aether_dragon_scale_bow", DragonScaleTier.AETHER, tool());
+    public static final RegistryObject<DragonScaleBowItem> WATER_DRAGON_SCALE_BOW = createDragonScaleBowItem("water_dragon_scale_bow", DragonScaleTier.WATER, tool());
+    public static final RegistryObject<DragonScaleBowItem> ICE_DRAGON_SCALE_BOW = createDragonScaleBowItem("ice_dragon_scale_bow", DragonScaleTier.ICE, tool());
+    public static final RegistryObject<DragonScaleBowItem> FIRE_DRAGON_SCALE_BOW = createDragonScaleBowItem("fire_dragon_scale_bow", DragonScaleTier.FIRE, tool());
+    public static final RegistryObject<DragonScaleBowItem> FOREST_DRAGON_SCALE_BOW = createDragonScaleBowItem("forest_dragon_scale_bow", DragonScaleTier.FOREST, tool());
+    public static final RegistryObject<DragonScaleBowItem> NETHER_DRAGON_SCALE_BOW = createDragonScaleBowItem("nether_dragon_scale_bow", DragonScaleTier.NETHER, tool());
+    public static final RegistryObject<DragonScaleBowItem> ENDER_DRAGON_SCALE_BOW = createDragonScaleBowItem("ender_dragon_scale_bow", DragonScaleTier.ENDER, tool());
+    public static final RegistryObject<DragonScaleBowItem> ENCHANT_DRAGON_SCALE_BOW = createDragonScaleBowItem("enchant_dragon_scale_bow", DragonScaleTier.ENCHANT, tool());
+    public static final RegistryObject<DragonScaleBowItem> SUNLIGHT_DRAGON_SCALE_BOW = createDragonScaleBowItem("sunlight_dragon_scale_bow", DragonScaleTier.SUNLIGHT, tool());
+    public static final RegistryObject<DragonScaleBowItem> MOONLIGHT_DRAGON_SCALE_BOW = createDragonScaleBowItem("moonlight_dragon_scale_bow", DragonScaleTier.MOONLIGHT, tool());
+    public static final RegistryObject<DragonScaleBowItem> STORM_DRAGON_SCALE_BOW = createDragonScaleBowItem("storm_dragon_scale_bow", DragonScaleTier.STORM, tool());
+    public static final RegistryObject<DragonScaleBowItem> TERRA_DRAGON_SCALE_BOW = createDragonScaleBowItem("terra_dragon_scale_bow", DragonScaleTier.TERRA, tool());
+    public static final RegistryObject<DragonScaleBowItem> ZOMBIE_DRAGON_SCALE_BOW = createDragonScaleBowItem("zombie_dragon_scale_bow", DragonScaleTier.ZOMBIE, tool());
+    public static final RegistryObject<DragonScaleBowItem> SCULK_DRAGON_SCALE_BOW = createDragonScaleBowItem("sculk_dragon_scale_bow", DragonScaleTier.SCULK, tool().fireResistant());
     //Dragon Scale Shields
     public static final RegistryObject<DragonScaleShieldItem> AETHER_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("aether_dragon_scale_shield", DragonScaleMaterial.AETHER, tool());
     public static final RegistryObject<DragonScaleShieldItem> WATER_DRAGON_SCALE_SHIELD = createDragonScaleShieldItem("water_dragon_scale_shield", DragonScaleMaterial.WATER, tool());

@@ -1,9 +1,9 @@
 package net.dragonmounts3.item;
 
+import net.dragonmounts3.api.DragonType;
+import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.inits.ModEntities;
-import net.dragonmounts3.registry.DragonType;
-import net.dragonmounts3.registry.IDragonTypified;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
@@ -47,7 +47,7 @@ public final class DragonSpawnEggItem extends ForgeSpawnEggItem implements IDrag
         super(ModEntities.TAMEABLE_DRAGON, backgroundColor, highlightColor, props);
         this.type = type;
         this.spawnData.putString("id", ModEntities.TAMEABLE_DRAGON.getId().toString());
-        this.spawnData.putInt(DragonType.DATA_PARAMETER_KEY, type.ordinal());
+        this.spawnData.putString(DragonType.DATA_PARAMETER_KEY, type.getSerializedName());
     }
 
     @Nonnull

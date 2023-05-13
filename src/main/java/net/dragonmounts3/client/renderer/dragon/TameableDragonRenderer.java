@@ -2,9 +2,9 @@ package net.dragonmounts3.client.renderer.dragon;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.client.model.dragon.DragonModel;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
-import net.dragonmounts3.registry.DragonType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;

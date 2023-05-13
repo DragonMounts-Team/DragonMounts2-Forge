@@ -5,7 +5,6 @@ import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.monster.piglin.PiglinTasks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
@@ -67,7 +66,6 @@ public class DragonCoreBlock extends ContainerBlock {
 
     @Nonnull
     @Override
-    @SuppressWarnings("deprecation")
     public BlockRenderType getRenderShape(@Nonnull BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
@@ -88,7 +86,6 @@ public class DragonCoreBlock extends ContainerBlock {
                 if (status != ShulkerBoxTileEntity.AnimationStatus.CLOSING && (status != ShulkerBoxTileEntity.AnimationStatus.CLOSED || level.noCollision(ShulkerAABBHelper.openBoundingBox(pos, Direction.UP)))) {
                     player.openMenu(dragonCoreBlockEntity);
                     player.awardStat(Stats.OPEN_SHULKER_BOX);
-                    PiglinTasks.angerNearbyPiglins(player, true);
                 }
                 return ActionResultType.CONSUME;
             } else {

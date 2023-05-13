@@ -1,9 +1,9 @@
 package net.dragonmounts3.item;
 
+import net.dragonmounts3.api.DragonType;
+import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.inits.ModItems;
-import net.dragonmounts3.registry.DragonType;
-import net.dragonmounts3.registry.IDragonTypified;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -32,6 +32,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
+
+import static net.dragonmounts3.util.EntityUtil.loadScores;
 
 public class FilledDragonAmuletItem extends DragonAmuletItem implements IDragonTypified {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -65,12 +67,11 @@ public class FilledDragonAmuletItem extends DragonAmuletItem implements IDragonT
                 TameableDragonEntity dragon = new TameableDragonEntity(level);
                 if (compound != null) {
                     dragon.load(compound);
-                    dragon.loadScores(compound);
-                    dragon.setDragonType(this.type, false);
+                    loadScores(dragon, compound).setDragonType(this.type, false);
                 } else {
                     dragon.setDragonType(this.type, true);
                 }
-                dragon.setPos(pos.getX(), pos.getY(), pos.getZ());
+                dragon.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
                 level.addFreshEntity(dragon);
                 ItemStack newStack = new ItemStack(ModItems.DRAGON_AMULET.get());
                 player.setItemInHand(hand, newStack);

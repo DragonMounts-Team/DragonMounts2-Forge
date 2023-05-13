@@ -1,6 +1,6 @@
 package net.dragonmounts3.client.renderer.dragon;
 
-import net.dragonmounts3.registry.DragonType;
+import net.dragonmounts3.api.DragonType;
 import net.minecraft.util.ResourceLocation;
 
 import static net.dragonmounts3.DragonMounts.prefix;

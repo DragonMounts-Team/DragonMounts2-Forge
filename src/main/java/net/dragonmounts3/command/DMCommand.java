@@ -16,10 +16,16 @@ import static net.minecraft.util.text.event.HoverEvent.Action.SHOW_ENTITY;
 public class DMCommand {
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         LiteralArgumentBuilder<CommandSource> builder = Commands.literal("dragonmounts")
+                .then(ConfigCommand.register())
+                .then(FreeCommand.register())
                 .then(StageCommand.register())
                 .then(TameCommand.register())
                 .then(TypeCommand.register());
         dispatcher.register(builder);
+    }
+
+    public static ITextComponent createClassCastException(String string, Class<?> clazz) {
+        return new TranslationTextComponent("message.class_cast_exception", string, clazz.getCanonicalName());
     }
 
     public static ITextComponent createClassCastException(Entity entity, Class<?> clazz) {

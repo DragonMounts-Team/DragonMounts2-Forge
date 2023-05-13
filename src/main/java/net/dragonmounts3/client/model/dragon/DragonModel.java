@@ -2,8 +2,8 @@ package net.dragonmounts3.client.model.dragon;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
-import net.dragonmounts3.registry.DragonType;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 
 import javax.annotation.Nonnull;

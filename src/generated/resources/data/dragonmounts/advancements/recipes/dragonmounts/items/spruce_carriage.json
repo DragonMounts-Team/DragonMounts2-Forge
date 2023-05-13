@@ -6,6 +6,16 @@
     ]
   },
   "criteria": {
+    "has_planks": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "minecraft:planks"
+          }
+        ]
+      }
+    },
     "has_leather": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
@@ -25,6 +35,7 @@
   },
   "requirements": [
     [
+      "has_planks",
       "has_leather",
       "has_the_recipe"
     ]

@@ -2,52 +2,141 @@ package net.dragonmounts3.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import net.dragonmounts3.registry.DragonType;
-import net.dragonmounts3.registry.IDragonTypified;
-import net.dragonmounts3.registry.IMutableDragonTypified;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.dragonmounts3.api.DragonType;
+import net.dragonmounts3.api.IDragonTypified;
+import net.dragonmounts3.api.IMutableDragonTypified;
+import net.dragonmounts3.api.SetDragonTypeCommandEvent;
+import net.dragonmounts3.inits.ModBlocks;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.DragonEggBlock;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.command.arguments.BlockPosArgument;
 import net.minecraft.command.arguments.EntityArgument;
-import net.minecraft.command.arguments.EntitySelector;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
 import static net.dragonmounts3.command.DMCommand.createClassCastException;
 
 public class TypeCommand {
     public static LiteralArgumentBuilder<CommandSource> register() {
         return Commands.literal("type").requires(source -> source.hasPermission(3))
-                .then(Commands.literal("get")
-                        .then(Commands.argument("targets", EntityArgument.entities()).executes(context -> get(context.getSource(), EntityArgument.getEntity(context, "targets"))))
-                )
-                .then(Commands.literal("set")
-                        .then(addValuesTo(Commands.argument("target", EntityArgument.entity())))
-                );
+                .then(Commands.literal("block").then(impl(
+                        Commands.argument("pos", BlockPosArgument.blockPos()),
+                        TypeCommand::getType,
+                        TypeCommand::setType,
+                        TypeCommand::block
+                )))
+                .then(Commands.literal("entity").then(impl(
+                        Commands.argument("target", EntityArgument.entity()),
+                        TypeCommand::getType,
+                        TypeCommand::setType,
+                        TypeCommand::entity
+                )))/*.then(Commands.literal("storage"))*/;
     }
 
-    private static RequiredArgumentBuilder<CommandSource, EntitySelector> addValuesTo(RequiredArgumentBuilder<CommandSource, EntitySelector> builder) {
-        for (DragonType type : DragonType.values()) {
-            builder.then(Commands.literal(type.getSerializedName()).executes(context -> set(context.getSource(), EntityArgument.getEntity(context, "target"), type)));
+    private static BlockPos block(CommandContext<CommandSource> context) throws CommandSyntaxException {
+        return BlockPosArgument.getLoadedBlockPos(context, "pos");
+    }
+
+    private static Entity entity(CommandContext<CommandSource> context) throws CommandSyntaxException {
+        return EntityArgument.getEntity(context, "target");
+    }
+
+    private static int getType(CommandContext<CommandSource> context, BlockPos pos) {
+        CommandSource source = context.getSource();
+        World level = source.getLevel();
+        BlockState oldState = level.getBlockState(pos);
+        Block block = oldState.getBlock();
+        if (block instanceof IDragonTypified) {
+            source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.block.get", pos.getX(), pos.getY(), pos.getZ(), ((IDragonTypified) block).getDragonType().getText()), true);
+            return 1;
         }
-        return builder;
+        source.sendFailure(createClassCastException(block.getClass().getCanonicalName(), IDragonTypified.class));
+        return 0;
     }
 
-    private static int get(CommandSource source, Entity target) {
+    private static int getType(CommandContext<CommandSource> context, Entity target) {
+        CommandSource source = context.getSource();
         if (target instanceof IDragonTypified) {
-            source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.get", target.getDisplayName(), ((IDragonTypified) target).getDragonType().getText()), true);
+            source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.entity.get", target.getDisplayName(), ((IDragonTypified) target).getDragonType().getText()), true);
             return 1;
         }
         source.sendFailure(createClassCastException(target, IDragonTypified.class));
         return 0;
     }
 
-    private static int set(CommandSource source, Entity target, DragonType type) {
+    private static int setType(CommandContext<CommandSource> context, BlockPos pos, DragonType type) {
+        boolean succeed = false;
+        CommandSource source = context.getSource();
+        World level = source.getLevel();
+        BlockState oldState = level.getBlockState(pos);
+        Block block = oldState.getBlock();
+        BlockState newState = oldState;
+        if (block instanceof IDragonTypified) {
+            if (block instanceof DragonEggBlock) {
+                Block egg = ModBlocks.HATCHABLE_DRAGON_EGG.get(type);
+                if (egg != null) {
+                    newState = egg.defaultBlockState();
+                    succeed = true;
+                }
+            }
+            SetDragonTypeCommandEvent.Block event = new SetDragonTypeCommandEvent.Block(context, pos, type, newState, succeed);
+            MinecraftForge.EVENT_BUS.post(event);
+            newState = event.getState();
+            succeed = event.isSucceed();
+        }
+        if (succeed && newState != null && newState != oldState) {
+            level.setBlockAndUpdate(pos, newState);
+            source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.block.set", pos.getX(), pos.getY(), pos.getZ(), type.getText()), true);
+            return 1;
+        }
+        return 0;
+    }
+
+    private static int setType(CommandContext<CommandSource> context, Entity target, DragonType type) {
+        CommandSource source = context.getSource();
         if (target instanceof IMutableDragonTypified) {
             ((IMutableDragonTypified) target).setDragonType(type);
-            source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.set", target.getDisplayName(), type.getText()), true);
+            source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.entity.set", target.getDisplayName(), type.getText()), true);
             return 1;
         }
         source.sendFailure(createClassCastException(target, IMutableDragonTypified.class));
         return 0;
+    }
+
+    private static <T, S> RequiredArgumentBuilder<CommandSource, T> impl(
+            RequiredArgumentBuilder<CommandSource, T> builder,
+            Getter<S> getter,
+            Setter<S> setter,
+            Provider<S> provider
+    ) {
+        for (DragonType type : DragonType.values()) {
+            builder.then(Commands.literal(type.getSerializedName())
+                    .executes(context -> setter.set(context, provider.get(context), type)));
+        }
+        builder.executes(context -> getter.get(context, provider.get(context)));
+        return builder;
+    }
+
+    @FunctionalInterface
+    private interface Getter<T> {
+        int get(CommandContext<CommandSource> context, T target);
+    }
+
+    @FunctionalInterface
+    private interface Setter<T> {
+        int set(CommandContext<CommandSource> context, T target, DragonType type);
+    }
+
+    @FunctionalInterface
+    private interface Provider<T> {
+        T get(CommandContext<CommandSource> context) throws CommandSyntaxException;
     }
 }

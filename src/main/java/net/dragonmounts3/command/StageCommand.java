@@ -20,13 +20,10 @@ import static net.dragonmounts3.entity.dragon.config.DragonLifeStage.EGG_TRANSLA
 
 public class StageCommand {
     public static LiteralArgumentBuilder<CommandSource> register() {
-        return Commands.literal("stage").requires(source -> source.hasPermission(3))
-                .then(Commands.literal("set")
-                        .then(addValuesTo(Commands.argument("target", EntityArgument.entity())))
-                )
-                .then(Commands.literal("get")
-                        .then(Commands.argument("targets", EntityArgument.entities()).executes(context -> get(context.getSource(), EntityArgument.getEntity(context, "targets"))))
-                );
+        return Commands.literal("stage").requires(source -> source.hasPermission(3)).then(
+                addValuesTo(Commands.argument("target", EntityArgument.entity()))
+                        .executes(context -> get(context.getSource(), EntityArgument.getEntity(context, "target")))
+        );
     }
 
     private static RequiredArgumentBuilder<CommandSource, EntitySelector> addValuesTo(RequiredArgumentBuilder<CommandSource, EntitySelector> builder) {
@@ -71,13 +68,13 @@ public class StageCommand {
     private static int set(CommandSource source, Entity target, DragonLifeStage stage) {
         if (target instanceof TameableDragonEntity) {
             TameableDragonEntity dragon = (TameableDragonEntity) target;
-            dragon.setLifeStage(stage);
+            dragon.setLifeStage(stage, true);
         } else if (target instanceof HatchableDragonEggEntity) {
             ServerWorld level = source.getLevel();
             TameableDragonEntity dragon = new TameableDragonEntity(target.level);
             CompoundNBT compound = target.saveWithoutId(new CompoundNBT());
             dragon.load(compound);
-            dragon.setLifeStage(stage);
+            dragon.setLifeStage(stage, true);
             level.removeEntity(target, false);
             level.addFreshEntity(dragon);
         } else {

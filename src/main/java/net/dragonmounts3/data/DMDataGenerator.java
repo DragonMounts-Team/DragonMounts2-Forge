@@ -22,6 +22,7 @@ public class DMDataGenerator {
         DMBlockTagsProvider blockTagsProvider = new DMBlockTagsProvider(generator, exFileHelper);
         generator.addProvider(blockTagsProvider);
         generator.addProvider(new DMItemTagsProvider(generator, blockTagsProvider, exFileHelper));
+        generator.addProvider(new DMEntityTypeTagsProvider(generator, exFileHelper));
         generator.addProvider(new DMLanguageProviderENUS(generator));
         generator.addProvider(new DMLanguageProviderZHCN(generator));
         generator.addProvider(new DMLootTableProvider(generator));

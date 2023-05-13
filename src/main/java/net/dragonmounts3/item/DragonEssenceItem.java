@@ -1,8 +1,8 @@
 package net.dragonmounts3.item;
 
+import net.dragonmounts3.api.DragonType;
+import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
-import net.dragonmounts3.registry.DragonType;
-import net.dragonmounts3.registry.IDragonTypified;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -52,7 +52,7 @@ public class DragonEssenceItem extends Item implements IDragonTypified {
                     dragon.load(compound);
                 }
                 dragon.setDragonType(this.type, true);
-                dragon.setPos(pos.getX(), pos.getY(), pos.getZ());
+                dragon.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
                 level.addFreshEntity(dragon);
                 if (!player.abilities.instabuild) {
                     stack.shrink(1);

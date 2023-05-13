@@ -2,11 +2,21 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "dragonmounts:netherite_shears_smithing"
+      "dragonmounts:netherite_dragon_armor_from_emerald"
     ]
   },
   "criteria": {
-    "has_netherite_ingot": {
+    "has_ingredient": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "dragonmounts:emerald_dragon_armor"
+          }
+        ]
+      }
+    },
+    "has_block_of_netherite": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -19,13 +29,14 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "dragonmounts:netherite_shears_smithing"
+        "recipe": "dragonmounts:netherite_dragon_armor_from_emerald"
       }
     }
   },
   "requirements": [
     [
-      "has_netherite_ingot",
+      "has_ingredient",
+      "has_block_of_netherite",
       "has_the_recipe"
     ]
   ]

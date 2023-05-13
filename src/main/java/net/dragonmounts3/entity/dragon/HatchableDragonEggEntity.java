@@ -1,5 +1,7 @@
 package net.dragonmounts3.entity.dragon;
 
+import net.dragonmounts3.api.DragonType;
+import net.dragonmounts3.api.IMutableDragonTypified;
 import net.dragonmounts3.block.HatchableDragonEggBlock;
 import net.dragonmounts3.entity.dragon.config.DragonLifeStage;
 import net.dragonmounts3.inits.ModBlocks;
@@ -7,8 +9,6 @@ import net.dragonmounts3.inits.ModEntities;
 import net.dragonmounts3.inits.ModItems;
 import net.dragonmounts3.inits.ModSounds;
 import net.dragonmounts3.item.DragonScalesItem;
-import net.dragonmounts3.registry.DragonType;
-import net.dragonmounts3.registry.IMutableDragonTypified;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -46,7 +46,7 @@ import static net.dragonmounts3.entity.dragon.TameableDragonEntity.AGE_DATA_PARA
 
 @ParametersAreNonnullByDefault
 public class HatchableDragonEggEntity extends LivingEntity implements IMutableDragonTypified {
-    private static final DataParameter<Integer> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DataSerializers.INT);
+    private static final DataParameter<String> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DataSerializers.STRING);
     private static final float EGG_CRACK_THRESHOLD = 0.9f;
     private static final float EGG_WRIGGLE_THRESHOLD = 0.75f;
     private static final float EGG_WRIGGLE_BASE_CHANCE = 20;
@@ -77,13 +77,13 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(DATA_DRAGON_TYPE, DragonType.ENDER.ordinal());
+        this.entityData.define(DATA_DRAGON_TYPE, DragonType.ENDER.getSerializedName());
     }
 
     @Override
     public void addAdditionalSaveData(CompoundNBT compound) {
         super.addAdditionalSaveData(compound);
-        compound.putInt(DragonType.DATA_PARAMETER_KEY, this.entityData.get(DATA_DRAGON_TYPE));
+        compound.putString(DragonType.DATA_PARAMETER_KEY, this.entityData.get(DATA_DRAGON_TYPE));
         compound.putInt(AGE_DATA_PARAMETER_KEY, this.age);
     }
 
@@ -91,7 +91,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     public void readAdditionalSaveData(CompoundNBT compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains(DragonType.DATA_PARAMETER_KEY)) {
-            this.entityData.set(DATA_DRAGON_TYPE, compound.getInt(DragonType.DATA_PARAMETER_KEY));
+            this.entityData.set(DATA_DRAGON_TYPE, compound.getString(DragonType.DATA_PARAMETER_KEY));
         }
         if (compound.contains(AGE_DATA_PARAMETER_KEY)) {
             this.age = compound.getInt(AGE_DATA_PARAMETER_KEY);
@@ -136,7 +136,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
             CompoundNBT compound = this.saveWithoutId(new CompoundNBT());
             compound.remove(AGE_DATA_PARAMETER_KEY);
             dragon.load(compound);
-            dragon.setLifeStage(DragonLifeStage.NEWBORN);
+            dragon.setLifeStage(DragonLifeStage.NEWBORN, true);
             if (this.team != null) {
                 scoreboard.addPlayerToTeam(scoreboardName, this.team);
             }
@@ -298,6 +298,16 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     public void push(Entity entity) {
     }
 
+    @Override
+    public boolean isPushedByFluid() {
+        return false;
+    }
+
+    @Override
+    public boolean canBreatheUnderwater() {
+        return true;
+    }
+
     public void setAge(int age) {
         this.age = age;
     }
@@ -315,7 +325,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     }
 
     public void setDragonType(DragonType type, boolean reset) {
-        this.entityData.set(DATA_DRAGON_TYPE, type.ordinal());
+        this.entityData.set(DATA_DRAGON_TYPE, type.getSerializedName());
         if (reset) {
             final double health = this.getDragonType().getConfig().getMaxHealth();
             Objects.requireNonNull(this.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(health);
@@ -330,6 +340,6 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
 
     @Override
     public DragonType getDragonType() {
-        return DragonType.byId(this.entityData.get(DATA_DRAGON_TYPE));
+        return DragonType.byName(this.entityData.get(DATA_DRAGON_TYPE));
     }
 }

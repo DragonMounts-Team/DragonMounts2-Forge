@@ -2,16 +2,16 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "dragonmounts:netherite_dragon_armor_smithing"
+      "dragonmounts:iron_ingot_form_smelting"
     ]
   },
   "criteria": {
-    "has_netherite_ingot": {
+    "has_armor": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:netherite_ingot"
+            "item": "dragonmounts:iron_dragon_armor"
           }
         ]
       }
@@ -19,13 +19,13 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "dragonmounts:netherite_dragon_armor_smithing"
+        "recipe": "dragonmounts:iron_ingot_form_smelting"
       }
     }
   },
   "requirements": [
     [
-      "has_netherite_ingot",
+      "has_armor",
       "has_the_recipe"
     ]
   ]

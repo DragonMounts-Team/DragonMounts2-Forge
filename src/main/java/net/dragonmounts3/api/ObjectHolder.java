@@ -1,4 +1,4 @@
-package net.dragonmounts3.registry;
+package net.dragonmounts3.api;
 
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -8,12 +8,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @ParametersAreNonnullByDefault
 public class ObjectHolder<K, E extends IForgeRegistryEntry<? super E>> implements Iterable<E> {
-    private final HashMap<K, E> map = new HashMap<>();
+    private final Map<K, E> map = this.initMap();
 
     public final RegistryObject<E> register(
             final DeferredRegister<? super E> register,
@@ -21,25 +22,29 @@ public class ObjectHolder<K, E extends IForgeRegistryEntry<? super E>> implement
             final K key,
             final E value
     ) {
-        if (map.containsKey(key)) {
+        if (this.map.containsKey(key)) {
             throw new IllegalArgumentException();
         }
-        map.put(key, value);
+        this.map.put(key, value);
         return register.register(name, () -> value);
+    }
+
+    protected Map<K, E> initMap() {
+        return new LinkedHashMap<>();
     }
 
     @Nullable
     public final E get(K type) {
-        return map.get(type);
+        return this.map.get(type);
     }
 
     public final Collection<E> values() {
-        return map.values();
+        return this.map.values();
     }
 
     @Nonnull
     @Override
     public final Iterator<E> iterator() {
-        return map.values().iterator();
+        return this.map.values().iterator();
     }
 }

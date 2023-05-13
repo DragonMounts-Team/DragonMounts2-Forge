@@ -6,17 +6,22 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static net.dragonmounts3.util.TimeUtil.TICKS_PER_GAME_HOUR;
 
 public enum DragonLifeStage implements IStringSerializable {
-    ADULT(0, 1.00f, 1.00f),
     NEWBORN(48 * TICKS_PER_GAME_HOUR, 0.04f, 0.09f),
     INFANT(24 * TICKS_PER_GAME_HOUR, 0.10f, 0.18f),
     PREJUVENILE(32 * TICKS_PER_GAME_HOUR, 0.19f, 0.60f),
-    JUVENILE(60 * TICKS_PER_GAME_HOUR, 0.61f, 0.99f);
+    JUVENILE(60 * TICKS_PER_GAME_HOUR, 0.61f, 0.99f),
+    ADULT(0, 1.00f, 1.00f);
     public static final String DATA_PARAMETER_KEY = "LifeStage";
     public static final String EGG_TRANSLATION_KEY = "dragon.life_stage.egg";
+    private static final DragonLifeStage[] VALUES = values();
+    private static final Map<String, DragonLifeStage> BY_NAME = Arrays.stream(VALUES).collect(Collectors.toMap(DragonLifeStage::getSerializedName, (value) -> value));
     public final int duration;
     private final float startSize;
     private final float endSize;
@@ -42,14 +47,18 @@ public enum DragonLifeStage implements IStringSerializable {
     }
 
     public static DragonLifeStage byId(int id) {
-        DragonLifeStage[] values = DragonLifeStage.values();
-        if (id < 0 || id >= values.length) {
+        if (id < 0 || id >= VALUES.length) {
             return DragonLifeStage.ADULT;
         }
-        return values[id];
+        return VALUES[id];
+    }
+
+    public static DragonLifeStage byName(String string) {
+        DragonLifeStage value = BY_NAME.get(string);
+        return value == null ? ADULT : value;
     }
 
     public static float getSize(DragonLifeStage stage, int age) {
-        return stage.duration == 0 ? 1.00f : MathHelper.lerp(stage.startSize, stage.endSize, (float) Math.abs(age) / stage.duration);
+        return stage.duration == 0 ? 1.00f : MathHelper.lerp((float) Math.abs(age) / stage.duration, stage.endSize, stage.startSize);
     }
 }

@@ -1,4 +1,4 @@
-package net.dragonmounts3.registry;
+package net.dragonmounts3.api;
 
 import net.dragonmounts3.entity.dragon.config.*;
 import net.minecraft.util.IStringSerializable;
@@ -8,6 +8,9 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public enum DragonType implements IStringSerializable {
     AETHER(0x0294BD, new AetherDragonConfig()),
@@ -35,15 +38,22 @@ public enum DragonType implements IStringSerializable {
         this.text = "dragon.type." + this.name;
     }
 
+    private static final DragonType[] VALUES = values();
+    private static final Map<String, DragonType> BY_NAME = Arrays.stream(VALUES).collect(Collectors.toMap(DragonType::getSerializedName, (value) -> value));
     public static final String DATA_PARAMETER_KEY = "DragonType";
 
     public static DragonType byId(int id) {
-        DragonType[] values = DragonType.values();
-        if (id < 0 || id >= values.length) {
+        if (id < 0 || id >= VALUES.length) {
             return DragonType.ENDER;
         }
-        return values[id];
+        return VALUES[id];
     }
+
+    public static DragonType byName(String string) {
+        DragonType value = BY_NAME.get(string);
+        return value == null ? ENDER : value;
+    }
+
 
     public static boolean isSkeleton(DragonType type) {
         return type == DragonType.SKELETON || type == DragonType.WITHER;

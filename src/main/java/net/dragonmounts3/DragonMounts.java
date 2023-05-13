@@ -2,6 +2,7 @@ package net.dragonmounts3;
 
 import net.dragonmounts3.command.DMCommand;
 import net.dragonmounts3.inits.*;
+import net.dragonmounts3.network.DMPacketHandler;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -24,11 +25,11 @@ public class DragonMounts {
     public static final String MOD_ID = "dragonmounts";
     private static final String ITEM_TRANSLATION_KEY_PREFIX = "item." + MOD_ID + '.';
     private static final String BLOCK_TRANSLATION_KEY_PREFIX = "block." + MOD_ID + '.';
-
+    public static final DamageSource DRAGONS_FIRE = new DamageSource("dragons_fire");
     public IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-    public static DamageSource DRAGONS_FIRE = new DamageSource("dragons_fire");
 
     public DragonMounts() {
+        DMPacketHandler.init();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DragonMountsConfig.SPEC);
         ModSounds.SOUNDS.register(this.eventBus);
         ModAttributes.ATTRIBUTES.register(this.eventBus);

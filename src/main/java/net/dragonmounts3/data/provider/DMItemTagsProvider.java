@@ -10,6 +10,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
 import net.minecraft.data.TagsProvider;
 import net.minecraft.item.Item;
+import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -26,6 +27,8 @@ public class DMItemTagsProvider extends ItemTagsProvider {
         this.tag(Tags.Items.SHEARS)
                 .add(ModItems.DIAMOND_SHEARS.get())
                 .add(ModItems.NETHERITE_SHEARS.get());
+        this.tag(ItemTags.PIGLIN_LOVED)
+                .add(ModItems.GOLDEN_DRAGON_ARMOR.get());
         TagsProvider.Builder<Item> dragonScaleBow = this.tag(DMItemTags.DRAGON_SCALE_BOW);
         for (DragonScaleBowItem item : ModItems.DRAGON_SCALE_BOW) {
             dragonScaleBow.add(item);

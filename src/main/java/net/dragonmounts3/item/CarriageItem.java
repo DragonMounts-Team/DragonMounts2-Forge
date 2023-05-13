@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EntityPredicates;
@@ -17,6 +18,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -27,6 +29,11 @@ public class CarriageItem extends Item {
     public CarriageItem(CarriageType type, Properties properties) {
         super(properties);
         this.type = type;
+    }
+
+    @Override
+    public int getBurnTime(ItemStack itemStack, @Nullable IRecipeType<?> recipeType) {
+        return 800;
     }
 
     @Nonnull

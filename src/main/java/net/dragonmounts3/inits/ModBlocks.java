@@ -1,12 +1,12 @@
 package net.dragonmounts3.inits;
 
 import net.dragonmounts3.DragonMounts;
+import net.dragonmounts3.api.DragonType;
+import net.dragonmounts3.api.DragonTypifiedObjectHolder;
 import net.dragonmounts3.block.DragonCoreBlock;
 import net.dragonmounts3.block.DragonNestBlock;
 import net.dragonmounts3.block.HatchableDragonEggBlock;
 import net.dragonmounts3.client.renderer.ModItemStackTileEntityRenderer;
-import net.dragonmounts3.registry.DragonType;
-import net.dragonmounts3.registry.DragonTypifiedObjectHolder;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item.Properties;

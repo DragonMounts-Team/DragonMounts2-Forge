@@ -32,7 +32,7 @@ public class DMItemModelProvider extends ItemModelProvider {
                     .append("_");
             StringBuilder texture = new StringBuilder("items/bow/")
                     .append(item.getDragonType().getSerializedName())
-                    //pay attention to        ▼
+                    //pay attention to        ↓
                     .append("_dragon_scale_bow_");
             int rootLength = root.length();
             int textureLength = texture.length();

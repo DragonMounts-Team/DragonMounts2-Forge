@@ -1,8 +1,8 @@
 package net.dragonmounts3.item;
 
+import net.dragonmounts3.api.DragonType;
+import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.inits.ModItems;
-import net.dragonmounts3.registry.DragonType;
-import net.dragonmounts3.registry.IDragonTypified;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;

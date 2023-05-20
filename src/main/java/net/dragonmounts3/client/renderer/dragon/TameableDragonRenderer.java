@@ -27,7 +27,6 @@ import javax.annotation.Nonnull;
 
 public class TameableDragonRenderer extends LivingRenderer<TameableDragonEntity, DragonModel> {
     protected DragonType typeSnapshot = null;
-    protected TextureManager manager = TextureManager.ENDER;
 
     public TameableDragonRenderer(EntityRendererManager entityRenderDispatcher) {
         super(entityRenderDispatcher, new DragonModel(), 0);
@@ -39,8 +38,7 @@ public class TameableDragonRenderer extends LivingRenderer<TameableDragonEntity,
             return;
         DragonType type = dragon.getDragonType();
         if (type != this.typeSnapshot) {
-            this.model.onTypeChanged(typeSnapshot, type);
-            this.manager = TextureManager.get(type);
+            this.model.onTypeChanged(this.typeSnapshot, type);
             this.typeSnapshot = type;
         }
         matrixStack.pushPose();
@@ -126,7 +124,10 @@ public class TameableDragonRenderer extends LivingRenderer<TameableDragonEntity,
     @Nonnull
     @Override
     public ResourceLocation getTextureLocation(@Nonnull TameableDragonEntity dragon) {
-        return this.manager.body;
+        if (this.typeSnapshot == null) {
+            return DragonType.ENDER.resources.body;
+        }
+        return this.typeSnapshot.resources.body;
     }
 
     @Override

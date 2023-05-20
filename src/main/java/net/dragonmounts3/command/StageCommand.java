@@ -2,9 +2,9 @@ package net.dragonmounts3.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import net.dragonmounts3.entity.dragon.DragonLifeStage;
 import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
-import net.dragonmounts3.entity.dragon.config.DragonLifeStage;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
@@ -15,8 +15,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 
 import static net.dragonmounts3.command.DMCommand.createClassCastException;
+import static net.dragonmounts3.entity.dragon.DragonLifeStage.EGG_TRANSLATION_KEY;
 import static net.dragonmounts3.entity.dragon.TameableDragonEntity.AGE_DATA_PARAMETER_KEY;
-import static net.dragonmounts3.entity.dragon.config.DragonLifeStage.EGG_TRANSLATION_KEY;
 
 public class StageCommand {
     public static LiteralArgumentBuilder<CommandSource> register() {

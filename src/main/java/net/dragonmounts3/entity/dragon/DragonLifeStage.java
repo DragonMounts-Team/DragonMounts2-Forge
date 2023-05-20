@@ -1,4 +1,4 @@
-package net.dragonmounts3.entity.dragon.config;
+package net.dragonmounts3.entity.dragon;
 
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.MathHelper;

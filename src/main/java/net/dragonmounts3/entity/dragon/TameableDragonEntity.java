@@ -3,19 +3,21 @@ package net.dragonmounts3.entity.dragon;
 import net.dragonmounts3.DragonMountsConfig;
 import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IMutableDragonTypified;
-import net.dragonmounts3.entity.dragon.config.DragonLifeStage;
 import net.dragonmounts3.entity.dragon.helper.DragonBodyHelper;
 import net.dragonmounts3.entity.dragon.helper.DragonHelper;
 import net.dragonmounts3.inits.ModAttributes;
 import net.dragonmounts3.inits.ModEntities;
 import net.dragonmounts3.inventory.DragonInventoryContainer;
-import net.dragonmounts3.network.UpdateAgePacket;
+import net.dragonmounts3.network.SUpdateAgePacket;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.attributes.AttributeModifierManager;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.item.EnderCrystalEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -28,7 +30,6 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.IForgeShearable;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,7 +48,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     public static final double BASE_GROUND_SPEED = 0.4;
     public static final double BASE_AIR_SPEED = 0.9;
     public static final double BASE_DAMAGE = DragonMountsConfig.BASE_DAMAGE.get();
-    public static final double BASE_ARMOR = DragonMountsConfig.ARMOR.get();
+    public static final double BASE_ARMOR = DragonMountsConfig.BASE_ARMOR.get();
     public static final double BASE_TOUGHNESS = 30.0D;
     public static final float RESISTANCE = 10.0f;
     public static final double BASE_FOLLOW_RANGE = 70;
@@ -89,6 +90,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     public EnderCrystalEntity healingEnderCrystal;
     protected DragonInventoryContainer inventory;
     public static int ticksShear;
+    private int ageSnapshot = 0;
     public int inAirTicks;
     public int roarTicks;
     protected int ticksSinceLastAttack;
@@ -105,8 +107,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
         this.maxUpStep = 1.0F;
         this.blocksBuilding = true;
         createInventory();
-        LOGGER.log(Level.INFO, "MaxHealth:" + Objects.requireNonNull(this.getAttribute(Attributes.MAX_HEALTH)).getBaseValue());
-        LOGGER.log(Level.INFO, "Health" + this.getHealth());
+        Objects.requireNonNull(this.getAttributes().getInstance(Attributes.MAX_HEALTH)).setBaseValue(DragonMountsConfig.BASE_HEALTH.get());
     }
 
     public TameableDragonEntity(World world) {
@@ -115,6 +116,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
         return LivingEntity.createLivingAttributes()
+                .add(Attributes.MAX_HEALTH, DragonMountsConfig.BASE_HEALTH.get())
                 .add(ModAttributes.FLIGHT_SPEED.get(), BASE_AIR_SPEED)
                 .add(Attributes.MOVEMENT_SPEED, BASE_GROUND_SPEED)
                 .add(Attributes.ATTACK_DAMAGE, BASE_DAMAGE)
@@ -164,14 +166,12 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
 
     @Override
     public void readAdditionalSaveData(CompoundNBT compound) {
-        int age = this.age;
-        if (compound.contains(DragonType.DATA_PARAMETER_KEY)) {
-            this.setDragonType(DragonType.byName(compound.getString(DragonType.DATA_PARAMETER_KEY)), false);
-        }
+        this.ageSnapshot = this.age;
         super.readAdditionalSaveData(compound);
-        if (age != this.age && !this.level.isClientSide) {
-            UpdateAgePacket.send(this);
+        if (this.ageSnapshot != this.age) {
+            SUpdateAgePacket.send(this);
         }
+        this.setDragonType(DragonType.byName(compound.getString(DragonType.DATA_PARAMETER_KEY)));
         if (compound.contains(DragonLifeStage.DATA_PARAMETER_KEY)) {
             this.entityData.set(DATA_LIFE_STAGE, compound.getString(DragonLifeStage.DATA_PARAMETER_KEY));
             this.refreshDimensions();
@@ -196,6 +196,19 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
             this.yBodyRot = this.yHeadRot;
         }
         super.onSyncedDataUpdated(key);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.level.isClientSide) {
+            int i = this.age;
+            if (i < 0) {
+                ++this.age;
+            } else if (i > 0) {
+                --this.age;
+            }
+        }
     }
 
     @Nullable
@@ -280,7 +293,35 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
                 return true;
             }
         }
-        return super.isInvulnerableTo(source) || this.getDragonType().getConfig().isInvulnerableTo(source);
+        return super.isInvulnerableTo(source) || this.getDragonType().isInvulnerableTo(source);
+    }
+
+    @Override
+    public void startSeenByPlayer(ServerPlayerEntity player) {
+        SUpdateAgePacket.send(player, this);
+    }
+
+    @Override
+    public int getAge() {
+        return this.age;
+    }
+
+    @Override
+    public void setAge(int age) {
+        if (this.level.isClientSide) {
+            this.age = age;
+        } else {
+            int old = this.age;
+            this.age = age;
+            if (old < 0 && age >= 0 || old > 0 && age <= 0) {
+                this.ageBoundaryReached();
+            }
+        }
+    }
+
+    @Override
+    public void setBaby(boolean value) {
+        this.setAge(value ? -DragonLifeStage.NEWBORN.duration : 0);
     }
 
     public void setLifeStage(DragonLifeStage stage, boolean reset) {
@@ -289,13 +330,18 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
             switch (stage) {
                 case NEWBORN:
                 case INFANT:
-                    this.setAge(-stage.duration);
+                    this.age = -stage.duration;
                     break;
                 case PREJUVENILE:
                 case JUVENILE:
-                    this.setAge(stage.duration);
+                    this.age = stage.duration;
+                    break;
+                case ADULT:
+                    this.age = 0;
                     break;
             }
+            this.ageSnapshot = this.age;
+            SUpdateAgePacket.send(this);
         }
         this.refreshDimensions();
         this.reapplyPosition();
@@ -307,18 +353,19 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
 
     @Override
     protected void ageBoundaryReached() {
-        if (!this.level.isClientSide) {
-            this.setLifeStage(DragonLifeStage.byId(this.getLifeStage().ordinal() + 1), true);
-            UpdateAgePacket.send(this);
-        }
+        this.setLifeStage(DragonLifeStage.byId(this.getLifeStage().ordinal() + 1), true);
     }
 
     public void setDragonType(DragonType type, boolean reset) {
+        AttributeModifierManager manager = this.getAttributes();
+        manager.removeAttributeModifiers(this.getDragonType().getAttributeModifiers());
         this.entityData.set(DATA_DRAGON_TYPE, type.getSerializedName());
-        final double health = this.getDragonType().getConfig().getMaxHealth();
-        Objects.requireNonNull(this.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(health);
+        manager.addTransientAttributeModifiers(type.getAttributeModifiers());
         if (reset) {
-            this.setHealth((float) health);
+            ModifiableAttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
+            if (health != null) {
+                this.setHealth((float) health.getValue());
+            }
         }
     }
 
@@ -329,7 +376,11 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
 
     @Override
     public DragonType getDragonType() {
-        return DragonType.byName(this.entityData.get(DATA_DRAGON_TYPE));
+        DragonType type = DragonType.byName(this.entityData.get(DATA_DRAGON_TYPE));
+        if (type == null) {
+            return DragonType.ENDER;
+        }
+        return type;
     }
 
     @Override

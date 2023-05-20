@@ -49,12 +49,10 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
     }
 
     public void onTypeChanged(DragonType old, DragonType now) {
-        boolean wasSkeleton = DragonType.isSkeleton(old);
-        boolean isSkeleton = DragonType.isSkeleton(now);
-        if (isSkeleton && !wasSkeleton) {
+        if (now.isSkeleton && (old == null || !old.isSkeleton)) {
             this.foreLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.SKELETON, false);
             this.hindLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.SKELETON, true);
-        } else if (!isSkeleton && wasSkeleton) {
+        } else if (!now.isSkeleton && (old == null || old.isSkeleton)) {
             this.foreLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, false);
             this.hindLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, true);
         }

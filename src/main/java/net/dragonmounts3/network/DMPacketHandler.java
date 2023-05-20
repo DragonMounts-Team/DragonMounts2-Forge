@@ -15,6 +15,6 @@ public class DMPacketHandler {
     );
 
     public static void init() {
-        CHANNEL.registerMessage(0, UpdateAgePacket.class, UpdateAgePacket::encode, UpdateAgePacket::new, UpdateAgePacket::onMessage);
+        CHANNEL.registerMessage(0, SUpdateAgePacket.class, SUpdateAgePacket::encode, SUpdateAgePacket::new, SUpdateAgePacket::onMessage);
     }
 }

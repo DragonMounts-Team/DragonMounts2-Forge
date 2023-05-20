@@ -2,7 +2,8 @@ package net.dragonmounts3;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class DragonMountsConfig {
@@ -11,7 +12,7 @@ public class DragonMountsConfig {
 	public static final ForgeConfigSpec SPEC;
 
 	// config properties
-	public static final ForgeConfigSpec.ConfigValue<Boolean> debug;
+	public static final ForgeConfigSpec.ConfigValue<Boolean> DEBUG;
 	public static final ForgeConfigSpec.ConfigValue<Boolean> disableBlockOverride;
 	public static final ForgeConfigSpec.ConfigValue<Boolean> shouldChangeBreedViaHabitatOrBlock;
 	public static final ForgeConfigSpec.ConfigValue<Boolean> canDragonDespawn;
@@ -28,7 +29,7 @@ public class DragonMountsConfig {
 	public static final ForgeConfigSpec.ConfigValue<Integer> REG_FACTOR;
 	public static final ForgeConfigSpec.ConfigValue<Double> BASE_HEALTH;
 	public static final ForgeConfigSpec.ConfigValue<Double> BASE_DAMAGE;
-	public static final ForgeConfigSpec.ConfigValue<Double> ARMOR;
+	public static final ForgeConfigSpec.ConfigValue<Double> BASE_ARMOR;
 
 	// chances
 	public static final ForgeConfigSpec.ConfigValue<Integer> FireNestRarity;
@@ -56,7 +57,7 @@ public class DragonMountsConfig {
 	static {
 		BUILDER.push("Some config of Dragon Mount 3");
 		// config properties
-		debug = BUILDER.comment("Debug mode. You need to restart Minecraft for the change to take effect. Unless you're a developer or are told to activate it, you don't want to set this to true.").define("debug", false);
+		DEBUG = BUILDER.comment("Debug mode. You need to restart Minecraft for the change to take effect. Unless you're a developer or are told to activate it, you don't want to set this to true.").define("debug", false);
 		disableBlockOverride = BUILDER.comment("Disables right-click override on the vanilla dragon egg block. May help to fix issues with other mods.").define("disable block override", false);
 		shouldChangeBreedViaHabitatOrBlock = BUILDER.comment("Enables changing of egg breeds via block or environment").define("can eggs change breeds", true);
 		canDragonDespawn = BUILDER.comment("Enables or Disables dragons ability to despawn, works only for adult non tamed dragons").define("can dragons despawn", true);
@@ -71,9 +72,9 @@ public class DragonMountsConfig {
 		canSpawnEndNest = BUILDER.comment("Enables spawning of end dragon nests in end cities").define("can spawn end nest", true);
 		hungerDecrement = BUILDER.comment("More numbers slower, i.e. gets a number from the factor of (3000) to 1 per tick (millisecond) if it equals to 1 reduce hunger, don't make it too low or might crash the game").define("Hunger Speed", 6000);
 		REG_FACTOR = BUILDER.comment("Higher numbers slower regen for dragons").define("Health Regen Speed", 75);
-		BASE_HEALTH = BUILDER.comment("Dragon Base Health").define("Dragon Base Health", 90.0D);
-		BASE_DAMAGE = BUILDER.comment("Damage for dragon attack").define("Damage", 12.0D);
-		ARMOR = BUILDER.comment("Makes Dragons Tougher or Not").define("Armor", 8.0D);
+		BASE_HEALTH = BUILDER.comment("Dragon Base Health").defineInRange("dragonBaseHealth", 90.0D, 1.0D, 1024.0D);
+		BASE_DAMAGE = BUILDER.comment("Damage for dragon attack").define("dragonBaseDamage", 12.0D);
+		BASE_ARMOR = BUILDER.comment("Makes Dragons Tougher or Not").define("dragonBaseArmor", 8.0D);
 		// chances
 		FireNestRarity = BUILDER.comment("Determines how rare fire dragon nests will mainly spawn. Higher numbers = higher rarity (in other words, how many blocks for another nest to spawn), "
 				+ "(Note: Experiment on a new world when editing these numbers because it may cause damages to your own worlds)").define("Fire Nest Rarity", 150);
@@ -110,13 +111,8 @@ public class DragonMountsConfig {
 		thirdPersonZoom = BUILDER.comment("Zoom out for third person 2 while riding the the dragon and dragon carriages DO NOT EXAGGERATE IF YOU DON'T WANT CORRUPTED WORLDS").define("Third Person Zoom BACK", 20.0D);
 		maxFlightHeight = BUILDER.comment("Max flight for dragons circling players on a whistle").define("Max Flight Height", 20.0D);
 		useDimensionBlackList = BUILDER.comment("true to use dimensional blacklist, false to use the whitelist.").define("Use Dimension Blacklist", true);
-		ArrayList<Integer> dragonBlacklistedDimensionsDefaultValue = new ArrayList<>();
-		dragonBlacklistedDimensionsDefaultValue.add(-1);
-		dragonBlacklistedDimensionsDefaultValue.add(1);
-		dragonBlacklistedDimensions = BUILDER.comment("Dragons cannot spawn in these dimensions' IDs").defineList("Blacklisted Dragon Dimensions", dragonBlacklistedDimensionsDefaultValue, i -> i instanceof Integer);
-		ArrayList<Integer> dragonWhitelistedDimensionsDefaultValue = new ArrayList<>();
-		dragonWhitelistedDimensionsDefaultValue.add(0);
-		dragonWhitelistedDimensions = BUILDER.comment("Dragons can only spawn in these dimensions' IDs").defineList("Whitelisted Dragon Dimensions", dragonWhitelistedDimensionsDefaultValue, i -> i instanceof Integer);
+		dragonBlacklistedDimensions = BUILDER.comment("Dragons cannot spawn in these dimensions' IDs").defineList("Blacklisted Dragon Dimensions", Arrays.asList(-1, 1), i -> i instanceof Integer);
+		dragonWhitelistedDimensions = BUILDER.comment("Dragons can only spawn in these dimensions' IDs").defineList("Whitelisted Dragon Dimensions", Collections.singletonList(0), i -> i instanceof Integer);
 		BUILDER.pop();
 		SPEC = BUILDER.build();
 	}

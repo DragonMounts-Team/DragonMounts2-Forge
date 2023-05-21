@@ -7,7 +7,11 @@ import net.dragonmounts3.entity.dragon.helper.DragonBodyHelper;
 import net.dragonmounts3.entity.dragon.helper.DragonHelper;
 import net.dragonmounts3.inits.ModAttributes;
 import net.dragonmounts3.inits.ModEntities;
+import net.dragonmounts3.inits.ModItems;
+import net.dragonmounts3.inits.ModSounds;
 import net.dragonmounts3.inventory.DragonInventoryContainer;
+import net.dragonmounts3.item.DragonScalesItem;
+import net.dragonmounts3.item.TieredShearsItem;
 import net.dragonmounts3.network.SUpdateAgePacket;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierManager;
@@ -19,6 +23,7 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -27,6 +32,8 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.IForgeShearable;
@@ -73,10 +80,9 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     private static final DataParameter<Boolean> ALT_TEXTURE = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> FOLLOW_YAW = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Optional<UUID>> DATA_BREEDER = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.OPTIONAL_UUID);
-    private static final DataParameter<String> DATA_BREED = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.STRING);
-    private static final DataParameter<String> FOREST_TEXTURES = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> VARIANT = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.STRING);
     private static final DataParameter<Integer> DATA_REPO_COUNT = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.INT);
-    private static final DataParameter<Byte> DRAGON_SCALES = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BYTE);
+    private static final DataParameter<Boolean> DATA_SHEARED = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> HAS_ADJUDICATOR_STONE = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> HAS_ELDER_STONE = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     //private static final DataParameter<Boolean> SLEEP = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
@@ -85,11 +91,12 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     public static final String AGE_DATA_PARAMETER_KEY = "Age";
     public static final String FLYING_DATA_PARAMETER_KEY = "Flying";
     public static final String SADDLE_DATA_PARAMETER_KEY = "Saddle";
+    public static final String SHEARED_DATA_PARAMETER_KEY = "ShearCooldown";
     private final DragonBodyHelper dragonBodyHelper = new DragonBodyHelper(this);
     private final Map<Class<?>, DragonHelper> helpers = new HashMap<>();
     public EnderCrystalEntity healingEnderCrystal;
     protected DragonInventoryContainer inventory;
-    public static int ticksShear;
+    private int shearCooldown;
     private int ageSnapshot = 0;
     public int inAirTicks;
     public int roarTicks;
@@ -134,6 +141,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
         this.entityData.define(DATA_LIFE_STAGE, DragonLifeStage.ADULT.getSerializedName());
         this.entityData.define(DATA_FLYING, false);
         this.entityData.define(DATA_SADDLED, false);
+        this.entityData.define(DATA_SHEARED, false);
     }
 
     protected void saveChestData(CompoundNBT compound) {
@@ -161,6 +169,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
         compound.putString(DragonType.DATA_PARAMETER_KEY, this.entityData.get(DATA_DRAGON_TYPE));
         compound.putString(DragonLifeStage.DATA_PARAMETER_KEY, this.entityData.get(DATA_LIFE_STAGE));
         compound.putBoolean(FLYING_DATA_PARAMETER_KEY, this.entityData.get(DATA_FLYING));
+        compound.putInt(SHEARED_DATA_PARAMETER_KEY, this.isSheared() ? this.shearCooldown : 0);
         this.saveChestData(compound);
     }
 
@@ -185,6 +194,9 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
                 this.inventory.setItem(0, itemstack);
             }
         }
+        if (compound.contains(SHEARED_DATA_PARAMETER_KEY)) {
+            this.setSheared(compound.getInt(SHEARED_DATA_PARAMETER_KEY));
+        }
         this.updateContainerEquipment();
     }
 
@@ -207,6 +219,10 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
                 ++this.age;
             } else if (i > 0) {
                 --this.age;
+            }
+        } else {
+            if (this.shearCooldown > 0) {
+                this.setSheared(this.shearCooldown - 1);
             }
         }
     }
@@ -321,7 +337,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
 
     @Override
     public void setBaby(boolean value) {
-        this.setAge(value ? -DragonLifeStage.NEWBORN.duration : 0);
+        this.setLifeStage(value ? DragonLifeStage.NEWBORN : DragonLifeStage.ADULT, true);
     }
 
     public void setLifeStage(DragonLifeStage stage, boolean reset) {
@@ -386,6 +402,45 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     @Override
     public boolean isPersistenceRequired() {
         return true;
+    }
+
+    @Override
+    public ItemStack getPickedResult(RayTraceResult target) {
+        return new ItemStack(ModItems.DRAGON_SPAWN_EGG.get(this.getDragonType()));
+    }
+
+    //IForgeShearable
+
+    public boolean isSheared() {
+        return this.entityData.get(DATA_SHEARED);
+    }
+
+    public void setSheared(int cooldown) {
+        this.shearCooldown = cooldown;
+        this.entityData.set(DATA_SHEARED, cooldown > 0);
+    }
+
+    @Override
+    public boolean isShearable(@Nonnull ItemStack stack, World world, BlockPos pos) {
+        Item item = stack.getItem();
+        DragonLifeStage stage = this.getLifeStage();
+        if (stage == null) {
+            stage = DragonLifeStage.ADULT;
+        }
+        return this.isAlive() && stage.ordinal() >= 2 && !this.isSheared() && item instanceof TieredShearsItem && ((TieredShearsItem) item).getTier().getLevel() >= 3;
+    }
+
+    @Nonnull
+    @Override
+    public List<ItemStack> onSheared(@Nullable PlayerEntity player, @Nonnull ItemStack stack, World world, BlockPos pos, int fortune) {
+        DragonScalesItem scale = ModItems.DRAGON_SCALES.get(this.getDragonType());
+        if (scale != null) {
+            this.setSheared(2500 + this.random.nextInt(1000));
+            this.playSound(SoundEvents.ITEM_BREAK, 1.0F, 1.0F);
+            this.playSound(ModSounds.ENTITY_DRAGON_GROWL.get(), 1.0F, 1.0F);
+            return Collections.singletonList(new ItemStack(scale, 2 + this.random.nextInt(3)));
+        }
+        return Collections.emptyList();
     }
 
     //IInventory

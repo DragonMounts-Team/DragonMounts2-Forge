@@ -16,5 +16,7 @@ public class DMPacketHandler {
 
     public static void init() {
         CHANNEL.registerMessage(0, SUpdateAgePacket.class, SUpdateAgePacket::encode, SUpdateAgePacket::new, SUpdateAgePacket::onMessage);
+        CHANNEL.registerMessage(1, SEatItemParticlePacket.class, SEatItemParticlePacket::encode, SEatItemParticlePacket::new, SEatItemParticlePacket::onMessage);
+
     }
 }

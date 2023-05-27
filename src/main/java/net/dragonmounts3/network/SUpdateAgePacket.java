@@ -25,13 +25,13 @@ public class SUpdateAgePacket {
     }
 
     public SUpdateAgePacket(PacketBuffer buffer) {
-        this.id = buffer.readInt();
-        this.age = buffer.readInt();
+        this.id = buffer.readVarInt();
+        this.age = buffer.readVarInt();
     }
 
     public void encode(PacketBuffer buffer) {
-        buffer.writeInt(this.id);
-        buffer.writeInt(this.age);
+        buffer.writeVarInt(this.id);
+        buffer.writeVarInt(this.age);
     }
 
     public static void send(AgeableEntity entity) {

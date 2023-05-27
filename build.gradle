@@ -16,7 +16,7 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 version = 'Preview ' + Calendar.instance.get(Calendar.YEAR) % 100 + 'w' + Calendar.instance.get(Calendar.WEEK_OF_YEAR) + 'a'
 group = 'com.TheRPGAdventurer.ROTD'
-archivesBaseName = 'DragonMounts'
+archivesBaseName = 'DragonMounts3-1.16.5'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 

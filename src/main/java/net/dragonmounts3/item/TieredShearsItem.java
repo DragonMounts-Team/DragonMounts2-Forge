@@ -14,6 +14,7 @@ import net.minecraft.item.ShearsItem;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -44,24 +45,28 @@ public class TieredShearsItem extends ShearsItem {
         if (level.isClientSide) return ActionResultType.PASS;
         if (entity instanceof TameableDragonEntity) {
             TameableDragonEntity dragon = (TameableDragonEntity) entity;
-            BlockPos pos = new BlockPos(dragon.getX(), dragon.getY(), dragon.getZ());
-            if (dragon.isShearable(stack, level, pos)) {
-                List<ItemStack> drops = dragon.onSheared(player, stack, level, pos, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, stack));
-                Random random = dragon.getRandom();
-                boolean flag = false;
-                for (ItemStack drop : drops) {
-                    ItemEntity item = entity.spawnAtLocation(drop, 1.0F);
-                    if (item != null) {
-                        flag = true;
-                        item.setDeltaMovement(item.getDeltaMovement().add((random.nextFloat() - random.nextFloat()) * 0.1D, random.nextFloat() * 0.05D, (random.nextFloat() - random.nextFloat()) * 0.1D));
+            if (dragon.isOwnedBy(player)) {
+                BlockPos pos = new BlockPos(dragon.getX(), dragon.getY(), dragon.getZ());
+                if (dragon.isShearable(stack, level, pos)) {
+                    List<ItemStack> drops = dragon.onSheared(player, stack, level, pos, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, stack));
+                    Random random = dragon.getRandom();
+                    boolean flag = false;
+                    for (ItemStack drop : drops) {
+                        ItemEntity item = entity.spawnAtLocation(drop, 1.0F);
+                        if (item != null) {
+                            flag = true;
+                            item.setDeltaMovement(item.getDeltaMovement().add((random.nextFloat() - random.nextFloat()) * 0.1D, random.nextFloat() * 0.05D, (random.nextFloat() - random.nextFloat()) * 0.1D));
+                        }
+                    }
+                    if (flag) {
+                        stack.hurtAndBreak(20, dragon, e -> e.broadcastBreakEvent(hand));
+                        return ActionResultType.SUCCESS;
                     }
                 }
-                if (flag) {
-                    stack.hurtAndBreak(20, dragon, e -> e.broadcastBreakEvent(hand));
-                    return ActionResultType.SUCCESS;
-                }
+                return ActionResultType.PASS;
             }
-            return ActionResultType.PASS;
+            player.displayClientMessage(new TranslationTextComponent("message.dragonmounts.not_owner"), true);
+            return ActionResultType.FAIL;
         }
         return super.interactLivingEntity(stack, player, entity, hand);
     }
@@ -80,7 +85,7 @@ public class TieredShearsItem extends ShearsItem {
     public float getDestroySpeed(@Nonnull ItemStack stack, @Nonnull BlockState state) {
         float speed = super.getDestroySpeed(stack, state);
         if (speed > 1.0F) {
-            return speed * speedFactor;
+            return speed * this.speedFactor;
         }
         return speed;
     }

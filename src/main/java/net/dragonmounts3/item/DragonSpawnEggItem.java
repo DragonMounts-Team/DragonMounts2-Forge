@@ -36,10 +36,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
-import static net.dragonmounts3.DragonMounts.getItemTranslationKey;
+import static net.dragonmounts3.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
 
 public final class DragonSpawnEggItem extends ForgeSpawnEggItem implements IDragonTypified {
-    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_spawn_egg");
+    private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_spawn_egg";
     private final DragonType type;
     private final CompoundNBT spawnData = new CompoundNBT();
 

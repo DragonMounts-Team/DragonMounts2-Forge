@@ -98,7 +98,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         }
     }
 
-    protected void crack(int amount) {
+    protected void crack(int amount, SoundEvent sound) {
         DragonType type = this.getDragonType();
         HatchableDragonEggBlock block = ModBlocks.HATCHABLE_DRAGON_EGG.get(type);
         if (block != null) {
@@ -110,11 +110,11 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
                 this.spawnAtLocation(new ItemStack(scales, amount), 1.25f);
             }
         }
-        this.level.playSound(null, this, ModSounds.DRAGON_HATCHING.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+        this.level.playSound(null, this, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
 
     public void hatch() {
-        this.crack(this.random.nextInt(4) + 4);
+        this.crack(this.random.nextInt(4) + 4, ModSounds.DRAGON_HATCHED.get());
         if (!this.level.isClientSide) {
             String scoreboardName = this.getScoreboardName();
             Scoreboard scoreboard = this.level.getScoreboard();
@@ -156,7 +156,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
 
     @OnlyIn(Dist.CLIENT)
     public void handleEntityEvent(byte id) {
-        if (id > 16 && id < 32) {
+        if (id > 64) {
             if ((id & 0B0010) == 0B0010) {
                 this.wriggleX = 20;
             } else if ((id & 0B0001) == 0B0001) {
@@ -239,7 +239,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
                 if (age >= MAX_HATCHING_TIME || age >= MIN_HATCHING_TIME && this.random.nextFloat() < chance) {
                     this.hatch();
                 } else {
-                    byte state = 0B10000;//16
+                    byte state = 0B1000000;//64
                     if (this.wriggleX > 0) {
                         --this.wriggleX;
                     } else if (this.random.nextFloat() < chance) {
@@ -262,10 +262,10 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
                             state |= 0B0010;
                         }
                     }
-                    if (state != 0B10000) {
+                    if (state != 0B1000000) {
                         this.level.broadcastEntityEvent(this, state);
                         if (progress > EGG_CRACK_THRESHOLD) {
-                            this.crack(1);
+                            this.crack(1, ModSounds.DRAGON_HATCHING.get());
                         }
                     }
                 }

@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.api.IMutableDragonTypified;
-import net.dragonmounts3.api.SetDragonTypeCommandEvent;
+import net.dragonmounts3.event.OnDragonTypeEditEvent;
 import net.dragonmounts3.inits.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -20,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 
 import static net.dragonmounts3.command.DMCommand.createClassCastException;
@@ -53,7 +54,7 @@ public class TypeCommand {
         CommandSource source = context.getSource();
         World level = source.getLevel();
         BlockState oldState = level.getBlockState(pos);
-        Block block = oldState.getBlock();
+        net.minecraft.block.Block block = oldState.getBlock();
         if (block instanceof IDragonTypified) {
             source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.block.get", pos.getX(), pos.getY(), pos.getZ(), ((IDragonTypified) block).getDragonType().getText()), true);
             return 1;
@@ -73,31 +74,30 @@ public class TypeCommand {
     }
 
     private static int setType(CommandContext<CommandSource> context, BlockPos pos, DragonType type) {
-        boolean succeed = false;
         CommandSource source = context.getSource();
-        World level = source.getLevel();
-        BlockState oldState = level.getBlockState(pos);
-        Block block = oldState.getBlock();
-        BlockState newState = oldState;
+        ServerWorld level = source.getLevel();
+        BlockState originalState = level.getBlockState(pos);
+        OnDragonTypeEditEvent.Block event = new OnDragonTypeEditEvent.Block(level, type, pos, originalState);
+        Block block = originalState.getBlock();
         if (block instanceof IDragonTypified) {
             if (block instanceof DragonEggBlock) {
-                Block egg = ModBlocks.HATCHABLE_DRAGON_EGG.get(type);
+                net.minecraft.block.Block egg = ModBlocks.HATCHABLE_DRAGON_EGG.get(type);
                 if (egg != null) {
-                    newState = egg.defaultBlockState();
-                    succeed = true;
+                    event.setState(egg.defaultBlockState());
                 }
             }
-            SetDragonTypeCommandEvent.Block event = new SetDragonTypeCommandEvent.Block(context, pos, type, newState, succeed);
-            MinecraftForge.EVENT_BUS.post(event);
-            newState = event.getState();
-            succeed = event.isSucceed();
         }
-        if (succeed && newState != null && newState != oldState) {
-            level.setBlockAndUpdate(pos, newState);
-            source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.block.set", pos.getX(), pos.getY(), pos.getZ(), type.getText()), true);
-            return 1;
+        MinecraftForge.EVENT_BUS.post(event);
+        BlockState newState = event.getState();
+        if (event.isCanceled()) {
+            return 0;
         }
-        return 0;
+        if (newState == originalState) {
+            return 0;
+        }
+        level.setBlockAndUpdate(pos, newState);
+        source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.block.set", pos.getX(), pos.getY(), pos.getZ(), type.getText()), true);
+        return 1;
     }
 
     private static int setType(CommandContext<CommandSource> context, Entity target, DragonType type) {

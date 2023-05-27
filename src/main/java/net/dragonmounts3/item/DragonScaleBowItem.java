@@ -1,5 +1,6 @@
 package net.dragonmounts3.item;
 
+import net.dragonmounts3.api.DragonScaleTier;
 import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
 import net.minecraft.client.util.ITooltipFlag;
@@ -15,10 +16,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static net.dragonmounts3.DragonMounts.getItemTranslationKey;
+import static net.dragonmounts3.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
 
 public class DragonScaleBowItem extends BowItem implements IDragonTypified {
-    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_scale_bow");
+    private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_scale_bow";
 
     protected DragonType type;
 

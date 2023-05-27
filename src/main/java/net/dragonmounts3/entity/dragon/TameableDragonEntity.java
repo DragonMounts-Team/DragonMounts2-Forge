@@ -3,6 +3,7 @@ package net.dragonmounts3.entity.dragon;
 import net.dragonmounts3.DragonMountsConfig;
 import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IMutableDragonTypified;
+import net.dragonmounts3.data.tags.DMItemTags;
 import net.dragonmounts3.entity.dragon.helper.DragonBodyHelper;
 import net.dragonmounts3.entity.dragon.helper.DragonHelper;
 import net.dragonmounts3.inits.ModAttributes;
@@ -12,6 +13,7 @@ import net.dragonmounts3.inits.ModSounds;
 import net.dragonmounts3.inventory.DragonInventoryContainer;
 import net.dragonmounts3.item.DragonScalesItem;
 import net.dragonmounts3.item.TieredShearsItem;
+import net.dragonmounts3.network.SEatItemParticlePacket;
 import net.dragonmounts3.network.SUpdateAgePacket;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierManager;
@@ -23,15 +25,13 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -92,6 +92,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     public static final String FLYING_DATA_PARAMETER_KEY = "Flying";
     public static final String SADDLE_DATA_PARAMETER_KEY = "Saddle";
     public static final String SHEARED_DATA_PARAMETER_KEY = "ShearCooldown";
+    private static final LazyValue<Ingredient> DRAGON_FOOD = new LazyValue<>(() -> Ingredient.of(DMItemTags.DRAGON_FOOD));
     private final DragonBodyHelper dragonBodyHelper = new DragonBodyHelper(this);
     private final Map<Class<?>, DragonHelper> helpers = new HashMap<>();
     public EnderCrystalEntity healingEnderCrystal;
@@ -176,15 +177,15 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     @Override
     public void readAdditionalSaveData(CompoundNBT compound) {
         this.ageSnapshot = this.age;
+        if (compound.contains(DragonLifeStage.DATA_PARAMETER_KEY)) {
+            this.entityData.set(DATA_LIFE_STAGE, compound.getString(DragonLifeStage.DATA_PARAMETER_KEY));
+            this.refreshDimensions();
+        }
         super.readAdditionalSaveData(compound);
         if (this.ageSnapshot != this.age) {
             SUpdateAgePacket.send(this);
         }
         this.setDragonType(DragonType.byName(compound.getString(DragonType.DATA_PARAMETER_KEY)));
-        if (compound.contains(DragonLifeStage.DATA_PARAMETER_KEY)) {
-            this.entityData.set(DATA_LIFE_STAGE, compound.getString(DragonLifeStage.DATA_PARAMETER_KEY));
-            this.refreshDimensions();
-        }
         if (compound.contains(FLYING_DATA_PARAMETER_KEY)) {
             this.entityData.set(DATA_FLYING, compound.getBoolean(FLYING_DATA_PARAMETER_KEY));
         }
@@ -293,7 +294,80 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     @Nonnull
     @Override
     public EntitySize getDimensions(Pose pose) {
-        return super.getDimensions(pose).scale(this.getScale());
+        DragonLifeStage stage = this.getLifeStage();
+        return super.getDimensions(pose).scale(DragonLifeStage.getSize(stage, stage.duration >> 1));
+    }
+
+    @Override
+    public boolean isFood(ItemStack stack) {
+        return DRAGON_FOOD.get().test(stack);
+    }
+
+    protected void usePlayerItem(PlayerEntity player, ItemStack stack) {
+        int age = this.getAge();
+        Item item = stack.getItem();
+        //TODO: make increase in age related to food
+        if (this.level.isClientSide) {
+            if (age > 0) {
+                this.age = age - 2000;
+                if (this.forcedAgeTimer <= 0) {
+                    this.forcedAgeTimer = 40;
+                }
+            } else if (age < 0) {
+                this.age = age + 2000;
+                if (this.forcedAgeTimer <= 0) {
+                    this.forcedAgeTimer = 40;
+                }
+            }
+        } else {
+            if (!player.abilities.instabuild) {
+                stack.shrink(1);
+                ItemStack result = null;
+                if (item instanceof SoupItem) {
+                    result = new ItemStack(Items.BOWL);
+                } else if (item instanceof BucketItem) {
+                    result = new ItemStack(Items.BUCKET);
+                }
+                if (result != null && !player.inventory.add(result)) {
+                    player.drop(result, false);
+                }
+            }
+            this.playSound(SoundEvents.GENERIC_EAT, 1f, 0.75f);
+            if (item instanceof BucketItem) {
+                this.playSound(SoundEvents.GENERIC_DRINK, 0.25f, 0.75f);
+                if (item == Items.COD_BUCKET) {
+                    SEatItemParticlePacket.send(this, Items.COD);
+                } else if (item == Items.SALMON_BUCKET) {
+                    SEatItemParticlePacket.send(this, Items.SALMON);
+                } else {
+                    SEatItemParticlePacket.send(this, Items.TROPICAL_FISH);
+                }
+            } else {
+                SEatItemParticlePacket.send(this, item);
+            }
+            if (age > 0) {
+                this.setAge(age - 2000);
+            } else if (age < 0) {
+                this.setAge(age + 2000);
+            }
+        }
+    }
+
+    @Nonnull
+    @Override
+    public ActionResultType mobInteract(PlayerEntity player, Hand hand) {
+        ItemStack itemstack = player.getItemInHand(hand);
+        if (this.isFood(itemstack)) {
+            this.usePlayerItem(player, itemstack);
+            if (this.level.isClientSide) {
+                return ActionResultType.CONSUME;
+            }
+            if (this.getLifeStage() == DragonLifeStage.ADULT && this.canFallInLove()) {
+                this.setInLove(player);
+            }
+            return ActionResultType.SUCCESS;
+        }
+        return ActionResultType.PASS;
     }
 
     @Override

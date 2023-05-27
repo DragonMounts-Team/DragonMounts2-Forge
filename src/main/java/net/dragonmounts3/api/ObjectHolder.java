@@ -33,9 +33,13 @@ public class ObjectHolder<K, E extends IForgeRegistryEntry<? super E>> implement
         return new LinkedHashMap<>();
     }
 
+    public final boolean contains(K key) {
+        return this.map.containsKey(key);
+    }
+
     @Nullable
-    public final E get(K type) {
-        return this.map.get(type);
+    public final E get(K key) {
+        return this.map.get(key);
     }
 
     public final Collection<E> values() {

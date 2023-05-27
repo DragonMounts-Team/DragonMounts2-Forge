@@ -25,10 +25,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static net.dragonmounts3.DragonMounts.getBlockTranslationKey;
+import static net.dragonmounts3.DragonMounts.BLOCK_TRANSLATION_KEY_PREFIX;
 
 public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTypified {
-    private static final String TRANSLATION_KEY = getBlockTranslationKey("dragon_egg");
+    private static final String TRANSLATION_KEY = BLOCK_TRANSLATION_KEY_PREFIX + "dragon_egg";
     protected DragonType type;
 
     public HatchableDragonEggBlock(DragonType type) {

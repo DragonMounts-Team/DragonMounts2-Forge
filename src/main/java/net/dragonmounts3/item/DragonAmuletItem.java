@@ -15,11 +15,11 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nonnull;
 
-import static net.dragonmounts3.DragonMounts.getItemTranslationKey;
+import static net.dragonmounts3.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
 import static net.dragonmounts3.util.EntityUtil.saveScoreboard;
 
 public class DragonAmuletItem extends Item {
-    private static final String TRANSLATION_KEY = getItemTranslationKey("dragon_amulet");
+    private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_amulet";
 
     public DragonAmuletItem(Properties pProperties) {
         super(pProperties.stacksTo(1));

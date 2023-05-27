@@ -202,9 +202,9 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
         this.name = name;
         this.text = "dragon.type." + name;
         this.attributes = builder.attributes.build();
-        this.immunities = builder.immunities;
-        this.blocks = builder.blocks;
-        this.biomes = builder.biomes;
+        this.immunities = new HashSet<>(builder.immunities);
+        this.blocks = new HashSet<>(builder.blocks);
+        this.biomes = new HashSet<>(builder.biomes);
         this.sneezeParticle = builder.sneezeParticle;
         this.eggParticle = builder.eggParticle;
         BY_NAME.put(name, this);
@@ -264,14 +264,14 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
 
     public static class Builder {
         private static final UUID MODIFIER_UUID = UUID.fromString("12e4cc82-db6d-5676-afc5-86498f0f6464");
-        private final ImmutableMultimap.Builder<Attribute, AttributeModifier> attributes = ImmutableMultimap.builder();
-        private final int color;
-        private final Set<DamageSource> immunities = new HashSet<>();
-        private final Set<Block> blocks = new HashSet<>();
-        private final Set<RegistryKey<Biome>> biomes = new HashSet<>();
-        private final boolean isSkeleton;
-        private BasicParticleType sneezeParticle = ParticleTypes.LARGE_SMOKE;
-        private BasicParticleType eggParticle = ParticleTypes.MYCELIUM;
+        public final ImmutableMultimap.Builder<Attribute, AttributeModifier> attributes = ImmutableMultimap.builder();
+        public final int color;
+        public final Set<DamageSource> immunities = new HashSet<>();
+        public final Set<Block> blocks = new HashSet<>();
+        public final Set<RegistryKey<Biome>> biomes = new HashSet<>();
+        public final boolean isSkeleton;
+        public BasicParticleType sneezeParticle = ParticleTypes.LARGE_SMOKE;
+        public BasicParticleType eggParticle = ParticleTypes.MYCELIUM;
 
         public Builder(int color) {
             this(color, false);

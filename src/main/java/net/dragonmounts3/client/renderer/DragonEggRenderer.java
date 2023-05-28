@@ -2,7 +2,7 @@ package net.dragonmounts3.client.renderer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
-import net.dragonmounts3.inits.ModBlocks;
+import net.dragonmounts3.init.DMBlocks;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DragonEggBlock;
@@ -34,7 +34,7 @@ public class DragonEggRenderer extends EntityRenderer<HatchableDragonEggEntity> 
 
     @Override
     public void render(@Nonnull HatchableDragonEggEntity entity, float entityYaw, float partialTicks, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int packedLight) {
-        DragonEggBlock block = ModBlocks.HATCHABLE_DRAGON_EGG.get(entity.getDragonType());
+        DragonEggBlock block = DMBlocks.HATCHABLE_DRAGON_EGG.get(entity.getDragonType());
         if (block != null) {
             BlockState blockstate = block.defaultBlockState();
             World world = entity.level;

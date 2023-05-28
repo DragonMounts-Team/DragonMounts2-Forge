@@ -1,6 +1,6 @@
 package net.dragonmounts3.entity.carriage;
 
-import net.dragonmounts3.inits.ModEntities;
+import net.dragonmounts3.init.DMEntities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
@@ -39,11 +39,11 @@ public class CarriageEntity extends Entity {
     }
 
     public CarriageEntity(World world) {
-        this(ModEntities.CARRIAGE.get(), world);
+        this(DMEntities.CARRIAGE.get(), world);
     }
 
     public CarriageEntity(World world, double x, double y, double z) {
-        this(ModEntities.CARRIAGE.get(), world);
+        this(DMEntities.CARRIAGE.get(), world);
         this.setPos(x, y, z);
         this.setDeltaMovement(0.0D, 0.0D, 0.0D);
         this.xo = x;

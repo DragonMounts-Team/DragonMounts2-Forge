@@ -7,17 +7,17 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
+import net.minecraft.command.arguments.GameProfileArgument;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.UUID;
 
 import static net.dragonmounts3.command.DMCommand.createClassCastException;
+import static net.dragonmounts3.command.DMCommand.getSingleProfileOrException;
 
 public class FreeCommand {
     public static LiteralArgumentBuilder<CommandSource> register() {
@@ -25,8 +25,8 @@ public class FreeCommand {
                 .requires(source -> source.hasPermission(3))
                 .then(Commands.argument("targets", EntityArgument.entities())
                         .executes(context -> free(context, EntityArgument.getEntities(context, "targets")))
-                        .then(Commands.argument("owner", EntityArgument.player())
-                                .executes(context -> free(context, EntityArgument.getEntities(context, "targets"), EntityArgument.getPlayer(context, "owner")))
+                        .then(Commands.argument("owner", GameProfileArgument.gameProfile())
+                                .executes(context -> free(context, EntityArgument.getEntities(context, "targets"), getSingleProfileOrException(context, "owner").getId()))
                         )
                         .then(Commands.argument("forced", BoolArgumentType.bool())
                                 .executes(context -> free(context, BoolArgumentType.getBool(context, "forced")))
@@ -34,28 +34,27 @@ public class FreeCommand {
                 );
     }
 
-    private static int free(CommandContext<CommandSource> context, Collection<? extends Entity> targets) {
-        Entity entity = context.getSource().getEntity();
-        return free(context, targets, entity instanceof ServerPlayerEntity ? (ServerPlayerEntity) entity : null, targets.size() == 1);
+    private static int free(CommandContext<CommandSource> context, Collection<? extends Entity> targets) throws CommandSyntaxException {
+        return free(context, targets, context.getSource().getPlayerOrException().getUUID(), targets.size() == 1);
     }
 
-    private static int free(CommandContext<CommandSource> context, Collection<? extends Entity> targets, PlayerEntity owner) {
-        return free(context, targets, owner, targets.size() == 1);
+    private static int free(CommandContext<CommandSource> context, Collection<? extends Entity> targets, UUID owner) {
+        return free(context, targets, owner, false);
     }
 
     private static int free(CommandContext<CommandSource> context, boolean forced) throws CommandSyntaxException {
         return free(context, EntityArgument.getEntities(context, "targets"), null, forced);
     }
 
-    private static int free(CommandContext<CommandSource> context, Collection<? extends Entity> targets, @Nullable LivingEntity owner, boolean forced) {
+    private static int free(CommandContext<CommandSource> context, Collection<? extends Entity> targets, @Nullable UUID owner, boolean forced) {
         CommandSource source = context.getSource();
+        Entity cache = null;
         boolean flag = true;
         int count = 0;
-        Entity cache = null;
         for (Entity target : targets) {
             if (target instanceof TameableEntity) {
                 TameableEntity entity = (TameableEntity) target;
-                if (forced || (owner != null && entity.isOwnedBy(owner))) {
+                if (forced || (owner != null && owner.equals(entity.getOwnerUUID()))) {
                     entity.setTame(false);
                     entity.setOwnerUUID(null);
                     ++count;

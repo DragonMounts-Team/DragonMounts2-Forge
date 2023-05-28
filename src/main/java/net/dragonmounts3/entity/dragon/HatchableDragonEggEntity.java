@@ -4,10 +4,10 @@ import net.dragonmounts3.DragonMountsConfig;
 import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IMutableDragonTypified;
 import net.dragonmounts3.block.HatchableDragonEggBlock;
-import net.dragonmounts3.inits.ModBlocks;
-import net.dragonmounts3.inits.ModEntities;
-import net.dragonmounts3.inits.ModItems;
-import net.dragonmounts3.inits.ModSounds;
+import net.dragonmounts3.init.DMBlocks;
+import net.dragonmounts3.init.DMEntities;
+import net.dragonmounts3.init.DMItems;
+import net.dragonmounts3.init.DMSounds;
 import net.dragonmounts3.item.DragonScalesItem;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -67,7 +67,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     }
 
     public HatchableDragonEggEntity(World world) {
-        this(ModEntities.HATCHABLE_DRAGON_EGG.get(), world);
+        this(DMEntities.HATCHABLE_DRAGON_EGG.get(), world);
     }
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
@@ -100,12 +100,12 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
 
     protected void crack(int amount, SoundEvent sound) {
         DragonType type = this.getDragonType();
-        HatchableDragonEggBlock block = ModBlocks.HATCHABLE_DRAGON_EGG.get(type);
+        HatchableDragonEggBlock block = DMBlocks.HATCHABLE_DRAGON_EGG.get(type);
         if (block != null) {
             this.level.levelEvent(2001, blockPosition(), Block.getId(block.defaultBlockState()));
         }
         if (amount > 0 && !this.level.isClientSide) {
-            DragonScalesItem scales = ModItems.DRAGON_SCALES.get(type);
+            DragonScalesItem scales = DMItems.DRAGON_SCALES.get(type);
             if (scales != null && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
                 this.spawnAtLocation(new ItemStack(scales, amount), 1.25f);
             }
@@ -114,7 +114,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     }
 
     public void hatch() {
-        this.crack(this.random.nextInt(4) + 4, ModSounds.DRAGON_HATCHED.get());
+        this.crack(this.random.nextInt(4) + 4, DMSounds.DRAGON_HATCHED.get());
         if (!this.level.isClientSide) {
             String scoreboardName = this.getScoreboardName();
             Scoreboard scoreboard = this.level.getScoreboard();
@@ -200,7 +200,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         if (!this.isAlive()) {
             return ActionResultType.PASS;
         } else if (player.isShiftKeyDown()) {
-            HatchableDragonEggBlock block = ModBlocks.HATCHABLE_DRAGON_EGG.get(this.getDragonType());
+            HatchableDragonEggBlock block = DMBlocks.HATCHABLE_DRAGON_EGG.get(this.getDragonType());
             if (block == null) {
                 return ActionResultType.FAIL;
             }
@@ -265,7 +265,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
                     if (state != 0B1000000) {
                         this.level.broadcastEntityEvent(this, state);
                         if (progress > EGG_CRACK_THRESHOLD) {
-                            this.crack(1, ModSounds.DRAGON_HATCHING.get());
+                            this.crack(1, DMSounds.DRAGON_HATCHING.get());
                         }
                     }
                 }
@@ -276,7 +276,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
 
     @Override
     public ItemStack getPickedResult(RayTraceResult target) {
-        return new ItemStack(ModBlocks.HATCHABLE_DRAGON_EGG.get(getDragonType()));
+        return new ItemStack(DMBlocks.HATCHABLE_DRAGON_EGG.get(getDragonType()));
     }
 
     @Override
@@ -345,9 +345,6 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     @Override
     public DragonType getDragonType() {
         DragonType type = DragonType.byName(this.entityData.get(DATA_DRAGON_TYPE));
-        if (type == null) {
-            return DragonType.ENDER;
-        }
-        return type;
+        return type == null ? DragonType.ENDER : type;
     }
 }

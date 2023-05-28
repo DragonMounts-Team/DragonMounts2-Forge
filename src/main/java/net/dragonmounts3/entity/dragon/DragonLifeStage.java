@@ -47,10 +47,7 @@ public enum DragonLifeStage implements IStringSerializable {
     }
 
     public static DragonLifeStage byId(int id) {
-        if (id < 0 || id >= VALUES.length) {
-            return DragonLifeStage.ADULT;
-        }
-        return VALUES[id];
+        return id < 0 || id >= VALUES.length ? DragonLifeStage.ADULT : VALUES[id];
     }
 
     public static DragonLifeStage byName(String string) {

@@ -1,4 +1,4 @@
-package net.dragonmounts3.inits;
+package net.dragonmounts3.init;
 
 import net.dragonmounts3.DragonMounts;
 import net.dragonmounts3.client.gui.DragonCoreScreen;
@@ -12,7 +12,7 @@ import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class ModContainers {
+public class DMContainers {
     public static final DeferredRegister<ContainerType<?>> CONTAINERS = DragonMounts.create(ForgeRegistries.CONTAINERS);
     public static final RegistryObject<ContainerType<DragonCoreContainer>> DRAGON_CORE = register("dragon_core", DragonCoreContainer::new);
 

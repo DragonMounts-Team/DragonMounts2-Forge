@@ -1,6 +1,6 @@
 package net.dragonmounts3.api;
 
-import net.dragonmounts3.inits.ModItems;
+import net.dragonmounts3.init.DMItems;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.ItemStack;
@@ -80,7 +80,7 @@ public class DragonScaleMaterial implements IArmorMaterial, IDragonTypified {
         this.sound = builder.sound;
         this.toughness = builder.toughness;
         this.knockbackResistance = builder.knockbackResistance;
-        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(() -> Ingredient.of(new ItemStack(ModItems.DRAGON_SCALES.get(type)))) : builder.repairIngredient;
+        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(() -> Ingredient.of(new ItemStack(DMItems.DRAGON_SCALES.get(type)))) : builder.repairIngredient;
     }
 
     public int getDurabilityForShield() {

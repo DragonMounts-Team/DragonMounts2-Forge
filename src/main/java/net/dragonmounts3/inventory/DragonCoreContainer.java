@@ -1,6 +1,6 @@
 package net.dragonmounts3.inventory;
 
-import net.dragonmounts3.inits.ModContainers;
+import net.dragonmounts3.init.DMContainers;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
@@ -25,7 +25,7 @@ public class DragonCoreContainer extends Container {
     }
 
     public DragonCoreContainer(int containerId, PlayerInventory playerInventory, IInventory container) {
-        super(ModContainers.DRAGON_CORE.get(), containerId);
+        super(DMContainers.DRAGON_CORE.get(), containerId);
         this.container = container;
         PlayerEntity player = playerInventory.player;
         container.startOpen(player);

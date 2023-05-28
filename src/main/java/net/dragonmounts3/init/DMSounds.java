@@ -1,4 +1,4 @@
-package net.dragonmounts3.inits;
+package net.dragonmounts3.init;
 
 import net.dragonmounts3.DragonMounts;
 import net.minecraft.util.SoundEvent;
@@ -8,7 +8,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import static net.dragonmounts3.DragonMounts.prefix;
 
-public class ModSounds {
+public class DMSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DragonMounts.create(ForgeRegistries.SOUND_EVENTS);
     public static final RegistryObject<SoundEvent> ENTITY_DRAGON_STEP = createSoundEvent("mob.dragon.step");
     public static final RegistryObject<SoundEvent> ENTITY_DRAGON_BREATHE = createSoundEvent("mob.dragon.breathe");

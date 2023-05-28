@@ -4,9 +4,9 @@ import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.client.renderer.CarriageRenderer;
 import net.dragonmounts3.client.renderer.DragonEggRenderer;
 import net.dragonmounts3.client.renderer.dragon.TameableDragonRenderer;
-import net.dragonmounts3.inits.ModBlockEntities;
-import net.dragonmounts3.inits.ModContainers;
-import net.dragonmounts3.inits.ModItems;
+import net.dragonmounts3.init.DMBlockEntities;
+import net.dragonmounts3.init.DMContainers;
+import net.dragonmounts3.init.DMItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;
@@ -18,16 +18,16 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import static net.dragonmounts3.DragonMounts.MOD_ID;
-import static net.dragonmounts3.inits.ModEntities.*;
-import static net.dragonmounts3.inits.ModItems.DRAGON_WHISTLE;
+import static net.dragonmounts3.init.DMEntities.*;
+import static net.dragonmounts3.init.DMItems.DRAGON_WHISTLE;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
-public class ModClientEvents {
+public class DMClientEvents {
     @Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class ModBusEvents {
         private static void onFMLClientSetupEnqueueWork() {
-            ModContainers.registerScreens();
+            DMContainers.registerScreens();
         }
 
         @SubscribeEvent
@@ -36,7 +36,7 @@ public class ModClientEvents {
             RenderingRegistry.registerEntityRenderingHandler(CARRIAGE.get(), CarriageRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(HATCHABLE_DRAGON_EGG.get(), DragonEggRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(TAMEABLE_DRAGON.get(), TameableDragonRenderer::new);
-            ModBlockEntities.registerBlockEntityRenders();
+            DMBlockEntities.registerBlockEntityRenders();
             Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
                 CompoundNBT tag = stack.getTag();
                 if (tag != null && tag.contains("Type") && tintIndex == 1)
@@ -47,7 +47,7 @@ public class ModClientEvents {
 
         @SubscribeEvent
         public static void modelBake(ModelBakeEvent event) {
-            ModItems.addItemModelProperties();
+            DMItems.addItemModelProperties();
         }
     }
 }

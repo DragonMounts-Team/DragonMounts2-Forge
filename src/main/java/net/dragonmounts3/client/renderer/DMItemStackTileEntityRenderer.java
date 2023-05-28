@@ -18,15 +18,15 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 
 @OnlyIn(Dist.CLIENT)
-public class ModItemStackTileEntityRenderer extends ItemStackTileEntityRenderer {
+public class DMItemStackTileEntityRenderer extends ItemStackTileEntityRenderer {
     private static final ShulkerModel<?> DRAGON_CORE_MODEL = new ShulkerModel<>();
-    public static final ModItemStackTileEntityRenderer INSTANCE = new ModItemStackTileEntityRenderer();
+    public static final DMItemStackTileEntityRenderer INSTANCE = new DMItemStackTileEntityRenderer();
 
-    public static ModItemStackTileEntityRenderer getInstance() {
+    public static DMItemStackTileEntityRenderer getInstance() {
         return INSTANCE;
     }
 
-    private ModItemStackTileEntityRenderer() {
+    private DMItemStackTileEntityRenderer() {
     }
 
     @Override

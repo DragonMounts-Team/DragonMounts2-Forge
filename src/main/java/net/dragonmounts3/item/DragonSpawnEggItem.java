@@ -3,7 +3,7 @@ package net.dragonmounts3.item;
 import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
-import net.dragonmounts3.inits.ModEntities;
+import net.dragonmounts3.init.DMEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
@@ -44,9 +44,9 @@ public final class DragonSpawnEggItem extends ForgeSpawnEggItem implements IDrag
     private final CompoundNBT spawnData = new CompoundNBT();
 
     public DragonSpawnEggItem(DragonType type, int backgroundColor, int highlightColor, Properties props) {
-        super(ModEntities.TAMEABLE_DRAGON, backgroundColor, highlightColor, props);
+        super(DMEntities.TAMEABLE_DRAGON, backgroundColor, highlightColor, props);
         this.type = type;
-        this.spawnData.putString("id", ModEntities.TAMEABLE_DRAGON.getId().toString());
+        this.spawnData.putString("id", DMEntities.TAMEABLE_DRAGON.getId().toString());
         this.spawnData.putString(DragonType.DATA_PARAMETER_KEY, type.getSerializedName());
     }
 

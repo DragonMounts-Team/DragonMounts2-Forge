@@ -3,8 +3,8 @@ package net.dragonmounts3.data.provider;
 import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.data.tags.DMItemTags;
 import net.dragonmounts3.entity.carriage.CarriageType;
-import net.dragonmounts3.inits.ModBlocks;
-import net.dragonmounts3.inits.ModItems;
+import net.dragonmounts3.init.DMBlocks;
+import net.dragonmounts3.init.DMItems;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
@@ -35,35 +35,35 @@ public class DMRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildShapelessRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
-        smelting(Ingredient.of(ModItems.IRON_DRAGON_ARMOR.get()), Items.IRON_INGOT, 0.1f, 200).unlockedBy("has_armor", has(ModItems.IRON_DRAGON_ARMOR.get())).save(consumer, prefix("iron_ingot_form_smelting"));
-        smelting(Ingredient.of(ModItems.GOLDEN_DRAGON_ARMOR.get()), Items.GOLD_INGOT, 0.1f, 200).unlockedBy("has_armor", has(ModItems.GOLDEN_DRAGON_ARMOR.get())).save(consumer, prefix("gold_ingot_form_smelting"));
-        blasting(Ingredient.of(ModItems.IRON_DRAGON_ARMOR.get()), Items.IRON_INGOT, 0.1f, 100).unlockedBy("has_armor", has(ModItems.IRON_DRAGON_ARMOR.get())).save(consumer, prefix("iron_ingot_form_blasting"));
-        blasting(Ingredient.of(ModItems.GOLDEN_DRAGON_ARMOR.get()), Items.GOLD_INGOT, 0.1f, 100).unlockedBy("has_armor", has(ModItems.GOLDEN_DRAGON_ARMOR.get())).save(consumer, prefix("gold_ingot_form_blasting"));
-        dragonArmor(consumer, Tags.Items.INGOTS_IRON, Tags.Items.STORAGE_BLOCKS_IRON, ModItems.IRON_DRAGON_ARMOR.get());
-        dragonArmor(consumer, Tags.Items.INGOTS_GOLD, Tags.Items.STORAGE_BLOCKS_GOLD, ModItems.GOLDEN_DRAGON_ARMOR.get());
-        dragonArmor(consumer, Tags.Items.GEMS_EMERALD, Tags.Items.STORAGE_BLOCKS_EMERALD, ModItems.EMERALD_DRAGON_ARMOR.get());
-        dragonArmor(consumer, Tags.Items.GEMS_DIAMOND, Tags.Items.STORAGE_BLOCKS_DIAMOND, ModItems.DIAMOND_DRAGON_ARMOR.get());
-        netheriteBlockSmithingBuilder(ModItems.DIAMOND_DRAGON_ARMOR.get(), ModItems.NETHERITE_DRAGON_ARMOR.get()).save(consumer, prefix("netherite_dragon_armor_from_diamond"));
-        netheriteBlockSmithingBuilder(ModItems.EMERALD_DRAGON_ARMOR.get(), ModItems.NETHERITE_DRAGON_ARMOR.get()).save(consumer, prefix("netherite_dragon_armor_from_emerald"));
-        netheriteIngotSmithingBuilder(ModItems.DIAMOND_SHEARS.get(), ModItems.NETHERITE_SHEARS.get()).save(consumer, ModItems.NETHERITE_SHEARS.getId());
+        smelting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR.get()), Items.IRON_INGOT, 0.1f, 200).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR.get())).save(consumer, prefix("iron_ingot_form_smelting"));
+        smelting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR.get()), Items.GOLD_INGOT, 0.1f, 200).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR.get())).save(consumer, prefix("gold_ingot_form_smelting"));
+        blasting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR.get()), Items.IRON_INGOT, 0.1f, 100).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR.get())).save(consumer, prefix("iron_ingot_form_blasting"));
+        blasting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR.get()), Items.GOLD_INGOT, 0.1f, 100).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR.get())).save(consumer, prefix("gold_ingot_form_blasting"));
+        dragonArmor(consumer, Tags.Items.INGOTS_IRON, Tags.Items.STORAGE_BLOCKS_IRON, DMItems.IRON_DRAGON_ARMOR.get());
+        dragonArmor(consumer, Tags.Items.INGOTS_GOLD, Tags.Items.STORAGE_BLOCKS_GOLD, DMItems.GOLDEN_DRAGON_ARMOR.get());
+        dragonArmor(consumer, Tags.Items.GEMS_EMERALD, Tags.Items.STORAGE_BLOCKS_EMERALD, DMItems.EMERALD_DRAGON_ARMOR.get());
+        dragonArmor(consumer, Tags.Items.GEMS_DIAMOND, Tags.Items.STORAGE_BLOCKS_DIAMOND, DMItems.DIAMOND_DRAGON_ARMOR.get());
+        netheriteBlockSmithingBuilder(DMItems.DIAMOND_DRAGON_ARMOR.get(), DMItems.NETHERITE_DRAGON_ARMOR.get()).save(consumer, prefix("netherite_dragon_armor_from_diamond"));
+        netheriteBlockSmithingBuilder(DMItems.EMERALD_DRAGON_ARMOR.get(), DMItems.NETHERITE_DRAGON_ARMOR.get()).save(consumer, prefix("netherite_dragon_armor_from_emerald"));
+        netheriteIngotSmithingBuilder(DMItems.DIAMOND_SHEARS.get(), DMItems.NETHERITE_SHEARS.get()).save(consumer, DMItems.NETHERITE_SHEARS.getId());
         for (DragonType type : DragonType.values()) {
-            Item scale = ModItems.DRAGON_SCALES.get(type);
+            Item scale = DMItems.DRAGON_SCALES.get(type);
             if (scale != null) {
-                dragonScaleAxe(consumer, scale, ModItems.DRAGON_SCALE_AXE.get(type));
-                dragonScaleBoots(consumer, scale, ModItems.DRAGON_SCALE_BOOTS.get(type));
-                dragonScaleBow(consumer, scale, ModItems.DRAGON_SCALE_BOW.get(type));
-                dragonScaleChestplate(consumer, scale, ModItems.DRAGON_SCALE_CHESTPLATE.get(type));
-                dragonScaleHelmet(consumer, scale, ModItems.DRAGON_SCALE_HELMET.get(type));
-                dragonScaleHoe(consumer, scale, ModItems.DRAGON_SCALE_HOE.get(type));
-                dragonScaleLeggings(consumer, scale, ModItems.DRAGON_SCALE_LEGGINGS.get(type));
-                dragonScalePickaxe(consumer, scale, ModItems.DRAGON_SCALE_PICKAXE.get(type));
-                dragonScaleShovel(consumer, scale, ModItems.DRAGON_SCALE_SHOVEL.get(type));
-                dragonScaleShield(consumer, scale, ModItems.DRAGON_SCALE_SHIELD.get(type));
-                dragonScaleSword(consumer, scale, ModItems.DRAGON_SCALE_SWORD.get(type));
+                dragonScaleAxe(consumer, scale, DMItems.DRAGON_SCALE_AXE.get(type));
+                dragonScaleBoots(consumer, scale, DMItems.DRAGON_SCALE_BOOTS.get(type));
+                dragonScaleBow(consumer, scale, DMItems.DRAGON_SCALE_BOW.get(type));
+                dragonScaleChestplate(consumer, scale, DMItems.DRAGON_SCALE_CHESTPLATE.get(type));
+                dragonScaleHelmet(consumer, scale, DMItems.DRAGON_SCALE_HELMET.get(type));
+                dragonScaleHoe(consumer, scale, DMItems.DRAGON_SCALE_HOE.get(type));
+                dragonScaleLeggings(consumer, scale, DMItems.DRAGON_SCALE_LEGGINGS.get(type));
+                dragonScalePickaxe(consumer, scale, DMItems.DRAGON_SCALE_PICKAXE.get(type));
+                dragonScaleShovel(consumer, scale, DMItems.DRAGON_SCALE_SHOVEL.get(type));
+                dragonScaleShield(consumer, scale, DMItems.DRAGON_SCALE_SHIELD.get(type));
+                dragonScaleSword(consumer, scale, DMItems.DRAGON_SCALE_SWORD.get(type));
             }
         }
         for (CarriageType type : CarriageType.values()) {
-            Item carriage = ModItems.CARRIAGE.get(type);
+            Item carriage = DMItems.CARRIAGE.get(type);
             if (carriage != null) {
                 Block planks = type.getPlanks();
                 shaped(carriage)
@@ -76,7 +76,7 @@ public class DMRecipeProvider extends RecipeProvider {
                         .save(consumer);
             }
         }
-        shaped(ModItems.DIAMOND_SHEARS.get())
+        shaped(DMItems.DIAMOND_SHEARS.get())
                 .define('X', Tags.Items.GEMS_DIAMOND)
                 .pattern(" X")
                 .pattern("X ")
@@ -91,7 +91,7 @@ public class DMRecipeProvider extends RecipeProvider {
                 .pattern("#R#")
                 .unlockedBy("has_bow", has(DMItemTags.DRAGON_SCALE_BOW))
                 .save(consumer, prefix(Objects.requireNonNull(Items.DISPENSER.getRegistryName()).getPath()));
-        shaped(ModItems.DRAGON_AMULET.get())
+        shaped(DMItems.DRAGON_AMULET.get())
                 .define('#', Tags.Items.STRING)
                 .define('Y', Tags.Items.COBBLESTONE)
                 .define('X', Tags.Items.ENDER_PEARLS)
@@ -100,14 +100,14 @@ public class DMRecipeProvider extends RecipeProvider {
                 .pattern(" # ")
                 .unlockedBy("has_pearls", has(Tags.Items.ENDER_PEARLS))
                 .save(consumer);
-        shaped(ModBlocks.DRAGON_NEST.get())
+        shaped(DMBlocks.DRAGON_NEST.get())
                 .define('X', Tags.Items.RODS_WOODEN)
                 .pattern("XXX")
                 .pattern("XXX")
                 .pattern("XXX")
                 .unlockedBy("has_sticks", has(Tags.Items.RODS_WOODEN))
                 .save(consumer);
-        shaped(ModItems.DRAGON_WHISTLE.get())
+        shaped(DMItems.DRAGON_WHISTLE.get())
                 .define('P', Tags.Items.RODS_WOODEN)
                 .define('#', Tags.Items.ENDER_PEARLS)
                 .define('X', Tags.Items.STRING)

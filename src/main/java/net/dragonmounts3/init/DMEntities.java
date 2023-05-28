@@ -1,4 +1,4 @@
-package net.dragonmounts3.inits;
+package net.dragonmounts3.init;
 
 import net.dragonmounts3.DragonMounts;
 import net.dragonmounts3.entity.carriage.CarriageEntity;
@@ -15,7 +15,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod.EventBusSubscriber(modid = DragonMounts.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ModEntities {
+public class DMEntities {
 
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DragonMounts.create(ForgeRegistries.ENTITIES);
     public static final RegistryObject<EntityType<CarriageEntity>> CARRIAGE = register("carriage", common(CarriageEntity::new, EntityClassification.MISC), 0.8F, 0.8F);

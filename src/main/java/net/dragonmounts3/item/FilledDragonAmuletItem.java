@@ -3,7 +3,7 @@ package net.dragonmounts3.item;
 import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
-import net.dragonmounts3.inits.ModItems;
+import net.dragonmounts3.init.DMItems;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -73,7 +73,7 @@ public class FilledDragonAmuletItem extends DragonAmuletItem implements IDragonT
                 }
                 dragon.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
                 level.addFreshEntity(dragon);
-                ItemStack newStack = new ItemStack(ModItems.DRAGON_AMULET.get());
+                ItemStack newStack = new ItemStack(DMItems.DRAGON_AMULET.get());
                 player.setItemInHand(hand, newStack);
                 return ActionResult.success(newStack);
             }

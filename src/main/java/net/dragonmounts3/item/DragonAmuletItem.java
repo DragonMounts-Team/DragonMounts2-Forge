@@ -2,7 +2,7 @@ package net.dragonmounts3.item;
 
 import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
-import net.dragonmounts3.inits.ModItems;
+import net.dragonmounts3.init.DMItems;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -35,7 +35,7 @@ public class DragonAmuletItem extends Item {
             TameableDragonEntity dragon = (TameableDragonEntity) entity;
             if (dragon.isOwnedBy(player)) {
                 DragonType type = dragon.getDragonType();
-                Item amulet = ModItems.FILLED_DRAGON_AMULET.get(type);
+                Item amulet = DMItems.FILLED_DRAGON_AMULET.get(type);
                 if (amulet == null) {
                     return ActionResultType.FAIL;
                 }

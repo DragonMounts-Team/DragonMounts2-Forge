@@ -1,4 +1,4 @@
-package net.dragonmounts3.inits;
+package net.dragonmounts3.init;
 
 import net.minecraft.item.Item.Properties;
 import net.minecraft.item.ItemGroup;
@@ -8,12 +8,12 @@ import javax.annotation.Nonnull;
 
 import static net.dragonmounts3.DragonMounts.MOD_ID;
 
-public class ModItemGroups {
+public class DMItemGroups {
     public static final ItemGroup BLOCK_TAB = new ItemGroup(MOD_ID + ".blocks") {
         @Nonnull
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(ModBlocks.ENDER_DRAGON_EGG.get());
+            return new ItemStack(DMBlocks.ENDER_DRAGON_EGG.get());
         }
     };
 
@@ -21,7 +21,7 @@ public class ModItemGroups {
         @Nonnull
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(ModItems.ENDER_DRAGON_SCALES.get());
+            return new ItemStack(DMItems.ENDER_DRAGON_SCALES.get());
         }
     };
 
@@ -29,7 +29,7 @@ public class ModItemGroups {
         @Nonnull
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(ModItems.ENDER_DRAGON_SCALE_SWORD.get());
+            return new ItemStack(DMItems.ENDER_DRAGON_SCALE_SWORD.get());
         }
     };
 

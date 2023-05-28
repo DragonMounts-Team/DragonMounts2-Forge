@@ -1,7 +1,7 @@
 package net.dragonmounts3;
 
 import net.dragonmounts3.command.DMCommand;
-import net.dragonmounts3.inits.*;
+import net.dragonmounts3.init.*;
 import net.dragonmounts3.network.DMPacketHandler;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
@@ -31,13 +31,13 @@ public class DragonMounts {
     public DragonMounts() {
         DMPacketHandler.init();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DragonMountsConfig.SPEC);
-        ModSounds.SOUNDS.register(this.eventBus);
-        ModAttributes.ATTRIBUTES.register(this.eventBus);
-        ModItems.ITEMS.register(this.eventBus);
-        ModBlocks.BLOCKS.register(this.eventBus);
-        ModEntities.ENTITY_TYPES.register(this.eventBus);
-        ModBlockEntities.BLOCK_ENTITY.register(this.eventBus);
-        ModContainers.CONTAINERS.register(this.eventBus);
+        DMSounds.SOUNDS.register(this.eventBus);
+        DMAttributes.ATTRIBUTES.register(this.eventBus);
+        DMItems.ITEMS.register(this.eventBus);
+        DMBlocks.BLOCKS.register(this.eventBus);
+        DMEntities.ENTITY_TYPES.register(this.eventBus);
+        DMBlockEntities.BLOCK_ENTITY.register(this.eventBus);
+        DMContainers.CONTAINERS.register(this.eventBus);
         MinecraftForge.EVENT_BUS.register(this);
     }
 

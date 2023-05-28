@@ -45,9 +45,9 @@ public class TieredShearsItem extends ShearsItem {
         if (level.isClientSide) return ActionResultType.PASS;
         if (entity instanceof TameableDragonEntity) {
             TameableDragonEntity dragon = (TameableDragonEntity) entity;
-            if (dragon.isOwnedBy(player)) {
-                BlockPos pos = new BlockPos(dragon.getX(), dragon.getY(), dragon.getZ());
-                if (dragon.isShearable(stack, level, pos)) {
+            BlockPos pos = new BlockPos(dragon.getX(), dragon.getY(), dragon.getZ());
+            if (dragon.isShearable(stack, level, pos)) {
+                if (dragon.isOwnedBy(player)) {
                     List<ItemStack> drops = dragon.onSheared(player, stack, level, pos, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, stack));
                     Random random = dragon.getRandom();
                     boolean flag = false;
@@ -62,11 +62,12 @@ public class TieredShearsItem extends ShearsItem {
                         stack.hurtAndBreak(20, dragon, e -> e.broadcastBreakEvent(hand));
                         return ActionResultType.SUCCESS;
                     }
+                } else {
+                    player.displayClientMessage(new TranslationTextComponent("message.dragonmounts.not_owner"), true);
                 }
-                return ActionResultType.PASS;
+                return ActionResultType.FAIL;
             }
-            player.displayClientMessage(new TranslationTextComponent("message.dragonmounts.not_owner"), true);
-            return ActionResultType.FAIL;
+            return ActionResultType.PASS;
         }
         return super.interactLivingEntity(stack, player, entity, hand);
     }

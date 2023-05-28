@@ -1,4 +1,4 @@
-package net.dragonmounts3.inits;
+package net.dragonmounts3.init;
 
 import net.dragonmounts3.DragonMounts;
 import net.dragonmounts3.block.entity.DragonCoreBlockEntity;
@@ -11,11 +11,11 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class ModBlockEntities {
+public class DMBlockEntities {
 
     public static final DeferredRegister<TileEntityType<?>> BLOCK_ENTITY = DragonMounts.create(ForgeRegistries.TILE_ENTITIES);
 
-    public static final RegistryObject<TileEntityType<DragonCoreBlockEntity>> DRAGON_CORE = BLOCK_ENTITY.register("dragon_core", () -> TileEntityType.Builder.of(DragonCoreBlockEntity::new, ModBlocks.DRAGON_CORE.get()).build(null));
+    public static final RegistryObject<TileEntityType<DragonCoreBlockEntity>> DRAGON_CORE = BLOCK_ENTITY.register("dragon_core", () -> TileEntityType.Builder.of(DragonCoreBlockEntity::new, DMBlocks.DRAGON_CORE.get()).build(null));
 
     @OnlyIn(Dist.CLIENT)
     public static void registerBlockEntityRenders() {

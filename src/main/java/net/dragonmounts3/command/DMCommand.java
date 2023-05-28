@@ -1,15 +1,22 @@
 package net.dragonmounts3.command;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.command.arguments.EntityArgument;
+import net.minecraft.command.arguments.GameProfileArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.util.text.event.HoverEvent;
+
+import java.util.Collection;
 
 import static net.minecraft.util.text.event.HoverEvent.Action.SHOW_ENTITY;
 
@@ -37,5 +44,16 @@ public class DMCommand {
                 ),
                 clazz.getCanonicalName()
         );
+    }
+
+    public static GameProfile getSingleProfileOrException(CommandContext<CommandSource> context, String name) throws CommandSyntaxException {
+        Collection<GameProfile> profiles = GameProfileArgument.getGameProfiles(context, name);
+        if (profiles.isEmpty()) {
+            throw EntityArgument.NO_ENTITIES_FOUND.create();
+        } else if (profiles.size() > 1) {
+            throw EntityArgument.ERROR_NOT_SINGLE_ENTITY.create();
+        } else {
+            return profiles.stream().findAny().get();
+        }
     }
 }

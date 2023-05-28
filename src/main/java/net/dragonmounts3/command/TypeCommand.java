@@ -8,7 +8,7 @@ import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.api.IMutableDragonTypified;
 import net.dragonmounts3.event.OnDragonTypeEditEvent;
-import net.dragonmounts3.inits.ModBlocks;
+import net.dragonmounts3.init.DMBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DragonEggBlock;
@@ -81,7 +81,7 @@ public class TypeCommand {
         Block block = originalState.getBlock();
         if (block instanceof IDragonTypified) {
             if (block instanceof DragonEggBlock) {
-                net.minecraft.block.Block egg = ModBlocks.HATCHABLE_DRAGON_EGG.get(type);
+                net.minecraft.block.Block egg = DMBlocks.HATCHABLE_DRAGON_EGG.get(type);
                 if (egg != null) {
                     event.setState(egg.defaultBlockState());
                 }

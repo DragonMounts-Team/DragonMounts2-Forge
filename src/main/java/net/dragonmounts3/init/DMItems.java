@@ -1,4 +1,4 @@
-package net.dragonmounts3.inits;
+package net.dragonmounts3.init;
 
 import mcp.MethodsReturnNonnullByDefault;
 import net.dragonmounts3.DragonMounts;
@@ -20,10 +20,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static net.dragonmounts3.inits.ModItemGroups.*;
+import static net.dragonmounts3.init.DMItemGroups.*;
 
 @MethodsReturnNonnullByDefault
-public class ModItems {
+public class DMItems {
 
     public static final DeferredRegister<Item> ITEMS = DragonMounts.create(ForgeRegistries.ITEMS);
     public static final ObjectHolder<CarriageType, CarriageItem> CARRIAGE = new ObjectHolder<>();
@@ -409,11 +409,11 @@ public class ModItems {
     @OnlyIn(Dist.CLIENT)
     public static void addItemModelProperties() {
         for (DragonScaleBowItem item : DRAGON_SCALE_BOW) {
-            ItemModelsProperties.register(item, new ResourceLocation("pull"), ModItems::getPullItemProperty);
-            ItemModelsProperties.register(item, new ResourceLocation("pulling"), ModItems::getPullingItemProperty);
+            ItemModelsProperties.register(item, new ResourceLocation("pull"), DMItems::getPullItemProperty);
+            ItemModelsProperties.register(item, new ResourceLocation("pulling"), DMItems::getPullingItemProperty);
         }
         for (DragonScaleShieldItem item : DRAGON_SCALE_SHIELD) {
-            ItemModelsProperties.register(item, new ResourceLocation("blocking"), ModItems::getBlockingItemProperty);
+            ItemModelsProperties.register(item, new ResourceLocation("blocking"), DMItems::getBlockingItemProperty);
         }
     }
 }

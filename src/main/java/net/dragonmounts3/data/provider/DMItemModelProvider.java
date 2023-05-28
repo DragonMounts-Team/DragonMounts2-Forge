@@ -1,7 +1,7 @@
 package net.dragonmounts3.data.provider;
 
 import net.dragonmounts3.DragonMounts;
-import net.dragonmounts3.inits.ModItems;
+import net.dragonmounts3.init.DMItems;
 import net.dragonmounts3.item.DragonScaleBowItem;
 import net.dragonmounts3.item.DragonScaleShieldItem;
 import net.dragonmounts3.item.DragonSpawnEggItem;
@@ -27,7 +27,7 @@ public class DMItemModelProvider extends ItemModelProvider {
         ModelFile[] pulling = new ModelFile[3];
         ResourceLocation pullPredicate = new ResourceLocation("pull");
         ResourceLocation pullingPredicate = new ResourceLocation("pulling");
-        for (DragonScaleBowItem item : ModItems.DRAGON_SCALE_BOW) {
+        for (DragonScaleBowItem item : DMItems.DRAGON_SCALE_BOW) {
             StringBuilder root = new StringBuilder(Objects.requireNonNull(item.getRegistryName()).getPath())
                     .append("_");
             StringBuilder texture = new StringBuilder("items/bow/")
@@ -64,7 +64,7 @@ public class DMItemModelProvider extends ItemModelProvider {
         ModelFile shieldModel = getExistingFile(prefix("item/shield/shield"));
         ModelFile shieldBlockingModel = getExistingFile(prefix("item/shield/shield_blocking"));
         ResourceLocation blockingPredicate = new ResourceLocation("blocking");
-        for (DragonScaleShieldItem item : ModItems.DRAGON_SCALE_SHIELD) {
+        for (DragonScaleShieldItem item : DMItems.DRAGON_SCALE_SHIELD) {
             ResourceLocation texture = prefix("entities/dragon_scale_shield/" + item.getDragonType().getSerializedName());
             String root = Objects.requireNonNull(item.getRegistryName()).getPath();
             ModelFile blocking = this.getBuilder(root + "_blocking")
@@ -79,7 +79,7 @@ public class DMItemModelProvider extends ItemModelProvider {
                     .end();
         }
         ModelFile vanillaSpawnModel = getExistingFile(new ResourceLocation("item/template_spawn_egg"));
-        for (DragonSpawnEggItem item : ModItems.DRAGON_SPAWN_EGG) {
+        for (DragonSpawnEggItem item : DMItems.DRAGON_SPAWN_EGG) {
             this.getBuilder(Objects.requireNonNull(item.getRegistryName()).getPath()).parent(vanillaSpawnModel);
         }
     }

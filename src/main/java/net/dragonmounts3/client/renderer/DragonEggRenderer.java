@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -40,14 +40,20 @@ public class DragonEggRenderer extends EntityRenderer<HatchableDragonEggEntity> 
             World world = entity.level;
             if (blockstate.getRenderShape() != BlockRenderType.INVISIBLE) {
                 BlockPos pos = new BlockPos(entity.getX(), entity.getBoundingBox().maxY, entity.getZ());
-                float wriggleX = entity.getWriggleX();
-                float wriggleZ = entity.getWriggleZ();
                 matrixStack.pushPose();
-                if (wriggleX > 0) {
-                    matrixStack.mulPose(Vector3f.XP.rotationDegrees((float) (Math.sin(wriggleX - partialTicks) * 8)));
-                }
-                if (wriggleZ > 0) {
-                    matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) (Math.sin(wriggleZ - partialTicks) * 8)));
+                float axis = entity.getRotationAxis();
+                float angle = entity.getAmplitude();
+                if (angle != 0) {
+                    angle = (float) (Math.sin(angle - partialTicks) * Math.PI / 45f);//... * 8 / 360
+                    double temp = Math.sin(angle);
+                    matrixStack.mulPose(new Quaternion(
+                            (float) (Math.cos(axis) * temp),
+                            0f,
+                            (float) (Math.sin(axis) * temp),
+                            (float) (Math.cos(angle))
+                    ));/*It is equivalent (at least assuming so) to:
+                    matrixStack.mulPose(new Vector3f((float)Math.cos(axis), 0, (float)Math.sin(axis)).rotationDegrees((float) (Math.sin(entity.getAmplitude() - partialTicks) * 8f)));
+                    */
                 }
                 matrixStack.translate(-0.5D, 0.0D, -0.5D);
                 BlockRendererDispatcher dispatcher = Minecraft.getInstance().getBlockRenderer();

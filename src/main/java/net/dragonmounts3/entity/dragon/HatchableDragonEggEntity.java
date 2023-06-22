@@ -9,6 +9,7 @@ import net.dragonmounts3.init.DMEntities;
 import net.dragonmounts3.init.DMItems;
 import net.dragonmounts3.init.DMSounds;
 import net.dragonmounts3.item.DragonScalesItem;
+import net.dragonmounts3.network.SShakeDragonEggPacket;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -28,7 +29,10 @@ import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.Hand;
+import net.minecraft.util.HandSide;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.GameRules;
@@ -45,17 +49,20 @@ import java.util.Map;
 import java.util.Objects;
 
 import static net.dragonmounts3.entity.dragon.TameableDragonEntity.AGE_DATA_PARAMETER_KEY;
+import static net.dragonmounts3.network.DMPacketHandler.CHANNEL;
+import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
 
 @ParametersAreNonnullByDefault
 public class HatchableDragonEggEntity extends LivingEntity implements IMutableDragonTypified {
     private static final DataParameter<String> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DataSerializers.STRING);
-    private static final float EGG_CRACK_THRESHOLD = 0.9f;
-    private static final float EGG_WRIGGLE_THRESHOLD = 0.75f;
-    private static final float EGG_WRIGGLE_BASE_CHANCE = 20;
-    private static final int MIN_HATCHING_TIME = 36000;
-    private static final int MAX_HATCHING_TIME = 48000;
-    protected int wriggleX = 0;
-    protected int wriggleZ = 0;
+    public static final int MIN_HATCHING_TIME = 36000;
+    private static final float EGG_CRACK_PROCESS_THRESHOLD = 0.9f;
+    private static final float EGG_SHAKE_PROCESS_THRESHOLD = 0.75f;
+    private static final int EGG_SHAKE_THRESHOLD = (int) (EGG_SHAKE_PROCESS_THRESHOLD * MIN_HATCHING_TIME);
+    private static final float EGG_SHAKE_BASE_CHANCE = 20f;
+    protected DragonType type = DragonType.ENDER;
+    protected float rotationAxis = 0;
+    protected int amplitude = 0;
     protected int age = 0;
     protected boolean hatched = false;//to keep uuid
     protected Map<ScoreObjective, Score> scores = null;//to keep score
@@ -98,24 +105,27 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         }
     }
 
-    protected void crack(int amount, SoundEvent sound) {
-        DragonType type = this.getDragonType();
-        HatchableDragonEggBlock block = DMBlocks.HATCHABLE_DRAGON_EGG.get(type);
-        if (block != null) {
-            this.level.levelEvent(2001, blockPosition(), Block.getId(block.defaultBlockState()));
+    @Override
+    public void onSyncedDataUpdated(DataParameter<?> key) {
+        if (DATA_DRAGON_TYPE.equals(key)) {
+            this.type = DragonType.byName(this.entityData.get(DATA_DRAGON_TYPE));
+        } else {
+            super.onSyncedDataUpdated(key);
         }
-        if (amount > 0 && !this.level.isClientSide) {
-            DragonScalesItem scales = DMItems.DRAGON_SCALES.get(type);
+    }
+
+    protected void spawnScales(int amount) {
+        if (amount > 0) {
+            DragonScalesItem scales = DMItems.DRAGON_SCALES.get(this.getDragonType());
             if (scales != null && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
                 this.spawnAtLocation(new ItemStack(scales, amount), 1.25f);
             }
         }
-        this.level.playSound(null, this, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
 
     public void hatch() {
-        this.crack(this.random.nextInt(4) + 4, DMSounds.DRAGON_HATCHED.get());
         if (!this.level.isClientSide) {
+            this.spawnScales(this.random.nextInt(4) + 4);
             String scoreboardName = this.getScoreboardName();
             Scoreboard scoreboard = this.level.getScoreboard();
             this.scores = scoreboard.getPlayerScores(scoreboardName);
@@ -128,47 +138,33 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     @Override
     public void onRemovedFromWorld() {
         super.onRemovedFromWorld();
-        if (this.hatched && !this.level.isClientSide) {
-            ServerWorld world = (ServerWorld) level;
-            Scoreboard scoreboard = world.getScoreboard();
-            TameableDragonEntity dragon = new TameableDragonEntity(world);
-            String scoreboardName = dragon.getScoreboardName();
-            CompoundNBT compound = this.saveWithoutId(new CompoundNBT());
-            compound.remove(AGE_DATA_PARAMETER_KEY);
-            dragon.load(compound);
-            dragon.setLifeStage(DragonLifeStage.NEWBORN, true);
-            if (this.team != null) {
-                scoreboard.addPlayerToTeam(scoreboardName, this.team);
-            }
-            if (this.scores != null) {
-                Score target;
-                Score cache;
-                for (Map.Entry<ScoreObjective, Score> entry : this.scores.entrySet()) {
-                    cache = entry.getValue();
-                    target = scoreboard.getOrCreatePlayerScore(scoreboardName, entry.getKey());
-                    target.setScore(cache.getScore());
-                    target.setLocked(cache.isLocked());
+        if (this.hatched) {
+            if (this.level.isClientSide) {
+                this.playSound(DMSounds.DRAGON_HATCHED.get(), 1.0F, 1.0F);
+            } else {
+                ServerWorld world = (ServerWorld) level;
+                Scoreboard scoreboard = world.getScoreboard();
+                TameableDragonEntity dragon = new TameableDragonEntity(world);
+                String scoreboardName = dragon.getScoreboardName();
+                CompoundNBT compound = this.saveWithoutId(new CompoundNBT());
+                compound.remove(AGE_DATA_PARAMETER_KEY);
+                dragon.load(compound);
+                dragon.setLifeStage(DragonLifeStage.NEWBORN, true, false);
+                if (this.team != null) {
+                    scoreboard.addPlayerToTeam(scoreboardName, this.team);
                 }
+                if (this.scores != null) {
+                    Score target;
+                    Score cache;
+                    for (Map.Entry<ScoreObjective, Score> entry : this.scores.entrySet()) {
+                        cache = entry.getValue();
+                        target = scoreboard.getOrCreatePlayerScore(scoreboardName, entry.getKey());
+                        target.setScore(cache.getScore());
+                        target.setLocked(cache.isLocked());
+                    }
+                }
+                world.addFreshEntity(dragon);
             }
-            world.addFreshEntity(dragon);
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public void handleEntityEvent(byte id) {
-        if (id > 64) {
-            if ((id & 0B0010) == 0B0010) {
-                this.wriggleX = 20;
-            } else if ((id & 0B0001) == 0B0001) {
-                this.wriggleX = 10;
-            }
-            if ((id & 0B1000) == 0B1000) {
-                this.wriggleZ = 20;
-            } else if ((id & 0B0100) == 0B0100) {
-                this.wriggleZ = 10;
-            }
-        } else {
-            super.handleEntityEvent(id);
         }
     }
 
@@ -214,13 +210,12 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     @Override
     public void tick() {
         super.tick();
+        if (this.amplitude > 0) {
+            --this.amplitude;
+        } else if (this.amplitude < 0) {
+            ++this.amplitude;
+        }
         if (this.level.isClientSide) {
-            if (this.wriggleX > 0) {
-                --this.wriggleX;
-            }
-            if (this.wriggleZ > 0) {
-                --this.wriggleZ;
-            }
             // spawn generic particles
             double px = getX() + (this.random.nextDouble() - 0.5);
             double py = getY() + (this.random.nextDouble() - 0.3);
@@ -229,54 +224,35 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
             double oy = (this.random.nextDouble() - 0.3) * 2;
             double oz = (this.random.nextDouble() - 0.5) * 2;
             this.level.addParticle(this.getDragonType().getEggParticle(), px, py, pz, ox, oy, oz);
-        } else {
-            int age = this.getAge() + 1;
-            // animate egg wriggle based on the time the eggs take to hatch
-            float progress = (float) age / MIN_HATCHING_TIME;
+            return;
+        }
+        // play the egg shake animation based on the time the eggs take to hatch
+        if (++this.age > EGG_SHAKE_THRESHOLD && this.amplitude == 0) {
+            float progress = (float) this.age / MIN_HATCHING_TIME;
             // wait until the egg is nearly hatched
-            if (progress > EGG_WRIGGLE_THRESHOLD) {
-                float chance = (progress - EGG_WRIGGLE_THRESHOLD) / EGG_WRIGGLE_BASE_CHANCE * (1 - EGG_WRIGGLE_THRESHOLD);
-                if (age >= MAX_HATCHING_TIME || age >= MIN_HATCHING_TIME && this.random.nextFloat() < chance) {
-                    this.hatch();
-                } else {
-                    byte state = 0B1000000;//64
-                    if (this.wriggleX > 0) {
-                        --this.wriggleX;
-                    } else if (this.random.nextFloat() < chance) {
-                        if (this.random.nextBoolean()) {
-                            this.wriggleX = 10;
-                            state |= 0B0100;
-                        } else {
-                            this.wriggleX = 20;
-                            state |= 0B1000;
-                        }
-                    }
-                    if (this.wriggleZ > 0) {
-                        --this.wriggleZ;
-                    } else if (this.random.nextFloat() < chance) {
-                        if (this.random.nextBoolean()) {
-                            this.wriggleZ = 10;
-                            state |= 0B0001;
-                        } else {
-                            this.wriggleZ = 20;
-                            state |= 0B0010;
-                        }
-                    }
-                    if (state != 0B1000000) {
-                        this.level.broadcastEntityEvent(this, state);
-                        if (progress > EGG_CRACK_THRESHOLD) {
-                            this.crack(1, DMSounds.DRAGON_HATCHING.get());
-                        }
-                    }
-                }
+            float chance = (progress - EGG_SHAKE_PROCESS_THRESHOLD) / EGG_SHAKE_BASE_CHANCE * (1 - EGG_SHAKE_PROCESS_THRESHOLD);
+            if (this.age >= MIN_HATCHING_TIME && this.random.nextFloat() * 2 < chance) {
+                this.hatch();
+                return;
             }
-            this.setAge(age);
+            if (this.random.nextFloat() < chance) {
+                this.rotationAxis = this.random.nextFloat() * 2f;
+                this.amplitude = this.random.nextBoolean() ? 10 : 20;
+                boolean flag = progress > EGG_CRACK_PROCESS_THRESHOLD;
+                if (flag) {
+                    this.spawnScales(1);
+                }
+                CHANNEL.send(
+                        TRACKING_ENTITY.with(() -> this),
+                        new SShakeDragonEggPacket(this.getId(), this.rotationAxis, this.amplitude, flag)
+                );
+            }
         }
     }
 
     @Override
     public ItemStack getPickedResult(RayTraceResult target) {
-        return new ItemStack(DMBlocks.HATCHABLE_DRAGON_EGG.get(getDragonType()));
+        return new ItemStack(DMBlocks.HATCHABLE_DRAGON_EGG.get(this.getDragonType()));
     }
 
     @Override
@@ -316,12 +292,26 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         return this.age;
     }
 
-    public int getWriggleX() {
-        return this.wriggleX;
+    public float getRotationAxis() {
+        return this.rotationAxis;
     }
 
-    public int getWriggleZ() {
-        return this.wriggleZ;
+    public int getAmplitude() {
+        return this.amplitude;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public void applyPacket(SShakeDragonEggPacket packet) {
+        this.rotationAxis = packet.axis;
+        this.amplitude = packet.amplitude;
+        if (packet.particle) {
+            DragonType type = this.getDragonType();
+            HatchableDragonEggBlock block = DMBlocks.HATCHABLE_DRAGON_EGG.get(type);
+            if (block != null) {
+                this.level.levelEvent(2001, this.blockPosition(), Block.getId(block.defaultBlockState()));
+            }
+        }
+        this.playSound(DMSounds.DRAGON_HATCHING.get(), 1.0F, 1.0F);
     }
 
     public void setDragonType(DragonType type, boolean reset) {
@@ -344,7 +334,6 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
 
     @Override
     public DragonType getDragonType() {
-        DragonType type = DragonType.byName(this.entityData.get(DATA_DRAGON_TYPE));
-        return type == null ? DragonType.ENDER : type;
+        return this.type;
     }
 }

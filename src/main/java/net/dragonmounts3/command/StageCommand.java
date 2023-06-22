@@ -68,13 +68,13 @@ public class StageCommand {
     private static int set(CommandSource source, Entity target, DragonLifeStage stage) {
         if (target instanceof TameableDragonEntity) {
             TameableDragonEntity dragon = (TameableDragonEntity) target;
-            dragon.setLifeStage(stage, true);
+            dragon.setLifeStage(stage, true, true);
         } else if (target instanceof HatchableDragonEggEntity) {
             ServerWorld level = source.getLevel();
             TameableDragonEntity dragon = new TameableDragonEntity(target.level);
             CompoundNBT compound = target.saveWithoutId(new CompoundNBT());
             dragon.load(compound);
-            dragon.setLifeStage(stage, true);
+            dragon.setLifeStage(stage, true, true);
             level.removeEntity(target, false);
             level.addFreshEntity(dragon);
         } else {

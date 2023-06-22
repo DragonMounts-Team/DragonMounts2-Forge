@@ -2,8 +2,8 @@ package net.dragonmounts3.entity.dragon;
 
 import net.dragonmounts3.DragonMountsConfig;
 import net.dragonmounts3.api.DragonType;
+import net.dragonmounts3.api.IDragonFood;
 import net.dragonmounts3.api.IMutableDragonTypified;
-import net.dragonmounts3.data.tags.DMItemTags;
 import net.dragonmounts3.entity.dragon.helper.DragonBodyHelper;
 import net.dragonmounts3.entity.dragon.helper.DragonHelper;
 import net.dragonmounts3.init.DMAttributes;
@@ -13,8 +13,9 @@ import net.dragonmounts3.init.DMSounds;
 import net.dragonmounts3.inventory.DragonInventoryContainer;
 import net.dragonmounts3.item.DragonScalesItem;
 import net.dragonmounts3.item.TieredShearsItem;
-import net.dragonmounts3.network.SEatItemParticlePacket;
-import net.dragonmounts3.network.SUpdateAgePacket;
+import net.dragonmounts3.network.SFeedDragonPacket;
+import net.dragonmounts3.network.SSyncDragonAgePacket;
+import net.dragonmounts3.util.DragonFood;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierManager;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -25,13 +26,17 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.*;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.Hand;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -44,6 +49,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
+
+import static net.dragonmounts3.network.DMPacketHandler.CHANNEL;
+import static net.minecraftforge.fml.network.PacketDistributor.PLAYER;
+import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
 
 /**
  * @see net.minecraft.entity.passive.horse.MuleEntity
@@ -66,7 +75,6 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
 
     // data value IDs
     private static final DataParameter<String> DATA_DRAGON_TYPE = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.STRING);
-    private static final DataParameter<String> DATA_LIFE_STAGE = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.STRING);
     private static final DataParameter<Boolean> DATA_FLYING = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> DATA_SADDLED = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> DATA_AGE_LOCKED = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
@@ -94,13 +102,13 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     public static final String FLYING_DATA_PARAMETER_KEY = "Flying";
     public static final String SADDLE_DATA_PARAMETER_KEY = "Saddle";
     public static final String SHEARED_DATA_PARAMETER_KEY = "ShearCooldown";
-    private static final LazyValue<Ingredient> DRAGON_FOOD = new LazyValue<>(() -> Ingredient.of(DMItemTags.DRAGON_FOOD));
     private final DragonBodyHelper dragonBodyHelper = new DragonBodyHelper(this);
     private final Map<Class<?>, DragonHelper> helpers = new HashMap<>();
     public EnderCrystalEntity healingEnderCrystal;
     protected DragonInventoryContainer inventory;
+    protected DragonType type = DragonType.ENDER;
+    protected DragonLifeStage stage = DragonLifeStage.ADULT;
     private int shearCooldown;
-    private int ageSnapshot = 0;
     public int inAirTicks;
     public int roarTicks;
     protected int ticksSinceLastAttack;
@@ -136,12 +144,13 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
                 .add(Attributes.ARMOR_TOUGHNESS, BASE_TOUGHNESS);
     }
 
+    //----------Entity----------
+
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_CHESTED, false);
         this.entityData.define(DATA_DRAGON_TYPE, DragonType.ENDER.getSerializedName());
-        this.entityData.define(DATA_LIFE_STAGE, DragonLifeStage.ADULT.getSerializedName());
         this.entityData.define(DATA_FLYING, false);
         this.entityData.define(DATA_SADDLED, false);
         this.entityData.define(DATA_SHEARED, false);
@@ -171,7 +180,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     public void addAdditionalSaveData(CompoundNBT compound) {
         super.addAdditionalSaveData(compound);
         compound.putString(DragonType.DATA_PARAMETER_KEY, this.entityData.get(DATA_DRAGON_TYPE));
-        compound.putString(DragonLifeStage.DATA_PARAMETER_KEY, this.entityData.get(DATA_LIFE_STAGE));
+        compound.putString(DragonLifeStage.DATA_PARAMETER_KEY, this.stage.getSerializedName());
         compound.putBoolean(FLYING_DATA_PARAMETER_KEY, this.entityData.get(DATA_FLYING));
         compound.putBoolean(AGE_LOCKED_DATA_PARAMETER_KEY, this.entityData.get(DATA_AGE_LOCKED));
         compound.putInt(SHEARED_DATA_PARAMETER_KEY, this.isSheared() ? this.shearCooldown : 0);
@@ -180,14 +189,14 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
 
     @Override
     public void readAdditionalSaveData(CompoundNBT compound) {
-        this.ageSnapshot = this.age;
+        int age = this.age;
+        DragonLifeStage stage = this.stage;
         if (compound.contains(DragonLifeStage.DATA_PARAMETER_KEY)) {
-            this.entityData.set(DATA_LIFE_STAGE, compound.getString(DragonLifeStage.DATA_PARAMETER_KEY));
-            this.refreshDimensions();
+            this.setLifeStage(DragonLifeStage.byName(compound.getString(DragonLifeStage.DATA_PARAMETER_KEY)), false, false);
         }
         super.readAdditionalSaveData(compound);
-        if (this.ageSnapshot != this.age) {
-            SUpdateAgePacket.send(this);
+        if (!this.firstTick && (this.age != age || stage != this.stage)) {
+            CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SSyncDragonAgePacket(this));
         }
         this.setDragonType(DragonType.byName(compound.getString(DragonType.DATA_PARAMETER_KEY)));
         if (compound.contains(FLYING_DATA_PARAMETER_KEY)) {
@@ -210,12 +219,11 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
 
     @Override
     public void onSyncedDataUpdated(DataParameter<?> key) {
-        if (DATA_LIFE_STAGE.equals(key)) {
-            this.refreshDimensions();
-            this.yRot = this.yHeadRot;
-            this.yBodyRot = this.yHeadRot;
+        if (DATA_DRAGON_TYPE.equals(key)) {
+            this.type = DragonType.byName(this.entityData.get(DATA_DRAGON_TYPE));
+        } else {
+            super.onSyncedDataUpdated(key);
         }
-        super.onSyncedDataUpdated(key);
     }
 
     @Override
@@ -304,97 +312,18 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
 
     @Override
     public float getScale() {
-        return DragonLifeStage.getSize(this.getLifeStage(), this.age);
+        return DragonLifeStage.getSize(this.stage, this.age);
     }
 
     @Nonnull
     @Override
     public EntitySize getDimensions(Pose pose) {
-        DragonLifeStage stage = this.getLifeStage();
-        return super.getDimensions(pose).scale(DragonLifeStage.getSize(stage, stage.duration >> 1));
+        return super.getDimensions(pose).scale(DragonLifeStage.getSize(this.stage, this.stage.duration >> 1));
     }
 
     @Override
     public boolean isFood(ItemStack stack) {
-        return DRAGON_FOOD.get().test(stack);
-    }
-
-    protected void feed(PlayerEntity player, ItemStack stack) {
-        SoundEvent eatingSound = SoundEvents.GENERIC_EAT;
-        SoundEvent extraSound = null;
-        Item item = stack.getItem();
-        Item eatingParticle = item;
-        Item resultItem = null;
-        int deltaAge;
-        int deltaHealth;
-        int age = this.getAge();
-        if (item instanceof HoneyBottleItem) {
-            this.setAgeLocked(false);
-            deltaAge = 100;
-            deltaHealth = 2;
-            eatingSound = item.getEatingSound();
-            eatingParticle = null;
-            resultItem = Items.GLASS_BOTTLE;
-        } else if (item instanceof BucketItem) {
-            deltaAge = 2000;
-            deltaHealth = 2;
-            extraSound = SoundEvents.GENERIC_DRINK;
-            resultItem = Items.BUCKET;
-            if (item == Items.COD_BUCKET) {
-                eatingParticle = Items.COD;
-            } else if (item == Items.SALMON_BUCKET) {
-                eatingParticle = Items.SALMON;
-            } else {
-                eatingParticle = Items.TROPICAL_FISH;
-            }
-        } else if (item instanceof SoupItem) {
-            deltaAge = 2500;
-            deltaHealth = 2;
-            resultItem = Items.BOWL;
-        } else {
-            deltaAge = 2000;
-            deltaHealth = 2;
-        }
-        if (this.level.isClientSide) {
-            if (!this.isAgeLocked() && this.getLifeStage() != DragonLifeStage.ADULT) {
-                if (age > 0) {
-                    this.age = age - deltaAge;
-                    if (this.forcedAgeTimer <= 0) {
-                        this.forcedAgeTimer = 40;
-                    }
-                } else if (age < 0) {
-                    this.age = age + deltaAge;
-                    if (this.forcedAgeTimer <= 0) {
-                        this.forcedAgeTimer = 40;
-                    }
-                }
-            }
-        } else {
-            if (!this.isAgeLocked()) {
-                if (age > 0) {
-                    this.setAge(age - deltaAge);
-                } else if (age < 0) {
-                    this.setAge(age + deltaAge);
-                }
-            }
-            this.setHealth(this.getHealth() + deltaHealth);
-            this.playSound(eatingSound, 1f, 0.75f);
-            if (extraSound != null) {
-                this.playSound(extraSound, 0.25f, 0.75f);
-            }
-            if (eatingParticle != null) {
-                SEatItemParticlePacket.send(this, eatingParticle);
-            }
-            if (!player.abilities.instabuild) {
-                stack.shrink(1);
-                if (resultItem != null) {
-                    ItemStack result = new ItemStack(resultItem);
-                    if (!player.inventory.add(result)) {
-                        player.drop(result, false);
-                    }
-                }
-            }
-        }
+        return DragonFood.test(stack.getItem());
     }
 
     @Nonnull
@@ -402,29 +331,15 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     public ActionResultType mobInteract(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getItemInHand(hand);
         Item item = stack.getItem();
-        if (item == Items.POISONOUS_POTATO) {
-            if (this.isAgeLocked()) {
-                return ActionResultType.PASS;
-            }
-            if (this.level.isClientSide) {
-                return ActionResultType.CONSUME;
-            }
-            this.setAgeLocked(true);
-            stack.shrink(1);
-            SEatItemParticlePacket.send(this, item);
-            this.playSound(SoundEvents.GENERIC_EAT, 1f, 0.75f);
-            return ActionResultType.SUCCESS;
+        if (this.level.isClientSide) {
+            if (DragonFood.test(item)) return ActionResultType.CONSUME;
+            return ActionResultType.PASS;
         }
-        if (item instanceof HoneyBottleItem) {
-            this.feed(player, stack);
-            return this.level.isClientSide ? ActionResultType.CONSUME : ActionResultType.SUCCESS;
-        }
-        if (this.isFood(stack)) {
-            this.feed(player, stack);
-            if (this.level.isClientSide) {
-                return ActionResultType.CONSUME;
-            }
-            if (this.getLifeStage() == DragonLifeStage.ADULT && this.canFallInLove()) {
+        IDragonFood food = DragonFood.get(item);
+        if (food != null) {
+            food.eat(this, player, stack, hand);
+            CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SFeedDragonPacket(this, item));
+            if (this.stage == DragonLifeStage.ADULT && this.canFallInLove()) {
                 this.setInLove(player);
             }
             return ActionResultType.SUCCESS;
@@ -445,7 +360,56 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
 
     @Override
     public void startSeenByPlayer(ServerPlayerEntity player) {
-        SUpdateAgePacket.send(player, this);
+        CHANNEL.send(PLAYER.with(() -> player), new SSyncDragonAgePacket(this));
+    }
+
+    public void setLifeStage(DragonLifeStage stage, boolean reset, boolean sync) {
+        if (this.stage == stage) return;
+        this.stage = stage;
+        if (reset) {
+            this.refreshAge();
+        }
+        this.refreshDimensions();
+        this.reapplyPosition();
+        if (sync && !this.level.isClientSide) {
+            CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SSyncDragonAgePacket(this));
+        }
+    }
+
+    public final DragonLifeStage getLifeStage() {
+        return this.stage;
+    }
+
+    @Override
+    public boolean isPersistenceRequired() {
+        return true;
+    }
+
+    @Override
+    public ItemStack getPickedResult(RayTraceResult target) {
+        return new ItemStack(DMItems.DRAGON_SPAWN_EGG.get(this.getDragonType()));
+    }
+
+    public void applyPacket(SSyncDragonAgePacket packet) {
+        this.age = packet.age;
+        this.setLifeStage(packet.stage, false, false);
+    }
+
+    //----------AgeableEntity----------
+
+    protected void refreshAge() {
+        switch (this.stage) {
+            case NEWBORN:
+            case INFANT:
+                this.age = -this.stage.duration;
+                break;
+            case JUVENILE:
+            case PREJUVENILE:
+                this.age = this.stage.duration;
+                break;
+            default:
+                this.age = 0;
+        }
     }
 
     public void setAgeLocked(boolean locked) {
@@ -457,57 +421,61 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     }
 
     @Override
-    public int getAge() {
-        return this.age;
+    protected void ageBoundaryReached() {
+        this.setLifeStage(DragonLifeStage.byId(this.stage.ordinal() + 1), true, false);
     }
 
-    @Override
-    public void setAge(int age) {
-        if (!this.level.isClientSide) {
-            int old = this.age;
-            if (old < 0 && age >= 0 || old > 0 && age <= 0) {
-                this.ageBoundaryReached();
-            }
-        }
+    /**
+     * Call the field {@link TameableDragonEntity#age} directly for internal use.
+     */
+    public void setAgeAsync(int age) {
         this.age = age;
     }
 
     @Override
-    public void setBaby(boolean value) {
-        this.setLifeStage(value ? DragonLifeStage.NEWBORN : DragonLifeStage.ADULT, true);
-    }
-
-    public void setLifeStage(DragonLifeStage stage, boolean reset) {
-        this.entityData.set(DATA_LIFE_STAGE, stage.getSerializedName());
-        if (reset) {
-            switch (stage) {
-                case NEWBORN:
-                case INFANT:
-                    this.age = -stage.duration;
-                    break;
-                case PREJUVENILE:
-                case JUVENILE:
-                    this.age = stage.duration;
-                    break;
-                case ADULT:
-                    this.age = 0;
-                    break;
-            }
-            this.ageSnapshot = this.age;
-            SUpdateAgePacket.send(this);
+    public void setAge(int age) {
+        if (this.age == age) return;
+        if (this.level.isClientSide) {
+            this.age = age;
+            return;
         }
-        this.refreshDimensions();
-        this.reapplyPosition();
-    }
-
-    public DragonLifeStage getLifeStage() {
-        return DragonLifeStage.byName(this.entityData.get(DATA_LIFE_STAGE));
+        if (this.age < 0 && age >= 0 || this.age > 0 && age <= 0) {
+            this.ageBoundaryReached();
+        } else {
+            this.age = age;
+        }
+        CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SSyncDragonAgePacket(this));
     }
 
     @Override
-    protected void ageBoundaryReached() {
-        this.setLifeStage(DragonLifeStage.byId(this.getLifeStage().ordinal() + 1), true);
+    public void ageUp(int delta, boolean forced) {
+        int backup = this.age;
+        //Notice:                                ↓↓           ↓↓                             ↓↓           ↓↓
+        if (!this.isAgeLocked() && (this.age < 0 && (this.age += delta) >= 0 || this.age > 0 && (this.age -= delta) <= 0)) {
+            this.ageBoundaryReached();
+            if (forced) {
+                this.forcedAge += backup < 0 ? -backup : backup;
+            }
+        }
     }
+
+    @Override
+    public final int getAge() {
+        return this.age;
+    }
+
+    @Override
+    public void setBaby(boolean value) {
+        this.setLifeStage(value ? DragonLifeStage.NEWBORN : DragonLifeStage.ADULT, true, true);
+    }
+
+    public void refreshForcedAgeTimer() {
+        if (this.forcedAgeTimer <= 0) {
+            this.forcedAgeTimer = 40;
+        }
+    }
+
+    //----------IMutableDragonTypified----------
 
     public void setDragonType(DragonType type, boolean reset) {
         AttributeModifierManager manager = this.getAttributes();
@@ -529,21 +497,10 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
 
     @Override
     public DragonType getDragonType() {
-        DragonType type = DragonType.byName(this.entityData.get(DATA_DRAGON_TYPE));
-        return type == null ? DragonType.ENDER : type;
+        return this.type;
     }
 
-    @Override
-    public boolean isPersistenceRequired() {
-        return true;
-    }
-
-    @Override
-    public ItemStack getPickedResult(RayTraceResult target) {
-        return new ItemStack(DMItems.DRAGON_SPAWN_EGG.get(this.getDragonType()));
-    }
-
-    //IForgeShearable
+    //----------IForgeShearable----------
 
     public boolean isSheared() {
         return this.entityData.get(DATA_SHEARED);
@@ -557,11 +514,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     @Override
     public boolean isShearable(@Nonnull ItemStack stack, World world, BlockPos pos) {
         Item item = stack.getItem();
-        DragonLifeStage stage = this.getLifeStage();
-        if (stage == null) {
-            stage = DragonLifeStage.ADULT;
-        }
-        return this.isAlive() && stage.ordinal() >= 2 && !this.isSheared() && item instanceof TieredShearsItem && ((TieredShearsItem) item).getTier().getLevel() >= 3;
+        return this.isAlive() && this.stage.ordinal() >= 2 && !this.isSheared() && item instanceof TieredShearsItem && ((TieredShearsItem) item).getTier().getLevel() >= 3;
     }
 
     @Nonnull
@@ -570,14 +523,13 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
         DragonScalesItem scale = DMItems.DRAGON_SCALES.get(this.getDragonType());
         if (scale != null) {
             this.setSheared(2500 + this.random.nextInt(1000));
-            this.playSound(SoundEvents.ITEM_BREAK, 1.0F, 1.0F);
             this.playSound(DMSounds.ENTITY_DRAGON_GROWL.get(), 1.0F, 1.0F);
             return Collections.singletonList(new ItemStack(scale, 2 + this.random.nextInt(3)));
         }
         return Collections.emptyList();
     }
 
-    //IInventory
+    //----------IInventory----------
 
     @Override
     public int getContainerSize() {

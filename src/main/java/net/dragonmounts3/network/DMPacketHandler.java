@@ -15,8 +15,8 @@ public class DMPacketHandler {
     );
 
     public static void init() {
-        CHANNEL.registerMessage(0, SUpdateAgePacket.class, SUpdateAgePacket::encode, SUpdateAgePacket::new, SUpdateAgePacket::onMessage);
-        CHANNEL.registerMessage(1, SEatItemParticlePacket.class, SEatItemParticlePacket::encode, SEatItemParticlePacket::new, SEatItemParticlePacket::onMessage);
-
+        CHANNEL.registerMessage(0, SSyncDragonAgePacket.class, SSyncDragonAgePacket::encode, SSyncDragonAgePacket::new, SSyncDragonAgePacket::handle);
+        CHANNEL.registerMessage(1, SFeedDragonPacket.class, SFeedDragonPacket::encode, SFeedDragonPacket::new, SFeedDragonPacket::handle);
+        CHANNEL.registerMessage(2, SShakeDragonEggPacket.class, SShakeDragonEggPacket::encode, SShakeDragonEggPacket::new, SShakeDragonEggPacket::handle);
     }
 }

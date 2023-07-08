@@ -26,22 +26,22 @@ import static net.dragonmounts3.init.DMItemGroups.*;
 public class DMItems {
 
     public static final DeferredRegister<Item> ITEMS = DragonMounts.create(ForgeRegistries.ITEMS);
-    public static final ObjectHolder<CarriageType, CarriageItem> CARRIAGE = new ObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonEssenceItem> DRAGON_ESSENCE = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonScalesItem> DRAGON_SCALES = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonScaleAxeItem> DRAGON_SCALE_AXE = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonScaleArmorItem> DRAGON_SCALE_BOOTS = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonScaleBowItem> DRAGON_SCALE_BOW = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonScaleArmorItem> DRAGON_SCALE_CHESTPLATE = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonScaleArmorItem> DRAGON_SCALE_HELMET = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonScaleHoeItem> DRAGON_SCALE_HOE = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonScaleArmorItem> DRAGON_SCALE_LEGGINGS = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonScalePickaxeItem> DRAGON_SCALE_PICKAXE = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonScaleShieldItem> DRAGON_SCALE_SHIELD = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonScaleShovelItem> DRAGON_SCALE_SHOVEL = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonScaleSwordItem> DRAGON_SCALE_SWORD = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<DragonSpawnEggItem> DRAGON_SPAWN_EGG = new DragonTypifiedObjectHolder<>();
-    public static final DragonTypifiedObjectHolder<FilledDragonAmuletItem> FILLED_DRAGON_AMULET = new DragonTypifiedObjectHolder<>();
+    public static final TypifiedRegistry<CarriageType, CarriageItem> CARRIAGE = new TypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonEssenceItem> DRAGON_ESSENCE = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonScalesItem> DRAGON_SCALES = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonScaleAxeItem> DRAGON_SCALE_AXE = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonScaleArmorItem> DRAGON_SCALE_BOOTS = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonScaleBowItem> DRAGON_SCALE_BOW = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonScaleArmorItem> DRAGON_SCALE_CHESTPLATE = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonScaleArmorItem> DRAGON_SCALE_HELMET = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonScaleHoeItem> DRAGON_SCALE_HOE = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonScaleArmorItem> DRAGON_SCALE_LEGGINGS = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonScalePickaxeItem> DRAGON_SCALE_PICKAXE = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonScaleShieldItem> DRAGON_SCALE_SHIELD = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonScaleShovelItem> DRAGON_SCALE_SHOVEL = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonScaleSwordItem> DRAGON_SCALE_SWORD = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<DragonSpawnEggItem> DRAGON_SPAWN_EGG = new DragonTypifiedRegistry<>();
+    public static final DragonTypifiedRegistry<FilledDragonAmuletItem> FILLED_DRAGON_AMULET = new DragonTypifiedRegistry<>();
     //Scales Start
     public static final RegistryObject<DragonScalesItem> FOREST_DRAGON_SCALES = createDragonScalesItem("forest_dragon_scales", DragonType.FOREST, item());
     public static final RegistryObject<DragonScalesItem> FIRE_DRAGON_SCALES = createDragonScalesItem("fire_dragon_scales", DragonType.FIRE, item());
@@ -58,11 +58,11 @@ public class DMItems {
     public static final RegistryObject<DragonScalesItem> MOONLIGHT_DRAGON_SCALES = createDragonScalesItem("moonlight_dragon_scales", DragonType.MOONLIGHT, item());
     public static final RegistryObject<DragonScalesItem> SCULK_DRAGON_SCALES = createDragonScalesItem("sculk_dragon_scales", DragonType.SCULK, item().fireResistant());
     //Dragon Armor
-    public static final RegistryObject<Item> IRON_DRAGON_ARMOR = createDragonArmorItem("iron_dragon_armor", 5, tool());
-    public static final RegistryObject<Item> GOLDEN_DRAGON_ARMOR = createDragonArmorItem("golden_dragon_armor", 7, tool());
-    public static final RegistryObject<Item> DIAMOND_DRAGON_ARMOR = createDragonArmorItem("diamond_dragon_armor", 11, tool());
-    public static final RegistryObject<Item> EMERALD_DRAGON_ARMOR = createDragonArmorItem("emerald_dragon_armor", 11, tool());
-    public static final RegistryObject<Item> NETHERITE_DRAGON_ARMOR = createDragonArmorItem("netherite_dragon_armor", 15, tool().fireResistant());
+    public static final RegistryObject<Item> IRON_DRAGON_ARMOR = createDragonArmorItem("iron_dragon_armor", 5, tool().stacksTo(1));
+    public static final RegistryObject<Item> GOLDEN_DRAGON_ARMOR = createDragonArmorItem("golden_dragon_armor", 7, tool().stacksTo(1));
+    public static final RegistryObject<Item> DIAMOND_DRAGON_ARMOR = createDragonArmorItem("diamond_dragon_armor", 11, tool().stacksTo(1));
+    public static final RegistryObject<Item> EMERALD_DRAGON_ARMOR = createDragonArmorItem("emerald_dragon_armor", 11, tool().stacksTo(1));
+    public static final RegistryObject<Item> NETHERITE_DRAGON_ARMOR = createDragonArmorItem("netherite_dragon_armor", 15, tool().stacksTo(1).fireResistant());
     //Dragon Scale Swords
     public static final RegistryObject<DragonScaleSwordItem> AETHER_DRAGON_SCALE_SWORD = createDragonScaleSwordItem("aether_dragon_sword", DragonScaleTier.AETHER, tool());
     public static final RegistryObject<DragonScaleSwordItem> WATER_DRAGON_SCALE_SWORD = createDragonScaleSwordItem("water_dragon_sword", DragonScaleTier.WATER, tool());
@@ -180,75 +180,75 @@ public class DMItems {
     public static final RegistryObject<DragonScalePickaxeItem> SCULK_DRAGON_SCALE_PICKAXE = createDragonScalePickaxeItem("sculk_dragon_pickaxe", DragonScaleTier.SCULK, tool().fireResistant());
     public static final RegistryObject<DragonScaleHoeItem> SCULK_DRAGON_SCALE_HOE = createDragonScaleHoeItem("sculk_dragon_hoe", DragonScaleTier.SCULK, tool().fireResistant());
     //Dragon Scale Armors - Aether
-    public static final RegistryObject<DragonScaleArmorItem> AETHER_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("aether_dragon_scale_helmet", DragonScaleMaterial.AETHER, tool());
-    public static final RegistryObject<DragonScaleArmorItem> AETHER_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("aether_dragon_scale_chestplate", DragonScaleMaterial.AETHER, tool());
-    public static final RegistryObject<DragonScaleArmorItem> AETHER_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("aether_dragon_scale_leggings", DragonScaleMaterial.AETHER, tool());
-    public static final RegistryObject<DragonScaleArmorItem> AETHER_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("aether_dragon_scale_boots", DragonScaleMaterial.AETHER, tool());
+    public static final RegistryObject<DragonScaleArmorItem> AETHER_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("aether_dragon_scale_helmet", DragonScaleMaterial.AETHER, DragonArmorEffect.AETHER, tool());
+    public static final RegistryObject<DragonScaleArmorItem> AETHER_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("aether_dragon_scale_chestplate", DragonScaleMaterial.AETHER, DragonArmorEffect.AETHER, tool());
+    public static final RegistryObject<DragonScaleArmorItem> AETHER_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("aether_dragon_scale_leggings", DragonScaleMaterial.AETHER, DragonArmorEffect.AETHER, tool());
+    public static final RegistryObject<DragonScaleArmorItem> AETHER_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("aether_dragon_scale_boots", DragonScaleMaterial.AETHER, DragonArmorEffect.AETHER, tool());
     //Dragon Scale Armors - Water
-    public static final RegistryObject<DragonScaleArmorItem> WATER_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("water_dragon_scale_helmet", DragonScaleMaterial.WATER, tool());
-    public static final RegistryObject<DragonScaleArmorItem> WATER_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("water_dragon_scale_chestplate", DragonScaleMaterial.WATER, tool());
-    public static final RegistryObject<DragonScaleArmorItem> WATER_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("water_dragon_scale_leggings", DragonScaleMaterial.WATER, tool());
-    public static final RegistryObject<DragonScaleArmorItem> WATER_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("water_dragon_scale_boots", DragonScaleMaterial.WATER, tool());
+    public static final RegistryObject<DragonScaleArmorItem> WATER_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("water_dragon_scale_helmet", DragonScaleMaterial.WATER, DragonArmorEffect.WATER, tool());
+    public static final RegistryObject<DragonScaleArmorItem> WATER_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("water_dragon_scale_chestplate", DragonScaleMaterial.WATER, DragonArmorEffect.WATER, tool());
+    public static final RegistryObject<DragonScaleArmorItem> WATER_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("water_dragon_scale_leggings", DragonScaleMaterial.WATER, DragonArmorEffect.WATER, tool());
+    public static final RegistryObject<DragonScaleArmorItem> WATER_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("water_dragon_scale_boots", DragonScaleMaterial.WATER, DragonArmorEffect.WATER, tool());
     //Dragon Scale Armors - Ice
-    public static final RegistryObject<DragonScaleArmorItem> ICE_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("ice_dragon_scale_helmet", DragonScaleMaterial.ICE, tool());
-    public static final RegistryObject<DragonScaleArmorItem> ICE_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("ice_dragon_scale_chestplate", DragonScaleMaterial.ICE, tool());
-    public static final RegistryObject<DragonScaleArmorItem> ICE_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("ice_dragon_scale_leggings", DragonScaleMaterial.ICE, tool());
-    public static final RegistryObject<DragonScaleArmorItem> ICE_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("ice_dragon_scale_boots", DragonScaleMaterial.ICE, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ICE_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("ice_dragon_scale_helmet", DragonScaleMaterial.ICE, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ICE_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("ice_dragon_scale_chestplate", DragonScaleMaterial.ICE, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ICE_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("ice_dragon_scale_leggings", DragonScaleMaterial.ICE, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ICE_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("ice_dragon_scale_boots", DragonScaleMaterial.ICE, null, tool());
     //Dragon Scale Armors - Fire
-    public static final RegistryObject<DragonScaleArmorItem> FIRE_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("fire_dragon_scale_helmet", DragonScaleMaterial.FIRE, tool());
-    public static final RegistryObject<DragonScaleArmorItem> FIRE_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("fire_dragon_scale_chestplate", DragonScaleMaterial.FIRE, tool());
-    public static final RegistryObject<DragonScaleArmorItem> FIRE_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("fire_dragon_scale_leggings", DragonScaleMaterial.FIRE, tool());
-    public static final RegistryObject<DragonScaleArmorItem> FIRE_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("fire_dragon_scale_boots", DragonScaleMaterial.FIRE, tool());
+    public static final RegistryObject<DragonScaleArmorItem> FIRE_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("fire_dragon_scale_helmet", DragonScaleMaterial.FIRE, DragonArmorEffect.FIRE, tool());
+    public static final RegistryObject<DragonScaleArmorItem> FIRE_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("fire_dragon_scale_chestplate", DragonScaleMaterial.FIRE, DragonArmorEffect.FIRE, tool());
+    public static final RegistryObject<DragonScaleArmorItem> FIRE_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("fire_dragon_scale_leggings", DragonScaleMaterial.FIRE, DragonArmorEffect.FIRE, tool());
+    public static final RegistryObject<DragonScaleArmorItem> FIRE_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("fire_dragon_scale_boots", DragonScaleMaterial.FIRE, DragonArmorEffect.FIRE, tool());
     //Dragon Scale Armors - Forest
-    public static final RegistryObject<DragonScaleArmorItem> FOREST_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("forest_dragon_scale_helmet", DragonScaleMaterial.FOREST, tool());
-    public static final RegistryObject<DragonScaleArmorItem> FOREST_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("forest_dragon_scale_chestplate", DragonScaleMaterial.FOREST, tool());
-    public static final RegistryObject<DragonScaleArmorItem> FOREST_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("forest_dragon_scale_leggings", DragonScaleMaterial.FOREST, tool());
-    public static final RegistryObject<DragonScaleArmorItem> FOREST_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("forest_dragon_scale_boots", DragonScaleMaterial.FOREST, tool());
+    public static final RegistryObject<DragonScaleArmorItem> FOREST_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("forest_dragon_scale_helmet", DragonScaleMaterial.FOREST, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> FOREST_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("forest_dragon_scale_chestplate", DragonScaleMaterial.FOREST, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> FOREST_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("forest_dragon_scale_leggings", DragonScaleMaterial.FOREST, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> FOREST_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("forest_dragon_scale_boots", DragonScaleMaterial.FOREST, null, tool());
     //Dragon Scale Armors - Nether
-    public static final RegistryObject<DragonScaleArmorItem> NETHER_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("nether_dragon_scale_helmet", DragonScaleMaterial.NETHER, tool());
-    public static final RegistryObject<DragonScaleArmorItem> NETHER_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("nether_dragon_scale_chestplate", DragonScaleMaterial.NETHER, tool());
-    public static final RegistryObject<DragonScaleArmorItem> NETHER_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("nether_dragon_scale_leggings", DragonScaleMaterial.NETHER, tool());
-    public static final RegistryObject<DragonScaleArmorItem> NETHER_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("nether_dragon_scale_boots", DragonScaleMaterial.NETHER, tool());
+    public static final RegistryObject<DragonScaleArmorItem> NETHER_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("nether_dragon_scale_helmet", DragonScaleMaterial.NETHER, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> NETHER_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("nether_dragon_scale_chestplate", DragonScaleMaterial.NETHER, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> NETHER_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("nether_dragon_scale_leggings", DragonScaleMaterial.NETHER, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> NETHER_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("nether_dragon_scale_boots", DragonScaleMaterial.NETHER, null, tool());
     //Dragon Scale Armors - Ender
-    public static final RegistryObject<DragonScaleArmorItem> ENDER_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("ender_dragon_scale_helmet", DragonScaleMaterial.ENDER, tool());
-    public static final RegistryObject<DragonScaleArmorItem> ENDER_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("ender_dragon_scale_chestplate", DragonScaleMaterial.ENDER, tool());
-    public static final RegistryObject<DragonScaleArmorItem> ENDER_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("ender_dragon_scale_leggings", DragonScaleMaterial.ENDER, tool());
-    public static final RegistryObject<DragonScaleArmorItem> ENDER_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("ender_dragon_scale_boots", DragonScaleMaterial.ENDER, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ENDER_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("ender_dragon_scale_helmet", DragonScaleMaterial.ENDER, DragonArmorEffect.ENDER, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ENDER_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("ender_dragon_scale_chestplate", DragonScaleMaterial.ENDER, DragonArmorEffect.ENDER, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ENDER_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("ender_dragon_scale_leggings", DragonScaleMaterial.ENDER, DragonArmorEffect.ENDER, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ENDER_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("ender_dragon_scale_boots", DragonScaleMaterial.ENDER, DragonArmorEffect.ENDER, tool());
     //Dragon Scale Armors - Enchant
-    public static final RegistryObject<DragonScaleArmorItem> ENCHANT_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("enchant_dragon_scale_helmet", DragonScaleMaterial.ENCHANT, tool());
-    public static final RegistryObject<DragonScaleArmorItem> ENCHANT_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("enchant_dragon_scale_chestplate", DragonScaleMaterial.ENCHANT, tool());
-    public static final RegistryObject<DragonScaleArmorItem> ENCHANT_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("enchant_dragon_scale_leggings", DragonScaleMaterial.ENCHANT, tool());
-    public static final RegistryObject<DragonScaleArmorItem> ENCHANT_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("enchant_dragon_scale_boots", DragonScaleMaterial.ENCHANT, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ENCHANT_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("enchant_dragon_scale_helmet", DragonScaleMaterial.ENCHANT, DragonArmorEffect.ENCHANT, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ENCHANT_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("enchant_dragon_scale_chestplate", DragonScaleMaterial.ENCHANT, DragonArmorEffect.ENCHANT, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ENCHANT_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("enchant_dragon_scale_leggings", DragonScaleMaterial.ENCHANT, DragonArmorEffect.ENCHANT, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ENCHANT_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("enchant_dragon_scale_boots", DragonScaleMaterial.ENCHANT, DragonArmorEffect.ENCHANT, tool());
     //Dragon Scale Armors - Sunlight
-    public static final RegistryObject<DragonScaleArmorItem> SUNLIGHT_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("sunlight_dragon_scale_helmet", DragonScaleMaterial.SUNLIGHT, tool());
-    public static final RegistryObject<DragonScaleArmorItem> SUNLIGHT_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("sunlight_dragon_scale_chestplate", DragonScaleMaterial.SUNLIGHT, tool());
-    public static final RegistryObject<DragonScaleArmorItem> SUNLIGHT_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("sunlight_dragon_scale_leggings", DragonScaleMaterial.SUNLIGHT, tool());
-    public static final RegistryObject<DragonScaleArmorItem> SUNLIGHT_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("sunlight_dragon_scale_boots", DragonScaleMaterial.SUNLIGHT, tool());
+    public static final RegistryObject<DragonScaleArmorItem> SUNLIGHT_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("sunlight_dragon_scale_helmet", DragonScaleMaterial.SUNLIGHT, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> SUNLIGHT_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("sunlight_dragon_scale_chestplate", DragonScaleMaterial.SUNLIGHT, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> SUNLIGHT_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("sunlight_dragon_scale_leggings", DragonScaleMaterial.SUNLIGHT, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> SUNLIGHT_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("sunlight_dragon_scale_boots", DragonScaleMaterial.SUNLIGHT, null, tool());
     //Dragon Scale Armors - Moonlight
-    public static final RegistryObject<DragonScaleArmorItem> MOONLIGHT_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("moonlight_dragon_scale_helmet", DragonScaleMaterial.MOONLIGHT, tool());
-    public static final RegistryObject<DragonScaleArmorItem> MOONLIGHT_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("moonlight_dragon_scale_chestplate", DragonScaleMaterial.MOONLIGHT, tool());
-    public static final RegistryObject<DragonScaleArmorItem> MOONLIGHT_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("moonlight_dragon_scale_leggings", DragonScaleMaterial.MOONLIGHT, tool());
-    public static final RegistryObject<DragonScaleArmorItem> MOONLIGHT_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("moonlight_dragon_scale_boots", DragonScaleMaterial.MOONLIGHT, tool());
+    public static final RegistryObject<DragonScaleArmorItem> MOONLIGHT_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("moonlight_dragon_scale_helmet", DragonScaleMaterial.MOONLIGHT, DragonArmorEffect.MOONLIGHT, tool());
+    public static final RegistryObject<DragonScaleArmorItem> MOONLIGHT_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("moonlight_dragon_scale_chestplate", DragonScaleMaterial.MOONLIGHT, DragonArmorEffect.MOONLIGHT, tool());
+    public static final RegistryObject<DragonScaleArmorItem> MOONLIGHT_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("moonlight_dragon_scale_leggings", DragonScaleMaterial.MOONLIGHT, DragonArmorEffect.MOONLIGHT, tool());
+    public static final RegistryObject<DragonScaleArmorItem> MOONLIGHT_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("moonlight_dragon_scale_boots", DragonScaleMaterial.MOONLIGHT, DragonArmorEffect.MOONLIGHT, tool());
     //Dragon Scale Armors - Storm
-    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("storm_dragon_scale_helmet", DragonScaleMaterial.STORM, tool());
-    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("storm_dragon_scale_chestplate", DragonScaleMaterial.STORM, tool());
-    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("storm_dragon_scale_leggings", DragonScaleMaterial.STORM, tool());
-    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("storm_dragon_scale_boots", DragonScaleMaterial.STORM, tool());
+    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("storm_dragon_scale_helmet", DragonScaleMaterial.STORM, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("storm_dragon_scale_chestplate", DragonScaleMaterial.STORM, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("storm_dragon_scale_leggings", DragonScaleMaterial.STORM, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("storm_dragon_scale_boots", DragonScaleMaterial.STORM, null, tool());
     //Dragon Scale Armors - Terra
-    public static final RegistryObject<DragonScaleArmorItem> TERRA_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("terra_dragon_scale_helmet", DragonScaleMaterial.TERRA, tool());
-    public static final RegistryObject<DragonScaleArmorItem> TERRA_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("terra_dragon_scale_chestplate", DragonScaleMaterial.TERRA, tool());
-    public static final RegistryObject<DragonScaleArmorItem> TERRA_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("terra_dragon_scale_leggings", DragonScaleMaterial.TERRA, tool());
-    public static final RegistryObject<DragonScaleArmorItem> TERRA_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("terra_dragon_scale_boots", DragonScaleMaterial.TERRA, tool());
+    public static final RegistryObject<DragonScaleArmorItem> TERRA_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("terra_dragon_scale_helmet", DragonScaleMaterial.TERRA, DragonArmorEffect.TERRA, tool());
+    public static final RegistryObject<DragonScaleArmorItem> TERRA_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("terra_dragon_scale_chestplate", DragonScaleMaterial.TERRA, DragonArmorEffect.TERRA, tool());
+    public static final RegistryObject<DragonScaleArmorItem> TERRA_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("terra_dragon_scale_leggings", DragonScaleMaterial.TERRA, DragonArmorEffect.TERRA, tool());
+    public static final RegistryObject<DragonScaleArmorItem> TERRA_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("terra_dragon_scale_boots", DragonScaleMaterial.TERRA, DragonArmorEffect.TERRA, tool());
     //Dragon Scale Armors - Zombie
-    public static final RegistryObject<DragonScaleArmorItem> ZOMBIE_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("zombie_dragon_scale_helmet", DragonScaleMaterial.ZOMBIE, tool());
-    public static final RegistryObject<DragonScaleArmorItem> ZOMBIE_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("zombie_dragon_scale_chestplate", DragonScaleMaterial.ZOMBIE, tool());
-    public static final RegistryObject<DragonScaleArmorItem> ZOMBIE_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("zombie_dragon_scale_leggings", DragonScaleMaterial.ZOMBIE, tool());
-    public static final RegistryObject<DragonScaleArmorItem> ZOMBIE_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("zombie_dragon_scale_boots", DragonScaleMaterial.ZOMBIE, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ZOMBIE_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("zombie_dragon_scale_helmet", DragonScaleMaterial.ZOMBIE, DragonArmorEffect.ZOMBIE, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ZOMBIE_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("zombie_dragon_scale_chestplate", DragonScaleMaterial.ZOMBIE, DragonArmorEffect.ZOMBIE, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ZOMBIE_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("zombie_dragon_scale_leggings", DragonScaleMaterial.ZOMBIE, DragonArmorEffect.ZOMBIE, tool());
+    public static final RegistryObject<DragonScaleArmorItem> ZOMBIE_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("zombie_dragon_scale_boots", DragonScaleMaterial.ZOMBIE, DragonArmorEffect.ZOMBIE, tool());
     //Dragon Scale Armors - Sculk
-    public static final RegistryObject<DragonScaleArmorItem> SCULK_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("sculk_dragon_scale_helmet", DragonScaleMaterial.SCULK, tool().fireResistant());
-    public static final RegistryObject<DragonScaleArmorItem> SCULK_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("sculk_dragon_scale_chestplate", DragonScaleMaterial.SCULK, tool().fireResistant());
-    public static final RegistryObject<DragonScaleArmorItem> SCULK_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("sculk_dragon_scale_leggings", DragonScaleMaterial.SCULK, tool().fireResistant());
-    public static final RegistryObject<DragonScaleArmorItem> SCULK_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("sculk_dragon_scale_boots", DragonScaleMaterial.SCULK, tool().fireResistant());
+    public static final RegistryObject<DragonScaleArmorItem> SCULK_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("sculk_dragon_scale_helmet", DragonScaleMaterial.SCULK, null, tool().fireResistant());
+    public static final RegistryObject<DragonScaleArmorItem> SCULK_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("sculk_dragon_scale_chestplate", DragonScaleMaterial.SCULK, null, tool().fireResistant());
+    public static final RegistryObject<DragonScaleArmorItem> SCULK_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("sculk_dragon_scale_leggings", DragonScaleMaterial.SCULK, null, tool().fireResistant());
+    public static final RegistryObject<DragonScaleArmorItem> SCULK_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("sculk_dragon_scale_boots", DragonScaleMaterial.SCULK, null, tool().fireResistant());
     //Dragon Spawn Eggs
     public static final RegistryObject<DragonSpawnEggItem> AETHER_DRAGON_SPAWN_EGG = createDragonSpawnEgg("aether_dragon_spawn_egg", DragonType.AETHER, 0x05C3D2, 0x281EE8, item());
     public static final RegistryObject<DragonSpawnEggItem> ENCHANT_DRAGON_SPAWN_EGG = createDragonSpawnEgg("enchant_dragon_spawn_egg", DragonType.ENCHANT, 0xCC0DE0, 0xFFFFFF, item());
@@ -349,20 +349,20 @@ public class DMItems {
         return DRAGON_SCALE_PICKAXE.register(ITEMS, name, new DragonScalePickaxeItem(tier, 1, -2.8F, properties));
     }
 
-    private static RegistryObject<DragonScaleArmorItem> createDragonScaleHelmetItem(String name, DragonScaleMaterial material, Properties properties) {
-        return DRAGON_SCALE_HELMET.register(ITEMS, name, new DragonScaleArmorItem(material, EquipmentSlotType.HEAD, properties));
+    private static RegistryObject<DragonScaleArmorItem> createDragonScaleHelmetItem(String name, DragonScaleMaterial material, DragonArmorEffect effect, Properties properties) {
+        return DRAGON_SCALE_HELMET.register(ITEMS, name, new DragonScaleArmorItem(material, EquipmentSlotType.HEAD, effect, properties));
     }
 
-    private static RegistryObject<DragonScaleArmorItem> createDragonScaleChestplateItem(String name, DragonScaleMaterial material, Properties properties) {
-        return DRAGON_SCALE_CHESTPLATE.register(ITEMS, name, new DragonScaleArmorItem(material, EquipmentSlotType.CHEST, properties));
+    private static RegistryObject<DragonScaleArmorItem> createDragonScaleChestplateItem(String name, DragonScaleMaterial material, DragonArmorEffect effect, Properties properties) {
+        return DRAGON_SCALE_CHESTPLATE.register(ITEMS, name, new DragonScaleArmorItem(material, EquipmentSlotType.CHEST, effect, properties));
     }
 
-    private static RegistryObject<DragonScaleArmorItem> createDragonScaleLeggingsItem(String name, DragonScaleMaterial material, Properties properties) {
-        return DRAGON_SCALE_LEGGINGS.register(ITEMS, name, new DragonScaleArmorItem(material, EquipmentSlotType.LEGS, properties));
+    private static RegistryObject<DragonScaleArmorItem> createDragonScaleLeggingsItem(String name, DragonScaleMaterial material, DragonArmorEffect effect, Properties properties) {
+        return DRAGON_SCALE_LEGGINGS.register(ITEMS, name, new DragonScaleArmorItem(material, EquipmentSlotType.LEGS, effect, properties));
     }
 
-    private static RegistryObject<DragonScaleArmorItem> createDragonScaleBootsItem(String name, DragonScaleMaterial material, Properties properties) {
-        return DRAGON_SCALE_BOOTS.register(ITEMS, name, new DragonScaleArmorItem(material, EquipmentSlotType.FEET, properties));
+    private static RegistryObject<DragonScaleArmorItem> createDragonScaleBootsItem(String name, DragonScaleMaterial material, DragonArmorEffect effect, Properties properties) {
+        return DRAGON_SCALE_BOOTS.register(ITEMS, name, new DragonScaleArmorItem(material, EquipmentSlotType.FEET, effect, properties));
     }
 
     private static RegistryObject<DragonScalesItem> createDragonScalesItem(String name, DragonType type, Properties properties) {

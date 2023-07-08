@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @ParametersAreNonnullByDefault
-public final class DragonTypifiedObjectHolder<T extends IForgeRegistryEntry<? super T> & IDragonTypified> extends ObjectHolder<DragonType, T> {
+public final class DragonTypifiedRegistry<T extends IForgeRegistryEntry<? super T> & IDragonTypified> extends TypifiedRegistry<DragonType, T> {
 
     @Override
     protected Map<DragonType, T> initMap() {

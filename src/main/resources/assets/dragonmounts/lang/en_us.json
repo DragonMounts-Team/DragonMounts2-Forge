@@ -81,5 +81,22 @@
   "tooltip.dragonmounts.health": "Health: %s",
   "tooltip.dragonmounts.missing": "Missing Data!",
   "tooltip.dragonmounts.owner_name": "Owner: %s",
-  "tooltip.dragonmounts.type": "Type: %s"
+  "tooltip.dragonmounts.type": "Type: %s",
+  "tooltip.dragonmounts.armor_effect_piece_4": "4 Piece:",
+  "tooltip.dragonmounts.armor_effect_remain_cooldown": "[UNTRANSLATED]%s",
+  "tooltip.dragonmounts.armor_effect_cooldown": "[UNTRANSLATED]%s",
+  "tooltip.dragonmounts.armor_effect.aether": "[UNTRANSLATED]",
+  "tooltip.dragonmounts.armor_effect.enchant": "[UNTRANSLATED]",
+  "tooltip.dragonmounts.armor_effect.ender": "[UNTRANSLATED]",
+  "tooltip.dragonmounts.armor_effect.fire": "[UNTRANSLATED]",
+  "tooltip.dragonmounts.armor_effect.forest": "",
+  "tooltip.dragonmounts.armor_effect.ice": "",
+  "tooltip.dragonmounts.armor_effect.moonlight": "[UNTRANSLATED]",
+  "tooltip.dragonmounts.armor_effect.nether": "",
+  "tooltip.dragonmounts.armor_effect.sculk": "",
+  "tooltip.dragonmounts.armor_effect.storm": "",
+  "tooltip.dragonmounts.armor_effect.sunlight": "",
+  "tooltip.dragonmounts.armor_effect.terra": "[UNTRANSLATED]",
+  "tooltip.dragonmounts.armor_effect.water": "[UNTRANSLATED]",
+  "tooltip.dragonmounts.armor_effect.zombie": "[UNTRANSLATED]"
 }

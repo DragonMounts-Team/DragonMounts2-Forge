@@ -2,7 +2,6 @@ package net.dragonmounts3.client.renderer.dragon;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.client.model.dragon.DragonModel;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.minecraft.client.Minecraft;
@@ -26,7 +25,6 @@ import net.minecraftforge.eventbus.api.Event;
 import javax.annotation.Nonnull;
 
 public class TameableDragonRenderer extends LivingRenderer<TameableDragonEntity, DragonModel> {
-    protected DragonType typeSnapshot = null;
 
     public TameableDragonRenderer(EntityRendererManager entityRenderDispatcher) {
         super(entityRenderDispatcher, new DragonModel(), 0);
@@ -36,11 +34,6 @@ public class TameableDragonRenderer extends LivingRenderer<TameableDragonEntity,
     public void render(@Nonnull TameableDragonEntity dragon, float entityYaw, float partialTicks, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int packedLight) {
         if (MinecraftForge.EVENT_BUS.post(new RenderLivingEvent.Pre<>(dragon, this, partialTicks, matrixStack, buffer, packedLight)))
             return;
-        DragonType type = dragon.getDragonType();
-        if (type != this.typeSnapshot) {
-            this.model.onTypeChanged(this.typeSnapshot, type);
-            this.typeSnapshot = type;
-        }
         matrixStack.pushPose();
         this.model.attackTime = this.getAttackAnim(dragon, partialTicks);
         boolean shouldSit = dragon.isPassenger() && (dragon.getVehicle() != null && dragon.getVehicle().shouldRiderSit());
@@ -124,10 +117,7 @@ public class TameableDragonRenderer extends LivingRenderer<TameableDragonEntity,
     @Nonnull
     @Override
     public ResourceLocation getTextureLocation(@Nonnull TameableDragonEntity dragon) {
-        if (this.typeSnapshot == null) {
-            return DragonType.ENDER.resources.body;
-        }
-        return this.typeSnapshot.resources.body;
+        return dragon.getDragonType().resources.body;
     }
 
     @Override

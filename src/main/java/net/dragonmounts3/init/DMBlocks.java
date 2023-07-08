@@ -2,7 +2,7 @@ package net.dragonmounts3.init;
 
 import net.dragonmounts3.DragonMounts;
 import net.dragonmounts3.api.DragonType;
-import net.dragonmounts3.api.DragonTypifiedObjectHolder;
+import net.dragonmounts3.api.DragonTypifiedRegistry;
 import net.dragonmounts3.block.DragonCoreBlock;
 import net.dragonmounts3.block.DragonNestBlock;
 import net.dragonmounts3.block.HatchableDragonEggBlock;
@@ -21,7 +21,7 @@ import static net.dragonmounts3.init.DMItemGroups.none;
 
 public class DMBlocks {
     public static final DeferredRegister<Block> BLOCKS = DragonMounts.create(ForgeRegistries.BLOCKS);
-    public static final DragonTypifiedObjectHolder<HatchableDragonEggBlock> HATCHABLE_DRAGON_EGG = new DragonTypifiedObjectHolder<>();
+    public static final DragonTypifiedRegistry<HatchableDragonEggBlock> HATCHABLE_DRAGON_EGG = new DragonTypifiedRegistry<>();
     public static final RegistryObject<Block> DRAGON_NEST = register("dragon_nest", DragonNestBlock::new, block());
     public static final RegistryObject<Block> DRAGON_CORE = register("dragon_core", DragonCoreBlock::new, none().setISTER(() -> DMItemStackTileEntityRenderer::getInstance));
     public static final RegistryObject<HatchableDragonEggBlock> AETHER_DRAGON_EGG = registerDragonEggBlock("aether_dragon_egg", new HatchableDragonEggBlock(DragonType.AETHER), block());

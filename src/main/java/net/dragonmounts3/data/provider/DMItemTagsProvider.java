@@ -29,6 +29,12 @@ public class DMItemTagsProvider extends ItemTagsProvider {
                 .add(DMItems.NETHERITE_SHEARS.get());
         this.tag(ItemTags.PIGLIN_LOVED)
                 .add(DMItems.GOLDEN_DRAGON_ARMOR.get());
+        this.tag(DMItemTags.DRAGON_ARMOR)
+                .add(DMItems.IRON_DRAGON_ARMOR.get())
+                .add(DMItems.GOLDEN_DRAGON_ARMOR.get())
+                .add(DMItems.EMERALD_DRAGON_ARMOR.get())
+                .add(DMItems.DIAMOND_DRAGON_ARMOR.get())
+                .add(DMItems.NETHERITE_DRAGON_ARMOR.get());
         TagsProvider.Builder<Item> dragonScaleBow = this.tag(DMItemTags.DRAGON_SCALE_BOW);
         for (DragonScaleBowItem item : DMItems.DRAGON_SCALE_BOW) {
             dragonScaleBow.add(item);

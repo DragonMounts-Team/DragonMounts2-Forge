@@ -22,8 +22,10 @@ import net.minecraft.world.biome.Biomes;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DragonType implements IStringSerializable, Comparable<DragonType> {
+    private static final AtomicInteger COUNTER = new AtomicInteger();
     private static final HashMap<String, DragonType> BY_NAME = new HashMap<>();
     public static final String DATA_PARAMETER_KEY = "DragonType";
     public static final DragonType AETHER = new Builder(0x0294BD)
@@ -184,6 +186,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
     private final String text;
     public final int color;
     public final boolean isSkeleton;
+    private final int id = COUNTER.incrementAndGet();
     private final ImmutableMultimap<Attribute, AttributeModifier> attributes;
     private final Set<DamageSource> immunities;
     private final Set<Block> blocks;
@@ -328,5 +331,18 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
         public DragonType build(String name, DragonResources resources) {
             return new DragonType(name, this, resources);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || this.getClass() != o.getClass()) return false;
+        DragonType type = (DragonType) o;
+        return this.id == type.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id;
     }
 }

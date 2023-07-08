@@ -18,5 +18,6 @@ public class DMPacketHandler {
         CHANNEL.registerMessage(0, SSyncDragonAgePacket.class, SSyncDragonAgePacket::encode, SSyncDragonAgePacket::new, SSyncDragonAgePacket::handle);
         CHANNEL.registerMessage(1, SFeedDragonPacket.class, SFeedDragonPacket::encode, SFeedDragonPacket::new, SFeedDragonPacket::handle);
         CHANNEL.registerMessage(2, SShakeDragonEggPacket.class, SShakeDragonEggPacket::encode, SShakeDragonEggPacket::new, SShakeDragonEggPacket::handle);
+        CHANNEL.registerMessage(3, SSyncCooldownPacket.class, SSyncCooldownPacket::encode, SSyncCooldownPacket::new, SSyncCooldownPacket::handle);
     }
 }

@@ -1,49 +1,126 @@
 package net.dragonmounts3.inventory;
 
+import net.dragonmounts3.data.tags.DMItemTags;
+import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.init.DMContainers;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.FurnaceResultSlot;
 import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
+import javax.annotation.Nullable;
 
-/**
- * @see net.minecraft.inventory.container.HorseInventoryContainer
- */
 public class DragonInventoryContainer extends Container {
-    private final IInventory container;
-
-    public DragonInventoryContainer(int containerId, PlayerInventory playerInventory, PacketBuffer extraData) {
-        this(containerId, playerInventory, (IInventory) Objects.requireNonNull(playerInventory.player.level.getBlockEntity(extraData.readBlockPos())));
+    @Nullable
+    public static DragonInventoryContainer fromPacket(int containerId, PlayerInventory playerInventory, PacketBuffer extraData) {
+        Entity entity = extraData == null ? null : playerInventory.player.level.getEntity(extraData.readVarInt());
+        if (entity instanceof TameableDragonEntity) {
+            TameableDragonEntity dragon = (TameableDragonEntity) entity;
+            return new DragonInventoryContainer(containerId, playerInventory, dragon.getInventory(), dragon);
+        }
+        return null;
     }
 
-    public DragonInventoryContainer(int containerId, PlayerInventory playerInventory, IInventory container) {
-        super(DMContainers.DRAGON_CORE.get(), containerId);
-        this.container = container;
+    private static final LimitedSlot.ICondition SADDLE = (stack) -> stack.getItem() == Items.SADDLE;
+    private static final LimitedSlot.ICondition DRAGON_ARMOR = (stack) -> stack.getItem().is(DMItemTags.DRAGON_ARMOR);
+    private static final LimitedSlot.ICondition WOODEN_CHEST = (stack) -> stack.getItem().is(Tags.Items.CHESTS_WOODEN);
+
+    private final DragonInventory inventory;
+    public final TameableDragonEntity dragon;
+
+    public DragonInventoryContainer(int containerId, PlayerInventory playerInventory, DragonInventory dragonInventory, TameableDragonEntity dragon) {
+        super(DMContainers.DRAGON_INVENTORY.get(), containerId);
+        this.dragon = dragon;
+        this.inventory = dragonInventory;
         PlayerEntity player = playerInventory.player;
-        container.startOpen(player);
-        this.addSlot(new FurnaceResultSlot(player, container, 0, 80, 36));
+        dragonInventory.startOpen(player);
+        this.addSlot(new LimitedSlot(dragonInventory, DragonInventory.SLOT_SADDLE_INDEX, 8, 18, 1, SADDLE));
+        this.addSlot(new LimitedSlot(dragonInventory, DragonInventory.SLOT_ARMOR_INDEX, 8, 36, 1, DRAGON_ARMOR));
+        this.addSlot(new LimitedSlot(dragonInventory, DragonInventory.SLOT_CHEST_INDEX, 8, 54, 1, WOODEN_CHEST));
         for (int i = 0; i < 3; ++i) {
             for (int k = 0; k < 9; ++k) {
-                this.addSlot(new Slot(playerInventory, k + i * 9 + 9, 8 + k * 18, 84 + i * 18));
+                this.addSlot(new DragonChestSlot(dragonInventory, dragon, k + i * 9, 8 + k * 18, 72 + i * 18));
+            }
+        }
+        for (int i = 0; i < 3; ++i) {
+            for (int k = 0; k < 9; ++k) {
+                this.addSlot(new Slot(playerInventory, k + i * 9 + 9, 8 + k * 18, 138 + i * 18));
             }
         }
         for (int j = 0; j < 9; ++j) {
-            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
+            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 196));
         }
     }
 
-    public IInventory getContainer() {
-        return this.container;
+    @Nonnull
+    @Override
+    public ItemStack quickMoveStack(@Nonnull PlayerEntity player, int index) {
+        ItemStack result = ItemStack.EMPTY;
+        Slot slot = this.slots.get(index);
+        if (slot != null && slot.hasItem()) {
+            ItemStack stack = slot.getItem();
+            result = stack.copy();
+            int dragonInventorySize = this.inventory.getContainerSize();
+            if (index < dragonInventorySize) {
+                if (!this.moveItemStackTo(stack, dragonInventorySize, this.slots.size(), true)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (this.getSlot(2).mayPlace(stack) && !this.getSlot(2).hasItem()) {
+                if (!this.moveItemStackTo(stack, 2, 3, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (this.getSlot(1).mayPlace(stack) && !this.getSlot(1).hasItem()) {
+                if (!this.moveItemStackTo(stack, 1, 2, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (this.getSlot(0).mayPlace(stack) && !this.getSlot(0).hasItem()) {
+                if (!this.moveItemStackTo(stack, 0, 1, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (!this.moveItemStackTo(stack, 3, dragonInventorySize, false)) {
+                int playerInventorySize = dragonInventorySize + 27;
+                int playerHotbarSize = playerInventorySize + 9;
+                if (index >= playerInventorySize && index < playerHotbarSize) {
+                    if (!this.moveItemStackTo(stack, dragonInventorySize, playerInventorySize, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else if (index < playerInventorySize) {
+                    if (!this.moveItemStackTo(stack, playerInventorySize, playerHotbarSize, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                } else if (!this.moveItemStackTo(stack, playerInventorySize, playerInventorySize, false)) {
+                    return ItemStack.EMPTY;
+                }
+
+                return ItemStack.EMPTY;
+            }
+            if (result.isEmpty()) {
+                slot.set(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public void removed(@Nonnull PlayerEntity player) {
+        super.removed(player);
+        this.inventory.stopOpen(player);
+    }
+
+    public DragonInventory getInventory() {
+        return this.inventory;
     }
 
     @Override
     public boolean stillValid(@Nonnull PlayerEntity player) {
-        return this.container.stillValid(player);
+        return this.inventory.stillValid(player);
     }
 }

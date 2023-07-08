@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.entity.model.EntityModel;
 import javax.annotation.Nonnull;
 
 public class DragonModel extends EntityModel<TameableDragonEntity> {
+    protected DragonType typeSnapshot = null;
     protected DragonHeadModelPart head;
     protected DragonNeckModelPart neck;
     protected DragonBodyModelPart body;
@@ -29,7 +30,17 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
 
     @Override
     public void prepareMobModel(@Nonnull TameableDragonEntity entity, float limbSwing, float limbSwingAmount, float partialTick) {
-
+        DragonType type = entity.getDragonType();
+        if (type != this.typeSnapshot) {
+            if (type.isSkeleton && (this.typeSnapshot == null || !this.typeSnapshot.isSkeleton)) {
+                this.foreLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.SKELETON, false);
+                this.hindLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.SKELETON, true);
+            } else if (!type.isSkeleton && (this.typeSnapshot == null || this.typeSnapshot.isSkeleton)) {
+                this.foreLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, false);
+                this.hindLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, true);
+            }
+            this.typeSnapshot = type;
+        }
     }
 
     @Override
@@ -46,15 +57,5 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
         this.wing.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         this.foreLeg.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         this.hindLeg.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);*/
-    }
-
-    public void onTypeChanged(DragonType old, DragonType now) {
-        if (now.isSkeleton && (old == null || !old.isSkeleton)) {
-            this.foreLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.SKELETON, false);
-            this.hindLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.SKELETON, true);
-        } else if (!now.isSkeleton && (old == null || old.isSkeleton)) {
-            this.foreLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, false);
-            this.hindLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, true);
-        }
     }
 }

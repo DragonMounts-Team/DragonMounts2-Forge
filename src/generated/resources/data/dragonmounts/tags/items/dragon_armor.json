@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "dragonmounts:iron_dragon_armor",
+    "dragonmounts:golden_dragon_armor",
+    "dragonmounts:emerald_dragon_armor",
+    "dragonmounts:diamond_dragon_armor",
+    "dragonmounts:netherite_dragon_armor"
+  ]
+}

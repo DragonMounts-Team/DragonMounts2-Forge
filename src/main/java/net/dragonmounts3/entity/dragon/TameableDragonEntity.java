@@ -10,7 +10,7 @@ import net.dragonmounts3.init.DMAttributes;
 import net.dragonmounts3.init.DMEntities;
 import net.dragonmounts3.init.DMItems;
 import net.dragonmounts3.init.DMSounds;
-import net.dragonmounts3.inventory.DragonInventoryContainer;
+import net.dragonmounts3.inventory.DragonInventory;
 import net.dragonmounts3.item.DragonScalesItem;
 import net.dragonmounts3.item.TieredShearsItem;
 import net.dragonmounts3.network.SFeedDragonPacket;
@@ -25,18 +25,13 @@ import net.minecraft.entity.item.EnderCrystalEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -59,7 +54,7 @@ import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
  * @see net.minecraft.entity.passive.horse.HorseEntity
  */
 @ParametersAreNonnullByDefault
-public class TameableDragonEntity extends TameableEntity implements IInventory, IForgeShearable, IMutableDragonTypified {
+public class TameableDragonEntity extends TameableEntity implements IEquipable, IForgeShearable, IMutableDragonTypified {
     // base attributes
     public static final double BASE_GROUND_SPEED = 0.4;
     public static final double BASE_AIR_SPEED = 0.9;
@@ -105,7 +100,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
     private final DragonBodyHelper dragonBodyHelper = new DragonBodyHelper(this);
     private final Map<Class<?>, DragonHelper> helpers = new HashMap<>();
     public EnderCrystalEntity healingEnderCrystal;
-    protected DragonInventoryContainer inventory;
+    protected DragonInventory inventory = new DragonInventory(this);
     protected DragonType type = DragonType.ENDER;
     protected DragonLifeStage stage = DragonLifeStage.ADULT;
     private int shearCooldown;
@@ -142,6 +137,19 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
                 .add(Attributes.KNOCKBACK_RESISTANCE, RESISTANCE)
                 .add(Attributes.ARMOR, BASE_ARMOR)
                 .add(Attributes.ARMOR_TOUGHNESS, BASE_TOUGHNESS);
+    }
+
+    public DragonInventory getInventory() {
+        return this.inventory;
+    }
+
+    public void containerChanged() {
+        boolean flag = this.isSaddled();
+        this.updateContainerEquipment();
+        if (this.tickCount > 20 && !flag && this.isSaddled()) {
+            this.playSound(SoundEvents.HORSE_SADDLE, 0.5F, 1.0F);
+        }
+
     }
 
     //----------Entity----------
@@ -203,10 +211,7 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
             this.entityData.set(DATA_FLYING, compound.getBoolean(FLYING_DATA_PARAMETER_KEY));
         }
         if (compound.contains(SADDLE_DATA_PARAMETER_KEY)) {
-            ItemStack itemstack = ItemStack.of(compound.getCompound(SADDLE_DATA_PARAMETER_KEY));
-            if (itemstack.getItem() == Items.SADDLE) {
-                this.inventory.setItem(0, itemstack);
-            }
+            this.inventory.setSaddle(ItemStack.of(compound.getCompound(SADDLE_DATA_PARAMETER_KEY)));
         }
         if (compound.contains(SHEARED_DATA_PARAMETER_KEY)) {
             this.setSheared(compound.getInt(SHEARED_DATA_PARAMETER_KEY));
@@ -262,10 +267,6 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
         return this.entityData.get(DATA_FLYING);
     }
 
-    public boolean isSaddled() {
-        return this.entityData.get(DATA_SADDLED);
-    }
-
     public boolean hasChest() {
         return this.entityData.get(DATA_CHESTED);
     }
@@ -276,27 +277,8 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
         }
     }
 
-    public void containerChanged(IInventory pInvBasic) {
-        boolean flag = this.isSaddled();
-        this.updateContainerEquipment();
-        if (this.tickCount > 20 && !flag && this.isSaddled()) {
-            this.playSound(SoundEvents.HORSE_SADDLE, 0.5F, 1.0F);
-        }
-
-    }
-
     protected void createInventory() {
-        /*Inventory inventory = this.inventory;
-        this.inventory = new DragonInventoryContainer(44, this);
-        if (inventory != null) {
-            int i = Math.min(inventory.getContainerSize(), this.inventory.getContainerSize());
-            for (int j = 0; j < i; ++j) {
-                ItemStack itemstack = inventory.getItem(j);
-                if (!itemstack.isEmpty()) {
-                    this.inventory.setItem(j, itemstack.copy());
-                }
-            }
-        }*/
+
         //this.updateContainerEquipment();
         //this.itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new net.minecraftforge.items.wrapper.InvWrapper(this.inventory));
     }
@@ -343,7 +325,12 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
                 this.setInLove(player);
             }
             return ActionResultType.SUCCESS;
-        }
+        }/*
+        if (this.isOwnedBy(player)) {
+            NetworkHooks.openGui((ServerPlayerEntity) player, this.inventory, buffer -> {
+                buffer.writeVarInt(this.getId());
+            });
+        }*/
         return ActionResultType.PASS;
     }
 
@@ -517,6 +504,23 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
         return this.isAlive() && this.stage.ordinal() >= 2 && !this.isSheared() && item instanceof TieredShearsItem && ((TieredShearsItem) item).getTier().getLevel() >= 3;
     }
 
+    //----------IEquipable----------
+
+    @Override
+    public boolean isSaddled() {
+        return this.entityData.get(DATA_SADDLED);
+    }
+
+    @Override
+    public boolean isSaddleable() {
+        return this.isAlive() && !this.isBaby();
+    }
+
+    @Override
+    public void equipSaddle(@Nullable SoundCategory category) {
+
+    }
+
     @Nonnull
     @Override
     public List<ItemStack> onSheared(@Nullable PlayerEntity player, @Nonnull ItemStack stack, World world, BlockPos pos, int fortune) {
@@ -527,53 +531,6 @@ public class TameableDragonEntity extends TameableEntity implements IInventory, 
             return Collections.singletonList(new ItemStack(scale, 2 + this.random.nextInt(3)));
         }
         return Collections.emptyList();
-    }
-
-    //----------IInventory----------
-
-    @Override
-    public int getContainerSize() {
-        return 0;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    @Override
-    public ItemStack getItem(int pIndex) {
-        return null;
-    }
-
-    @Override
-    public ItemStack removeItem(int pIndex, int pCount) {
-        return null;
-    }
-
-    @Override
-    public ItemStack removeItemNoUpdate(int pIndex) {
-        return null;
-    }
-
-    @Override
-    public void setItem(int pIndex, ItemStack pStack) {
-
-    }
-
-    @Override
-    public void setChanged() {
-
-    }
-
-    @Override
-    public boolean stillValid(PlayerEntity pPlayer) {
-        return false;
-    }
-
-    @Override
-    public void clearContent() {
-
     }
 
     public static CompoundNBT simplifyData(CompoundNBT compound) {

@@ -2,7 +2,9 @@ package net.dragonmounts3.init;
 
 import net.dragonmounts3.DragonMounts;
 import net.dragonmounts3.client.gui.DragonCoreScreen;
+import net.dragonmounts3.client.gui.DragonInventoryScreen;
 import net.dragonmounts3.inventory.DragonCoreContainer;
+import net.dragonmounts3.inventory.DragonInventoryContainer;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
@@ -14,6 +16,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class DMContainers {
     public static final DeferredRegister<ContainerType<?>> CONTAINERS = DragonMounts.create(ForgeRegistries.CONTAINERS);
+    public static final RegistryObject<ContainerType<DragonInventoryContainer>> DRAGON_INVENTORY = register("dragon_inventory", DragonInventoryContainer::fromPacket);
     public static final RegistryObject<ContainerType<DragonCoreContainer>> DRAGON_CORE = register("dragon_core", DragonCoreContainer::new);
 
     private static <T extends Container> RegistryObject<ContainerType<T>> register(String name, IContainerFactory<T> factory) {
@@ -21,6 +24,7 @@ public class DMContainers {
     }
 
     public static void registerScreens() {
+        ScreenManager.register(DRAGON_INVENTORY.get(), DragonInventoryScreen::new);
         ScreenManager.register(DRAGON_CORE.get(), DragonCoreScreen::new);
     }
 }

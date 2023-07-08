@@ -7,4 +7,15 @@ public class TimeUtil {
     public static final int SECOND_PRE_HOUR = SECOND_PRE_MINUTE * MINUTE_PRE_HOUR;
     public static final int TICKS_PER_REAL_SECOND = 20;
     public static final int TICKS_PER_GAME_HOUR = TICKS_PER_REAL_SECOND * SECOND_PRE_HOUR / RATE;
+
+    public static String formatAsFloat(int value) {
+        value = (value + 1) >> 1;
+        if (value < 10) {
+            return "0." + value;
+        }
+        StringBuilder builder = new StringBuilder().append(value);
+        value = builder.length() - 1;
+        builder.append(builder.charAt(value)).setCharAt(value, '.');
+        return builder.toString();
+    }
 }

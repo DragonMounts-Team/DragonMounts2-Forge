@@ -5,7 +5,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.FurnaceResultSlot;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -18,6 +17,7 @@ import static net.dragonmounts3.util.BlockEntityUtil.getInventory;
  * @see net.minecraft.inventory.container.ShulkerBoxContainer
  */
 public class DragonCoreContainer extends Container {
+    private static final LimitedSlot.ICondition REJECT = (stack) -> false;
     private final IInventory container;
 
     public DragonCoreContainer(int containerId, PlayerInventory playerInventory, PacketBuffer extraData) {
@@ -29,7 +29,7 @@ public class DragonCoreContainer extends Container {
         this.container = container;
         PlayerEntity player = playerInventory.player;
         container.startOpen(player);
-        this.addSlot(new FurnaceResultSlot(player, container, 0, 80, 35));
+        this.addSlot(new LimitedSlot(container, 0, 80, 35, 64, REJECT));
         for (int i = 0; i < 3; ++i) {
             for (int k = 0; k < 9; ++k) {
                 this.addSlot(new Slot(playerInventory, k + i * 9 + 9, 8 + k * 18, 84 + i * 18));
@@ -43,16 +43,20 @@ public class DragonCoreContainer extends Container {
     @Nonnull
     @Override
     public ItemStack quickMoveStack(@Nonnull PlayerEntity player, int index) {
-        ItemStack itemstack = ItemStack.EMPTY;
+        ItemStack result = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (slot != null && slot.hasItem()) {
-            ItemStack itemstack1 = slot.getItem();
-            itemstack = itemstack1.copy();
-            if (!this.moveItemStackTo(itemstack1, 1, 37, true)) {
+            ItemStack stack = slot.getItem();
+            result = stack.copy();
+            if (index == 0 && !this.moveItemStackTo(stack, 1, this.slots.size(), true)) {
+                return ItemStack.EMPTY;
+            } else if (index <= 27 && !this.moveItemStackTo(stack, 27, this.slots.size(), true)) {
+                return ItemStack.EMPTY;
+            } else if (!this.moveItemStackTo(stack, 1, 28, false)) {
                 return ItemStack.EMPTY;
             }
         }
-        return itemstack;
+        return result;
     }
 
     @Override

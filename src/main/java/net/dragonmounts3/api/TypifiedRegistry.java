@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @ParametersAreNonnullByDefault
-public class ObjectHolder<K, E extends IForgeRegistryEntry<? super E>> implements Iterable<E> {
+public class TypifiedRegistry<K, E extends IForgeRegistryEntry<? super E>> implements Iterable<E> {
     private final Map<K, E> map = this.initMap();
 
     public final RegistryObject<E> register(

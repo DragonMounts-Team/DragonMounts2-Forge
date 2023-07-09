@@ -65,7 +65,7 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified, 
             player.getCapability(DMCapabilities.DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
                 int value = cooldown.get(this.type);
                 if (value > 0) {
-                    components.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_remain_cooldown", formatAsFloat(value)));
+                    components.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_remaining_cooldown", formatAsFloat(value)));
                 } else if (this.effect.cooldown > 0) {
                     components.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_cooldown", formatAsFloat(this.effect.cooldown)));
                 }

@@ -50,10 +50,15 @@ public class DragonCoreContainer extends Container {
             result = stack.copy();
             if (index == 0 && !this.moveItemStackTo(stack, 1, this.slots.size(), true)) {
                 return ItemStack.EMPTY;
-            } else if (index <= 27 && !this.moveItemStackTo(stack, 27, this.slots.size(), true)) {
+            } else if (index <= 27 && !this.moveItemStackTo(stack, 28, this.slots.size(), false)) {
                 return ItemStack.EMPTY;
             } else if (!this.moveItemStackTo(stack, 1, 28, false)) {
                 return ItemStack.EMPTY;
+            }
+            if (stack.isEmpty()) {
+                slot.set(ItemStack.EMPTY);
+            } else {
+                slot.setChanged();
             }
         }
         return result;

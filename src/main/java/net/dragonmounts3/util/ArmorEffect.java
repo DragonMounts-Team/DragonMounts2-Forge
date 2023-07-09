@@ -45,7 +45,7 @@ public class ArmorEffect {
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) return;
+        if (event.phase == TickEvent.Phase.END) return;
         event.player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(IDragonTypifiedCooldown::tick);
         HashMap<IArmorEffect, Integer> map = EFFECT_CACHE.get(event.player);
         if (map == null) {

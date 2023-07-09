@@ -1,7 +1,10 @@
 package net.dragonmounts3.util;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -11,6 +14,11 @@ import net.minecraft.world.World;
 import java.util.Map;
 
 public class EntityUtil {
+    public static boolean addEffect(LivingEntity entity, Effect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon) {
+        EffectInstance instance = entity.getEffect(effect);
+        return entity.addEffect(new EffectInstance(effect, instance != null && instance.getAmplifier() == amplifier ? duration + instance.getDuration() : duration, amplifier, ambient, visible, showIcon, null));
+    }
+
     public static CompoundNBT saveScoreboard(Entity entity, CompoundNBT compound) {
         Scoreboard scoreboard = entity.level.getScoreboard();
         String scoreboardName = entity.getScoreboardName();

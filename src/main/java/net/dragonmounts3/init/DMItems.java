@@ -230,10 +230,10 @@ public class DMItems {
     public static final RegistryObject<DragonScaleArmorItem> MOONLIGHT_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("moonlight_dragon_scale_leggings", DragonScaleMaterial.MOONLIGHT, DragonArmorEffect.MOONLIGHT, tool());
     public static final RegistryObject<DragonScaleArmorItem> MOONLIGHT_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("moonlight_dragon_scale_boots", DragonScaleMaterial.MOONLIGHT, DragonArmorEffect.MOONLIGHT, tool());
     //Dragon Scale Armors - Storm
-    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("storm_dragon_scale_helmet", DragonScaleMaterial.STORM, null, tool());
-    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("storm_dragon_scale_chestplate", DragonScaleMaterial.STORM, null, tool());
-    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("storm_dragon_scale_leggings", DragonScaleMaterial.STORM, null, tool());
-    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("storm_dragon_scale_boots", DragonScaleMaterial.STORM, null, tool());
+    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("storm_dragon_scale_helmet", DragonScaleMaterial.STORM, DragonArmorEffect.STORM, tool());
+    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("storm_dragon_scale_chestplate", DragonScaleMaterial.STORM, DragonArmorEffect.STORM, tool());
+    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_LEGGINGS = createDragonScaleLeggingsItem("storm_dragon_scale_leggings", DragonScaleMaterial.STORM, DragonArmorEffect.STORM, tool());
+    public static final RegistryObject<DragonScaleArmorItem> STORM_DRAGON_SCALE_BOOTS = createDragonScaleBootsItem("storm_dragon_scale_boots", DragonScaleMaterial.STORM, DragonArmorEffect.STORM, tool());
     //Dragon Scale Armors - Terra
     public static final RegistryObject<DragonScaleArmorItem> TERRA_DRAGON_SCALE_HELMET = createDragonScaleHelmetItem("terra_dragon_scale_helmet", DragonScaleMaterial.TERRA, DragonArmorEffect.TERRA, tool());
     public static final RegistryObject<DragonScaleArmorItem> TERRA_DRAGON_SCALE_CHESTPLATE = createDragonScaleChestplateItem("terra_dragon_scale_chestplate", DragonScaleMaterial.TERRA, DragonArmorEffect.TERRA, tool());

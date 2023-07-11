@@ -46,6 +46,7 @@ public class DragonMounts {
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(ArmorEffect.class);
         MinecraftForge.EVENT_BUS.addListener(DragonArmorEffect::xpBonus);
+        MinecraftForge.EVENT_BUS.addListener(DragonArmorEffect::meleeChanneling);
     }
 
     @SubscribeEvent

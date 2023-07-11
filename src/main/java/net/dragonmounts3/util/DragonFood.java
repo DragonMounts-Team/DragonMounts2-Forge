@@ -1,6 +1,7 @@
 package net.dragonmounts3.util;
 
 import net.dragonmounts3.api.IDragonFood;
+import net.dragonmounts3.entity.dragon.DragonLifeStage;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
@@ -32,14 +33,29 @@ public class DragonFood implements IDragonFood {
                 }
             }
         }
+        if (dragon.isOwnedBy(player)) {
+            if (dragon.getLifeStage() == DragonLifeStage.ADULT && dragon.canFallInLove()) {
+                dragon.setInLove(player);
+            }
+        } else if (dragon.getRandom().nextFloat() < 0.25) {
+            dragon.tame(player);
+        }
     };
 
-    public static final IDragonFood POISONOUS_POTATO = (dragon, player, stack, hand) -> {
-        if (!dragon.isAgeLocked()) {
-            dragon.setAgeLocked(true);
+    public static final IDragonFood POISONOUS_POTATO = new IDragonFood() {
+        @Override
+        public boolean isEatable(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand) {
+            return dragon.isOwnedBy(player);
         }
-        if (!player.abilities.instabuild) {
-            stack.shrink(1);
+
+        @Override
+        public void eat(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand) {
+            if (!dragon.isAgeLocked()) {
+                dragon.setAgeLocked(true);
+            }
+            if (!player.abilities.instabuild) {
+                stack.shrink(1);
+            }
         }
     };
 
@@ -124,6 +140,13 @@ public class DragonFood implements IDragonFood {
                     }
                 }
             }
+        }
+        if (dragon.isOwnedBy(player)) {
+            if (dragon.getLifeStage() == DragonLifeStage.ADULT && dragon.canFallInLove()) {
+                dragon.setInLove(player);
+            }
+        } else if (dragon.getRandom().nextFloat() < 0.25) {
+            dragon.tame(player);
         }
     }
 }

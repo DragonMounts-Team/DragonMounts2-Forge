@@ -13,10 +13,42 @@ import net.minecraft.world.World;
 
 import java.util.Map;
 
+import static net.dragonmounts3.entity.dragon.TameableDragonEntity.FLYING_DATA_PARAMETER_KEY;
+
 public class EntityUtil {
-    public static boolean addEffect(LivingEntity entity, Effect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon) {
+    public static boolean addOrMergeEffect(LivingEntity entity, Effect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon) {
         EffectInstance instance = entity.getEffect(effect);
         return entity.addEffect(new EffectInstance(effect, instance != null && instance.getAmplifier() == amplifier ? duration + instance.getDuration() : duration, amplifier, ambient, visible, showIcon, null));
+    }
+
+    public static boolean addOrResetEffect(LivingEntity entity, Effect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon, int threshold) {
+        EffectInstance instance = entity.getEffect(effect);
+        if (instance != null && instance.getAmplifier() == amplifier && instance.getDuration() > threshold)
+            return false;
+        return entity.addEffect(new EffectInstance(effect, duration, amplifier, ambient, visible, showIcon, null));
+    }
+
+    public static CompoundNBT simplifyDragonData(CompoundNBT compound) {
+        compound.remove(FLYING_DATA_PARAMETER_KEY);
+        compound.remove("Air");
+        compound.remove("DeathTime");
+        compound.remove("FallDistance");
+        compound.remove("FallFlying");
+        compound.remove("Fire");
+        compound.remove("HurtByTimestamp");
+        compound.remove("HurtTime");
+        compound.remove("InLove");
+        compound.remove("Leash");
+        compound.remove("Motion");
+        compound.remove("OnGround");
+        compound.remove("PortalCooldown");
+        compound.remove("Pos");
+        compound.remove("Rotation");
+        compound.remove("SleepingX");
+        compound.remove("SleepingY");
+        compound.remove("SleepingZ");
+        compound.remove("TicksFrozen");
+        return compound;
     }
 
     public static CompoundNBT saveScoreboard(Entity entity, CompoundNBT compound) {

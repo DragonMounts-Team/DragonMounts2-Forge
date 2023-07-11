@@ -2,7 +2,7 @@ package net.dragonmounts3.api;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import net.dragonmounts3.client.DragonResources;
+import net.dragonmounts3.client.DragonResourceManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.attributes.Attribute;
@@ -180,7 +180,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
         return value == null ? ENDER : value;
     }
 
-    public final DragonResources resources;
+    public final DragonResourceManager resources;
     private final Style style;
     private final String name;
     private final String text;
@@ -194,7 +194,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
     private final BasicParticleType sneezeParticle;
     private final BasicParticleType eggParticle;
 
-    public DragonType(String name, Builder builder, DragonResources resources) {
+    public DragonType(String name, Builder builder, DragonResourceManager resources) {
         if (BY_NAME.containsKey(name)) {
             throw new IllegalArgumentException();
         }
@@ -325,10 +325,10 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
         }
 
         public DragonType build(String name) {
-            return new DragonType(name, this, new DragonResources(name));
+            return new DragonType(name, this, new DragonResourceManager(name));
         }
 
-        public DragonType build(String name, DragonResources resources) {
+        public DragonType build(String name, DragonResourceManager resources) {
             return new DragonType(name, this, resources);
         }
     }

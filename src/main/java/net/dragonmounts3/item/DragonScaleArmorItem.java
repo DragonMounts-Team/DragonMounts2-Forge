@@ -45,7 +45,7 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified, 
     public void putEffect(Map<IArmorEffect, Integer> map, PlayerEntity player, ItemStack stack) {
         if (this.effect != null) {
             if (map.containsKey(this.effect)) {
-                map.put(this.effect, map.get(this.effect) + 1);
+                map.put(this.effect, map.getOrDefault(this.effect, 0) + 1);
             } else {
                 map.put(this.effect, 1);
             }

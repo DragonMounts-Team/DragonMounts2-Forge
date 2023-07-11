@@ -3,6 +3,7 @@ package net.dragonmounts3.item;
 import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.init.DMItems;
+import net.dragonmounts3.util.EntityUtil;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -39,7 +40,7 @@ public class DragonAmuletItem extends Item {
                 if (amulet == null) {
                     return ActionResultType.FAIL;
                 }
-                CompoundNBT compound = TameableDragonEntity.simplifyData(dragon.saveWithoutId(new CompoundNBT()));
+                CompoundNBT compound = EntityUtil.simplifyDragonData(dragon.saveWithoutId(new CompoundNBT()));
                 compound.putString("OwnerName", ITextComponent.Serializer.toJson(player.getName()));
                 compound.remove(DragonType.DATA_PARAMETER_KEY);
                 compound.remove("UUID");

@@ -20,6 +20,10 @@ import java.util.Random;
 public interface IDragonFood {
     void eat(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand);
 
+    default boolean isEatable(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand) {
+        return true;
+    }
+
     default void act(TameableDragonEntity dragon, Item item) {
         if (item == Items.AIR) return;
         Minecraft minecraft = Minecraft.getInstance();

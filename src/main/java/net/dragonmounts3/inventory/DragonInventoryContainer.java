@@ -1,6 +1,5 @@
 package net.dragonmounts3.inventory;
 
-import net.dragonmounts3.data.tags.DMItemTags;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.init.DMContainers;
 import net.minecraft.entity.Entity;
@@ -9,9 +8,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,10 +24,6 @@ public class DragonInventoryContainer extends Container {
         return null;
     }
 
-    private static final LimitedSlot.ICondition SADDLE = (stack) -> stack.getItem() == Items.SADDLE;
-    private static final LimitedSlot.ICondition DRAGON_ARMOR = (stack) -> stack.getItem().is(DMItemTags.DRAGON_ARMOR);
-    private static final LimitedSlot.ICondition WOODEN_CHEST = (stack) -> stack.getItem().is(Tags.Items.CHESTS_WOODEN);
-
     private final DragonInventory inventory;
     public final TameableDragonEntity dragon;
 
@@ -40,21 +33,21 @@ public class DragonInventoryContainer extends Container {
         this.inventory = dragonInventory;
         PlayerEntity player = playerInventory.player;
         dragonInventory.startOpen(player);
-        this.addSlot(new LimitedSlot(dragonInventory, DragonInventory.SLOT_SADDLE_INDEX, 8, 18, 1, SADDLE));
-        this.addSlot(new LimitedSlot(dragonInventory, DragonInventory.SLOT_ARMOR_INDEX, 8, 36, 1, DRAGON_ARMOR));
-        this.addSlot(new LimitedSlot(dragonInventory, DragonInventory.SLOT_CHEST_INDEX, 8, 54, 1, WOODEN_CHEST));
+        this.addSlot(new LimitedSlot.Saddle(dragonInventory, DragonInventory.SLOT_SADDLE_INDEX, 8, 18));
+        this.addSlot(new LimitedSlot.DragonArmor(dragonInventory, DragonInventory.SLOT_ARMOR_INDEX, 8, 36));
+        this.addSlot(new LimitedSlot.SingleWoodenChest(dragonInventory, DragonInventory.SLOT_CHEST_INDEX, 8, 54));
         for (int i = 0; i < 3; ++i) {
             for (int k = 0; k < 9; ++k) {
-                this.addSlot(new DragonChestSlot(dragonInventory, dragon, k + i * 9, 8 + k * 18, 72 + i * 18));
+                this.addSlot(new DragonChestSlot(dragonInventory, dragon, k + i * 9, 8 + k * 18, 76 + i * 18));
             }
         }
         for (int i = 0; i < 3; ++i) {
             for (int k = 0; k < 9; ++k) {
-                this.addSlot(new Slot(playerInventory, k + i * 9 + 9, 8 + k * 18, 138 + i * 18));
+                this.addSlot(new Slot(playerInventory, k + i * 9 + 9, 8 + k * 18, 142 + i * 18));
             }
         }
         for (int j = 0; j < 9; ++j) {
-            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 196));
+            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 200));
         }
     }
 

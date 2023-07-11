@@ -20,8 +20,8 @@ public class DragonInventoryScreen extends DisplayEffectsScreen<DragonInventoryC
 
     public DragonInventoryScreen(DragonInventoryContainer menu, PlayerInventory playerInventory, ITextComponent title) {
         super(menu, playerInventory, title);
-        this.imageHeight = 220;
-        this.inventoryLabelY = 127;//220 - 94 + 1
+        this.imageHeight = 224;
+        this.inventoryLabelY = 131;//224 - 94 + 1
     }
 
     @Override
@@ -40,7 +40,7 @@ public class DragonInventoryScreen extends DisplayEffectsScreen<DragonInventoryC
             int j = (this.height - this.imageHeight) >> 1;
             this.blit(matrixStack, i, j, 0, 0, this.imageWidth, this.imageHeight);
             if (this.menu.dragon.hasChest()) {
-                this.blit(matrixStack, (this.width - 162) >> 1, (this.height - 78) >> 1, 7, 137, 162, 54);
+                this.blit(matrixStack, (this.width - 162) >> 1, (this.height - 74) >> 1, 7, 141, 162, 54);
             }
         }
     }

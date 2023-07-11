@@ -2,14 +2,12 @@ package net.dragonmounts3.client.model.dragon;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 
 import javax.annotation.Nonnull;
 
 public class DragonModel extends EntityModel<TameableDragonEntity> {
-    protected DragonType typeSnapshot = null;
     protected DragonHeadModelPart head;
     protected DragonNeckModelPart neck;
     protected DragonBodyModelPart body;
@@ -26,21 +24,12 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
         this.body = new DragonBodyModelPart(this);
         this.tail = new DragonTailModelPart(this);
         this.wing = new DragonWingModelPart(this);
+        this.foreLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, false);
+        this.hindLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, true);
     }
 
     @Override
     public void prepareMobModel(@Nonnull TameableDragonEntity entity, float limbSwing, float limbSwingAmount, float partialTick) {
-        DragonType type = entity.getDragonType();
-        if (type != this.typeSnapshot) {
-            if (type.isSkeleton && (this.typeSnapshot == null || !this.typeSnapshot.isSkeleton)) {
-                this.foreLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.SKELETON, false);
-                this.hindLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.SKELETON, true);
-            } else if (!type.isSkeleton && (this.typeSnapshot == null || this.typeSnapshot.isSkeleton)) {
-                this.foreLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, false);
-                this.hindLeg = new DragonLegModelPart(this, DragonLegModelPart.Config.DEFAULT, true);
-            }
-            this.typeSnapshot = type;
-        }
     }
 
     @Override

@@ -17,7 +17,6 @@ import static net.dragonmounts3.util.BlockEntityUtil.getInventory;
  * @see net.minecraft.inventory.container.ShulkerBoxContainer
  */
 public class DragonCoreContainer extends Container {
-    private static final LimitedSlot.ICondition REJECT = (stack) -> false;
     private final IInventory container;
 
     public DragonCoreContainer(int containerId, PlayerInventory playerInventory, PacketBuffer extraData) {
@@ -29,7 +28,7 @@ public class DragonCoreContainer extends Container {
         this.container = container;
         PlayerEntity player = playerInventory.player;
         container.startOpen(player);
-        this.addSlot(new LimitedSlot(container, 0, 80, 35, 64, REJECT));
+        this.addSlot(new LimitedSlot.Reject(container, 0, 80, 35));
         for (int i = 0; i < 3; ++i) {
             for (int k = 0; k < 9; ++k) {
                 this.addSlot(new Slot(playerInventory, k + i * 9 + 9, 8 + k * 18, 84 + i * 18));

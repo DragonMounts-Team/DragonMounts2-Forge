@@ -27,6 +27,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SaddleItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -37,6 +38,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.IForgeShearable;
+import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -107,7 +109,6 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     public int inAirTicks;
     public int roarTicks;
     protected int ticksSinceLastAttack;
-    private boolean hasChestVarChanged = false;
     private boolean isUsingBreathWeapon;
     private boolean altBreathing;
     private boolean isGoingDown;
@@ -119,7 +120,6 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         super(type, world);
         this.maxUpStep = 1.0F;
         this.blocksBuilding = true;
-        createInventory();
         Objects.requireNonNull(this.getAttributes().getInstance(Attributes.MAX_HEALTH)).setBaseValue(DragonMountsConfig.BASE_HEALTH.get());
     }
 
@@ -143,13 +143,22 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         return this.inventory;
     }
 
-    public void containerChanged() {
-        boolean flag = this.isSaddled();
-        this.updateContainerEquipment();
-        if (this.tickCount > 20 && !flag && this.isSaddled()) {
+    public void inventoryChanged() {
+    }
+
+    public void applySaddleChange(ItemStack stack) {
+        boolean flag = stack.getItem() instanceof SaddleItem;
+        if (flag && !this.isSaddled()) {
             this.playSound(SoundEvents.HORSE_SADDLE, 0.5F, 1.0F);
         }
+        this.entityData.set(DATA_SADDLED, flag);
+    }
 
+    public void applyArmorChange(ItemStack stack) {
+    }
+
+    public void applyChestChange(ItemStack stack) {
+        this.entityData.set(DATA_CHESTED, !stack.isEmpty());
     }
 
     //----------Entity----------
@@ -165,25 +174,6 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         this.entityData.define(DATA_AGE_LOCKED, false);
     }
 
-    protected void saveChestData(CompoundNBT compound) {
-        if (this.hasChest()) {
-            /*compound.putBoolean("Chested", true);
-            ListNBT listnbt = new ListNBT();
-            for (int i = 2; i < this.inventory.getContainerSize(); ++i) {
-                ItemStack itemstack = this.inventory.getItem(i);
-                if (!itemstack.isEmpty()) {
-                    CompoundNBT compoundnbt = new CompoundNBT();
-                    compoundnbt.putByte("Slot", (byte) i);
-                    itemstack.save(compoundnbt);
-                    listnbt.add(compoundnbt);
-                }
-            }
-            compound.put("Items", listnbt);*/
-        } else {
-            compound.putBoolean("Chested", false);
-        }
-    }
-
     @Override
     public void addAdditionalSaveData(CompoundNBT compound) {
         super.addAdditionalSaveData(compound);
@@ -192,7 +182,8 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         compound.putBoolean(FLYING_DATA_PARAMETER_KEY, this.entityData.get(DATA_FLYING));
         compound.putBoolean(AGE_LOCKED_DATA_PARAMETER_KEY, this.entityData.get(DATA_AGE_LOCKED));
         compound.putInt(SHEARED_DATA_PARAMETER_KEY, this.isSheared() ? this.shearCooldown : 0);
-        this.saveChestData(compound);
+        compound.put("Items", this.inventory.createTag());
+        compound.putBoolean("Chested", this.hasChest());
     }
 
     @Override
@@ -219,7 +210,11 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         if (compound.contains(AGE_LOCKED_DATA_PARAMETER_KEY)) {
             this.entityData.set(DATA_FLYING, compound.getBoolean(FLYING_DATA_PARAMETER_KEY));
         }
-        this.updateContainerEquipment();
+        if (compound.contains("Items")) {
+            this.inventory.fromTag(compound.getList("Items", 10));
+        }
+        this.entityData.set(DATA_CHESTED, compound.getBoolean("Chested"));
+
     }
 
     @Override
@@ -271,18 +266,6 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         return this.entityData.get(DATA_CHESTED);
     }
 
-    protected void updateContainerEquipment() {
-        if (!this.level.isClientSide) {
-            //this.entityData.set(DATA_SADDLED, !this.inventory.getItem(0).isEmpty());
-        }
-    }
-
-    protected void createInventory() {
-
-        //this.updateContainerEquipment();
-        //this.itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new net.minecraftforge.items.wrapper.InvWrapper(this.inventory));
-    }
-
     @Override
     public void refreshDimensions() {
         double d0 = this.getX();
@@ -314,23 +297,27 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         ItemStack stack = player.getItemInHand(hand);
         Item item = stack.getItem();
         if (this.level.isClientSide) {
-            if (DragonFood.test(item)) return ActionResultType.CONSUME;
+            if (DragonFood.test(item) || item instanceof SaddleItem) return ActionResultType.CONSUME;
+            if (this.isOwnedBy(player)) return ActionResultType.CONSUME;
             return ActionResultType.PASS;
         }
         IDragonFood food = DragonFood.get(item);
         if (food != null) {
+            if (!food.isEatable(this, player, stack, hand)) return ActionResultType.FAIL;
             food.eat(this, player, stack, hand);
             CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SFeedDragonPacket(this, item));
-            if (this.stage == DragonLifeStage.ADULT && this.canFallInLove()) {
-                this.setInLove(player);
-            }
             return ActionResultType.SUCCESS;
-        }/*
+        }
+        if (item instanceof SaddleItem) {
+            this.entityData.set(DATA_SADDLED, true);//avoid playing sound
+            this.inventory.setChest(stack.copy());
+            item.interactLivingEntity(stack, player, this, hand);//play sound, shrink stack
+            return ActionResultType.SUCCESS;
+        }
         if (this.isOwnedBy(player)) {
-            NetworkHooks.openGui((ServerPlayerEntity) player, this.inventory, buffer -> {
-                buffer.writeVarInt(this.getId());
-            });
-        }*/
+            NetworkHooks.openGui((ServerPlayerEntity) player, this.inventory, buffer -> buffer.writeVarInt(this.getId()));
+            return ActionResultType.SUCCESS;
+        }
         return ActionResultType.PASS;
     }
 
@@ -518,7 +505,9 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
 
     @Override
     public void equipSaddle(@Nullable SoundCategory category) {
-
+        if (category != null) {
+            this.level.playSound(null, this, SoundEvents.HORSE_SADDLE, category, 0.5F, 1.0F);
+        }
     }
 
     @Nonnull
@@ -527,32 +516,9 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         DragonScalesItem scale = DMItems.DRAGON_SCALES.get(this.getDragonType());
         if (scale != null) {
             this.setSheared(2500 + this.random.nextInt(1000));
-            this.playSound(DMSounds.ENTITY_DRAGON_GROWL.get(), 1.0F, 1.0F);
+            this.playSound(DMSounds.DRAGON_GROWL.get(), 1.0F, 1.0F);
             return Collections.singletonList(new ItemStack(scale, 2 + this.random.nextInt(3)));
         }
         return Collections.emptyList();
-    }
-
-    public static CompoundNBT simplifyData(CompoundNBT compound) {
-        compound.remove(FLYING_DATA_PARAMETER_KEY);
-        compound.remove("Air");
-        compound.remove("DeathTime");
-        compound.remove("FallDistance");
-        compound.remove("FallFlying");
-        compound.remove("Fire");
-        compound.remove("HurtByTimestamp");
-        compound.remove("HurtTime");
-        compound.remove("InLove");
-        compound.remove("Leash");
-        compound.remove("Motion");
-        compound.remove("OnGround");
-        compound.remove("PortalCooldown");
-        compound.remove("Pos");
-        compound.remove("Rotation");
-        compound.remove("SleepingX");
-        compound.remove("SleepingY");
-        compound.remove("SleepingZ");
-        compound.remove("TicksFrozen");
-        return compound;
     }
 }

@@ -2,7 +2,7 @@ package net.dragonmounts3;
 
 import net.dragonmounts3.command.DMCommand;
 import net.dragonmounts3.init.*;
-import net.dragonmounts3.item.DragonArmorEffect;
+import net.dragonmounts3.item.DragonScaleArmorEffect;
 import net.dragonmounts3.network.DMPacketHandler;
 import net.dragonmounts3.util.ArmorEffect;
 import net.minecraft.entity.Entity;
@@ -45,8 +45,9 @@ public class DragonMounts {
         MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, DMCapabilities::attachCapabilities);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(ArmorEffect.class);
-        MinecraftForge.EVENT_BUS.addListener(DragonArmorEffect::xpBonus);
-        MinecraftForge.EVENT_BUS.addListener(DragonArmorEffect::meleeChanneling);
+        MinecraftForge.EVENT_BUS.addListener(DragonScaleArmorEffect::xpBonus);
+        MinecraftForge.EVENT_BUS.addListener(DragonScaleArmorEffect::meleeChanneling);
+        MinecraftForge.EVENT_BUS.addListener(DragonScaleArmorEffect::riposte);
     }
 
     @SubscribeEvent

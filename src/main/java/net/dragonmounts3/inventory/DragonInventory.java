@@ -4,6 +4,7 @@ import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
@@ -12,6 +13,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,10 +25,11 @@ import static net.dragonmounts3.util.ItemUtil.saveItem;
  * @see net.minecraft.inventory.Inventory
  */
 public class DragonInventory implements IInventory, INamedContainerProvider {
-    public static final int CHEST_SIZE = 27;
+    public static final int MAX_CONTAINER_SIZE = 30;
+    public static final int CHEST_SIZE = MAX_CONTAINER_SIZE - 3;
     public static final int SLOT_SADDLE_INDEX = CHEST_SIZE;
-    public static final int SLOT_ARMOR_INDEX = CHEST_SIZE + 1;
-    public static final int SLOT_CHEST_INDEX = CHEST_SIZE + 2;
+    public static final int SLOT_ARMOR_INDEX = MAX_CONTAINER_SIZE - 2;
+    public static final int SLOT_CHEST_INDEX = MAX_CONTAINER_SIZE - 1;
 
     public final WeakReference<TameableDragonEntity> dragon;
     protected final NonNullList<ItemStack> items = NonNullList.withSize(CHEST_SIZE, ItemStack.EMPTY);
@@ -78,7 +81,7 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
     @Override
     public int getContainerSize() {
         TameableDragonEntity dragon = this.dragon.get();
-        return dragon != null && dragon.hasChest() ? CHEST_SIZE + 3 : 3;
+        return dragon != null && dragon.hasChest() ? MAX_CONTAINER_SIZE : 3;
     }
 
     @Override
@@ -248,6 +251,17 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
     public DragonInventoryContainer createMenu(int id, @Nonnull PlayerInventory inventory, @Nonnull PlayerEntity player) {
         TameableDragonEntity dragon = this.dragon.get();
         return dragon == null ? null : new DragonInventoryContainer(id, inventory, this, dragon);
+    }
+
+    public void dropContents(World level, double x, double y, double z, boolean keepEquipments) {
+        if (!keepEquipments) {
+            InventoryHelper.dropItemStack(level, x, y, z, this.saddle);
+            InventoryHelper.dropItemStack(level, x, y, z, this.armor);
+            InventoryHelper.dropItemStack(level, x, y, z, this.chest);
+        }
+        for (ItemStack stack : this.items) {
+            InventoryHelper.dropItemStack(level, x, y, z, stack);
+        }
     }
 
     public void fromTag(ListNBT list) {

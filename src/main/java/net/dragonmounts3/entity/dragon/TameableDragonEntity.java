@@ -158,7 +158,11 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     }
 
     public void applyChestChange(ItemStack stack) {
-        this.entityData.set(DATA_CHESTED, !stack.isEmpty());
+        boolean flag = stack.isEmpty();
+        this.entityData.set(DATA_CHESTED, !flag);
+        if (flag) {
+            this.inventory.dropContents(this.level, this.getX(), this.getY(), this.getZ(), true);
+        }
     }
 
     //----------Entity----------

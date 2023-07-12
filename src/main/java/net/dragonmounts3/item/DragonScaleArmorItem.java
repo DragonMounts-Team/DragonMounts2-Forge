@@ -27,12 +27,12 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified, 
     private static final String[] TRANSLATION_KEY_SUFFIX = new String[]{"boots", "leggings", "chestplate", "helmet"};
     private final String translationKey;
     protected DragonType type;
-    public final DragonArmorEffect effect;
+    public final DragonScaleArmorEffect effect;
 
     public DragonScaleArmorItem(
             DragonScaleMaterial material,
             EquipmentSlotType slot,
-            DragonArmorEffect effect,
+            DragonScaleArmorEffect effect,
             Properties properties
     ) {
         super(material, slot, properties);
@@ -59,6 +59,9 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified, 
         if (this.effect == null) return;
         components.add(StringTextComponent.EMPTY);
         components.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_piece_4"));
+        if (this.effect.luck) {
+            components.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_fishing_luck"));
+        }
         components.add(new TranslationTextComponent(this.effect.description));
         PlayerEntity player = Minecraft.getInstance().player;
         if (player != null) {

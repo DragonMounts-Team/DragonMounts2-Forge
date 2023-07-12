@@ -13,6 +13,8 @@ import net.minecraft.network.PacketBuffer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static net.dragonmounts3.inventory.DragonInventory.*;
+
 public class DragonInventoryContainer extends Container {
     @Nullable
     public static DragonInventoryContainer fromPacket(int containerId, PlayerInventory playerInventory, PacketBuffer extraData) {
@@ -33,9 +35,9 @@ public class DragonInventoryContainer extends Container {
         this.inventory = dragonInventory;
         PlayerEntity player = playerInventory.player;
         dragonInventory.startOpen(player);
-        this.addSlot(new LimitedSlot.Saddle(dragonInventory, DragonInventory.SLOT_SADDLE_INDEX, 8, 18));
-        this.addSlot(new LimitedSlot.DragonArmor(dragonInventory, DragonInventory.SLOT_ARMOR_INDEX, 8, 36));
-        this.addSlot(new LimitedSlot.SingleWoodenChest(dragonInventory, DragonInventory.SLOT_CHEST_INDEX, 8, 54));
+        this.addSlot(new LimitedSlot.Saddle(dragonInventory, SLOT_SADDLE_INDEX, 8, 18));
+        this.addSlot(new LimitedSlot.DragonArmor(dragonInventory, SLOT_ARMOR_INDEX, 8, 36));
+        this.addSlot(new LimitedSlot.SingleWoodenChest(dragonInventory, SLOT_CHEST_INDEX, 8, 54));
         for (int i = 0; i < 3; ++i) {
             for (int k = 0; k < 9; ++k) {
                 this.addSlot(new DragonChestSlot(dragonInventory, dragon, k + i * 9, 8 + k * 18, 76 + i * 18));
@@ -59,9 +61,8 @@ public class DragonInventoryContainer extends Container {
         if (slot != null && slot.hasItem()) {
             ItemStack stack = slot.getItem();
             result = stack.copy();
-            int dragonInventorySize = this.inventory.getContainerSize();
-            if (index < dragonInventorySize) {
-                if (!this.moveItemStackTo(stack, dragonInventorySize, this.slots.size(), true)) {
+            if (index < MAX_CONTAINER_SIZE) {
+                if (!this.moveItemStackTo(stack, MAX_CONTAINER_SIZE, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
             } else if (this.getSlot(2).mayPlace(stack) && !this.getSlot(2).hasItem()) {
@@ -76,21 +77,15 @@ public class DragonInventoryContainer extends Container {
                 if (!this.moveItemStackTo(stack, 0, 1, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(stack, 3, dragonInventorySize, false)) {
-                int playerInventorySize = dragonInventorySize + 27;
-                int playerHotbarSize = playerInventorySize + 9;
-                if (index >= playerInventorySize && index < playerHotbarSize) {
-                    if (!this.moveItemStackTo(stack, dragonInventorySize, playerInventorySize, false)) {
+            } else if (!this.dragon.hasChest() || !this.moveItemStackTo(stack, 3, MAX_CONTAINER_SIZE, false)) {
+                int playerInventorySize = MAX_CONTAINER_SIZE + 27;
+                if (index >= playerInventorySize) {
+                    if (!this.moveItemStackTo(stack, MAX_CONTAINER_SIZE, playerInventorySize, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (index < playerInventorySize) {
-                    if (!this.moveItemStackTo(stack, playerInventorySize, playerHotbarSize, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else if (!this.moveItemStackTo(stack, playerInventorySize, playerInventorySize, false)) {
+                } else if (!this.moveItemStackTo(stack, playerInventorySize, playerInventorySize + 9, false)) {
                     return ItemStack.EMPTY;
                 }
-
                 return ItemStack.EMPTY;
             }
             if (result.isEmpty()) {

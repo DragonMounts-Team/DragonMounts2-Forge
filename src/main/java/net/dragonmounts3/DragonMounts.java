@@ -1,5 +1,6 @@
 package net.dragonmounts3;
 
+import net.dragonmounts3.command.ConfigCommand;
 import net.dragonmounts3.command.DMCommand;
 import net.dragonmounts3.init.*;
 import net.dragonmounts3.item.DragonScaleArmorEffect;
@@ -12,11 +13,10 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -32,15 +32,15 @@ public class DragonMounts {
     public IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
     public DragonMounts() {
+        DragonMountsConfig.init();
         DMPacketHandler.init();
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DragonMountsConfig.SPEC);
         DMSounds.SOUNDS.register(this.eventBus);
-        DMAttributes.ATTRIBUTES.register(this.eventBus);
         DMItems.ITEMS.register(this.eventBus);
         DMBlocks.BLOCKS.register(this.eventBus);
         DMEntities.ENTITY_TYPES.register(this.eventBus);
         DMBlockEntities.BLOCK_ENTITY.register(this.eventBus);
         DMContainers.CONTAINERS.register(this.eventBus);
+        DMKeyBindings.register();
         this.eventBus.addListener(DragonMounts::preInit);
         MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, DMCapabilities::attachCapabilities);
         MinecraftForge.EVENT_BUS.register(this);
@@ -48,6 +48,10 @@ public class DragonMounts {
         MinecraftForge.EVENT_BUS.addListener(DragonScaleArmorEffect::xpBonus);
         MinecraftForge.EVENT_BUS.addListener(DragonScaleArmorEffect::meleeChanneling);
         MinecraftForge.EVENT_BUS.addListener(DragonScaleArmorEffect::riposte);
+        if (FMLLoader.getDist().isClient()) {
+            MinecraftForge.EVENT_BUS.addListener(ConfigCommand::onClientSendMessage);
+            MinecraftForge.EVENT_BUS.addListener(ConfigCommand::onGuiOpen);
+        }
     }
 
     @SubscribeEvent

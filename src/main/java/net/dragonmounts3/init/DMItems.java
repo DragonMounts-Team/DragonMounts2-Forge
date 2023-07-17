@@ -58,11 +58,11 @@ public class DMItems {
     public static final RegistryObject<DragonScalesItem> MOONLIGHT_DRAGON_SCALES = createDragonScalesItem("moonlight_dragon_scales", DragonType.MOONLIGHT, item());
     public static final RegistryObject<DragonScalesItem> SCULK_DRAGON_SCALES = createDragonScalesItem("sculk_dragon_scales", DragonType.SCULK, item().fireResistant());
     //Dragon Armor
-    public static final RegistryObject<Item> IRON_DRAGON_ARMOR = createDragonArmorItem("iron_dragon_armor", 5, tool().stacksTo(1));
-    public static final RegistryObject<Item> GOLDEN_DRAGON_ARMOR = createDragonArmorItem("golden_dragon_armor", 7, tool().stacksTo(1));
-    public static final RegistryObject<Item> DIAMOND_DRAGON_ARMOR = createDragonArmorItem("diamond_dragon_armor", 11, tool().stacksTo(1));
-    public static final RegistryObject<Item> EMERALD_DRAGON_ARMOR = createDragonArmorItem("emerald_dragon_armor", 11, tool().stacksTo(1));
-    public static final RegistryObject<Item> NETHERITE_DRAGON_ARMOR = createDragonArmorItem("netherite_dragon_armor", 15, tool().stacksTo(1).fireResistant());
+    public static final RegistryObject<Item> IRON_DRAGON_ARMOR = createDragonArmorItem("iron_dragon_armor", DragonArmorItem.TEXTURE_PREFIX + "iron.png", 5, tool().stacksTo(1));
+    public static final RegistryObject<Item> GOLDEN_DRAGON_ARMOR = createDragonArmorItem("golden_dragon_armor", DragonArmorItem.TEXTURE_PREFIX + "gold.png", 7, tool().stacksTo(1));
+    public static final RegistryObject<Item> DIAMOND_DRAGON_ARMOR = createDragonArmorItem("diamond_dragon_armor", DragonArmorItem.TEXTURE_PREFIX + "diamond.png", 11, tool().stacksTo(1));
+    public static final RegistryObject<Item> EMERALD_DRAGON_ARMOR = createDragonArmorItem("emerald_dragon_armor", DragonArmorItem.TEXTURE_PREFIX + "emerald.png", 11, tool().stacksTo(1));
+    public static final RegistryObject<Item> NETHERITE_DRAGON_ARMOR = createDragonArmorItem("netherite_dragon_armor", DragonArmorItem.TEXTURE_PREFIX + "netherite.png", 15, tool().stacksTo(1).fireResistant());
     //Dragon Scale Swords
     public static final RegistryObject<DragonScaleSwordItem> AETHER_DRAGON_SCALE_SWORD = createDragonScaleSwordItem("aether_dragon_sword", DragonScaleTier.AETHER, tool());
     public static final RegistryObject<DragonScaleSwordItem> WATER_DRAGON_SCALE_SWORD = createDragonScaleSwordItem("water_dragon_sword", DragonScaleTier.WATER, tool());
@@ -321,8 +321,8 @@ public class DMItems {
         return FILLED_DRAGON_AMULET.register(ITEMS, name, new FilledDragonAmuletItem(type, properties));
     }
 
-    private static RegistryObject<Item> createDragonArmorItem(String name, int protection, Properties properties) {
-        return ITEMS.register(name, () -> new DragonArmorItem(protection, properties));
+    private static RegistryObject<Item> createDragonArmorItem(String name, String texture, int protection, Properties properties) {
+        return ITEMS.register(name, () -> new DragonArmorItem(DragonMounts.prefix(texture), protection, properties));
     }
 
     private static RegistryObject<DragonScaleAxeItem> createDragonScaleAxeItem(String name, DragonScaleTier tier, float attackDamageModifier, float attackSpeedModifier, Properties properties) {

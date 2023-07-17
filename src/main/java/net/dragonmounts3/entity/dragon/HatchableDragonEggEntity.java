@@ -70,7 +70,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
 
     public HatchableDragonEggEntity(EntityType<? extends HatchableDragonEggEntity> type, World world) {
         super(type, world);
-        Objects.requireNonNull(this.getAttributes().getInstance(Attributes.MAX_HEALTH)).setBaseValue(DragonMountsConfig.BASE_HEALTH.get());
+        Objects.requireNonNull(this.getAttributes().getInstance(Attributes.MAX_HEALTH)).setBaseValue(DragonMountsConfig.SERVER.base_health.get());
     }
 
     public HatchableDragonEggEntity(World world) {
@@ -79,7 +79,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
         return LivingEntity.createLivingAttributes()
-                .add(Attributes.MAX_HEALTH, DragonMountsConfig.BASE_HEALTH.get())
+                .add(Attributes.MAX_HEALTH, DragonMountsConfig.SERVER.base_health.get())
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0);
     }
 

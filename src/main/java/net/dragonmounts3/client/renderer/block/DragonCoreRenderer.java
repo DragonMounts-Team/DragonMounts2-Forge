@@ -17,7 +17,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 
 import static net.dragonmounts3.DragonMounts.prefix;
-import static net.dragonmounts3.block.DragonCoreBlock.FACING;
+import static net.minecraft.block.HorizontalBlock.FACING;
 
 /**
  * @see net.minecraft.client.renderer.tileentity.ShulkerBoxTileEntityRenderer

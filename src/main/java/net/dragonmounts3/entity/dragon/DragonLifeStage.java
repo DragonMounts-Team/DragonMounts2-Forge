@@ -56,6 +56,6 @@ public enum DragonLifeStage implements IStringSerializable {
     }
 
     public static float getSize(DragonLifeStage stage, int age) {
-        return stage.duration == 0 ? 1.00f : MathHelper.lerp((float) Math.abs(age) / stage.duration, stage.endSize, stage.startSize);
+        return stage.duration == 0 ? 1.00f : MathHelper.lerp(Math.abs(age) / (float) stage.duration, stage.endSize, stage.startSize);
     }
 }

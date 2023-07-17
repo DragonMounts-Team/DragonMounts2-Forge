@@ -2,113 +2,116 @@ package net.dragonmounts3.client.model.dragon;
 
 import net.minecraft.client.renderer.model.Model;
 import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class DragonLegModelPart extends ModelRenderer {
-    public static final int LEG_BASE_LENGTH = 26;
-    public static final int LEG_BASE_WIDTH = 9;
-    public static final int FOOT_HEIGHT = 4;
+@OnlyIn(Dist.CLIENT)
+public abstract class DragonLegModelPart extends ModelRenderer {
     public final ModelRenderer shank;
     public final ModelRenderer foot;
     public final ModelRenderer toe;
 
-    public DragonLegModelPart(Model model, Config config, boolean hind) {
+    public DragonLegModelPart(Model model, DragonLegConfig config) {
         super(model);
-        buildThigh(config, hind);
-        this.shank = this.createShank(model, config, hind);
+        buildThigh(config);
+        this.shank = this.createShank(model, config);
         this.addChild(this.shank);
-        this.foot = this.createFoot(model, config, hind);
+        this.foot = this.createFoot(model, config);
         this.shank.addChild(this.foot);
-        this.toe = this.createToe(model, config, hind);
+        this.toe = this.createToe(model, config);
         this.foot.addChild(this.toe);
     }
 
-    protected void buildThigh(Config config, boolean hind) {
-        final int length = config.getThighLength(hind);
-        final int width;
-        if (hind) {
-            width = config.width + 1;
-            this.setPos(-11, 13, 4);
-            this.texOffs(112, 29);
-        } else {
-            width = config.width;
+    abstract protected void buildThigh(DragonLegConfig config);
+
+    abstract protected ModelRenderer createShank(Model model, DragonLegConfig config);
+
+    abstract protected ModelRenderer createFoot(Model model, DragonLegConfig config);
+
+    abstract protected ModelRenderer createToe(Model model, DragonLegConfig config);
+
+    public static class Fore extends DragonLegModelPart {
+        public Fore(Model model, DragonLegConfig config) {
+            super(model, config);
+        }
+
+        @Override
+        protected void buildThigh(DragonLegConfig config) {
+            final int length = config.getThighLength(false);
+            final int width = config.width;
             this.setPos(-11, 18, 4);
             this.texOffs(112, 0);
-        }
-        this.addBox(config.defaultOffset, config.defaultOffset, config.defaultOffset, width, length, width);
-    }
+            this.addBox(config.defaultOffset, config.defaultOffset, config.defaultOffset, width, length, width);
 
-    protected ModelRenderer createShank(Model model, Config config, boolean hind) {
-        final int length = config.getShankLength(hind);
-        final ModelRenderer renderer = new ModelRenderer(model);
-        if (hind) {
-            renderer.texOffs(152, 29);
-        } else {
+        }
+
+        @Override
+        protected ModelRenderer createShank(Model model, DragonLegConfig config) {
+            final int length = config.getShankLength(false);
+            final ModelRenderer renderer = new ModelRenderer(model);
             renderer.texOffs(148, 0);
+            renderer.setPos(0, config.getThighLength(false) + config.defaultOffset, 0);
+            return renderer.addBox(config.shankOffset, config.shankOffset, config.shankOffset, config.shankWidth, length, config.shankWidth);
         }
-        renderer.setPos(0, config.getThighLength(hind) + config.defaultOffset, 0);
-        return renderer.addBox(config.shankOffset, config.shankOffset, config.shankOffset, config.shankWidth, length, config.shankWidth);
-    }
 
-    protected ModelRenderer createFoot(Model model, Config config, boolean hind) {
-        final int length = config.getFootLength(hind);
-        final ModelRenderer renderer = new ModelRenderer(model);
-        if (hind) {
-            renderer.texOffs(180, 29);
-        } else {
+        @Override
+        protected ModelRenderer createFoot(Model model, DragonLegConfig config) {
+            final int length = config.getFootLength(false);
+            final ModelRenderer renderer = new ModelRenderer(model);
             renderer.texOffs(210, 0);
+            renderer.setPos(0, config.getShankLength(false) + config.shankOffset, 0);
+            return renderer.addBox(config.defaultOffset, config.footOffset, length * -0.75f, config.width, config.footHeight, length);
         }
-        renderer.setPos(0, config.getShankLength(hind) + config.shankOffset, 0);
-        return renderer.addBox(config.defaultOffset, config.footOffset, length * -0.75f, config.width, config.footHeight, length);
-    }
 
-    protected ModelRenderer createToe(Model model, Config config, boolean hind) {
-        final int length = config.getToeLength(hind);
-        final ModelRenderer renderer = new ModelRenderer(model);
-        if (hind) {
-            renderer.setPos(0, 0, config.getFootLength(true) * -0.75f - config.footOffset / 2f);
-            renderer.texOffs(215, 29);
-        } else {
+        @Override
+        protected ModelRenderer createToe(Model model, DragonLegConfig config) {
+            final int length = config.getToeLength(false);
+            final ModelRenderer renderer = new ModelRenderer(model);
             renderer.setPos(0, 0, config.getFootLength(false) * -0.75f - config.footOffset / 2f);
             renderer.texOffs(176, 0);
+            return renderer.addBox(config.defaultOffset, config.footOffset, -length, config.width, config.footHeight, length);
         }
-        return renderer.addBox(config.defaultOffset, config.footOffset, -length, config.width, config.footHeight, length);
     }
 
-    public static class Config {
-        public static final Config DEFAULT = new Config(LEG_BASE_LENGTH, LEG_BASE_WIDTH, FOOT_HEIGHT);
-        public static final Config SKELETON = new Config(LEG_BASE_LENGTH, LEG_BASE_WIDTH, FOOT_HEIGHT);
-        public final int length;
-        public final int width;
-        public final int footHeight;
-        public final int shankWidth;
-        public final float defaultOffset;
-        public final float shankOffset;
-        public final float footOffset;
-
-        public Config(int length, int width, int footHeight) {
-            this.length = length;
-            this.width = width;
-            this.footHeight = footHeight;
-            this.shankWidth = width - 2;
-            this.defaultOffset = -width / 2f;
-            this.shankOffset = -this.shankWidth / 2f;
-            this.footOffset = -this.footHeight / 2f;
+    public static class Hind extends DragonLegModelPart {
+        public Hind(Model model, DragonLegConfig config) {
+            super(model, config);
         }
 
-        public int getThighLength(boolean hind) {
-            return (int) (this.length * (hind ? 0.90f : 0.77f));
+        @Override
+        protected void buildThigh(DragonLegConfig config) {
+            final int length = config.getThighLength(true);
+            final int width = config.width + 1;
+            this.setPos(-11, 13, 4);
+            this.texOffs(112, 29);
+            this.addBox(config.defaultOffset, config.defaultOffset, config.defaultOffset, width, length, width);
         }
 
-        public int getShankLength(boolean hind) {
-            return (int) (hind ? this.length * 0.70f - 2 : this.length * 0.80f);
+        @Override
+        protected ModelRenderer createShank(Model model, DragonLegConfig config) {
+            final int length = config.getShankLength(true);
+            final ModelRenderer renderer = new ModelRenderer(model);
+            renderer.texOffs(152, 29);
+            renderer.setPos(0, config.getThighLength(true) + config.defaultOffset, 0);
+            return renderer.addBox(config.shankOffset, config.shankOffset, config.shankOffset, config.shankWidth, length, config.shankWidth);
         }
 
-        public int getFootLength(boolean hind) {
-            return (int) (this.length * (hind ? 0.67f : 0.34f));
+        @Override
+        protected ModelRenderer createFoot(Model model, DragonLegConfig config) {
+            final int length = config.getFootLength(true);
+            final ModelRenderer renderer = new ModelRenderer(model);
+            renderer.texOffs(180, 29);
+            renderer.setPos(0, config.getShankLength(true) + config.shankOffset, 0);
+            return renderer.addBox(config.defaultOffset, config.footOffset, length * -0.75f, config.width, config.footHeight, length);
         }
 
-        public int getToeLength(boolean hind) {
-            return (int) (this.length * (hind ? 0.27f : 0.33f));
+        @Override
+        protected ModelRenderer createToe(Model model, DragonLegConfig config) {
+            final int length = config.getToeLength(true);
+            final ModelRenderer renderer = new ModelRenderer(model);
+            renderer.setPos(0, 0, config.getFootLength(true) * -0.75f - config.footOffset / 2f);
+            renderer.texOffs(215, 29);
+            return renderer.addBox(config.defaultOffset, config.footOffset, -length, config.width, config.footHeight, length);
         }
     }
 }

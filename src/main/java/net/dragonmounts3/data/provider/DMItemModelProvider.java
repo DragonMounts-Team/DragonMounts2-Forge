@@ -36,7 +36,7 @@ public class DMItemModelProvider extends ItemModelProvider {
                     .append("_dragon_scale_bow_");
             int rootLength = root.length();
             int textureLength = texture.length();
-            for (int i = 0; i <= 2; i++) {
+            for (int i = 0; i < 3; ++i) {
                 pulling[i] = this.getBuilder(root.append(i).toString())
                         .parent(vanillaBowModel)
                         .texture("layer0", prefix(texture.append(i).toString()));

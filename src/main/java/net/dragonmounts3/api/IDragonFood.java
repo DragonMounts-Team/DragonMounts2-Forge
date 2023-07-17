@@ -1,6 +1,8 @@
 package net.dragonmounts3.api;
 
+import net.dragonmounts3.entity.dragon.DragonLifeStage;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
+import net.dragonmounts3.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BucketItem;
@@ -16,6 +18,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
+
 @FunctionalInterface
 public interface IDragonFood {
     void eat(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand);
@@ -29,7 +32,9 @@ public interface IDragonFood {
         Minecraft minecraft = Minecraft.getInstance();
         PlayerEntity player = minecraft.player;
         World level = dragon.level;
-        dragon.refreshForcedAgeTimer();
+        if (dragon.getLifeStage() != DragonLifeStage.ADULT) {
+            dragon.refreshForcedAgeTimer();
+        }
         level.playSound(player, dragon, item.getEatingSound(), SoundCategory.NEUTRAL, 1f, 0.75f);
         if (item == Items.HONEY_BOTTLE) return;
         if (item instanceof BucketItem) {
@@ -44,10 +49,11 @@ public interface IDragonFood {
         }
         ItemStack stack = new ItemStack(item);
         Random random = dragon.getRandom();
+        Vector3d pos = dragon.getAnimator().getThroatPosition(0, 0, -4);
+        if (pos == null) return;
         for (int i = 0; i < 8; ++i) {
-            //TODO: Create particles around the mouth of the dragon
-            Vector3d vector3d = new Vector3d((random.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D).xRot((float) (-dragon.xRot * Math.PI / 180F)).yRot((float) (-dragon.yRot * Math.PI / 180F));
-            dragon.level.addParticle(new ItemParticleData(ParticleTypes.ITEM, stack), dragon.getX(), dragon.getY(), dragon.getZ(), vector3d.x, vector3d.y + 0.05D, vector3d.z);
+            Vector3d speed = new Vector3d((random.nextFloat() - 0.5D) * 0.1D, random.nextFloat() * 0.1D + 0.1D, 0.0D).xRot(-dragon.xRot * MathUtil.PI / 180F).yRot(-dragon.yRot * MathUtil.PI / 180F);
+            level.addParticle(new ItemParticleData(ParticleTypes.ITEM, stack), pos.x, pos.y, pos.z, speed.x, speed.y + 0.05D, speed.z);
         }
     }
 }

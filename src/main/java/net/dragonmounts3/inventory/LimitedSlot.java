@@ -1,6 +1,6 @@
 package net.dragonmounts3.inventory;
 
-import net.dragonmounts3.data.tags.DMItemTags;
+import net.dragonmounts3.item.DragonArmorItem;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
@@ -47,7 +47,7 @@ public abstract class LimitedSlot extends Slot {
         @Override
         public void setChanged() {
             if (this.container instanceof DragonInventory) {
-                ((DragonInventory) this.container).applySaddleChange(this.getItem());
+                ((DragonInventory) this.container).dragon.setSaddle(this.getItem(), false);
             } else {
                 this.container.setChanged();
             }
@@ -66,13 +66,13 @@ public abstract class LimitedSlot extends Slot {
 
         @Override
         public boolean mayPlace(@Nonnull ItemStack stack) {
-            return stack.getItem().is(DMItemTags.DRAGON_ARMOR);
+            return stack.getItem() instanceof DragonArmorItem;
         }
 
         @Override
         public void setChanged() {
             if (this.container instanceof DragonInventory) {
-                ((DragonInventory) this.container).applyArmorChange(this.getItem());
+                ((DragonInventory) this.container).dragon.setArmor(this.getItem(), false);
             } else {
                 this.container.setChanged();
             }
@@ -97,7 +97,7 @@ public abstract class LimitedSlot extends Slot {
         @Override
         public void setChanged() {
             if (this.container instanceof DragonInventory) {
-                ((DragonInventory) this.container).applyChestChange(this.getItem());
+                ((DragonInventory) this.container).dragon.setChest(this.getItem(), false);
             } else {
                 this.container.setChanged();
             }

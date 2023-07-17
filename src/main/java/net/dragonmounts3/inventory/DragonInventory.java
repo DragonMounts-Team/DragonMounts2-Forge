@@ -12,12 +12,10 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
 
 import static net.dragonmounts3.util.ItemUtil.saveItem;
 
@@ -31,57 +29,16 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
     public static final int SLOT_ARMOR_INDEX = MAX_CONTAINER_SIZE - 2;
     public static final int SLOT_CHEST_INDEX = MAX_CONTAINER_SIZE - 1;
 
-    public final WeakReference<TameableDragonEntity> dragon;
+    public final TameableDragonEntity dragon;
     protected final NonNullList<ItemStack> items = NonNullList.withSize(CHEST_SIZE, ItemStack.EMPTY);
 
-    protected ItemStack saddle = ItemStack.EMPTY;
-    protected ItemStack armor = ItemStack.EMPTY;
-    protected ItemStack chest = ItemStack.EMPTY;
-
     public DragonInventory(TameableDragonEntity dragon) {
-        this.dragon = new WeakReference<>(dragon);
-    }
-
-    public void setSaddle(@Nonnull ItemStack stack) {
-        if (!stack.isEmpty()) {
-            stack.setCount(1);
-        }
-        this.saddle = applySaddleChange(stack);
-    }
-
-    @Nonnull
-    public ItemStack getSaddle() {
-        return this.saddle;
-    }
-
-    public void setArmor(@Nonnull ItemStack stack) {
-        if (!stack.isEmpty()) {
-            stack.setCount(1);
-        }
-        this.armor = applyArmorChange(stack);
-    }
-
-    @Nonnull
-    public ItemStack getArmor() {
-        return this.armor;
-    }
-
-    public void setChest(@Nonnull ItemStack stack) {
-        if (!stack.isEmpty()) {
-            stack.setCount(1);
-        }
-        this.chest = applyChestChange(stack);
-    }
-
-    @Nonnull
-    public ItemStack getChest() {
-        return this.chest;
+        this.dragon = dragon;
     }
 
     @Override
     public int getContainerSize() {
-        TameableDragonEntity dragon = this.dragon.get();
-        return dragon != null && dragon.hasChest() ? MAX_CONTAINER_SIZE : 3;
+        return this.dragon.hasChest() ? MAX_CONTAINER_SIZE : 3;
     }
 
     @Override
@@ -94,11 +51,11 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
     public ItemStack getItem(int index) {
         switch (index) {
             case SLOT_SADDLE_INDEX:
-                return this.saddle;
+                return this.dragon.getSaddle();
             case SLOT_ARMOR_INDEX:
-                return this.armor;
+                return this.dragon.getArmor();
             case SLOT_CHEST_INDEX:
-                return this.chest;
+                return this.dragon.getChest();
             default:
                 return index >= 0 && index < CHEST_SIZE ? this.items.get(index) : ItemStack.EMPTY;
         }
@@ -109,30 +66,34 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
     public ItemStack removeItem(int index, int count) {
         ItemStack stack;
         if (count <= 0) return ItemStack.EMPTY;
+        ItemStack original;
         switch (index) {
             case SLOT_SADDLE_INDEX:
-                if (this.saddle.isEmpty()) return ItemStack.EMPTY;
-                count = Math.min(count, this.saddle.getCount());
-                stack = this.saddle.copy();
+                original = this.dragon.getSaddle();
+                if (original.isEmpty()) return ItemStack.EMPTY;
+                count = Math.min(count, original.getCount());
+                stack = original.copy();
                 stack.setCount(count);
-                this.saddle.shrink(count);
-                this.applySaddleChange(this.saddle);
+                original.shrink(count);
+                this.dragon.setSaddle(original, true);
                 break;
             case SLOT_ARMOR_INDEX:
-                if (this.armor.isEmpty()) return ItemStack.EMPTY;
-                count = Math.min(count, this.armor.getCount());
-                stack = this.armor.copy();
+                original = this.dragon.getArmor();
+                if (original.isEmpty()) return ItemStack.EMPTY;
+                count = Math.min(count, original.getCount());
+                stack = original.copy();
                 stack.setCount(count);
-                this.armor.shrink(count);
-                this.applyArmorChange(this.armor);
+                original.shrink(count);
+                this.dragon.setArmor(original, true);
                 break;
             case SLOT_CHEST_INDEX:
-                if (this.chest.isEmpty()) return ItemStack.EMPTY;
-                count = Math.min(count, this.chest.getCount());
-                stack = this.chest.copy();
+                original = this.dragon.getChest();
+                if (original.isEmpty()) return ItemStack.EMPTY;
+                count = Math.min(count, original.getCount());
+                stack = original.copy();
                 stack.setCount(count);
-                this.chest.shrink(count);
-                this.applyChestChange(this.chest);
+                original.shrink(count);
+                this.dragon.setChest(original, true);
                 break;
             default:
                 stack = ItemStackHelper.removeItem(this.items, index, count);
@@ -149,19 +110,19 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
         ItemStack stack;
         switch (index) {
             case SLOT_SADDLE_INDEX:
-                if (this.saddle.isEmpty()) return ItemStack.EMPTY;
-                stack = this.saddle;
-                this.saddle = ItemStack.EMPTY;
+                stack = this.dragon.getSaddle();
+                if (stack.isEmpty()) return ItemStack.EMPTY;
+                this.dragon.setSaddle(ItemStack.EMPTY, false);
                 break;
             case SLOT_ARMOR_INDEX:
-                if (this.armor.isEmpty()) return ItemStack.EMPTY;
-                stack = this.armor;
-                this.armor = ItemStack.EMPTY;
+                stack = this.dragon.getArmor();
+                if (stack.isEmpty()) return ItemStack.EMPTY;
+                this.dragon.setSaddle(ItemStack.EMPTY, false);
                 break;
             case SLOT_CHEST_INDEX:
-                if (this.chest.isEmpty()) return ItemStack.EMPTY;
-                stack = this.chest;
-                this.chest = ItemStack.EMPTY;
+                stack = this.dragon.getChest();
+                if (stack.isEmpty()) return ItemStack.EMPTY;
+                this.dragon.setChest(ItemStack.EMPTY, false);
                 break;
             default:
                 stack = ItemStackHelper.takeItem(this.items, index);
@@ -176,13 +137,13 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
         }
         switch (index) {
             case SLOT_SADDLE_INDEX:
-                this.saddle = this.applySaddleChange(stack);
+                this.dragon.setSaddle(stack, true);
                 break;
             case SLOT_ARMOR_INDEX:
-                this.armor = this.applyArmorChange(stack);
+                this.dragon.setArmor(stack, true);
                 break;
             case SLOT_CHEST_INDEX:
-                this.chest = this.applyChestChange(stack);
+                this.dragon.setChest(stack, true);
                 break;
             default:
                 if (index < 0 || index >= CHEST_SIZE) return;
@@ -193,71 +154,45 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
 
     @Override
     public void setChanged() {
-        TameableDragonEntity dragon = this.dragon.get();
-        if (dragon != null) {
-            dragon.inventoryChanged();
-        }
-    }
-
-    public ItemStack applySaddleChange(ItemStack stack) {
-        TameableDragonEntity dragon = this.dragon.get();
-        if (dragon != null) {
-            dragon.applySaddleChange(stack);
-        }
-        return stack;
-    }
-
-    public ItemStack applyArmorChange(ItemStack stack) {
-        TameableDragonEntity dragon = this.dragon.get();
-        if (dragon != null) {
-            dragon.applyArmorChange(stack);
-        }
-        return stack;
-    }
-
-    public ItemStack applyChestChange(ItemStack stack) {
-        TameableDragonEntity dragon = this.dragon.get();
-        if (dragon != null) {
-            dragon.applyChestChange(stack);
-        }
-        return stack;
+        this.dragon.inventoryChanged();
     }
 
     @Override
     public boolean stillValid(@Nonnull PlayerEntity player) {
-        TameableDragonEntity dragon = this.dragon.get();
-        if (dragon == null || !dragon.isAlive()) return false;
-        return player.distanceToSqr(dragon) <= 64.0D;//8 blocks
+        if (!this.dragon.isAlive()) return false;
+        return player.distanceToSqr(this.dragon) <= 64.0D;//8 blocks
     }
 
     @Override
     public void clearContent() {
         this.items.clear();
-        this.saddle = this.applySaddleChange(ItemStack.EMPTY);
-        this.armor = this.applyArmorChange(ItemStack.EMPTY);
-        this.chest = this.applyChestChange(ItemStack.EMPTY);
+        this.dragon.setSaddle(ItemStack.EMPTY, true);
+        this.dragon.setArmor(ItemStack.EMPTY, true);
+        this.dragon.setChest(ItemStack.EMPTY, true);
         this.setChanged();
     }
 
     @Nonnull
     @Override
     public ITextComponent getDisplayName() {
-        TameableDragonEntity dragon = this.dragon.get();
-        return dragon == null ? new StringTextComponent("") : dragon.getDisplayName();
+        return this.dragon.getDisplayName();
     }
 
     @Nullable
     @Override
     public DragonInventoryContainer createMenu(int id, @Nonnull PlayerInventory inventory, @Nonnull PlayerEntity player) {
-        TameableDragonEntity dragon = this.dragon.get();
-        return dragon == null ? null : new DragonInventoryContainer(id, inventory, this, dragon);
+        return new DragonInventoryContainer(id, inventory, this, this.dragon);
     }
 
-    public void dropContents(World level, double x, double y, double z, boolean keepEquipments) {
+    public void dropContents(boolean keepEquipments) {
+        World level = this.dragon.level;
+        double x = this.dragon.getX();
+        double y = this.dragon.getY();
+        double z = this.dragon.getZ();
         if (!keepEquipments) {
-            InventoryHelper.dropItemStack(level, x, y, z, this.saddle);
-            InventoryHelper.dropItemStack(level, x, y, z, this.armor);
-            InventoryHelper.dropItemStack(level, x, y, z, this.chest);
+            InventoryHelper.dropItemStack(level, x, y, z, this.dragon.getSaddle());
+            InventoryHelper.dropItemStack(level, x, y, z, this.dragon.getArmor());
+            InventoryHelper.dropItemStack(level, x, y, z, this.dragon.getChest());
         }
         for (ItemStack stack : this.items) {
             InventoryHelper.dropItemStack(level, x, y, z, stack);
@@ -283,14 +218,17 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
                 list.add(saveItem(stack, (byte) i));
             }
         }
-        if (!this.saddle.isEmpty()) {
-            list.add(saveItem(this.saddle, (byte) SLOT_SADDLE_INDEX));
+        ItemStack stack = this.dragon.getSaddle();
+        if (!stack.isEmpty()) {
+            list.add(saveItem(stack, (byte) SLOT_SADDLE_INDEX));
         }
-        if (!this.armor.isEmpty()) {
-            list.add(saveItem(this.armor, (byte) SLOT_ARMOR_INDEX));
+        stack = this.dragon.getArmor();
+        if (!stack.isEmpty()) {
+            list.add(saveItem(stack, (byte) SLOT_ARMOR_INDEX));
         }
-        if (!this.chest.isEmpty()) {
-            list.add(saveItem(this.chest, (byte) SLOT_CHEST_INDEX));
+        stack = this.dragon.getChest();
+        if (!stack.isEmpty()) {
+            list.add(saveItem(stack, (byte) SLOT_CHEST_INDEX));
         }
         return list;
     }

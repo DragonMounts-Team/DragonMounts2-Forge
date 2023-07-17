@@ -28,7 +28,7 @@ public class EntityUtil {
         return entity.addEffect(new EffectInstance(effect, duration, amplifier, ambient, visible, showIcon, null));
     }
 
-    public static CompoundNBT simplifyDragonData(CompoundNBT compound) {
+    public static CompoundNBT simplifyDragonData(CompoundNBT compound, boolean reborn) {
         compound.remove(FLYING_DATA_PARAMETER_KEY);
         compound.remove("Air");
         compound.remove("DeathTime");
@@ -48,6 +48,24 @@ public class EntityUtil {
         compound.remove("SleepingY");
         compound.remove("SleepingZ");
         compound.remove("TicksFrozen");
+        if (reborn) {
+            compound.remove("AbsorptionAmount");
+            compound.remove("Age");
+            compound.remove("AgeLocked");
+            compound.remove("ArmorDropChances");
+            compound.remove("ArmorItems");
+            compound.remove("Attributes");
+            compound.remove("Brain");
+            compound.remove("ForcedAge");
+            compound.remove("HandDropChances");
+            compound.remove("HandItems");
+            compound.remove("Health");
+            compound.remove("Items");
+            compound.remove("LifeStage");
+            compound.remove("LoveCause");
+            compound.remove("ShearCooldown");
+            compound.remove("Sitting");
+        }
         return compound;
     }
 

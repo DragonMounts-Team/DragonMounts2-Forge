@@ -12,7 +12,6 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.stats.Stats;
 import net.minecraft.tileentity.ShulkerBoxTileEntity;
@@ -30,14 +29,16 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.ForgeSoundType;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Random;
+
+import static net.minecraft.block.HorizontalBlock.FACING;
 
 /**
  * @see net.minecraft.block.ChestBlock
  * @see net.minecraft.block.ShulkerBoxBlock
  */
 public class DragonCoreBlock extends ContainerBlock {
-    public static final DirectionProperty FACING = HorizontalBlock.FACING;
     private static final SoundType SOUND = new ForgeSoundType(1.0F, 1.0F, () -> SoundEvents.CHEST_LOCKED, () -> SoundEvents.STONE_STEP, () -> SoundEvents.BOOK_PUT, () -> SoundEvents.STONE_HIT, () -> SoundEvents.STONE_FALL);
 
     private static boolean testPositionPredicate(BlockState state, IBlockReader world, BlockPos pos) {
@@ -58,14 +59,22 @@ public class DragonCoreBlock extends ContainerBlock {
         return true;
     }
 
+
+    @Nullable
+    @Override
+    public DragonCoreBlockEntity createTileEntity(BlockState state, IBlockReader world) {
+        return this.newBlockEntity(world);
+    }
+
     @Nonnull
     @Override
-    public TileEntity newBlockEntity(@Nonnull IBlockReader world) {
+    public DragonCoreBlockEntity newBlockEntity(@Nonnull IBlockReader world) {
         return new DragonCoreBlockEntity();
     }
 
     @Nonnull
     @Override
+    @SuppressWarnings("deprecation")
     public BlockRenderType getRenderShape(@Nonnull BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }

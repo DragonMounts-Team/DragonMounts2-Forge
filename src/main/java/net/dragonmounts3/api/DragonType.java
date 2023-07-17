@@ -2,7 +2,10 @@ package net.dragonmounts3.api;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import net.dragonmounts3.client.DragonResourceManager;
+import net.dragonmounts3.client.resource.AbstractResourceManager;
+import net.dragonmounts3.client.resource.DefaultResourceManager;
+import net.dragonmounts3.client.resource.ForestResourceManager;
+import net.dragonmounts3.client.resource.SculkResourceManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.attributes.Attribute;
@@ -13,6 +16,7 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.RegistryKey;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
@@ -23,11 +27,34 @@ import net.minecraft.world.biome.Biomes;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
+
+import static net.dragonmounts3.DragonMounts.MOD_ID;
 
 public class DragonType implements IStringSerializable, Comparable<DragonType> {
     private static final AtomicInteger COUNTER = new AtomicInteger();
     private static final HashMap<String, DragonType> BY_NAME = new HashMap<>();
     public static final String DATA_PARAMETER_KEY = "DragonType";
+    public static final BiFunction<Integer, Boolean, Vector3d> DEFAULT_PASSENGER_OFFSET = (index, sitting) -> {
+        double yOffset = sitting ? 3.4 : 4.4;
+        double yOffset2 = sitting ? 2.1 : 2.5; // maybe not needed
+        // dragon position is the middle of the model, and the saddle is on
+        // the shoulders, so move player forwards on Z axis relative to the
+        // dragon's rotation to fix that
+        switch (index) {
+            case 1:
+                return new Vector3d(0.6, yOffset, 0.1);
+            case 2:
+                return new Vector3d(-0.6, yOffset, 0.1);
+            case 3:
+                return new Vector3d(1.6, yOffset2, 0.2);
+            case 4:
+                return new Vector3d(-1.6, yOffset2, 0.2);
+            default:
+                return new Vector3d(0, yOffset, 2.2);
+        }
+    };
+
     public static final DragonType AETHER = new Builder(0x0294BD)
             .addImmunity(DamageSource.MAGIC)
             .addImmunity(DamageSource.HOT_FLOOR)
@@ -77,7 +104,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             //.addHabitat(Blocks.LEAVES2)
             .addHabitat(Biomes.JUNGLE)
             .addHabitat(Biomes.JUNGLE_HILLS)
-            .build("forest");
+            .build("forest", new ForestResourceManager());
     public static final DragonType ICE = new Builder(0x00F2FF)
             .addImmunity(DamageSource.MAGIC)
             .addImmunity(DamageSource.HOT_FLOOR)
@@ -91,7 +118,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addHabitat(Biomes.FROZEN_RIVER)
             //.addHabitat(Biomes.JUNGLE)
             //.addHabitat(Biomes.JUNGLE_HILLS)
-            .build("ice");
+            .build("ice", false, true);
     public static final DragonType MOONLIGHT = new Builder(0x2C427C)
             .addHabitat(Blocks.BLUE_GLAZED_TERRACOTTA)
             .build("moonlight");
@@ -110,15 +137,16 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addImmunity(DamageSource.HOT_FLOOR)
             .addImmunity(DamageSource.LIGHTNING_BOLT)
             .addImmunity(DamageSource.WITHER)
-            .build("sculk");
-    public static final DragonType SKELETON = new Builder(0xFFFFFF, true)
+            .build("sculk", new SculkResourceManager());
+    public static final DragonType SKELETON = new Builder(0xFFFFFF)
+            .isSkeleton()
             .putAttributeModifier(Attributes.MAX_HEALTH, "Dragon health adjustment", -15.0D, AttributeModifier.Operation.ADDITION)
             .addImmunity(DamageSource.LIGHTNING_BOLT)
             .addImmunity(DamageSource.WITHER)
             .addHabitat(Blocks.BONE_BLOCK)
             .build("skeleton");
     public static final DragonType STORM = new Builder(0xF5F1E9)
-            .build("storm");
+            .build("storm", true, false);
     public static final DragonType SUNLIGHT = new Builder(0xFFDE00)
             .addHabitat(Blocks.GLOWSTONE)
             .addHabitat(Blocks.JACK_O_LANTERN)
@@ -152,14 +180,15 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addHabitat(Blocks.WATER)
             .addHabitat(Biomes.OCEAN)
             .addHabitat(Biomes.RIVER)
-            .build("water");
-    public static final DragonType WITHER = new Builder(0x50260A, true)
+            .build("water", true, false);
+    public static final DragonType WITHER = new Builder(0x50260A)
+            .isSkeleton()
             .putAttributeModifier(Attributes.MAX_HEALTH, "Dragon health adjustment", -10.0D, AttributeModifier.Operation.ADDITION)
             .addImmunity(DamageSource.MAGIC)
             .addImmunity(DamageSource.HOT_FLOOR)
             .addImmunity(DamageSource.LIGHTNING_BOLT)
             .addImmunity(DamageSource.WITHER)
-            .build("wither");
+            .build("wither", true, false);
     public static final DragonType ZOMBIE = new Builder(0x5A5602)
             .addImmunity(DamageSource.MAGIC)
             .addImmunity(DamageSource.HOT_FLOOR)
@@ -180,13 +209,14 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
         return value == null ? ENDER : value;
     }
 
-    public final DragonResourceManager resources;
+    public final AbstractResourceManager resources;
+    public final int color;
+    public final boolean isSkeleton;
+    public final BiFunction<Integer, Boolean, Vector3d> passengerOffset;
+    private final int id = COUNTER.incrementAndGet();
     private final Style style;
     private final String name;
     private final String text;
-    public final int color;
-    public final boolean isSkeleton;
-    private final int id = COUNTER.incrementAndGet();
     private final ImmutableMultimap<Attribute, AttributeModifier> attributes;
     private final Set<DamageSource> immunities;
     private final Set<Block> blocks;
@@ -194,7 +224,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
     private final BasicParticleType sneezeParticle;
     private final BasicParticleType eggParticle;
 
-    public DragonType(String name, Builder builder, DragonResourceManager resources) {
+    public DragonType(String name, Builder builder, AbstractResourceManager resources) {
         if (BY_NAME.containsKey(name)) {
             throw new IllegalArgumentException();
         }
@@ -210,6 +240,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
         this.biomes = new HashSet<>(builder.biomes);
         this.sneezeParticle = builder.sneezeParticle;
         this.eggParticle = builder.eggParticle;
+        this.passengerOffset = builder.passengerOffset;
         BY_NAME.put(name, this);
     }
 
@@ -266,23 +297,19 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
     }
 
     public static class Builder {
-        private static final UUID MODIFIER_UUID = UUID.fromString("12e4cc82-db6d-5676-afc5-86498f0f6464");
+        protected static final UUID MODIFIER_UUID = UUID.fromString("12e4cc82-db6d-5676-afc5-86498f0f6464");
         public final ImmutableMultimap.Builder<Attribute, AttributeModifier> attributes = ImmutableMultimap.builder();
         public final int color;
         public final Set<DamageSource> immunities = new HashSet<>();
         public final Set<Block> blocks = new HashSet<>();
         public final Set<RegistryKey<Biome>> biomes = new HashSet<>();
-        public final boolean isSkeleton;
+        public boolean isSkeleton = false;
         public BasicParticleType sneezeParticle = ParticleTypes.LARGE_SMOKE;
         public BasicParticleType eggParticle = ParticleTypes.MYCELIUM;
+        public BiFunction<Integer, Boolean, Vector3d> passengerOffset = DEFAULT_PASSENGER_OFFSET;
 
         public Builder(int color) {
-            this(color, false);
-        }
-
-        public Builder(int color, boolean isSkeleton) {
             this.color = color;
-            this.isSkeleton = isSkeleton;
             // ignore suffocation damage
             this.addImmunity(DamageSource.DROWN);
             this.addImmunity(DamageSource.IN_WALL);
@@ -294,41 +321,55 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             this.addImmunity(DamageSource.DRAGON_BREATH); // ignore damage from vanilla ender dragon. I kinda disabled this because it wouldn't make any sense, feel free to re enable
         }
 
-        public final Builder putAttributeModifier(Attribute attribute, String name, double value, AttributeModifier.Operation operation) {
+        public final Builder isSkeleton() {
+            this.isSkeleton = true;
+            return this;
+        }
+
+        public Builder putAttributeModifier(Attribute attribute, String name, double value, AttributeModifier.Operation operation) {
             this.attributes.put(attribute, new AttributeModifier(MODIFIER_UUID, name, value, operation));
             return this;
         }
 
-        public final Builder addImmunity(DamageSource source) {
+        public Builder addImmunity(DamageSource source) {
             this.immunities.add(source);
             return this;
         }
 
-        public final Builder addHabitat(Block block) {
+        public Builder addHabitat(Block block) {
             this.blocks.add(block);
             return this;
         }
 
-        public final Builder addHabitat(RegistryKey<Biome> block) {
+        public Builder addHabitat(RegistryKey<Biome> block) {
             this.biomes.add(block);
             return this;
         }
 
-        public final Builder setSneezeParticle(BasicParticleType particle) {
+        public Builder setSneezeParticle(BasicParticleType particle) {
             this.sneezeParticle = particle;
             return this;
         }
 
-        public final Builder setEggParticle(BasicParticleType particle) {
+        public Builder setEggParticle(BasicParticleType particle) {
             this.eggParticle = particle;
             return this;
         }
 
-        public DragonType build(String name) {
-            return new DragonType(name, this, new DragonResourceManager(name));
+        public Builder setPassengerOffset(BiFunction<Integer, Boolean, Vector3d> passengerOffset) {
+            this.passengerOffset = passengerOffset;
+            return this;
         }
 
-        public DragonType build(String name, DragonResourceManager resources) {
+        public DragonType build(String name) {
+            return new DragonType(name, this, new DefaultResourceManager(MOD_ID, name, false, false));
+        }
+
+        public DragonType build(String name, boolean hasTailHorns, boolean hasSideTailScale) {
+            return new DragonType(name, this, new DefaultResourceManager(MOD_ID, name, hasTailHorns, hasSideTailScale));
+        }
+
+        public DragonType build(String name, AbstractResourceManager resources) {
             return new DragonType(name, this, resources);
         }
     }

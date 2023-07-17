@@ -5,14 +5,12 @@ import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.init.DMItems;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
-import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -31,13 +29,11 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Predicate;
 
 import static net.dragonmounts3.util.EntityUtil.loadScores;
 
 public class FilledDragonAmuletItem extends DragonAmuletItem implements IDragonTypified {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Predicate<Entity> ENTITY_PREDICATE = EntityPredicates.NO_SPECTATORS.and(Entity::isPickable);
 
     protected DragonType type;
 
@@ -62,15 +58,8 @@ public class FilledDragonAmuletItem extends DragonAmuletItem implements IDragonT
             return ActionResult.pass(stack);
         } else if (resultType == RayTraceResult.Type.BLOCK) {
             if (!level.isClientSide) {
-                CompoundNBT compound = stack.getTag();
                 BlockPos pos = rayTraceResult.getBlockPos().relative(rayTraceResult.getDirection());
-                TameableDragonEntity dragon = new TameableDragonEntity(level);
-                if (compound != null) {
-                    dragon.load(compound);
-                    loadScores(dragon, compound).setDragonType(this.type, false);
-                } else {
-                    dragon.setDragonType(this.type, true);
-                }
+                TameableDragonEntity dragon = this.release(stack.getTag(), level, this.type);
                 dragon.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
                 level.addFreshEntity(dragon);
                 ItemStack newStack = new ItemStack(DMItems.DRAGON_AMULET.get());
@@ -81,6 +70,7 @@ public class FilledDragonAmuletItem extends DragonAmuletItem implements IDragonT
         }
         return ActionResult.fail(stack);
     }
+
 
     @Override
     @OnlyIn(Dist.CLIENT)
@@ -106,6 +96,26 @@ public class FilledDragonAmuletItem extends DragonAmuletItem implements IDragonT
             }
         }
         components.add(new TranslationTextComponent("tooltip.dragonmounts.missing").withStyle(TextFormatting.RED));
+    }
+
+    @Override
+    public TameableDragonEntity release(CompoundNBT compound, World level, @Nullable DragonType type) {
+        TameableDragonEntity dragon = new TameableDragonEntity(level);
+        if (type == null) {
+            type = this.type;
+        }
+        if (compound != null) {
+            dragon.load(compound);
+            loadScores(dragon, compound).setDragonType(type, false);
+        } else {
+            dragon.setDragonType(type, true);
+        }
+        return dragon;
+    }
+
+    @Override
+    public int getEntityLifespan(ItemStack itemStack, World world) {
+        return 12000;//10 minutes, Nether Star
     }
 
     @Override

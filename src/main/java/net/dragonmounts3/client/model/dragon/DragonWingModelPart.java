@@ -2,24 +2,24 @@ package net.dragonmounts3.client.model.dragon;
 
 import net.minecraft.client.renderer.model.Model;
 import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class DragonWingModelPart extends ModelRenderer {
+    public static final int FINGER_COUNT = 4;
     public final ModelRenderer forearm;
-    protected final ModelRenderer[] finger = new ModelRenderer[4];
+    protected final ModelRenderer[] fingers = new ModelRenderer[FINGER_COUNT];
 
     public DragonWingModelPart(Model model) {
         super(model);
         buildWing();
         this.forearm = this.createForearm(model);
         this.addChild(this.forearm);
-        this.finger[0] = createFinger(model, false);
-        this.forearm.addChild(this.finger[0]);
-        this.finger[1] = createFinger(model, false);
-        this.forearm.addChild(this.finger[1]);
-        this.finger[2] = createFinger(model, false);
-        this.forearm.addChild(this.finger[2]);
-        this.finger[3] = createFinger(model, true);
-        this.forearm.addChild(this.finger[3]);
+        for (int i = 0; i < this.fingers.length; ++i) {
+            this.fingers[i] = createFinger(model, i + 1 == this.fingers.length);
+            this.forearm.addChild(this.fingers[i]);
+        }
     }
 
     protected void buildWing() {
@@ -48,7 +48,7 @@ public class DragonWingModelPart extends ModelRenderer {
 
     public ModelRenderer getFinger(int index) {
         if (index >= 0 && index < 4) {
-            return this.finger[index];
+            return this.fingers[index];
         }
         throw new IndexOutOfBoundsException();
     }

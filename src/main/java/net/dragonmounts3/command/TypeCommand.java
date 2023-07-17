@@ -39,7 +39,7 @@ public class TypeCommand {
                         TypeCommand::getType,
                         TypeCommand::setType,
                         TypeCommand::entity
-                )))/*.then(Commands.literal("storage"))*/;
+                )));
     }
 
     private static BlockPos block(CommandContext<CommandSource> context) throws CommandSyntaxException {

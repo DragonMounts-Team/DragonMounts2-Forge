@@ -2,7 +2,10 @@ package net.dragonmounts3.client.model.dragon;
 
 import net.minecraft.client.renderer.model.Model;
 import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class DragonBodyModelPart extends ModelRenderer {
     public final ModelRenderer back;
     public final ModelRenderer chest;

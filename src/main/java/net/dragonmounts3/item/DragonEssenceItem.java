@@ -2,6 +2,7 @@ package net.dragonmounts3.item;
 
 import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
+import net.dragonmounts3.entity.dragon.DragonLifeStage;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,7 +26,7 @@ import java.util.List;
 
 import static net.dragonmounts3.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
 
-public class DragonEssenceItem extends Item implements IDragonTypified {
+public class DragonEssenceItem extends Item implements IDragonTypified, IDragonContainer {
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_essence";
 
     protected DragonType type;
@@ -45,12 +46,8 @@ public class DragonEssenceItem extends Item implements IDragonTypified {
             return ActionResult.pass(stack);
         } else if (resultType == RayTraceResult.Type.BLOCK) {
             if (!level.isClientSide) {
-                CompoundNBT compound = stack.getTag();
                 BlockPos pos = rayTraceResult.getBlockPos().relative(rayTraceResult.getDirection());
-                TameableDragonEntity dragon = new TameableDragonEntity(level);
-                if (compound != null) {
-                    dragon.load(compound);
-                }
+                TameableDragonEntity dragon = this.release(stack.getTag(), level, this.type);
                 dragon.setDragonType(this.type, true);
                 dragon.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
                 level.addFreshEntity(dragon);
@@ -62,6 +59,13 @@ public class DragonEssenceItem extends Item implements IDragonTypified {
             return ActionResult.consume(stack);
         }
         return ActionResult.fail(stack);
+    }
+
+    @Override
+    public TameableDragonEntity release(CompoundNBT compound, World level, @Nullable DragonType type) {
+        TameableDragonEntity dragon = IDragonContainer.super.release(compound, level, type);
+        dragon.setLifeStage(DragonLifeStage.NEWBORN, true, true);
+        return dragon;
     }
 
     @Override

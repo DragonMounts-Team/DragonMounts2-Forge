@@ -3,6 +3,7 @@ package net.dragonmounts3.inventory;
 import net.dragonmounts3.item.DragonArmorItem;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SaddleItem;
 import net.minecraftforge.common.Tags;
@@ -30,6 +31,10 @@ public abstract class LimitedSlot extends Slot {
     }
 
     public static class Saddle extends LimitedSlot {
+        public static boolean mayPlace(@Nonnull Item item) {
+            return item instanceof SaddleItem;
+        }
+
         public Saddle(IInventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
         }
@@ -41,7 +46,7 @@ public abstract class LimitedSlot extends Slot {
 
         @Override
         public boolean mayPlace(@Nonnull ItemStack stack) {
-            return stack.getItem() instanceof SaddleItem;
+            return Saddle.mayPlace(stack.getItem());
         }
 
         @Override
@@ -55,6 +60,10 @@ public abstract class LimitedSlot extends Slot {
     }
 
     public static class DragonArmor extends LimitedSlot {
+        public static boolean mayPlace(@Nonnull Item item) {
+            return item instanceof DragonArmorItem;
+        }
+
         public DragonArmor(IInventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
         }
@@ -66,7 +75,7 @@ public abstract class LimitedSlot extends Slot {
 
         @Override
         public boolean mayPlace(@Nonnull ItemStack stack) {
-            return stack.getItem() instanceof DragonArmorItem;
+            return DragonArmor.mayPlace(stack.getItem());
         }
 
         @Override
@@ -80,6 +89,10 @@ public abstract class LimitedSlot extends Slot {
     }
 
     public static class SingleWoodenChest extends LimitedSlot {
+        public static boolean mayPlace(@Nonnull Item item) {
+            return item.is(Tags.Items.CHESTS_WOODEN);
+        }
+
         public SingleWoodenChest(IInventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
         }
@@ -91,7 +104,7 @@ public abstract class LimitedSlot extends Slot {
 
         @Override
         public boolean mayPlace(@Nonnull ItemStack stack) {
-            return stack.getItem().is(Tags.Items.CHESTS_WOODEN);
+            return SingleWoodenChest.mayPlace(stack.getItem());
         }
 
         @Override

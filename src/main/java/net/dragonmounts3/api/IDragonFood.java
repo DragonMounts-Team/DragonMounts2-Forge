@@ -2,7 +2,7 @@ package net.dragonmounts3.api;
 
 import net.dragonmounts3.entity.dragon.DragonLifeStage;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
-import net.dragonmounts3.util.MathUtil;
+import net.dragonmounts3.util.math.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BucketItem;
@@ -35,10 +35,12 @@ public interface IDragonFood {
         if (dragon.getLifeStage() != DragonLifeStage.ADULT) {
             dragon.refreshForcedAgeTimer();
         }
-        level.playSound(player, dragon, item.getEatingSound(), SoundCategory.NEUTRAL, 1f, 0.75f);
+        Vector3d pos = dragon.animator.getThroatPosition(0, 0, -4);
+        if (pos == null) return;
+        level.playSound(player, pos.x, pos.y, pos.z, item.getEatingSound(), SoundCategory.NEUTRAL, 1f, 0.75f);
         if (item == Items.HONEY_BOTTLE) return;
         if (item instanceof BucketItem) {
-            level.playSound(player, dragon, item.getDrinkingSound(), SoundCategory.NEUTRAL, 0.25f, 0.75f);
+            level.playSound(player, pos.x, pos.y, pos.z, item.getDrinkingSound(), SoundCategory.NEUTRAL, 0.25f, 0.75f);
             if (item == Items.COD_BUCKET) {
                 item = Items.COD;
             } else if (item == Items.SALMON_BUCKET) {
@@ -49,8 +51,6 @@ public interface IDragonFood {
         }
         ItemStack stack = new ItemStack(item);
         Random random = dragon.getRandom();
-        Vector3d pos = dragon.getAnimator().getThroatPosition(0, 0, -4);
-        if (pos == null) return;
         for (int i = 0; i < 8; ++i) {
             Vector3d speed = new Vector3d((random.nextFloat() - 0.5D) * 0.1D, random.nextFloat() * 0.1D + 0.1D, 0.0D).xRot(-dragon.xRot * MathUtil.PI / 180F).yRot(-dragon.yRot * MathUtil.PI / 180F);
             level.addParticle(new ItemParticleData(ParticleTypes.ITEM, stack), pos.x, pos.y, pos.z, speed.x, speed.y + 0.05D, speed.z);

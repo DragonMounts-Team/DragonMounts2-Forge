@@ -2,6 +2,8 @@ package net.dragonmounts3.util;
 
 import java.util.Arrays;
 
+import static net.dragonmounts3.util.math.Interpolation.clampedSmoothLinear;
+
 /**
  * Very simple fixed size circular buffer implementation for animation purposes.
  *
@@ -31,7 +33,7 @@ public class CircularBuffer {
     public float get(float x, int offset) {
         int i = this.index - offset;
         int len = this.buffer.length - 1;
-        return MathUtil.clampedLerp(this.buffer[i - 1 & len], this.buffer[i & len], x);
+        return clampedSmoothLinear(this.buffer[i - 1 & len], this.buffer[i & len], x);
     }
 
     public float get(float x, int offset1, int offset2) {

@@ -7,7 +7,9 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.NonNullList;
@@ -17,28 +19,25 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static net.dragonmounts3.util.ItemUtil.saveItem;
-
 /**
  * @see net.minecraft.inventory.Inventory
  */
 public class DragonInventory implements IInventory, INamedContainerProvider {
-    public static final int MAX_CONTAINER_SIZE = 30;
-    public static final int CHEST_SIZE = MAX_CONTAINER_SIZE - 3;
-    public static final int SLOT_SADDLE_INDEX = CHEST_SIZE;
-    public static final int SLOT_ARMOR_INDEX = MAX_CONTAINER_SIZE - 2;
-    public static final int SLOT_CHEST_INDEX = MAX_CONTAINER_SIZE - 1;
+    public static final int SLOT_SADDLE_INDEX = 0;
+    public static final int SLOT_ARMOR_INDEX = 1;
+    public static final int SLOT_CHEST_INDEX = 2;
+    public static final int INVENTORY_SIZE = 30;
 
     public final TameableDragonEntity dragon;
-    protected final NonNullList<ItemStack> items = NonNullList.withSize(CHEST_SIZE, ItemStack.EMPTY);
+    protected final NonNullList<ItemStack> items = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
 
     public DragonInventory(TameableDragonEntity dragon) {
         this.dragon = dragon;
     }
 
     @Override
-    public int getContainerSize() {
-        return this.dragon.hasChest() ? MAX_CONTAINER_SIZE : 3;
+    public final int getContainerSize() {
+        return this.dragon.hasChest() ? INVENTORY_SIZE : 3;
     }
 
     @Override
@@ -57,7 +56,7 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
             case SLOT_CHEST_INDEX:
                 return this.dragon.getChest();
             default:
-                return index >= 0 && index < CHEST_SIZE ? this.items.get(index) : ItemStack.EMPTY;
+                return index >= 0 && index < this.items.size() ? this.items.get(index) : ItemStack.EMPTY;
         }
     }
 
@@ -132,9 +131,6 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
 
     @Override
     public void setItem(int index, @Nonnull ItemStack stack) {
-        if (!stack.isEmpty() && stack.getCount() > this.getMaxStackSize()) {
-            stack.setCount(this.getMaxStackSize());
-        }
         switch (index) {
             case SLOT_SADDLE_INDEX:
                 this.dragon.setSaddle(stack, true);
@@ -146,9 +142,44 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
                 this.dragon.setChest(stack, true);
                 break;
             default:
-                if (index < 0 || index >= CHEST_SIZE) return;
+                if (index < 0 || index >= this.items.size()) return;
+                if (!stack.isEmpty() && stack.getCount() > this.getMaxStackSize()) {
+                    stack.setCount(this.getMaxStackSize());
+                }
                 this.items.set(index, stack);
                 this.setChanged();
+        }
+    }
+
+    public boolean setItemAfterChecked(int index, @Nonnull ItemStack stack) {
+        Item item = stack.getItem();
+        switch (index) {
+            case SLOT_SADDLE_INDEX:
+                if (item == Items.AIR || LimitedSlot.Saddle.mayPlace(item)) {
+                    this.dragon.setSaddle(stack, true);
+                    return true;
+                }
+                return false;
+            case SLOT_ARMOR_INDEX:
+                if (item == Items.AIR || LimitedSlot.DragonArmor.mayPlace(item)) {
+                    this.dragon.setArmor(stack, true);
+                    return true;
+                }
+                return false;
+            case SLOT_CHEST_INDEX:
+                if (item == Items.AIR || LimitedSlot.SingleWoodenChest.mayPlace(item)) {
+                    this.dragon.setChest(stack, true);
+                    return true;
+                }
+                return false;
+            default:
+                if (index < 0 || index >= this.items.size() || !this.dragon.hasChest()) return false;
+                if (!stack.isEmpty() && stack.getCount() > this.getMaxStackSize()) {
+                    stack.setCount(this.getMaxStackSize());
+                }
+                this.items.set(index, stack);
+                this.setChanged();
+                return true;
         }
     }
 
@@ -200,35 +231,40 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
     }
 
     public void fromTag(ListNBT list) {
-        for (int i = 0; i < CHEST_SIZE; ++i) {
-            this.setItem(i, ItemStack.EMPTY);
+        boolean saddle = false;
+        boolean armor = false;
+        boolean chest = false;
+        for (int i = 3; i < this.items.size(); ++i) {
+            this.items.set(i, ItemStack.EMPTY);
         }
         for (int i = 0; i < list.size(); ++i) {
             CompoundNBT compound = list.getCompound(i);
             int j = compound.getByte("Slot") & 255;
+            saddle |= j == SLOT_SADDLE_INDEX;
+            armor |= j == SLOT_ARMOR_INDEX;
+            chest |= j == SLOT_CHEST_INDEX;
             this.setItem(j, ItemStack.of(compound));
+        }
+        if (!saddle) {
+            this.dragon.setSaddle(ItemStack.EMPTY, true);
+        }
+        if (!armor) {
+            this.dragon.setArmor(ItemStack.EMPTY, true);
+        }
+        if (!chest) {
+            this.dragon.setChest(ItemStack.EMPTY, true);
         }
     }
 
     public ListNBT createTag() {
         ListNBT list = new ListNBT();
-        for (int i = 0; i < CHEST_SIZE; ++i) {
-            ItemStack stack = this.items.get(i);
+        for (int i = 0; i < INVENTORY_SIZE; ++i) {
+            ItemStack stack = this.getItem(i);
             if (!stack.isEmpty()) {
-                list.add(saveItem(stack, (byte) i));
+                CompoundNBT compound = new CompoundNBT();
+                compound.putByte("Slot", (byte) i);
+                list.add(stack.save(compound));
             }
-        }
-        ItemStack stack = this.dragon.getSaddle();
-        if (!stack.isEmpty()) {
-            list.add(saveItem(stack, (byte) SLOT_SADDLE_INDEX));
-        }
-        stack = this.dragon.getArmor();
-        if (!stack.isEmpty()) {
-            list.add(saveItem(stack, (byte) SLOT_ARMOR_INDEX));
-        }
-        stack = this.dragon.getChest();
-        if (!stack.isEmpty()) {
-            list.add(saveItem(stack, (byte) SLOT_CHEST_INDEX));
         }
         return list;
     }

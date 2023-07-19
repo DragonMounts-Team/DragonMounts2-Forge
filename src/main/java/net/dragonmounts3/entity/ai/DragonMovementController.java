@@ -1,7 +1,7 @@
 package net.dragonmounts3.entity.ai;
 
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
-import net.dragonmounts3.util.MathUtil;
+import net.dragonmounts3.util.math.MathUtil;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.controller.MovementController;
 import net.minecraft.util.math.MathHelper;

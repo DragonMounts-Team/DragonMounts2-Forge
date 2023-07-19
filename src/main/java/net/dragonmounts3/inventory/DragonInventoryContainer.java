@@ -16,12 +16,15 @@ import javax.annotation.Nullable;
 import static net.dragonmounts3.inventory.DragonInventory.*;
 
 public class DragonInventoryContainer extends Container {
+    protected static final int PLAYER_INVENTORY_SIZE = INVENTORY_SIZE + 27;
+    protected static final int PLAYER_HOTBAR_SIZE = PLAYER_INVENTORY_SIZE + 9;
+
     @Nullable
     public static DragonInventoryContainer fromPacket(int containerId, PlayerInventory playerInventory, PacketBuffer extraData) {
         Entity entity = extraData == null ? null : playerInventory.player.level.getEntity(extraData.readVarInt());
         if (entity instanceof TameableDragonEntity) {
             TameableDragonEntity dragon = (TameableDragonEntity) entity;
-            return new DragonInventoryContainer(containerId, playerInventory, dragon.getInventory(), dragon);
+            return new DragonInventoryContainer(containerId, playerInventory, dragon.inventory, dragon);
         }
         return null;
     }
@@ -39,8 +42,8 @@ public class DragonInventoryContainer extends Container {
         this.addSlot(new LimitedSlot.DragonArmor(dragonInventory, SLOT_ARMOR_INDEX, 8, 36));
         this.addSlot(new LimitedSlot.SingleWoodenChest(dragonInventory, SLOT_CHEST_INDEX, 8, 54));
         for (int i = 0; i < 3; ++i) {
-            for (int k = 0; k < 9; ++k) {
-                this.addSlot(new DragonChestSlot(dragonInventory, dragon, k + i * 9, 8 + k * 18, 76 + i * 18));
+            for (int k = 3; k < 12; ++k) {
+                this.addSlot(new DragonChestSlot(dragonInventory, dragon, k + i * 9, k * 18 - 46, 76 + i * 18));
             }
         }
         for (int i = 0; i < 3; ++i) {
@@ -61,8 +64,8 @@ public class DragonInventoryContainer extends Container {
         if (slot != null && slot.hasItem()) {
             ItemStack stack = slot.getItem();
             result = stack.copy();
-            if (index < MAX_CONTAINER_SIZE) {
-                if (!this.moveItemStackTo(stack, MAX_CONTAINER_SIZE, this.slots.size(), true)) {
+            if (index < INVENTORY_SIZE) {
+                if (!this.moveItemStackTo(stack, INVENTORY_SIZE, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
             } else if (this.getSlot(2).mayPlace(stack) && !this.getSlot(2).hasItem()) {
@@ -77,13 +80,12 @@ public class DragonInventoryContainer extends Container {
                 if (!this.moveItemStackTo(stack, 0, 1, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.dragon.hasChest() || !this.moveItemStackTo(stack, 3, MAX_CONTAINER_SIZE, false)) {
-                int playerInventorySize = MAX_CONTAINER_SIZE + 27;
-                if (index >= playerInventorySize) {
-                    if (!this.moveItemStackTo(stack, MAX_CONTAINER_SIZE, playerInventorySize, false)) {
+            } else if (!this.dragon.hasChest() || !this.moveItemStackTo(stack, 3, INVENTORY_SIZE, false)) {
+                if (index >= PLAYER_INVENTORY_SIZE) {
+                    if (!this.moveItemStackTo(stack, INVENTORY_SIZE, PLAYER_INVENTORY_SIZE, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (!this.moveItemStackTo(stack, playerInventorySize, playerInventorySize + 9, false)) {
+                } else if (!this.moveItemStackTo(stack, PLAYER_INVENTORY_SIZE, PLAYER_HOTBAR_SIZE, false)) {
                     return ItemStack.EMPTY;
                 }
                 return ItemStack.EMPTY;

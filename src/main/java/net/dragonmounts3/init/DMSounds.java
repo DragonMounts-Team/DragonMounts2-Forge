@@ -16,16 +16,13 @@ public class DMSounds {
     public static final RegistryObject<SoundEvent> DRAGON_GROWL = createSoundEvent("mob.dragon.growl");
     public static final RegistryObject<SoundEvent> DRAGON_HATCHLING_GROWL = createSoundEvent("mob.dragon.hatchlinggrowl");
     public static final RegistryObject<SoundEvent> NETHER_DRAGON_GROWL = createSoundEvent("mob.dragon.nethergrowl");
-    public static final RegistryObject<SoundEvent> HATCHLING_NETHER_DRAGON_GROWL = createSoundEvent("mob.dragon.hatchlingnethergrowl");
     public static final RegistryObject<SoundEvent> SKELETON_DRAGON_GROWL = createSoundEvent("mob.dragon.skeletongrowl");
-    public static final RegistryObject<SoundEvent> HATCHLING_SKELETON_DRAGON_GROWL = createSoundEvent("mob.dragon.hatchlingskeletongrowl");
     public static final RegistryObject<SoundEvent> ZOMBIE_DRAGON_DEATH = createSoundEvent("mob.dragon.zombiedeath");
     public static final RegistryObject<SoundEvent> ZOMBIE_DRAGON_GROWL = createSoundEvent("mob.dragon.zombiegrowl");
     public static final RegistryObject<SoundEvent> DRAGON_SNEEZE = createSoundEvent("mob.dragon.sneeze");
     public static final RegistryObject<SoundEvent> DRAGON_HATCHED = createSoundEvent("mob.dragon.hatched");
     public static final RegistryObject<SoundEvent> DRAGON_HATCHING = createSoundEvent("mob.dragon.hatching");
     public static final RegistryObject<SoundEvent> DRAGON_WHISTLE = createSoundEvent("item.whistle");
-    public static final RegistryObject<SoundEvent> DRAGON_WHISTLE1 = createSoundEvent("item.whistle1");
     public static final RegistryObject<SoundEvent> DRAGON_ROAR = createSoundEvent("mob.dragon.roar");
     public static final RegistryObject<SoundEvent> HATCHLING_DRAGON_ROAR = createSoundEvent("mob.dragon.hatchlingroar");
 

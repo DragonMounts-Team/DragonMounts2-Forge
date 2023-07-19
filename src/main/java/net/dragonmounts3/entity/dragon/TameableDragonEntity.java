@@ -12,6 +12,7 @@ import net.dragonmounts3.entity.dragon.helper.DragonBodyHelper;
 import net.dragonmounts3.entity.dragon.helper.DragonHelper;
 import net.dragonmounts3.init.*;
 import net.dragonmounts3.inventory.DragonInventory;
+import net.dragonmounts3.inventory.LimitedSlot;
 import net.dragonmounts3.item.DragonArmorItem;
 import net.dragonmounts3.item.DragonScalesItem;
 import net.dragonmounts3.item.IDragonContainer;
@@ -19,7 +20,7 @@ import net.dragonmounts3.item.TieredShearsItem;
 import net.dragonmounts3.network.SFeedDragonPacket;
 import net.dragonmounts3.network.SSyncDragonAgePacket;
 import net.dragonmounts3.util.DragonFood;
-import net.dragonmounts3.util.MathUtil;
+import net.dragonmounts3.util.math.MathUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalBlock;
@@ -48,6 +49,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
@@ -64,8 +68,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
 import static net.dragonmounts3.network.DMPacketHandler.CHANNEL;
-import static net.minecraft.entity.ai.attributes.Attributes.FLYING_SPEED;
-import static net.minecraft.entity.ai.attributes.Attributes.MOVEMENT_SPEED;
 import static net.minecraftforge.fml.network.PacketDistributor.PLAYER;
 import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
 
@@ -75,11 +77,11 @@ import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
  */
 @ParametersAreNonnullByDefault
 public class TameableDragonEntity extends TameableEntity implements IEquipable, IForgeShearable, IMutableDragonTypified, IFlyingAnimal {
+    public static final UUID AGE_MODIFIER_UUID = UUID.fromString("2d147cda-121b-540e-bb24-435680aa374a");
     // base attributes
     public static final double BASE_GROUND_SPEED = 0.4;
     public static final double BASE_AIR_SPEED = 0.9;
     public static final double BASE_TOUGHNESS = 30.0D;
-    public static final float RESISTANCE = 10.0f;
     public static final double BASE_FOLLOW_RANGE = 70;
     public static final double BASE_FOLLOW_RANGE_FLYING = BASE_FOLLOW_RANGE * 2;
     public static final int HOME_RADIUS = 64;
@@ -98,7 +100,6 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     private static final DataParameter<Boolean> HOVER_CANCELLED = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> Y_LOCKED = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> ALT_TEXTURE = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<Boolean> FOLLOW_YAW = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Optional<UUID>> DATA_BREEDER = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.OPTIONAL_UUID);
     private static final DataParameter<String> VARIANT = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.STRING);
     private static final DataParameter<Integer> DATA_REPO_COUNT = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.INT);
@@ -116,19 +117,14 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     public static final String FLYING_DATA_PARAMETER_KEY = "Flying";
     public static final String SADDLE_DATA_PARAMETER_KEY = "Saddle";
     public static final String SHEARED_DATA_PARAMETER_KEY = "ShearCooldown";
+    protected static final Map<DragonType, ResourceLocation> DRAGON_TYPIFIED_LOOT_TABLE_MAP = new HashMap<>();
     private final DragonBodyHelper dragonBodyHelper = new DragonBodyHelper(this);
     private final Map<Class<?>, DragonHelper> helpers = new HashMap<>();
     protected final GroundPathNavigator groundNavigation;
     protected final FlyingPathNavigator flyingNavigation;
     public EnderCrystalEntity healingEnderCrystal;
-    /**
-     * Set to null in {@link Entity#onRemovedFromWorld()} to avoid memory leaks
-     */
-    protected DragonAnimator animator;
-    /**
-     * Set to null in {@link Entity#onRemovedFromWorld()} to avoid memory leaks
-     */
-    protected DragonInventory inventory = new DragonInventory(this);
+    public final DragonAnimator animator;
+    public final DragonInventory inventory = new DragonInventory(this);
     protected DragonType type = DragonType.ENDER;
     protected DragonLifeStage stage = DragonLifeStage.ADULT;
     protected ItemStack saddle = ItemStack.EMPTY;
@@ -149,9 +145,9 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
 
     public TameableDragonEntity(EntityType<? extends TameableDragonEntity> type, World world) {
         super(type, world);
+        this.resetAttributes();
         this.maxUpStep = 1.0F;
         this.blocksBuilding = true;
-        Objects.requireNonNull(this.getAttributes().getInstance(Attributes.MAX_HEALTH)).setBaseValue(DragonMountsConfig.SERVER.base_health.get());
         this.animator = this.level.isClientSide ? new DragonAnimator(this) : null;
         this.moveControl = new DragonMovementController(this);
         this.groundNavigation = new GroundPathNavigator(this, level);
@@ -165,20 +161,35 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         this(DMEntities.TAMEABLE_DRAGON.get(), world);
     }
 
+    public TameableDragonEntity(HatchableDragonEggEntity egg, DragonLifeStage stage) {
+        this(DMEntities.TAMEABLE_DRAGON.get(), egg.level);
+        CompoundNBT compound = egg.saveWithoutId(new CompoundNBT());
+        compound.remove(AGE_DATA_PARAMETER_KEY);
+        compound.remove(DragonLifeStage.DATA_PARAMETER_KEY);
+        compound.remove(DragonType.DATA_PARAMETER_KEY);
+        this.load(compound);
+        this.setDragonType(egg.getDragonType(), false);
+        this.setLifeStage(stage, true, true);
+        this.setHealth(this.getMaxHealth() + egg.getHealth() - egg.getMaxHealth());
+    }
+
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
         return LivingEntity.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, DragonMountsConfig.SERVER.base_health.get())
-                .add(FLYING_SPEED, BASE_AIR_SPEED)
-                .add(MOVEMENT_SPEED, BASE_GROUND_SPEED)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
+                .add(Attributes.FLYING_SPEED, BASE_AIR_SPEED)
+                .add(Attributes.MOVEMENT_SPEED, BASE_GROUND_SPEED)
                 .add(Attributes.ATTACK_DAMAGE, DragonMountsConfig.SERVER.base_damage.get())
                 .add(Attributes.FOLLOW_RANGE, BASE_FOLLOW_RANGE)
-                .add(Attributes.KNOCKBACK_RESISTANCE, RESISTANCE)
                 .add(Attributes.ARMOR, DragonMountsConfig.SERVER.base_armor.get())
                 .add(Attributes.ARMOR_TOUGHNESS, BASE_TOUGHNESS);
     }
 
-    public DragonInventory getInventory() {
-        return this.inventory;
+    public void resetAttributes() {
+        AttributeModifierManager manager = this.getAttributes();
+        Objects.requireNonNull(manager.getInstance(Attributes.MAX_HEALTH)).setBaseValue(DragonMountsConfig.SERVER.base_health.get());
+        Objects.requireNonNull(manager.getInstance(Attributes.ATTACK_DAMAGE)).setBaseValue(DragonMountsConfig.SERVER.base_damage.get());
+        Objects.requireNonNull(manager.getInstance(Attributes.ARMOR)).setBaseValue(DragonMountsConfig.SERVER.base_armor.get());
     }
 
     public void setSaddle(@Nonnull ItemStack stack, boolean sync) {
@@ -303,10 +314,6 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         return 120;
     }
 
-    public DragonAnimator getAnimator() {
-        return this.animator;
-    }
-
     public boolean isFlying() {
         return this.entityData.get(DATA_FLYING);
     }
@@ -423,13 +430,6 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     }
 
     @Override
-    public void onRemovedFromWorld() {
-        super.onRemovedFromWorld();
-        this.animator = null;
-        this.inventory = null;
-    }
-
-    @Override
     public void aiStep() {
         int age = this.age;
         if (this.level.isClientSide) {
@@ -519,18 +519,18 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
             return ActionResultType.SUCCESS;
         }
         if (this.isOwnedBy(player)) {
-            if (this.getSaddle().isEmpty() && item instanceof SaddleItem) {
+            if (this.getSaddle().isEmpty() && LimitedSlot.Saddle.mayPlace(item)) {
                 this.isSaddled = true;//avoid playing sound
                 this.setSaddle(stack.copy(), true);
                 item.interactLivingEntity(stack, player, this, hand);//play sound, shrink stack
                 return ActionResultType.SUCCESS;
             }
-            if (this.getArmor().isEmpty() && item instanceof DragonArmorItem) {
+            if (this.getArmor().isEmpty() && LimitedSlot.DragonArmor.mayPlace(item)) {
                 this.setArmor(stack.split(1), true);
                 return ActionResultType.SUCCESS;
             }
-            if (this.getChest().isEmpty() && item.is(Tags.Items.CHESTS_WOODEN)) {
-                this.setArmor(stack.split(1), true);
+            if (this.getChest().isEmpty() && LimitedSlot.SingleWoodenChest.mayPlace(item)) {
+                this.setChest(stack.split(1), true);
                 return ActionResultType.SUCCESS;
             }
             ActionResultType result = item.interactLivingEntity(stack, player, this, hand);
@@ -559,6 +559,12 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     public boolean hurt(DamageSource source, float amount) {
         return super.hurt(source, amount);
     }*/
+
+    @Nonnull
+    @Override
+    protected ResourceLocation getDefaultLootTable() {
+        return DRAGON_TYPIFIED_LOOT_TABLE_MAP.computeIfAbsent(this.getDragonType(), DragonType::createDragonLootTable);
+    }
 
     @Override
     public void die(DamageSource cause) {
@@ -596,6 +602,19 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     }
 
     public void setLifeStage(DragonLifeStage stage, boolean reset, boolean sync) {
+        boolean flag = !this.level.isClientSide;
+        if (flag) {
+            ModifiableAttributeInstance attribute = this.getAttribute(Attributes.MAX_HEALTH);
+            if (attribute != null) {
+                attribute.removeModifier(AGE_MODIFIER_UUID);
+                attribute.addTransientModifier(new AttributeModifier(
+                        AGE_MODIFIER_UUID,
+                        "DragonAgeBonus",
+                        Math.max(DragonLifeStage.getSize(stage, stage.duration >> 1), 0.1f),
+                        AttributeModifier.Operation.MULTIPLY_TOTAL
+                ));
+            }
+        }
         if (this.stage == stage) return;
         this.stage = stage;
         if (reset) {
@@ -603,7 +622,7 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         }
         this.refreshDimensions();
         this.reapplyPosition();
-        if (sync && !this.level.isClientSide) {
+        if (flag && sync) {
             CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SSyncDragonAgePacket(this));
         }
     }
@@ -648,7 +667,7 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     public void positionRider(Entity passenger) {
         int index = this.getPassengers().indexOf(passenger);
         if (index >= 0) {
-            Vector3d pos = this.type.passengerOffset.apply(index, /*this.isInSittingPose()*/false)
+            Vector3d pos = this.type.passengerOffset.apply(index, this.isInSittingPose())
                     .scale(this.getScale())
                     .yRot((float) Math.toRadians(-this.yBodyRot))
                     .add(this.position());
@@ -671,14 +690,19 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         return this.isInSittingPose() ? height * 0.8f : height;
     }
 
-    //----------LivingEntity----------
+    @Nonnull
+    @Override
+    protected ITextComponent getTypeName() {
+        return this.type.getTypifiedName("entity.dragonmounts.dragon.name");
+    }
 
-    //TODO: Override getItemBySlot
+    //----------LivingEntity----------
 
     @Override
     public void travel(Vector3d travelVector) {
         boolean flying = isFlying();
-        float speed = (float) (flying ? this.getAttributeValue(FLYING_SPEED) * 0.25f : this.getAttributeValue(MOVEMENT_SPEED));
+        float speed = (float)
+                (flying ? this.getAttributeValue(Attributes.FLYING_SPEED) * 0.25f : this.getAttributeValue(Attributes.MOVEMENT_SPEED));
         this.setSpeed(speed);
         if (this.canBeControlledByRider()) {// Were being controlled; override ai movement
             LivingEntity driver = (LivingEntity) this.getControllingPassenger();
@@ -751,7 +775,13 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         return this.getControllingPassenger() instanceof LivingEntity;
     }
 
-    //TODO: Override setSlot
+    @Override
+    public boolean setSlot(int index, ItemStack stack) {
+        if (index < DragonInventory.INVENTORY_SIZE) {
+            return this.inventory.setItemAfterChecked(index, stack);
+        }
+        return super.setSlot(index, stack);
+    }
 
     //----------AgeableEntity----------
 
@@ -846,10 +876,7 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         this.entityData.set(DATA_DRAGON_TYPE, type.getSerializedName());
         manager.addTransientAttributeModifiers(type.getAttributeModifiers());
         if (reset) {
-            ModifiableAttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
-            if (health != null) {
-                this.setHealth((float) health.getValue());
-            }
+            this.setHealth((float) Objects.requireNonNull(manager.getInstance(Attributes.MAX_HEALTH)).getValue());
         }
     }
 
@@ -909,5 +936,17 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
             return Collections.singletonList(new ItemStack(scale, 2 + this.random.nextInt(3)));
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public ILivingEntityData finalizeSpawn(IServerWorld level, DifficultyInstance difficulty, SpawnReason reason, @Nullable ILivingEntityData spawnData, @Nullable CompoundNBT compound) {
+        Objects.requireNonNull(this.getAttribute(Attributes.FOLLOW_RANGE)).addPermanentModifier(new AttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05D, AttributeModifier.Operation.MULTIPLY_BASE));
+        this.setLeftHanded(this.random.nextFloat() < 0.05F);
+        if (compound != null && compound.contains(DragonLifeStage.DATA_PARAMETER_KEY)) {
+            this.setLifeStage(DragonLifeStage.byName(compound.getString(DragonLifeStage.DATA_PARAMETER_KEY)), true, false);
+        } else {
+            this.setLifeStage(DragonLifeStage.ADULT, true, false);
+        }
+        return spawnData;
     }
 }

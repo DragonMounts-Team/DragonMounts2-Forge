@@ -71,10 +71,7 @@ public class StageCommand {
             dragon.setLifeStage(stage, true, true);
         } else if (target instanceof HatchableDragonEggEntity) {
             ServerWorld level = source.getLevel();
-            TameableDragonEntity dragon = new TameableDragonEntity(target.level);
-            CompoundNBT compound = target.saveWithoutId(new CompoundNBT());
-            dragon.load(compound);
-            dragon.setLifeStage(stage, true, true);
+            TameableDragonEntity dragon = new TameableDragonEntity((HatchableDragonEggEntity) target, stage);
             level.removeEntity(target, false);
             level.addFreshEntity(dragon);
         } else {

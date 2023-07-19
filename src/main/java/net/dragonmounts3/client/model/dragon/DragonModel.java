@@ -47,16 +47,16 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
         this.tail.leftScale.visible = this.tail.rightScale.visible = hasSideTailScale;
         this.tail.middleScale.visible = !hasSideTailScale;
         this.head.scaleX = this.head.scaleY = this.head.scaleZ = 0.92f;
-        dragon.getAnimator().setPartialTicks(partialTick);
+        dragon.animator.setPartialTicks(partialTick);
 
     }
 
     @Override
     public void setupAnim(@Nonnull TameableDragonEntity dragon, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        DragonAnimator animator = dragon.getAnimator();
+        DragonAnimator animator = dragon.animator;
         animator.setLook(netHeadYaw, headPitch);
         animator.setMovement(limbSwing, limbSwingAmount * dragon.getScale());
-        dragon.getAnimator().animate(this);
+        dragon.animator.animate(this);
     }
 
     @Override

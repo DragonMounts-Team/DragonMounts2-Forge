@@ -7,6 +7,7 @@ import static net.dragonmounts3.DragonMounts.prefix;
 
 public class SculkResourceManager extends AbstractResourceManager {
     public static final ResourceLocation BODY = prefix(TEXTURES_ROOT + "sculk/body.png");
+    public static final ResourceLocation GLOW = prefix(TEXTURES_ROOT + "ender/glow.png");
 
     public SculkResourceManager() {
         super(false, false, 1.6f);
@@ -19,6 +20,6 @@ public class SculkResourceManager extends AbstractResourceManager {
 
     @Override
     public ResourceLocation getGlow(TameableDragonEntity dragon) {
-        return BODY;
+        return GLOW;
     }
 }

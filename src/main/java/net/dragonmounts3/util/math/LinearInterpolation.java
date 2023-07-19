@@ -1,4 +1,4 @@
-package net.dragonmounts3.util;
+package net.dragonmounts3.util.math;
 
 import static net.minecraft.util.math.MathHelper.clamp;
 

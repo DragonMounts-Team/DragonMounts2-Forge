@@ -1,0 +1,117 @@
+{
+  "mob.dragon.growl": {
+    "subtitle": "subtitles.dragonmounts.dragon.growl",
+    "sounds": [
+      "dragonmounts:mob/dragon/growl",
+      "dragonmounts:mob/dragon/growl1"
+    ]
+  },
+  "mob.dragon.hatchlingroar": {
+    "subtitle": "subtitles.dragonmounts.dragon.hatchling_roar",
+    "sounds": [
+      "dragonmounts:mob/dragon/hatchlingroar1",
+      "dragonmounts:mob/dragon/hatchlingroar2"
+    ]
+  },
+  "mob.dragon.hatchlinggrowl": {
+    "subtitle": "subtitles.dragonmounts.dragon.hatchling_growl",
+    "sounds": [
+      "dragonmounts:mob/dragon/hatchlinggrowl1",
+      "dragonmounts:mob/dragon/hatchlinggrowl2"
+    ]
+  },
+  "mob.dragon.roar": {
+    "subtitle": "subtitles.dragonmounts.dragon.roar",
+    "sounds": [
+      "dragonmounts:mob/dragon/roar",
+      "dragonmounts:mob/dragon/roar1",
+      "dragonmounts:mob/dragon/roar2",
+      "dragonmounts:mob/dragon/roar3"
+    ]
+  },
+  "mob.dragon.nethergrowl": {
+    "subtitle": "subtitles.dragonmounts.dragon.growl.nether",
+    "sounds": [
+      "dragonmounts:mob/dragon/nethergrowl",
+      "dragonmounts:mob/dragon/nethergrowl1",
+      "dragonmounts:mob/dragon/nethergrowl2",
+      "dragonmounts:mob/dragon/nethergrowl3"
+    ]
+  },
+  "mob.dragon.zombiegrowl": {
+    "subtitle": "subtitles.dragonmounts.dragon.growl.zombie",
+    "sounds": [
+      "dragonmounts:mob/dragon/zombiegrowl",
+      "dragonmounts:mob/dragon/zombiegrowl1",
+      "dragonmounts:mob/dragon/zombiegrowl2"
+    ]
+  },
+  "mob.dragon.skeletongrowl": {
+    "subtitle": "subtitles.dragonmounts.dragon.growl.skeleton",
+    "sounds": [
+      "dragonmounts:mob/dragon/skeletongrowl1"
+    ]
+  },
+  "mob.dragon.breathe": {
+    "subtitle": "subtitles.dragonmounts.dragon.breathe",
+    "sounds": [
+      {
+        "name": "mob/cow/say2",
+        "volume": 0.5,
+        "pitch": 0.5
+      },
+      {
+        "name": "mob/cow/say4",
+        "volume": 0.5,
+        "pitch": 0.5
+      }
+    ]
+  },
+  "mob.dragon.sneeze": {
+    "subtitle": "subtitles.dragonmounts.dragon.sneeze",
+    "sounds": [
+      "dragonmounts:mob/dragon/sneeze"
+    ]
+  },
+  "mob.dragon.step": {
+    "subtitle": "subtitles.dragonmounts.dragon.step",
+    "sounds": [
+      "dragonmounts:mob/dragon/step1",
+      "dragonmounts:mob/dragon/step2",
+      "dragonmounts:mob/dragon/step3",
+      "dragonmounts:mob/dragon/step4"
+    ]
+  },
+  "mob.dragon.death": {
+    "subtitle": "subtitles.dragonmounts.dragon.death",
+    "sounds": [
+      "dragonmounts:mob/dragon/death"
+    ]
+  },
+  "mob.dragon.zombiedeath": {
+    "subtitle": "subtitles.dragonmounts.dragon.death.zombie",
+    "sounds": [
+      "dragonmounts:mob/dragon/zombiedeath"
+    ]
+  },
+  "mob.dragon.hatched": {
+    "subtitle": "subtitles.dragonmounts.dragon_egg.hatched",
+    "sounds": [
+      "dragonmounts:mob/dragon/hatched"
+    ]
+  },
+  "mob.dragon.hatching": {
+    "subtitle": "subtitles.dragonmounts.dragon_egg.hatching",
+    "sounds": [
+      "dragonmounts:mob/dragon/hatching1",
+      "dragonmounts:mob/dragon/hatching2"
+    ]
+  },
+  "item.whistle": {
+    "subtitle": "subtitles.dragonmounts.dragon_whistle",
+    "sounds": [
+      "dragonmounts:item/whistle",
+      "dragonmounts:item/whistle1"
+    ]
+  }
+}

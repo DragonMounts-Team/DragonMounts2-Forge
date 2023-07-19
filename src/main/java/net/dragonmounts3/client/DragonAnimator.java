@@ -3,16 +3,16 @@ package net.dragonmounts3.client;
 import net.dragonmounts3.client.model.dragon.*;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.util.CircularBuffer;
-import net.dragonmounts3.util.LinearInterpolation;
-import net.dragonmounts3.util.MathUtil;
+import net.dragonmounts3.util.math.LinearInterpolation;
+import net.dragonmounts3.util.math.MathUtil;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nullable;
 
-import static net.dragonmounts3.util.MathUtil.smoothClampedLerp;
 import static net.dragonmounts3.util.ModelUtil.applyRotateAngle;
+import static net.dragonmounts3.util.math.Interpolation.*;
 
 /**
  * Animation control class to put useless reptiles in motion.
@@ -356,7 +356,7 @@ public class DragonAnimator {
             // basic up/down movement
             neck.xRot = baseRotX;
             // reduce rotation when on ground
-            neck.xRot *= smoothClampedLerp(1, 0.5f, walk);
+            neck.xRot *= clampedSmoothLinear(1, 0.5f, walk);
             // flex neck down when hovering
             neck.xRot += (1 - speed) * vertMulti;
             // lower neck on low health
@@ -364,7 +364,7 @@ public class DragonAnimator {
             // use looking yaw
             neck.yRot = (float) Math.toRadians(lookYaw) * vertMulti * speed;
             // update scale
-            float v = MathUtil.clampedLerp(1.6f, 1, vertMulti);
+            float v = clampedLinear(1.6f, 1, vertMulti);
             neck.scaleX = neck.scaleY = v;
             neck.scaleZ = 0.6f;
             // hide the first and every second scale
@@ -446,7 +446,7 @@ public class DragonAnimator {
         for (int i = 0; i < DragonWingModelPart.FINGER_COUNT; ++i) {
             ModelRenderer finger = wing.getFinger(i);
             finger.xRot = rotX += 0.005f; // reduce Z-fighting
-            finger.yRot = smoothClampedLerp(yUnfold[i], yFold[i] + rotYOfs * rotYMulti, ground);
+            finger.yRot = clampedSmoothLinear(yUnfold[i], yFold[i] + rotYOfs * rotYMulti, ground);
             rotYMulti -= 0.2f;
         }
     }
@@ -478,11 +478,11 @@ public class DragonAnimator {
             rotYSit = MathHelper.sin(vertMulti * MathUtil.PI * MathUtil.PI * 1.2f - 0.5f); // curl to the left
             rotXAir -= MathHelper.sin(i * 0.45f + animBase) * 0.04f * MathHelper.clampedLerp(0.3f, 1, flutter);
             // interpolate between sitting and standing
-            tail.xRot = MathUtil.clampedLerp(rotXStand, rotXSit, sit);
-            tail.yRot = MathUtil.clampedLerp(rotYStand, rotYSit, sit);
+            tail.xRot = clampedLinear(rotXStand, rotXSit, sit);
+            tail.yRot = clampedLinear(rotYStand, rotYSit, sit);
             // interpolate between flying and grounded
-            tail.xRot = MathUtil.clampedLerp(rotXAir, tail.xRot, ground);
-            tail.yRot = MathUtil.clampedLerp(rotYAir, tail.yRot, ground);
+            tail.xRot = clampedLinear(rotXAir, tail.xRot, ground);
+            tail.yRot = clampedLinear(rotYAir, tail.yRot, ground);
             // body movement
             float angleLimit = 160 * vertMulti;
             float yawOfs = MathHelper.clamp(yawTrail.get(partialTicks, 0, i + 1) * 2, -angleLimit, angleLimit);
@@ -491,11 +491,11 @@ public class DragonAnimator {
             tail.xRot -= (1 - speed) * vertMulti * 2;
             tail.yRot += Math.toRadians(180 - yawOfs);
             // display horns near the tip
-            tail.leftHorn.visible = tail.rightHorn.visible = dragon.getDragonType().resources.hasTailHorns
+            tail.leftHorn.visible = tail.rightHorn.visible = this.dragon.getDragonType().resources.hasTailHorns
                     && i > DragonTailModelPart.TAIL_SEGMENT_COUNT - 7
                     && i < DragonTailModelPart.TAIL_SEGMENT_COUNT - 3;
             // update scale
-            float neckScale = MathUtil.clampedLerp(1.5f, 0.3f, vertMulti);
+            float neckScale = clampedLinear(1.5f, 0.3f, vertMulti);
             tail.scaleX = tail.scaleY = tail.scaleZ = neckScale;
             // update proxy
             tail.save(i);
@@ -527,15 +527,15 @@ public class DragonAnimator {
         float yAir = yAirAll[index];
         float yGround;
         // interpolate between sitting and standing
-        yGround = smoothClampedLerp(yGroundStand[index], yGroundSit[index], sit);
+        yGround = clampedSmoothLinear(yGroundStand[index], yGroundSit[index], sit);
         // interpolate between standing and walking
-        yGround = smoothClampedLerp(yGround, yGroundWalk[index], walk);
+        yGround = clampedSmoothLinear(yGround, yGroundWalk[index], walk);
         // interpolate between flying and grounded
-        model.yRot = smoothClampedLerp(yAir, yGround, ground);
-        model.xRot = smoothClampedLerp(xAir[0], xGround[0], ground);
-        model.shank.xRot = smoothClampedLerp(xAir[1], xGround[1], ground);
-        model.foot.xRot = smoothClampedLerp(xAir[2], xGround[2], ground);
-        model.toe.xRot = smoothClampedLerp(xAir[3], xGround[3], ground);
+        model.yRot = clampedSmoothLinear(yAir, yGround, ground);
+        model.xRot = clampedSmoothLinear(xAir[0], xGround[0], ground);
+        model.shank.xRot = clampedSmoothLinear(xAir[1], xGround[1], ground);
+        model.foot.xRot = clampedSmoothLinear(xAir[2], xGround[2], ground);
+        model.toe.xRot = clampedSmoothLinear(xAir[3], xGround[3], ground);
         //update proxy: model.thighProxy[i].update();
     }
 
@@ -568,7 +568,7 @@ public class DragonAnimator {
         float pitchMovingMax = 90;
         float pitchMoving = MathHelper.clamp(yTrail.get(pt, 5, 0) * 10, -pitchMovingMax, pitchMovingMax);
         float pitchHover = 60;
-        return smoothClampedLerp(pitchHover, pitchMoving, speed);
+        return clampedSmoothLinear(pitchHover, pitchMoving, speed);
     }
 
     public float getModelOffsetX() {
@@ -606,7 +606,7 @@ public class DragonAnimator {
         }
 
         for (int i = 0; i < c.length; ++i) {
-            c[i] = smoothClampedLerp(a[i], b[i], x);
+            c[i] = clampedSmoothLinear(a[i], b[i], x);
         }
     }
 
@@ -621,49 +621,8 @@ public class DragonAnimator {
 
         float xn = x % nodes.length - i1;
 
-        if (shift) terpCatmullRomSpline(xn, result, a2, a3, a1, a2);
-        else terpCatmullRomSpline(xn, result, a1, a2, a3, a1);
-    }
-
-    private static final float[][] CR = {
-            {-0.5f, 1.5f, -1.5f, 0.5f},
-            {1.0f, -2.5f, 2.0f, -0.5f},
-            {-0.5f, 0.0f, 0.5f, 0.0f},
-            {0.0f, 1.0f, 0.0f, 0.0f}
-    };
-
-    // http://www.java-gaming.org/index.php?topic=24122.0
-    private static void terpCatmullRomSpline(float x, float[] result, float[]... knots) {
-        int nknots = knots.length;
-        int nspans = nknots - 3;
-        int knot = 0;
-        if (nspans < 1) {
-            throw new IllegalArgumentException("Spline has too few knots");
-        }
-        x = MathHelper.clamp(x, 0, 0.9999f) * nspans;
-
-        int span = (int) x;
-        if (span >= nknots - 3) {
-            span = nknots - 3;
-        }
-
-        x -= span;
-        knot += span;
-
-        int dimension = result.length;
-        for (int i = 0; i < dimension; ++i) {
-            float knot0 = knots[knot][i];
-            float knot1 = knots[knot + 1][i];
-            float knot2 = knots[knot + 2][i];
-            float knot3 = knots[knot + 3][i];
-
-            float c3 = CR[0][0] * knot0 + CR[0][1] * knot1 + CR[0][2] * knot2 + CR[0][3] * knot3;
-            float c2 = CR[1][0] * knot0 + CR[1][1] * knot1 + CR[1][2] * knot2 + CR[1][3] * knot3;
-            float c1 = CR[2][0] * knot0 + CR[2][1] * knot1 + CR[2][2] * knot2 + CR[2][3] * knot3;
-            float c0 = CR[3][0] * knot0 + CR[3][1] * knot1 + CR[3][2] * knot2 + CR[3][3] * knot3;
-
-            result[i] = ((c3 * x + c2) * x + c1) * x + c0;
-        }
+        if (shift) catmullRomSpline(xn, result, a2, a3, a1, a2);
+        else catmullRomSpline(xn, result, a1, a2, a3, a1);
     }
 
     /**

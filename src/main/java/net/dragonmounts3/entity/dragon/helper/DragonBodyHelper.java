@@ -1,8 +1,8 @@
 package net.dragonmounts3.entity.dragon.helper;
 
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
-import net.dragonmounts3.util.math.MathX;
 import net.minecraft.entity.ai.controller.BodyController;
+import net.minecraft.util.math.MathHelper;
 
 public class DragonBodyHelper extends BodyController {
 
@@ -24,7 +24,7 @@ public class DragonBodyHelper extends BodyController {
         // rotate instantly if flying, sitting or moving
         if (this.dragon.isFlying() || dragon.isTame() || dist > 0.0001) {
             this.dragon.yBodyRot = dragon.yRot;
-            this.dragon.yHeadRot = MathX.updateRotation(this.dragon.yBodyRot, this.dragon.yHeadRot, maxHeadBodyAngleDifference);
+            this.dragon.yHeadRot = MathHelper.approachDegrees(this.dragon.yBodyRot, this.dragon.yHeadRot, maxHeadBodyAngleDifference);
             this.prevRotationYawHead = dragon.yHeadRot;
             this.turnTicks = 0;
             return;
@@ -42,7 +42,7 @@ public class DragonBodyHelper extends BodyController {
         }
 
         float yHeadRot = this.dragon.getYHeadRot();
-        this.dragon.yBodyRot = MathX.constrainAngle(this.dragon.yBodyRot, yHeadRot, maxHeadBodyAngleDifference);
+        this.dragon.yBodyRot = MathHelper.rotateIfNecessary(this.dragon.yBodyRot, yHeadRot, maxHeadBodyAngleDifference);
         this.dragon.yRot = this.dragon.yBodyRot;
     }
 

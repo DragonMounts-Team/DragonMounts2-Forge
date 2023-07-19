@@ -1,47 +1,40 @@
 /*
-** 2016 March 05
-**
-** The author disclaims copyright to this source code. In place of
-** a legal notice, here is a blessing:
-**    May you do good and not evil.
-**    May you find forgiveness for yourself and forgive others.
-**    May you share freely, never taking more than you give.
+ ** 2016 March 05
+ **
+ ** The author disclaims copyright to this source code. In place of
+ ** a legal notice, here is a blessing:
+ **    May you do good and not evil.
+ **    May you find forgiveness for yourself and forgive others.
+ **    May you share freely, never taking more than you give.
  */
 package net.dragonmounts3.util.math;
 
+import net.minecraft.util.math.MathHelper;
+
 /**
  * Interpolation utility class.
- * 
+ *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class Interpolation {
-    
+
     private static final float[][] CR = {
-        {-0.5f,  1.5f, -1.5f,  0.5f},
-        { 1.0f, -2.5f,  2.0f, -0.5f},
-        {-0.5f,  0.0f,  0.5f,  0.0f},
-        { 0.0f,  1.0f,  0.0f,  0.0f}
+            {-0.5f, 1.5f, -1.5f, 0.5f},
+            {1.0f, -2.5f, 2.0f, -0.5f},
+            {-0.5f, 0.0f, 0.5f, 0.0f},
+            {0.0f, 1.0f, 0.0f, 0.0f}
     };
-    
-    public static float linear(float a, float b, float x) {
-        if (x <= 0) {
-            return a;
-        }
-        if (x >= 1) {
-            return b;
-        }
-        return a * (1 - x) + b * x;
+
+    public static float clampedLinear(float start, float end, float delta) {
+        if (delta < 0.0f) return start;
+        if (delta > 1.0f) return end;
+        return start + delta * (end - start);
     }
-    
-    public static float smoothStep(float a, float b, float x) {
-        if (x <= 0) {
-            return a;
-        }
-        if (x >= 1) {
-            return b;
-        }
-        x = x * x * (3 - 2 * x);
-        return a * (1 - x) + b * x;
+
+    public static float clampedSmoothLinear(float start, float end, float delta) {
+        if (delta < 0.0f) return start;
+        if (delta > 1.0f) return end;
+        return start + delta * delta * (3 - 2 * delta) * (end - start);
     }
 
     // http://www.java-gaming.org/index.php?topic=24122.0
@@ -52,8 +45,8 @@ public class Interpolation {
         if (nspans < 1) {
             throw new IllegalArgumentException("Spline has too few knots");
         }
-        x = MathX.clamp(x, 0, 0.9999f) * nspans;
-        
+        x = MathHelper.clamp(x, 0, 0.9999f) * nspans;
+
         int span = (int) x;
         if (span >= nknots - 3) {
             span = nknots - 3;

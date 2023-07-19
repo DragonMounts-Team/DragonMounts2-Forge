@@ -16,17 +16,18 @@ public class DMDataGenerator {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
-        ExistingFileHelper exFileHelper = event.getExistingFileHelper();
-        generator.addProvider(new DMBlockStateProvider(generator, exFileHelper));
-        generator.addProvider(new DMItemModelProvider(generator, exFileHelper));
-        DMBlockTagsProvider blockTagsProvider = new DMBlockTagsProvider(generator, exFileHelper);
+        ExistingFileHelper helper = event.getExistingFileHelper();
+        generator.addProvider(new DMBlockStateProvider(generator, helper));
+        generator.addProvider(new DMItemModelProvider(generator, helper));
+        DMBlockTagsProvider blockTagsProvider = new DMBlockTagsProvider(generator, helper);
         generator.addProvider(blockTagsProvider);
-        generator.addProvider(new DMItemTagsProvider(generator, blockTagsProvider, exFileHelper));
-        generator.addProvider(new DMEntityTypeTagsProvider(generator, exFileHelper));
+        generator.addProvider(new DMItemTagsProvider(generator, blockTagsProvider, helper));
+        generator.addProvider(new DMEntityTypeTagsProvider(generator, helper));
         generator.addProvider(new DMLanguageProviderENUS(generator));
         generator.addProvider(new DMLanguageProviderZHCN(generator));
         generator.addProvider(new DMLootTableProvider(generator));
         generator.addProvider(new DMRecipeProvider(generator));
+        generator.addProvider(new DMSoundDefinitionsProvider(generator, helper));
     }
 
 }

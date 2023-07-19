@@ -30,9 +30,10 @@ public class TameableDragonRenderer extends LivingRenderer<TameableDragonEntity,
     @Override
     protected void setupRotations(@Nonnull TameableDragonEntity dragon, @Nonnull MatrixStack matrixStack, float ageInTicks, float rotationYaw, float partialTicks) {
         super.setupRotations(dragon, matrixStack, ageInTicks, rotationYaw, partialTicks);
-        DragonAnimator animator = dragon.getAnimator();
+        DragonAnimator animator = dragon.animator;
         float scale = dragon.getScale() * dragon.getDragonType().resources.modelRenderScale;
         matrixStack.scale(scale, scale, scale);
+        this.shadowRadius = dragon.isBaby() ? 4 * scale : 2 * scale;
         matrixStack.translate(animator.getModelOffsetX(), animator.getModelOffsetY(), animator.getModelOffsetZ());
         matrixStack.translate(0, 1.5, 0.5); // change rotation point
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(animator.getModelPitch(partialTicks))); // rotate near the saddle so we can support the player

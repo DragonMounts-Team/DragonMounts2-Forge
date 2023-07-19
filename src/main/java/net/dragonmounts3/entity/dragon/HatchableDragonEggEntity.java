@@ -11,6 +11,7 @@ import net.dragonmounts3.init.DMSounds;
 import net.dragonmounts3.item.DragonScalesItem;
 import net.dragonmounts3.network.SShakeDragonEggPacket;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -29,12 +30,10 @@ import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
-import net.minecraft.util.HandSide;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -70,7 +69,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
 
     public HatchableDragonEggEntity(EntityType<? extends HatchableDragonEggEntity> type, World world) {
         super(type, world);
-        Objects.requireNonNull(this.getAttributes().getInstance(Attributes.MAX_HEALTH)).setBaseValue(DragonMountsConfig.SERVER.base_health.get());
+        Objects.requireNonNull(this.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(DragonMountsConfig.SERVER.base_health.get());
     }
 
     public HatchableDragonEggEntity(World world) {
@@ -139,17 +138,12 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     public void onRemovedFromWorld() {
         super.onRemovedFromWorld();
         if (this.hatched) {
-            if (this.level.isClientSide) {
+            if (!this.level.isClientSide) {
                 this.playSound(DMSounds.DRAGON_HATCHED.get(), 1.0F, 1.0F);
-            } else {
                 ServerWorld world = (ServerWorld) level;
                 Scoreboard scoreboard = world.getScoreboard();
-                TameableDragonEntity dragon = new TameableDragonEntity(world);
+                TameableDragonEntity dragon = new TameableDragonEntity(this, DragonLifeStage.NEWBORN);
                 String scoreboardName = dragon.getScoreboardName();
-                CompoundNBT compound = this.saveWithoutId(new CompoundNBT());
-                compound.remove(AGE_DATA_PARAMETER_KEY);
-                dragon.load(compound);
-                dragon.setLifeStage(DragonLifeStage.NEWBORN, true, false);
                 if (this.team != null) {
                     scoreboard.addPlayerToTeam(scoreboardName, this.team);
                 }
@@ -255,6 +249,12 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         return new ItemStack(DMBlocks.HATCHABLE_DRAGON_EGG.get(this.getDragonType()));
     }
 
+    @Nonnull
+    @Override
+    protected ITextComponent getTypeName() {
+        return this.type.getTypifiedName("entity.dragonmounts.dragon_egg.name");
+    }
+
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
         return super.isInvulnerableTo(source) || this.getDragonType().isInvulnerableTo(source);
@@ -311,7 +311,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
                 this.level.levelEvent(2001, this.blockPosition(), Block.getId(block.defaultBlockState()));
             }
         }
-        this.playSound(DMSounds.DRAGON_HATCHING.get(), 1.0F, 1.0F);
+        this.level.playSound(Minecraft.getInstance().player, this.getX(), this.getY(), this.getZ(), DMSounds.DRAGON_HATCHING.get(), SoundCategory.NEUTRAL, 1.0F, 1.0F);
     }
 
     public void setDragonType(DragonType type, boolean reset) {

@@ -62,8 +62,8 @@ public class DMSoundDefinitionsProvider extends SoundDefinitionsProvider {
         this.add(DRAGON_BREATHE, definition()
                 .subtitle(TITLE_PREFIX + "dragon.breathe")
                 .with(
-                        sound(new ResourceLocation("minecraft", "mob/cow/say2")).volume(0.5f).pitch(0.5f),
-                        sound(new ResourceLocation("minecraft", "mob/cow/say4")).volume(0.5f).pitch(0.5f)
+                        sound(new ResourceLocation("minecraft", "mob/cow/say2")).volume(0.5F).pitch(0.5F),
+                        sound(new ResourceLocation("minecraft", "mob/cow/say4")).volume(0.5F).pitch(0.5F)
                 ));
         this.add(DRAGON_SNEEZE, definition()
                 .subtitle(TITLE_PREFIX + "dragon.sneeze")

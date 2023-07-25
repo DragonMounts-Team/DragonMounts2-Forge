@@ -19,21 +19,21 @@ import net.minecraft.util.math.MathHelper;
 public class Interpolation {
 
     private static final float[][] CR = {
-            {-0.5f, 1.5f, -1.5f, 0.5f},
-            {1.0f, -2.5f, 2.0f, -0.5f},
-            {-0.5f, 0.0f, 0.5f, 0.0f},
-            {0.0f, 1.0f, 0.0f, 0.0f}
+            {-0.5F, 1.5F, -1.5F, 0.5F},
+            {1.0F, -2.5F, 2.0F, -0.5F},
+            {-0.5F, 0.0F, 0.5F, 0.0F},
+            {0.0F, 1.0F, 0.0F, 0.0F}
     };
 
     public static float clampedLinear(float start, float end, float delta) {
-        if (delta < 0.0f) return start;
-        if (delta > 1.0f) return end;
+        if (delta < 0.0F) return start;
+        if (delta > 1.0F) return end;
         return start + delta * (end - start);
     }
 
     public static float clampedSmoothLinear(float start, float end, float delta) {
-        if (delta < 0.0f) return start;
-        if (delta > 1.0f) return end;
+        if (delta < 0.0F) return start;
+        if (delta > 1.0F) return end;
         return start + delta * delta * (3 - 2 * delta) * (end - start);
     }
 
@@ -45,7 +45,7 @@ public class Interpolation {
         if (nspans < 1) {
             throw new IllegalArgumentException("Spline has too few knots");
         }
-        x = MathHelper.clamp(x, 0, 0.9999f) * nspans;
+        x = MathHelper.clamp(x, 0, 0.9999F) * nspans;
 
         int span = (int) x;
         if (span >= nknots - 3) {

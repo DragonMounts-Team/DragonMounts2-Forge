@@ -53,7 +53,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
             if (strength >= 4 && !player.level.isClientSide && player.isSprinting()) {
                 player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
                     if (cooldown.get(DragonType.AETHER) <= 0 && addOrMergeEffect(player, Effects.MOVEMENT_SPEED, 100, 1, true, true, true)) {
-                        player.level.playSound(null, player, SoundEvents.GUARDIAN_HURT, SoundCategory.NEUTRAL, 1.0f, 1.0f);
+                        player.level.playSound(null, player, SoundEvents.GUARDIAN_HURT, SoundCategory.NEUTRAL, 1.0F, 1.0F);
                         cooldown.set(DragonType.AETHER, this.cooldown);
                     }
                 });
@@ -109,7 +109,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
                 //Trying to add these two effects in any case requires using `|` instead of `||`
                 if (cooldown.get(DragonType.ENDER) <= 0 && (addOrMergeEffect(player, Effects.DAMAGE_RESISTANCE, 600, 2, true, true, true) | addOrMergeEffect(player, Effects.DAMAGE_BOOST, 300, 1, true, true, true))) {
                     player.level.levelEvent(2003, player.blockPosition(), 0);
-                    player.level.playSound(null, player, SoundEvents.END_PORTAL_SPAWN, SoundCategory.HOSTILE, 0.05f, 1.0f);
+                    player.level.playSound(null, player, SoundEvents.END_PORTAL_SPAWN, SoundCategory.HOSTILE, 0.05F, 1.0F);
                     cooldown.set(DragonType.ENDER, this.cooldown);
                 }
             });
@@ -263,7 +263,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
                         target.hurt(DamageSource.GENERIC, 1);
                         if (target instanceof LivingEntity) {
                             ((LivingEntity) target).addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 200, 1));
-                            ((LivingEntity) target).knockback(0.4f, 1, 1);
+                            ((LivingEntity) target).knockback(0.4F, 1, 1);
                         }
                     }
                     cooldown.set(DragonType.ICE, ICE.cooldown);
@@ -277,7 +277,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
                     for (Entity target : targets) {
                         target.setSecondsOnFire(10);
                         if (target instanceof LivingEntity) {
-                            ((LivingEntity) target).knockback(0.4f, 1, 1);
+                            ((LivingEntity) target).knockback(0.4F, 1, 1);
                         }
                     }
                     cooldown.set(DragonType.NETHER, NETHER.cooldown);

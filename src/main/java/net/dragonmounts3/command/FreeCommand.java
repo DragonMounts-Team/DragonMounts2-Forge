@@ -46,7 +46,7 @@ public class FreeCommand {
         return free(context, EntityArgument.getEntities(context, "targets"), null, forced);
     }
 
-    private static int free(CommandContext<CommandSource> context, Collection<? extends Entity> targets, @Nullable UUID owner, boolean forced) {
+    public static int free(CommandContext<CommandSource> context, Collection<? extends Entity> targets, @Nullable UUID owner, boolean forced) {
         CommandSource source = context.getSource();
         Entity cache = null;
         boolean flag = true;

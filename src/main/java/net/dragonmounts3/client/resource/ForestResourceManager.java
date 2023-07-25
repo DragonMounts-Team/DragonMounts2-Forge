@@ -14,7 +14,7 @@ public class ForestResourceManager extends AbstractResourceManager {
     public static final ResourceLocation TAIGA_GLOW = prefix(TEXTURES_ROOT + "forest/taiga/glowtaiga.png");
 
     public ForestResourceManager() {
-        super(false, false, 1.6f);
+        super(false, false, 1.6F);
     }
 
     @Override

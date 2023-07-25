@@ -37,10 +37,10 @@ public interface IDragonFood {
         }
         Vector3d pos = dragon.animator.getThroatPosition(0, 0, -4);
         if (pos == null) return;
-        level.playSound(player, pos.x, pos.y, pos.z, item.getEatingSound(), SoundCategory.NEUTRAL, 1f, 0.75f);
+        level.playSound(player, pos.x, pos.y, pos.z, item.getEatingSound(), SoundCategory.NEUTRAL, 1F, 0.75F);
         if (item == Items.HONEY_BOTTLE) return;
         if (item instanceof BucketItem) {
-            level.playSound(player, pos.x, pos.y, pos.z, item.getDrinkingSound(), SoundCategory.NEUTRAL, 0.25f, 0.75f);
+            level.playSound(player, pos.x, pos.y, pos.z, item.getDrinkingSound(), SoundCategory.NEUTRAL, 0.25F, 0.75F);
             if (item == Items.COD_BUCKET) {
                 item = Items.COD;
             } else if (item == Items.SALMON_BUCKET) {

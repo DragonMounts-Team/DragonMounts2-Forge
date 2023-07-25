@@ -26,6 +26,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -36,6 +37,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -43,22 +45,23 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.dragonmounts3.entity.dragon.TameableDragonEntity.AGE_DATA_PARAMETER_KEY;
 import static net.dragonmounts3.network.DMPacketHandler.CHANNEL;
+import static net.dragonmounts3.util.math.MathUtil.getColor;
 import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
 
 @ParametersAreNonnullByDefault
 public class HatchableDragonEggEntity extends LivingEntity implements IMutableDragonTypified {
     private static final DataParameter<String> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DataSerializers.STRING);
     public static final int MIN_HATCHING_TIME = 36000;
-    private static final float EGG_CRACK_PROCESS_THRESHOLD = 0.9f;
-    private static final float EGG_SHAKE_PROCESS_THRESHOLD = 0.75f;
+    private static final int CONVERSION_RANGE = 2;
+    private static final float EGG_CRACK_PROCESS_THRESHOLD = 0.9F;
+    private static final float EGG_SHAKE_PROCESS_THRESHOLD = 0.75F;
     private static final int EGG_SHAKE_THRESHOLD = (int) (EGG_SHAKE_PROCESS_THRESHOLD * MIN_HATCHING_TIME);
-    private static final float EGG_SHAKE_BASE_CHANCE = 20f;
+    private static final float EGG_SHAKE_BASE_CHANCE = 20F;
     protected DragonType type = DragonType.ENDER;
     protected float rotationAxis = 0;
     protected int amplitude = 0;
@@ -117,7 +120,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         if (amount > 0) {
             DragonScalesItem scales = DMItems.DRAGON_SCALES.get(this.getDragonType());
             if (scales != null && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-                this.spawnAtLocation(new ItemStack(scales, amount), 1.25f);
+                this.spawnAtLocation(new ItemStack(scales, amount), 1.25F);
             }
         }
     }
@@ -195,7 +198,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
                 return ActionResultType.FAIL;
             }
             this.remove();
-            this.level.setBlockAndUpdate(new BlockPos(this.getX(), this.getY(), this.getZ()), block.defaultBlockState());
+            this.level.setBlockAndUpdate(this.blockPosition(), block.defaultBlockState());
             return ActionResultType.SUCCESS;
         }
         return ActionResultType.PASS;
@@ -211,13 +214,18 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         }
         if (this.level.isClientSide) {
             // spawn generic particles
+            DragonType type = this.getDragonType();
             double px = getX() + (this.random.nextDouble() - 0.5);
             double py = getY() + (this.random.nextDouble() - 0.3);
             double pz = getZ() + (this.random.nextDouble() - 0.5);
             double ox = (this.random.nextDouble() - 0.5) * 2;
             double oy = (this.random.nextDouble() - 0.3) * 2;
             double oz = (this.random.nextDouble() - 0.5) * 2;
-            this.level.addParticle(this.getDragonType().getEggParticle(), px, py, pz, ox, oy, oz);
+            this.level.addParticle(type.getEggParticle(), px, py, pz, ox, oy, oz);
+            if ((this.tickCount & 1) == 0 && type != DragonType.ENDER) {
+                int color = type.getColor();
+                this.level.addParticle(new RedstoneParticleData(getColor(color, 2), getColor(color, 1), getColor(color, 0), 1.0F), px, py + 0.8, pz, ox, oy, oz);
+            }
             return;
         }
         // play the egg shake animation based on the time the eggs take to hatch
@@ -230,7 +238,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
                 return;
             }
             if (this.random.nextFloat() < chance) {
-                this.rotationAxis = this.random.nextFloat() * 2f;
+                this.rotationAxis = this.random.nextFloat() * 2F;
                 this.amplitude = this.random.nextBoolean() ? 10 : 20;
                 boolean flag = progress > EGG_CRACK_PROCESS_THRESHOLD;
                 if (flag) {
@@ -242,6 +250,55 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
                 );
             }
         }
+        if ((this.tickCount & 0b0001_1111) == 0) {//check every 32 ticks
+            this.convertDragonType();
+        }
+    }
+
+    public void convertDragonType() {
+        DragonType current = this.getDragonType();
+        if (!current.convertible) return;
+        Map<DragonType, AtomicInteger> score = new HashMap<>();
+        score.put(current, new AtomicInteger(1));
+        Optional<RegistryKey<Biome>> biome = this.level.getBiomeName(this.blockPosition());
+        Collection<DragonType> types = DragonType.values();
+        // update egg breed every second on the server
+        BlockPos.betweenClosedStream(this.getBoundingBox().inflate(CONVERSION_RANGE)).forEach(pos -> {
+            for (DragonType type : types) {
+                if (type.isHabitat(this.level.getBlockState(pos).getBlock())) {
+                    AtomicInteger value = score.get(type);
+                    if (value == null) {
+                        score.put(type, new AtomicInteger(1));
+                    } else {
+                        value.incrementAndGet();
+                    }
+                }
+            }
+        });
+        int maxScore = 0;
+        ArrayList<DragonType> result = new ArrayList<>();
+        for (DragonType type : types) {
+            int temp = 0;
+            if (type.isHabitat(biome.orElse(null))) {
+                ++temp;
+            }
+            if (type.isHabitatEnvironment.test(this)) {
+                ++temp;
+            }
+            AtomicInteger value = score.get(type);
+            if (value != null) {
+                temp = value.addAndGet(temp);
+            }
+            if (temp > maxScore) {
+                maxScore = temp;
+                result.clear();
+                result.add(type);
+            } else if (temp == maxScore) {
+                result.add(type);
+            }
+        }
+        if (result.isEmpty() || result.contains(current)) return;
+        this.setDragonType(result.get(this.random.nextInt(result.size())), false);
     }
 
     @Override

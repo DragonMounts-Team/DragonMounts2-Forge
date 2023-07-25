@@ -47,17 +47,17 @@ public class DMItemModelProvider extends ItemModelProvider {
                     .parent(vanillaBowModel)
                     .texture("layer0", prefix(texture.substring(0, textureLength - 1)))
                     .override()
-                    .predicate(pullingPredicate, 1.00f)
+                    .predicate(pullingPredicate, 1.00F)
                     .model(pulling[0])
                     .end()
                     .override()
-                    .predicate(pullingPredicate, 1.00f)
-                    .predicate(pullPredicate, 0.65f)
+                    .predicate(pullingPredicate, 1.00F)
+                    .predicate(pullPredicate, 0.65F)
                     .model(pulling[1])
                     .end()
                     .override()
-                    .predicate(pullingPredicate, 1.00f)
-                    .predicate(pullPredicate, 0.90f)
+                    .predicate(pullingPredicate, 1.00F)
+                    .predicate(pullPredicate, 0.90F)
                     .model(pulling[2])
                     .end();
         }
@@ -74,7 +74,7 @@ public class DMItemModelProvider extends ItemModelProvider {
                     .parent(shieldModel)
                     .texture("base", texture)
                     .override()
-                    .predicate(blockingPredicate, 1.00f)
+                    .predicate(blockingPredicate, 1.00F)
                     .model(blocking)
                     .end();
         }

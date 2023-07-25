@@ -44,11 +44,11 @@ public class TameableDragonLayer extends LayerRenderer<TameableDragonEntity, Dra
         AbstractResourceManager resources = dragon.getDragonType().resources;
         //saddle
         if (dragon.isSaddled()) {
-            renderColoredCutoutModel(model, resources.getSaddle(dragon), matrixStack, buffer, packedLight, dragon, 1.0f, 1.0f, 1.0f);
+            renderColoredCutoutModel(model, resources.getSaddle(dragon), matrixStack, buffer, packedLight, dragon, 1.0F, 1.0F, 1.0F);
         }
         //chest
         if (dragon.hasChest()) {
-            renderColoredCutoutModel(model, resources.getChest(dragon), matrixStack, buffer, packedLight, dragon, 1.0f, 1.0f, 1.0f);
+            renderColoredCutoutModel(model, resources.getChest(dragon), matrixStack, buffer, packedLight, dragon, 1.0F, 1.0F, 1.0F);
         }
         //armor
         ItemStack stack = dragon.getArmor();
@@ -56,7 +56,7 @@ public class TameableDragonLayer extends LayerRenderer<TameableDragonEntity, Dra
         if (item instanceof DragonArmorItem) {
             DragonArmorItem armor = (DragonArmorItem) item;
             IVertexBuilder builder = ItemRenderer.getArmorFoilBuffer(buffer, RenderType.armorCutoutNoCull(armor.getDragonArmorTexture(stack, dragon)), false, stack.hasFoil());
-            model.renderToBuffer(matrixStack, builder, packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
+            model.renderToBuffer(matrixStack, builder, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         }
         //glow
         RenderType type = RenderType.create("eyes", DefaultVertexFormats.NEW_ENTITY, 7, 256, false, true, RenderType.State.builder()
@@ -66,6 +66,6 @@ public class TameableDragonLayer extends LayerRenderer<TameableDragonEntity, Dra
                 .createCompositeState(false)
         );
         IVertexBuilder builder = buffer.getBuffer(type);
-        model.renderToBuffer(matrixStack, builder, 15728640, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
+        model.renderToBuffer(matrixStack, builder, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

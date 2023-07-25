@@ -3,7 +3,6 @@ package net.dragonmounts3;
 import net.dragonmounts3.command.ConfigCommand;
 import net.dragonmounts3.command.DMCommand;
 import net.dragonmounts3.init.*;
-import net.dragonmounts3.item.DragonScaleArmorEffect;
 import net.dragonmounts3.network.DMPacketHandler;
 import net.dragonmounts3.util.ArmorEffect;
 import net.minecraft.entity.Entity;
@@ -34,20 +33,21 @@ public class DragonMounts {
     public DragonMounts() {
         DragonMountsConfig.init();
         DMPacketHandler.init();
+        MinecraftForge.EVENT_BUS.addListener(DMFeatures::addDimensionalSpacing);
+        MinecraftForge.EVENT_BUS.addListener(DMFeatures::loadBiome);
         DMSounds.SOUNDS.register(this.eventBus);
         DMItems.ITEMS.register(this.eventBus);
         DMBlocks.BLOCKS.register(this.eventBus);
         DMEntities.ENTITY_TYPES.register(this.eventBus);
         DMBlockEntities.BLOCK_ENTITY.register(this.eventBus);
         DMContainers.CONTAINERS.register(this.eventBus);
+        DMFeatures.STRUCTURE_FEATURE.register(this.eventBus);
         DMKeyBindings.register();
         this.eventBus.addListener(DragonMounts::preInit);
         MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, DMCapabilities::attachCapabilities);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(ArmorEffect.class);
-        MinecraftForge.EVENT_BUS.addListener(DragonScaleArmorEffect::xpBonus);
-        MinecraftForge.EVENT_BUS.addListener(DragonScaleArmorEffect::meleeChanneling);
-        MinecraftForge.EVENT_BUS.addListener(DragonScaleArmorEffect::riposte);
+        DMItems.subscribeEvents();
         if (FMLLoader.getDist().isClient()) {
             MinecraftForge.EVENT_BUS.addListener(ConfigCommand::onClientSendMessage);
             MinecraftForge.EVENT_BUS.addListener(ConfigCommand::onGuiOpen);
@@ -69,5 +69,6 @@ public class DragonMounts {
 
     public static void preInit(FMLCommonSetupEvent event) {
         DMCapabilities.register();
+        DMFeatures.setup();
     }
 }

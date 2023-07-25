@@ -44,15 +44,15 @@ public class DragonEggRenderer extends EntityRenderer<HatchableDragonEggEntity> 
                 float axis = entity.getRotationAxis();
                 float angle = entity.getAmplitude();
                 if (angle != 0) {
-                    angle = (float) (Math.sin(angle - partialTicks) * Math.PI / 45f);//... * 8 / 360
+                    angle = (float) (Math.sin(angle - partialTicks) * Math.PI / 45F);//... * 8 / 360
                     double temp = Math.sin(angle);
                     matrixStack.mulPose(new Quaternion(
                             (float) (Math.cos(axis) * temp),
-                            0f,
+                            0F,
                             (float) (Math.sin(axis) * temp),
                             (float) (Math.cos(angle))
                     ));/*It is equivalent (at least assuming so) to:
-                    matrixStack.mulPose(new Vector3f((float)Math.cos(axis), 0, (float)Math.sin(axis)).rotationDegrees((float) (Math.sin(entity.getAmplitude() - partialTicks) * 8f)));
+                    matrixStack.mulPose(new Vector3f((float)Math.cos(axis), 0, (float)Math.sin(axis)).rotationDegrees((float) (Math.sin(entity.getAmplitude() - partialTicks) * 8F)));
                     */
                 }
                 matrixStack.translate(-0.5D, 0.0D, -0.5D);

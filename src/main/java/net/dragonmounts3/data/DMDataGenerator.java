@@ -28,6 +28,7 @@ public class DMDataGenerator {
         generator.addProvider(new DMLootTableProvider(generator));
         generator.addProvider(new DMRecipeProvider(generator));
         generator.addProvider(new DMSoundDefinitionsProvider(generator, helper));
+        generator.addProvider(new DMAdvancementProvider(generator, helper));
     }
 
 }

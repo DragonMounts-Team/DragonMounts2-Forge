@@ -90,7 +90,7 @@ public abstract class LimitedSlot extends Slot {
 
     public static class SingleWoodenChest extends LimitedSlot {
         public static boolean mayPlace(@Nonnull Item item) {
-            return item.is(Tags.Items.CHESTS_WOODEN);
+            return Tags.Items.CHESTS_WOODEN.contains(item);
         }
 
         public SingleWoodenChest(IInventory inventory, int index, int x, int y) {

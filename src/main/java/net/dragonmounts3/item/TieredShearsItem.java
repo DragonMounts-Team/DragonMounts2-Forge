@@ -45,7 +45,7 @@ public class TieredShearsItem extends ShearsItem {
         if (level.isClientSide) return ActionResultType.PASS;
         if (entity instanceof TameableDragonEntity) {
             TameableDragonEntity dragon = (TameableDragonEntity) entity;
-            BlockPos pos = new BlockPos(dragon.getX(), dragon.getY(), dragon.getZ());
+            BlockPos pos = dragon.blockPosition();
             if (dragon.isShearable(stack, level, pos)) {
                 if (dragon.isOwnedBy(player)) {
                     List<ItemStack> drops = dragon.onSheared(player, stack, level, pos, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, stack));

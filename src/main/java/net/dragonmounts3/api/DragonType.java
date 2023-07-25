@@ -2,9 +2,12 @@ package net.dragonmounts3.api;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import net.dragonmounts3.client.resource.AbstractResourceManager;
 import net.dragonmounts3.client.resource.ForestResourceManager;
 import net.dragonmounts3.client.resource.SculkResourceManager;
+import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
 import net.dragonmounts3.util.DragonTypeBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -26,16 +29,16 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import javax.annotation.Nullable;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import static net.dragonmounts3.DragonMounts.MOD_ID;
 
 public class DragonType implements IStringSerializable, Comparable<DragonType> {
+    public static final Codec<DragonType> CODEC = Codec.STRING.comapFlatMap(name -> DataResult.success(byName(name)), DragonType::getSerializedName).stable();
     private static final AtomicInteger COUNTER = new AtomicInteger();
     private static final HashMap<String, DragonType> BY_NAME = new HashMap<>();
     public static final String DATA_PARAMETER_KEY = "DragonType";
@@ -59,6 +62,8 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
         }
     };
 
+    public static final Predicate<HatchableDragonEggEntity> DEFAULT_ENVIRONMENT_PREDICATE = egg -> false;
+
     public static final DragonType AETHER = new DragonTypeBuilder(0x0294BD)
             .addImmunity(DamageSource.MAGIC)
             .addImmunity(DamageSource.HOT_FLOOR)
@@ -66,6 +71,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addImmunity(DamageSource.WITHER)
             .addHabitat(Blocks.LAPIS_BLOCK)
             .addHabitat(Blocks.LAPIS_ORE)
+            .setEnvironmentPredicate(egg -> egg.getY() >= egg.level.getHeight() * 0.625)
             .build("aether");
     public static final DragonType ENCHANT = new DragonTypeBuilder(0x8359AE)
             .addImmunity(DamageSource.MAGIC)
@@ -76,6 +82,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addHabitat(Blocks.ENCHANTING_TABLE)
             .build("enchant");
     public static final DragonType ENDER = new DragonTypeBuilder(0xAB39BE)
+            .notConvertible()
             .putAttributeModifier(Attributes.MAX_HEALTH, "DragonTypeBonus", 10.0D, AttributeModifier.Operation.ADDITION)
             .addImmunity(DamageSource.MAGIC)
             .addImmunity(DamageSource.HOT_FLOOR)
@@ -136,6 +143,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .setEggParticle(ParticleTypes.DRIPPING_LAVA)
             .build("nether");
     public static final DragonType SCULK = new DragonTypeBuilder(0x29DFEB)
+            .notConvertible()
             .putAttributeModifier(Attributes.MAX_HEALTH, "DragonTypeBonus", 10.0D, AttributeModifier.Operation.ADDITION)
             .addImmunity(DamageSource.MAGIC)
             .addImmunity(DamageSource.HOT_FLOOR)
@@ -148,6 +156,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addImmunity(DamageSource.LIGHTNING_BOLT)
             .addImmunity(DamageSource.WITHER)
             .addHabitat(Blocks.BONE_BLOCK)
+            .setEnvironmentPredicate(egg -> egg.getY() <= egg.level.getHeight() * 0.25 || egg.level.getRawBrightness(egg.blockPosition(), 0) < 4)
             .build("skeleton");
     public static final DragonType STORM = new DragonTypeBuilder(0xF5F1E9)
             .build("storm", true, false);
@@ -186,6 +195,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addHabitat(Biomes.RIVER)
             .build("water", true, false);
     public static final DragonType WITHER = new DragonTypeBuilder(0x50260A)
+            .notConvertible()
             .isSkeleton()
             .putAttributeModifier(Attributes.MAX_HEALTH, "DragonTypeBonus", -10.0D, AttributeModifier.Operation.ADDITION)
             .addImmunity(DamageSource.MAGIC)
@@ -215,8 +225,10 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
 
     public final AbstractResourceManager resources;
     public final int color;
+    public final boolean convertible;
     public final boolean isSkeleton;
     public final BiFunction<Integer, Boolean, Vector3d> passengerOffset;
+    public final Predicate<HatchableDragonEggEntity> isHabitatEnvironment;
     private final int id = COUNTER.incrementAndGet();
     private final Style style;
     private final String name;
@@ -224,7 +236,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
     private final ImmutableMultimap<Attribute, AttributeModifier> attributes;
     private final Set<DamageSource> immunities;
     private final Set<Block> blocks;
-    private final Set<RegistryKey<Biome>> biomes;
+    private final List<RegistryKey<Biome>> biomes;
     private final BasicParticleType sneezeParticle;
     private final BasicParticleType eggParticle;
 
@@ -234,6 +246,7 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
         }
         this.resources = resources;
         this.color = builder.color;
+        this.convertible = builder.convertible;
         this.isSkeleton = builder.isSkeleton;
         this.style = Style.EMPTY.withColor(Color.fromRgb(this.color));
         this.name = name;
@@ -241,10 +254,13 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
         this.attributes = builder.attributes.build();
         this.immunities = new HashSet<>(builder.immunities);
         this.blocks = new HashSet<>(builder.blocks);
-        this.biomes = new HashSet<>(builder.biomes);
+        new ArrayList<>();
+        this.biomes = new ArrayList<>();
+        this.biomes.addAll(builder.biomes);
         this.sneezeParticle = builder.sneezeParticle;
         this.eggParticle = builder.eggParticle;
         this.passengerOffset = builder.passengerOffset;
+        this.isHabitatEnvironment = builder.isHabitatEnvironment;
         BY_NAME.put(name, this);
     }
 
@@ -288,8 +304,8 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
         return this.blocks.contains(block);
     }
 
-    public boolean isHabitat(RegistryKey<Biome> biome) {
-        if (this.biomes.isEmpty()) {
+    public boolean isHabitat(@Nullable RegistryKey<Biome> biome) {
+        if (biome == null || this.biomes.isEmpty()) {
             return false;
         }
         return this.biomes.contains(biome);

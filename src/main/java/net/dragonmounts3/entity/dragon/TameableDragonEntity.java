@@ -6,6 +6,7 @@ import net.dragonmounts3.api.IDragonFood;
 import net.dragonmounts3.api.IMutableDragonTypified;
 import net.dragonmounts3.block.entity.DragonCoreBlockEntity;
 import net.dragonmounts3.client.DragonAnimator;
+import net.dragonmounts3.data.tags.DMItemTags;
 import net.dragonmounts3.entity.ai.DragonBodyController;
 import net.dragonmounts3.entity.ai.DragonMovementController;
 import net.dragonmounts3.entity.dragon.helper.DragonBodyHelper;
@@ -27,6 +28,7 @@ import net.minecraft.block.HorizontalBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.*;
+import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.item.EnderCrystalEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.passive.IFlyingAnimal;
@@ -76,7 +78,7 @@ import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
  * @see net.minecraft.entity.passive.horse.HorseEntity
  */
 @ParametersAreNonnullByDefault
-public class TameableDragonEntity extends TameableEntity implements IEquipable, IForgeShearable, IMutableDragonTypified, IFlyingAnimal {
+public class TameableDragonEntity extends TameableEntity implements IForgeShearable, IMutableDragonTypified, IFlyingAnimal {
     public static final UUID AGE_MODIFIER_UUID = UUID.fromString("2d147cda-121b-540e-bb24-435680aa374a");
     // base attributes
     public static final double BASE_GROUND_SPEED = 0.4;
@@ -232,7 +234,7 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     }
 
     public void setChest(@Nonnull ItemStack stack, boolean sync) {
-        this.hasChest = stack.getItem().is(Tags.Items.CHESTS_WOODEN);
+        this.hasChest = Tags.Items.CHESTS_WOODEN.contains(stack.getItem());
         if (!this.hasChest) {
             this.inventory.dropContents(true);
         }
@@ -270,7 +272,7 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
                     SoundEvents.ENDER_DRAGON_FLAP,
                     SoundCategory.VOICE,
                     (1 - speed) * this.getVoicePitch(),
-                    (0.5f - speed * 0.2f) * this.getSoundVolume(),
+                    (0.5F - speed * 0.2F) * this.getSoundVolume(),
                     true
             );
         }
@@ -423,7 +425,7 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
             this.armor = this.entityData.get(DATA_ARMOR_ITEM);
         } else if (DATA_CHEST_ITEM.equals(key)) {
             this.chest = this.entityData.get(DATA_CHEST_ITEM);
-            this.hasChest = this.chest.getItem().getItem().is(Tags.Items.CHESTS_WOODEN);
+            this.hasChest = Tags.Items.CHESTS_WOODEN.contains(this.chest.getItem());
         } else {
             super.onSyncedDataUpdated(key);
         }
@@ -475,6 +477,10 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         return this.hasChest;
     }
 
+    public boolean isSaddled() {
+        return this.isSaddled;
+    }
+
     @Override
     public void refreshDimensions() {
         double d0 = this.getX();
@@ -492,7 +498,7 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     @Nonnull
     @Override
     public EntitySize getDimensions(Pose pose) {
-        return this.getType().getDimensions().scale(DragonLifeStage.getSize(this.stage, this.stage.duration >> 1));
+        return this.getType().getDimensions().scale(DragonLifeStage.getSizeAverage(this.stage));
     }
 
     @Override
@@ -506,7 +512,7 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         ItemStack stack = player.getItemInHand(hand);
         Item item = stack.getItem();
         if (this.level.isClientSide) {
-            if (DragonFood.test(item) || item.is(Tags.Items.CHESTS_WOODEN) || item instanceof SaddleItem || item instanceof DragonArmorItem || this.isOwnedBy(player)) {
+            if (DragonFood.test(item) || DMItemTags.BATONS.contains(item) || Tags.Items.CHESTS_WOODEN.contains(item) || item instanceof SaddleItem || item instanceof DragonArmorItem || this.isOwnedBy(player)) {
                 return ActionResultType.CONSUME;
             }
             return ActionResultType.PASS;
@@ -519,10 +525,12 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
             return ActionResultType.SUCCESS;
         }
         if (this.isOwnedBy(player)) {
-            if (this.getSaddle().isEmpty() && LimitedSlot.Saddle.mayPlace(item)) {
-                this.isSaddled = true;//avoid playing sound
-                this.setSaddle(stack.copy(), true);
-                item.interactLivingEntity(stack, player, this, hand);//play sound, shrink stack
+            if (DMItemTags.BATONS.contains(item)) {
+                this.setOrderedToSit(!this.isOrderedToSit());
+                return ActionResultType.SUCCESS;
+            }
+            if (!this.isBaby() && this.getSaddle().isEmpty() && LimitedSlot.Saddle.mayPlace(item)) {
+                this.setSaddle(stack.split(1), true);
                 return ActionResultType.SUCCESS;
             }
             if (this.getArmor().isEmpty() && LimitedSlot.DragonArmor.mayPlace(item)) {
@@ -606,13 +614,16 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
         if (flag) {
             ModifiableAttributeInstance attribute = this.getAttribute(Attributes.MAX_HEALTH);
             if (attribute != null) {
+                double temp = attribute.getValue();
                 attribute.removeModifier(AGE_MODIFIER_UUID);
                 attribute.addTransientModifier(new AttributeModifier(
                         AGE_MODIFIER_UUID,
                         "DragonAgeBonus",
-                        Math.max(DragonLifeStage.getSize(stage, stage.duration >> 1), 0.1f),
+                        Math.max(DragonLifeStage.getSizeAverage(stage), 0.1F),
                         AttributeModifier.Operation.MULTIPLY_TOTAL
                 ));
+                temp = attribute.getValue() - temp;
+                this.setHealth(temp > 0 ? this.getHealth() + (float) temp : this.getHealth());
             }
         }
         if (this.stage == stage) return;
@@ -657,7 +668,7 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     public void onPassengerTurned(Entity entity) {
         entity.setYBodyRot(this.yRot);
         float angle = MathHelper.wrapDegrees(entity.yRot - this.yRot);
-        float clamped = MathHelper.clamp(angle, -60.0f, 60.0f);
+        float clamped = MathHelper.clamp(angle, -60.0F, 60.0F);
         entity.yRotO += clamped - angle;
         entity.yRot += clamped - angle;
         entity.setYHeadRot(entity.yRot);
@@ -687,7 +698,7 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     @Override
     public float getEyeHeight(Pose pose) {
         float height = super.getStandingEyeHeight(pose, this.getDimensions(pose));
-        return this.isInSittingPose() ? height * 0.8f : height;
+        return this.isInSittingPose() ? height * 0.8F : height;
     }
 
     @Nonnull
@@ -702,7 +713,7 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     public void travel(Vector3d travelVector) {
         boolean flying = isFlying();
         float speed = (float)
-                (flying ? this.getAttributeValue(Attributes.FLYING_SPEED) * 0.25f : this.getAttributeValue(Attributes.MOVEMENT_SPEED));
+                (flying ? this.getAttributeValue(Attributes.FLYING_SPEED) * 0.25F : this.getAttributeValue(Attributes.MOVEMENT_SPEED));
         this.setSpeed(speed);
         if (this.canBeControlledByRider()) {// Were being controlled; override ai movement
             LivingEntity driver = (LivingEntity) this.getControllingPassenger();
@@ -711,10 +722,10 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
             // rotate head to match driver.
             float yaw = driver.yHeadRot;
             if (moveForward > 0) {// rotate in the direction of the drivers controls
-                yaw += (float) MathHelper.atan2(driver.zza, driver.xxa) * (180f / MathUtil.PI) - 90;
+                yaw += (float) MathHelper.atan2(driver.zza, driver.xxa) * (180F / MathUtil.PI) - 90;
             }
             this.yHeadRot = yaw;
-            this.xRot *= 0.68f;
+            this.xRot *= 0.68F;
             // rotate body towards the head
             this.yRot = (MathHelper.rotateIfNecessary(this.yRot, this.yHeadRot, 45));
             if (this.isControlledByLocalInstance()) {// Client applies motion
@@ -725,7 +736,7 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
                     if (moveForward > 0) {
                         //moveForward *= travelVector.z;
                         if (DragonMountsConfig.CLIENT.camera_control.get()) {
-                            moveY = MathHelper.clamp(moveY - driver.xRot / 90.0d, -1, 1);
+                            moveY = MathHelper.clamp(moveY - driver.xRot / 90.0, -1, 1);
                         }
                     } else {
                         moveForward = 0;
@@ -748,8 +759,8 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
             this.moveRelative(speed, travelVector);
             this.move(MoverType.SELF, this.getDeltaMovement());
             if (this.getDeltaMovement().lengthSqr() < 0.1) // we're not actually going anywhere, bob up and down.
-                this.setDeltaMovement(this.getDeltaMovement().add(0, Math.sin(this.tickCount / 4f) * 0.03, 0));
-            this.setDeltaMovement(this.getDeltaMovement().scale(0.9f)); // smoothly slow down
+                this.setDeltaMovement(this.getDeltaMovement().add(0, Math.sin(this.tickCount / 4F) * 0.03, 0));
+            this.setDeltaMovement(this.getDeltaMovement().scale(0.9F)); // smoothly slow down
             this.calculateEntityAnimation(this, true);
         } else {
             super.travel(travelVector);
@@ -758,6 +769,25 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
 
 
     //----------MobEntity----------
+
+    protected void registerGoals() {
+        this.goalSelector.addGoal(1, new SitGoal(this));
+        /*this.goalSelector.addGoal(4, new LeapAtTargetGoal(this, 0.4F));
+        this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.0D, true));
+        this.goalSelector.addGoal(6, new FollowOwnerGoal(this, 1.0D, 10.0F, 2.0F, false));
+        this.goalSelector.addGoal(7, new BreedGoal(this, 1.0D));
+        this.goalSelector.addGoal(8, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
+        this.goalSelector.addGoal(9, new BegGoal(this, 8.0F));
+        this.goalSelector.addGoal(10, new LookAtGoal(this, PlayerEntity.class, 8.0F));
+        this.goalSelector.addGoal(10, new LookRandomlyGoal(this));
+        this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this)).setAlertOthers());
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::isAngryAt));
+        this.targetSelector.addGoal(5, new NonTamedTargetGoal<>(this, AnimalEntity.class, false, PREY_SELECTOR));
+        this.targetSelector.addGoal(6, new NonTamedTargetGoal<>(this, TurtleEntity.class, false, TurtleEntity.BABY_ON_LAND_SELECTOR));
+        this.targetSelector.addGoal(7, new NearestAttackableTargetGoal<>(this, AbstractSkeletonEntity.class, false));*/
+    }
 
     @Nonnull
     @Override
@@ -905,25 +935,6 @@ public class TameableDragonEntity extends TameableEntity implements IEquipable, 
     public boolean isShearable(@Nonnull ItemStack stack, World world, BlockPos pos) {
         Item item = stack.getItem();
         return this.isAlive() && this.stage.ordinal() >= 2 && !this.isSheared() && item instanceof TieredShearsItem && ((TieredShearsItem) item).getTier().getLevel() >= 3;
-    }
-
-    //----------IEquipable----------
-
-    @Override
-    public boolean isSaddled() {
-        return this.isSaddled;
-    }
-
-    @Override
-    public boolean isSaddleable() {
-        return this.isAlive() && !this.isBaby();
-    }
-
-    @Override
-    public void equipSaddle(@Nullable SoundCategory category) {
-        if (category != null) {
-            this.level.playSound(null, this, SoundEvents.HORSE_SADDLE, category, 0.5F, 1.0F);
-        }
     }
 
     @Nonnull

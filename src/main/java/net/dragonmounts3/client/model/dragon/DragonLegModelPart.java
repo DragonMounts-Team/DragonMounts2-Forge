@@ -60,14 +60,14 @@ public abstract class DragonLegModelPart extends ModelRenderer {
             final ModelRenderer renderer = new ModelRenderer(model);
             renderer.texOffs(210, 0);
             renderer.setPos(0, config.getShankLength(false) + config.shankOffset, 0);
-            return renderer.addBox(config.defaultOffset, config.footOffset, length * -0.75f, config.width, config.footHeight, length);
+            return renderer.addBox(config.defaultOffset, config.footOffset, length * -0.75F, config.width, config.footHeight, length);
         }
 
         @Override
         protected ModelRenderer createToe(Model model, DragonLegConfig config) {
             final int length = config.getToeLength(false);
             final ModelRenderer renderer = new ModelRenderer(model);
-            renderer.setPos(0, 0, config.getFootLength(false) * -0.75f - config.footOffset / 2f);
+            renderer.setPos(0, 0, config.getFootLength(false) * -0.75F - config.footOffset / 2F);
             renderer.texOffs(176, 0);
             return renderer.addBox(config.defaultOffset, config.footOffset, -length, config.width, config.footHeight, length);
         }
@@ -102,14 +102,14 @@ public abstract class DragonLegModelPart extends ModelRenderer {
             final ModelRenderer renderer = new ModelRenderer(model);
             renderer.texOffs(180, 29);
             renderer.setPos(0, config.getShankLength(true) + config.shankOffset, 0);
-            return renderer.addBox(config.defaultOffset, config.footOffset, length * -0.75f, config.width, config.footHeight, length);
+            return renderer.addBox(config.defaultOffset, config.footOffset, length * -0.75F, config.width, config.footHeight, length);
         }
 
         @Override
         protected ModelRenderer createToe(Model model, DragonLegConfig config) {
             final int length = config.getToeLength(true);
             final ModelRenderer renderer = new ModelRenderer(model);
-            renderer.setPos(0, 0, config.getFootLength(true) * -0.75f - config.footOffset / 2f);
+            renderer.setPos(0, 0, config.getFootLength(true) * -0.75F - config.footOffset / 2F);
             renderer.texOffs(215, 29);
             return renderer.addBox(config.defaultOffset, config.footOffset, -length, config.width, config.footHeight, length);
         }

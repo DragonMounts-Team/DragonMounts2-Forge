@@ -45,7 +45,7 @@ public class SRiposteEffectPacket {
                 for (int i = -30; i < 31; ++i) {
                     level.addParticle(ParticleTypes.CLOUD, false, x, y, z, Math.sin(i), 0, Math.cos(i));
                 }
-                level.playSound(minecraft.player, entity.blockPosition(), SoundEvents.GRASS_BREAK, SoundCategory.BLOCKS, 0.46f, 1.0f);
+                level.playSound(minecraft.player, entity.blockPosition(), SoundEvents.GRASS_BREAK, SoundCategory.BLOCKS, 0.46F, 1.0F);
 
             }
             if ((this.flag & 0B10) == 0B10) {
@@ -53,7 +53,7 @@ public class SRiposteEffectPacket {
                 for (int i = -27; i < 28; ++i) {
                     level.addParticle(ParticleTypes.FLAME, x, y, z, Math.sin(i) / 3, 0, Math.cos(i) / 3);
                 }
-                level.playSound(minecraft.player, entity.blockPosition(), SoundEvents.BLAZE_SHOOT, SoundCategory.NEUTRAL, 0.46f, 1.0f);
+                level.playSound(minecraft.player, entity.blockPosition(), SoundEvents.BLAZE_SHOOT, SoundCategory.NEUTRAL, 0.46F, 1.0F);
 
             }
         });

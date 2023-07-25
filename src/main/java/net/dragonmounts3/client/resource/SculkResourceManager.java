@@ -10,7 +10,7 @@ public class SculkResourceManager extends AbstractResourceManager {
     public static final ResourceLocation GLOW = prefix(TEXTURES_ROOT + "ender/glow.png");
 
     public SculkResourceManager() {
-        super(false, false, 1.6f);
+        super(false, false, 1.6F);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class DragonWingModelPart extends ModelRenderer {
     }
 
     protected void buildWing() {
-        //setRenderScale(1.1f);
+        //setRenderScale(1.1F);
         this.setPos(-10, 5, 4);
         this.texOffs(0, 152).addBox(-28, -3, -3, 28, 6, 6);
         this.texOffs(116, 232).addBox(-28, 0, 2, 28, 0, 24);

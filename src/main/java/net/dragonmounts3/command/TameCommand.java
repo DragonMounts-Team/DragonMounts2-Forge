@@ -48,7 +48,7 @@ public class TameCommand {
         return tame(context, EntityArgument.getEntities(context, "targets"), getSingleProfileOrException(context, "owner"), forced);
     }
 
-    private static int tame(CommandContext<CommandSource> context, Collection<? extends Entity> targets, GameProfile owner, boolean forced) {
+    public static int tame(CommandContext<CommandSource> context, Collection<? extends Entity> targets, GameProfile owner, boolean forced) {
         CommandSource source = context.getSource();
         ServerWorld level = source.getLevel();
         UUID uuid = owner.getId();

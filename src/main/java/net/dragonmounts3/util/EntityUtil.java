@@ -9,6 +9,7 @@ import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Map;
@@ -16,6 +17,10 @@ import java.util.Map;
 import static net.dragonmounts3.entity.dragon.TameableDragonEntity.FLYING_DATA_PARAMETER_KEY;
 
 public class EntityUtil {
+    public static void setPos(Entity entity, BlockPos pos) {
+        entity.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+    }
+
     public static boolean addOrMergeEffect(LivingEntity entity, Effect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon) {
         EffectInstance instance = entity.getEffect(effect);
         return entity.addEffect(new EffectInstance(effect, instance != null && instance.getAmplifier() == amplifier ? duration + instance.getDuration() : duration, amplifier, ambient, visible, showIcon, null));

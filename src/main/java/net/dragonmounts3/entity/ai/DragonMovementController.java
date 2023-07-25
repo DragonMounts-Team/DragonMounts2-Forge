@@ -32,7 +32,7 @@ public class DragonMovementController extends MovementController {
             float speed = (float) (this.speedModifier * this.mob.getAttributeValue(Attributes.FLYING_SPEED));
             double distSq = Math.sqrt(xDif * xDif + zDif * zDif);
             this.mob.setSpeed(speed);
-            if (Math.abs(yDif) > 1.0E-5f || Math.abs(distSq) > 1.0E-5f) {
+            if (Math.abs(yDif) > 1.0E-5F || Math.abs(distSq) > 1.0E-5F) {
                 this.mob.setYya(yDif > 0d ? speed : -speed);
             }
             float yaw = (float) (MathHelper.atan2(zDif, xDif) * (180F / MathUtil.PI) - 90.0F);

@@ -46,7 +46,7 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
         boolean hasSideTailScale = dragon.getDragonType().resources.hasSideTailScale;
         this.tail.leftScale.visible = this.tail.rightScale.visible = hasSideTailScale;
         this.tail.middleScale.visible = !hasSideTailScale;
-        this.head.scaleX = this.head.scaleY = this.head.scaleZ = 0.92f;
+        this.head.scaleX = this.head.scaleY = this.head.scaleZ = 0.92F;
         dragon.animator.setPartialTicks(partialTick);
 
     }
@@ -78,7 +78,7 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
 
     public void renderWings(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         matrixStack.pushPose();
-        matrixStack.scale(1.1f, 1.1f, 1.1f);
+        matrixStack.scale(1.1F, 1.1F, 1.1F);
         this.wing.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         matrixStack.last().pose().multiply(INVERSE_SCALE);
         matrixStack.last().normal().mul(INVERSE_NORMS);

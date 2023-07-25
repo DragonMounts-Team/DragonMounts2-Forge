@@ -3,6 +3,8 @@
   "block.dragonmounts.dragon_core": "Dragon Core",
   "block.dragonmounts.dragon_egg": "Dragon Egg",
   "block.dragonmounts.dragon_nest": "Nest Block",
+  "commands.dragonmounts.config.query": "Config %s is currently set to: %s",
+  "commands.dragonmounts.config.set": "Config %s is now set to: %s",
   "commands.dragonmounts.free.multiple": "Made %s entities freed",
   "commands.dragonmounts.free.single": "Made %s freed",
   "commands.dragonmounts.stage.get": "The life stage of %s is currently set to: %s",

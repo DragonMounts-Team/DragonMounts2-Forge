@@ -1,4 +1,4 @@
-package net.dragonmounts3.api;
+package net.dragonmounts3.util.registry;
 
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;

@@ -4,6 +4,7 @@ import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.init.DMItems;
+import net.dragonmounts3.util.EntityUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -60,7 +61,7 @@ public class FilledDragonAmuletItem extends DragonAmuletItem implements IDragonT
             if (!level.isClientSide) {
                 BlockPos pos = rayTraceResult.getBlockPos().relative(rayTraceResult.getDirection());
                 TameableDragonEntity dragon = this.release(stack.getTag(), level, this.type);
-                dragon.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+                EntityUtil.setPos(dragon, pos);
                 level.addFreshEntity(dragon);
                 ItemStack newStack = new ItemStack(DMItems.DRAGON_AMULET.get());
                 player.setItemInHand(hand, newStack);

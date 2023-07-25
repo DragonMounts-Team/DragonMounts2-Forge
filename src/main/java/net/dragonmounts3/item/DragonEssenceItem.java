@@ -4,6 +4,7 @@ import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.DragonLifeStage;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
+import net.dragonmounts3.util.EntityUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -49,7 +50,7 @@ public class DragonEssenceItem extends Item implements IDragonTypified, IDragonC
                 BlockPos pos = rayTraceResult.getBlockPos().relative(rayTraceResult.getDirection());
                 TameableDragonEntity dragon = this.release(stack.getTag(), level, this.type);
                 dragon.setDragonType(this.type, true);
-                dragon.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+                EntityUtil.setPos(dragon, pos);
                 level.addFreshEntity(dragon);
                 if (!player.abilities.instabuild) {
                     stack.shrink(1);

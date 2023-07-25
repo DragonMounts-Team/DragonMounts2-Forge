@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMultimap;
 import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.client.resource.AbstractResourceManager;
 import net.dragonmounts3.client.resource.DefaultResourceManager;
+import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -18,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import static net.dragonmounts3.DragonMounts.MOD_ID;
 
@@ -28,10 +30,12 @@ public class DragonTypeBuilder {
     public final Set<DamageSource> immunities = new HashSet<>();
     public final Set<Block> blocks = new HashSet<>();
     public final Set<RegistryKey<Biome>> biomes = new HashSet<>();
+    public boolean convertible = true;
     public boolean isSkeleton = false;
     public BasicParticleType sneezeParticle = ParticleTypes.LARGE_SMOKE;
     public BasicParticleType eggParticle = ParticleTypes.MYCELIUM;
     public BiFunction<Integer, Boolean, Vector3d> passengerOffset = DragonType.DEFAULT_PASSENGER_OFFSET;
+    public Predicate<HatchableDragonEggEntity> isHabitatEnvironment = DragonType.DEFAULT_ENVIRONMENT_PREDICATE;
 
     public DragonTypeBuilder(int color) {
         this.color = color;
@@ -46,7 +50,12 @@ public class DragonTypeBuilder {
         this.addImmunity(DamageSource.DRAGON_BREATH); // ignore damage from vanilla ender dragon. I kinda disabled this because it wouldn't make any sense, feel free to re enable
     }
 
-    public final DragonTypeBuilder isSkeleton() {
+    public DragonTypeBuilder notConvertible() {
+        this.convertible = false;
+        return this;
+    }
+
+    public DragonTypeBuilder isSkeleton() {
         this.isSkeleton = true;
         return this;
     }
@@ -83,6 +92,11 @@ public class DragonTypeBuilder {
 
     public DragonTypeBuilder setPassengerOffset(BiFunction<Integer, Boolean, Vector3d> passengerOffset) {
         this.passengerOffset = passengerOffset;
+        return this;
+    }
+
+    public DragonTypeBuilder setEnvironmentPredicate(Predicate<HatchableDragonEggEntity> predicate) {
+        this.isHabitatEnvironment = predicate;
         return this;
     }
 

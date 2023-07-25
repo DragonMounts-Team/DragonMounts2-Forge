@@ -22,7 +22,7 @@ public abstract class AbstractResourceManager {
         this.hasTailHorns = hasTailHorns;
         this.hasSideTailScale = hasSideTailScale;
         this.modelRenderScale = modelScale;
-        this.modelPositionScale = modelScale / 16.0f;
+        this.modelPositionScale = modelScale / 16.0F;
     }
 
     public ResourceLocation getChest(TameableDragonEntity dragon) {

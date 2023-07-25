@@ -1,9 +1,9 @@
 package net.dragonmounts3.data.loot;
 
+import net.dragonmounts3.init.DMBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.data.loot.BlockLootTables;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.LootTables;
+import net.minecraft.loot.*;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
@@ -15,7 +15,9 @@ public class DMBlockLoot extends BlockLootTables {
 
     @Override
     protected void addTables() {
-
+        this.add(DMBlocks.DRAGON_CORE.get(), LootTable.lootTable());
+        this.dropSelf(DMBlocks.DRAGON_NEST.get());
+        DMBlocks.HATCHABLE_DRAGON_EGG.forEach(this::dropDragonEgg);
     }
 
     public void accept(@Nonnull BiConsumer<ResourceLocation, LootTable.Builder> biConsumer) {
@@ -36,4 +38,7 @@ public class DMBlockLoot extends BlockLootTables {
         }
     }
 
+    protected void dropDragonEgg(Block block) {
+        this.add(block, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantRange.exactly(1)).add(ItemLootEntry.lootTableItem(block))));
+    }
 }

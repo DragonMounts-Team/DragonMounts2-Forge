@@ -1,14 +1,12 @@
 package net.dragonmounts3.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import net.dragonmounts3.entity.dragon.DragonLifeStage;
 import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
-import net.minecraft.command.arguments.EntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -21,20 +19,12 @@ import static net.dragonmounts3.entity.dragon.TameableDragonEntity.AGE_DATA_PARA
 public class StageCommand {
     public static LiteralArgumentBuilder<CommandSource> register() {
         return Commands.literal("stage").requires(source -> source.hasPermission(3)).then(
-                addValuesTo(Commands.argument("target", EntityArgument.entity()))
+               DragonLifeStage.applyValues(Commands.argument("target", EntityArgument.entity()))
                         .executes(context -> get(context.getSource(), EntityArgument.getEntity(context, "target")))
         );
     }
 
-    private static RequiredArgumentBuilder<CommandSource, EntitySelector> addValuesTo(RequiredArgumentBuilder<CommandSource, EntitySelector> builder) {
-        builder.then(Commands.literal("egg").executes(context -> egg(context.getSource(), EntityArgument.getEntity(context, "target"))));
-        for (DragonLifeStage stage : DragonLifeStage.values()) {
-            builder.then(Commands.literal(stage.name().toLowerCase()).executes(context -> set(context.getSource(), EntityArgument.getEntity(context, "target"), stage)));
-        }
-        return builder;
-    }
-
-    private static int egg(CommandSource source, Entity target) {
+    public static int egg(CommandSource source, Entity target) {
         if (target instanceof TameableDragonEntity) {
             ServerWorld level = source.getLevel();
             HatchableDragonEggEntity egg = new HatchableDragonEggEntity(target.level);
@@ -53,7 +43,7 @@ public class StageCommand {
         return 1;
     }
 
-    private static int get(CommandSource source, Entity target) {
+    public static int get(CommandSource source, Entity target) {
         if (target instanceof TameableDragonEntity) {
             source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.stage.get", target.getDisplayName(), ((TameableDragonEntity) target).getLifeStage().getText()), true);
         } else if (target instanceof HatchableDragonEggEntity) {
@@ -65,7 +55,7 @@ public class StageCommand {
         return 1;
     }
 
-    private static int set(CommandSource source, Entity target, DragonLifeStage stage) {
+    public static int set(CommandSource source, Entity target, DragonLifeStage stage) {
         if (target instanceof TameableDragonEntity) {
             TameableDragonEntity dragon = (TameableDragonEntity) target;
             dragon.setLifeStage(stage, true, true);

@@ -1,5 +1,7 @@
-package net.dragonmounts3.api;
+package net.dragonmounts3.util.registry;
 
+import net.dragonmounts3.api.DragonType;
+import net.dragonmounts3.api.IDragonTypified;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistryEntry;

@@ -2,9 +2,14 @@ package net.dragonmounts3.init;
 
 import mcp.MethodsReturnNonnullByDefault;
 import net.dragonmounts3.DragonMounts;
-import net.dragonmounts3.api.*;
+import net.dragonmounts3.api.DragonScaleMaterial;
+import net.dragonmounts3.api.DragonScaleTier;
+import net.dragonmounts3.api.DragonType;
+import net.dragonmounts3.block.HatchableDragonEggBlock;
 import net.dragonmounts3.entity.carriage.CarriageType;
 import net.dragonmounts3.item.*;
+import net.dragonmounts3.util.registry.DragonTypifiedRegistry;
+import net.dragonmounts3.util.registry.TypifiedRegistry;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -13,6 +18,7 @@ import net.minecraft.item.Item.Properties;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -24,7 +30,6 @@ import static net.dragonmounts3.init.DMItemGroups.*;
 
 @MethodsReturnNonnullByDefault
 public class DMItems {
-
     public static final DeferredRegister<Item> ITEMS = DragonMounts.create(ForgeRegistries.ITEMS);
     public static final TypifiedRegistry<CarriageType, CarriageItem> CARRIAGE = new TypifiedRegistry<>();
     public static final DragonTypifiedRegistry<DragonEssenceItem> DRAGON_ESSENCE = new DragonTypifiedRegistry<>();
@@ -415,5 +420,12 @@ public class DMItems {
         for (DragonScaleShieldItem item : DRAGON_SCALE_SHIELD) {
             ItemModelsProperties.register(item, new ResourceLocation("blocking"), DMItems::getBlockingItemProperty);
         }
+    }
+
+    public static void subscribeEvents() {
+        MinecraftForge.EVENT_BUS.addListener(DragonScaleArmorEffect::xpBonus);
+        MinecraftForge.EVENT_BUS.addListener(DragonScaleArmorEffect::meleeChanneling);
+        MinecraftForge.EVENT_BUS.addListener(DragonScaleArmorEffect::riposte);
+        MinecraftForge.EVENT_BUS.addListener(HatchableDragonEggBlock::interact);
     }
 }

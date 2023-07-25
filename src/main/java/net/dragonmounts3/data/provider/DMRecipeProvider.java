@@ -35,10 +35,10 @@ public class DMRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildShapelessRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
-        smelting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR.get()), Items.IRON_INGOT, 0.1f, 200).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR.get())).save(consumer, prefix("iron_ingot_form_smelting"));
-        smelting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR.get()), Items.GOLD_INGOT, 0.1f, 200).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR.get())).save(consumer, prefix("gold_ingot_form_smelting"));
-        blasting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR.get()), Items.IRON_INGOT, 0.1f, 100).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR.get())).save(consumer, prefix("iron_ingot_form_blasting"));
-        blasting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR.get()), Items.GOLD_INGOT, 0.1f, 100).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR.get())).save(consumer, prefix("gold_ingot_form_blasting"));
+        smelting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR.get()), Items.IRON_INGOT, 0.1F, 200).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR.get())).save(consumer, prefix("iron_ingot_form_smelting"));
+        smelting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR.get()), Items.GOLD_INGOT, 0.1F, 200).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR.get())).save(consumer, prefix("gold_ingot_form_smelting"));
+        blasting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR.get()), Items.IRON_INGOT, 0.1F, 100).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR.get())).save(consumer, prefix("iron_ingot_form_blasting"));
+        blasting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR.get()), Items.GOLD_INGOT, 0.1F, 100).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR.get())).save(consumer, prefix("gold_ingot_form_blasting"));
         dragonArmor(consumer, Tags.Items.INGOTS_IRON, Tags.Items.STORAGE_BLOCKS_IRON, DMItems.IRON_DRAGON_ARMOR.get());
         dragonArmor(consumer, Tags.Items.INGOTS_GOLD, Tags.Items.STORAGE_BLOCKS_GOLD, DMItems.GOLDEN_DRAGON_ARMOR.get());
         dragonArmor(consumer, Tags.Items.GEMS_EMERALD, Tags.Items.STORAGE_BLOCKS_EMERALD, DMItems.EMERALD_DRAGON_ARMOR.get());
@@ -85,11 +85,11 @@ public class DMRecipeProvider extends RecipeProvider {
         shaped(Items.DISPENSER)
                 .define('R', Tags.Items.DUSTS_REDSTONE)
                 .define('#', Tags.Items.COBBLESTONE)
-                .define('X', DMItemTags.DRAGON_SCALE_BOW)
+                .define('X', DMItemTags.DRAGON_SCALE_BOWS)
                 .pattern("###")
                 .pattern("#X#")
                 .pattern("#R#")
-                .unlockedBy("has_bow", has(DMItemTags.DRAGON_SCALE_BOW))
+                .unlockedBy("has_bow", has(DMItemTags.DRAGON_SCALE_BOWS))
                 .save(consumer, prefix(Objects.requireNonNull(Items.DISPENSER.getRegistryName()).getPath()));
         shaped(DMItems.DRAGON_AMULET.get())
                 .define('#', Tags.Items.STRING)

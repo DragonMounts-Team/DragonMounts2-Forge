@@ -16,7 +16,7 @@ public class DragonHeadModelPart extends ScaledModelPart {
     public static final int JAW_LENGTH = 16;
     public static final int HORN_THICK = 3;
     public static final int HORN_LENGTH = 12;
-    public static final float HORN_OFS = -HORN_THICK / 2f;
+    public static final float HORN_OFS = -HORN_THICK / 2F;
     public final ModelRenderer lowerJaw;
 
     public DragonHeadModelPart(Model model) {

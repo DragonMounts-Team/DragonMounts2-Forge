@@ -17,7 +17,7 @@ public class DragonTailModelPart extends ScaledModelPart {
     public static final int TAIL_SEGMENT_COUNT = 12;
     public static final int HORN_THICK = 3;
     public static final int HORN_LENGTH = 32;
-    public static final float HORN_OFS = -HORN_THICK / 2f;
+    public static final float HORN_OFS = -HORN_THICK / 2F;
     protected final Segment[] segments = new Segment[TAIL_SEGMENT_COUNT];
     public final ModelRenderer middleScale;
     public final ModelRenderer leftScale;
@@ -56,7 +56,7 @@ public class DragonTailModelPart extends ScaledModelPart {
 
     protected ModelRenderer createHorn(Model model, boolean mirror) {
         final ModelRenderer renderer = new ModelRenderer(model).texOffs(0, 117).addBox(HORN_OFS, HORN_OFS, HORN_OFS, HORN_THICK, HORN_THICK, HORN_LENGTH, mirror);
-        renderer.setPos(0, HORN_OFS, TAIL_SIZE / 2f);
+        renderer.setPos(0, HORN_OFS, TAIL_SIZE / 2F);
         renderer.mirror = mirror;
         return applyRotateAngle(renderer, Math.toRadians(-15), Math.toRadians(mirror ? 145 : -145), 0);
     }

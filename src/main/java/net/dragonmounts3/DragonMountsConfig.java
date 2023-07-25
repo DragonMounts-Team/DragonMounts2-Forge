@@ -46,7 +46,7 @@ public class DragonMountsConfig {
 		public final ForgeConfigSpec.ConfigValue<Double> base_damage;
 		public final ForgeConfigSpec.ConfigValue<Double> base_armor;
 		// config properties
-		public final ForgeConfigSpec.ConfigValue<Boolean> disableBlockOverride;
+		public final ForgeConfigSpec.ConfigValue<Boolean> block_override;
 		public final ForgeConfigSpec.ConfigValue<Boolean> shouldChangeBreedViaHabitatOrBlock;
 		public final ForgeConfigSpec.ConfigValue<Boolean> canDragonDespawn;
 		public final ForgeConfigSpec.ConfigValue<Boolean> canIceBreathBePermanent;
@@ -86,8 +86,8 @@ public class DragonMountsConfig {
 			this.base_damage = builder.comment("Damage for dragon attack").define("base_damage", 12.0D);
 			this.base_armor = builder.comment("Makes Dragons Tougher or Not").define("base_armor", 8.0D);
 			builder.pop();
-			builder.push("property");
-			disableBlockOverride = builder.comment("Disables right-click override on the vanilla dragon egg block. May help to fix issues with other mods.").define("disable block override", false);
+			builder.push("gameplay");
+			block_override = builder.comment("Enables right-click override on the vanilla dragon egg block. May help to fix issues with other mods.").define("block_override", true);
 			shouldChangeBreedViaHabitatOrBlock = builder.comment("Enables changing of egg breeds via block or environment").define("can eggs change breeds", true);
 			canDragonDespawn = builder.comment("Enables or Disables dragons ability to despawn, works only for adult non tamed dragons").define("can dragons despawn", true);
 			canIceBreathBePermanent = builder.comment("refers to the ice breath for the dragon in water, set true if you want the ice block to be permanent. false otherwise.").define("can ice breath be permanent", false);
@@ -106,6 +106,8 @@ public class DragonMountsConfig {
 			dragonBlacklistedDimensions = builder.comment("Dragons cannot spawn in these dimensions' IDs").defineList("Blacklisted Dragon Dimensions", Arrays.asList(-1, 1), i -> i instanceof Integer);
 			dragonWhitelistedDimensions = builder.comment("Dragons can only spawn in these dimensions' IDs").defineList("Whitelisted Dragon Dimensions", Collections.singletonList(0), i -> i instanceof Integer);
 			// config properties
+			builder.pop();
+			builder.push("property");
 			FireNestRarity = builder.comment("Determines how rare fire dragon nests will mainly spawn. Higher numbers = higher rarity (in other words, how many blocks for another nest to spawn), "
 					+ "(Note: Experiment on a new world when editing these numbers because it may cause damages to your own worlds)").define("Fire Nest Rarity", 150);
 			TerraNestRarity = builder.comment("Determines how rare terra dragon nests will mainly spawn. Higher numbers = higher rarity (in other words, how many blocks for another nest to spawn), "

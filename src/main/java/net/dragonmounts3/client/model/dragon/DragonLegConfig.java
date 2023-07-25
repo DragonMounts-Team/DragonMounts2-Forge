@@ -23,24 +23,24 @@ public class DragonLegConfig {
         this.width = width;
         this.footHeight = footHeight;
         this.shankWidth = width - 2;
-        this.defaultOffset = -width / 2f;
-        this.shankOffset = -this.shankWidth / 2f;
-        this.footOffset = -this.footHeight / 2f;
+        this.defaultOffset = -width / 2F;
+        this.shankOffset = -this.shankWidth / 2F;
+        this.footOffset = -this.footHeight / 2F;
     }
 
     public int getThighLength(boolean hind) {
-        return (int) (this.length * (hind ? 0.90f : 0.77f));
+        return (int) (this.length * (hind ? 0.90F : 0.77F));
     }
 
     public int getShankLength(boolean hind) {
-        return (int) (hind ? this.length * 0.70f - 2 : this.length * 0.80f);
+        return (int) (hind ? this.length * 0.70F - 2 : this.length * 0.80F);
     }
 
     public int getFootLength(boolean hind) {
-        return (int) (this.length * (hind ? 0.67f : 0.34f));
+        return (int) (this.length * (hind ? 0.67F : 0.34F));
     }
 
     public int getToeLength(boolean hind) {
-        return (int) (this.length * (hind ? 0.27f : 0.33f));
+        return (int) (this.length * (hind ? 0.27F : 0.33F));
     }
 }

@@ -10,7 +10,7 @@ import net.dragonmounts3.client.gui.DMConfigScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -26,21 +26,23 @@ public class ConfigCommand {
     private static boolean OPEN_CONFIG_SCREEN_FLAG = false;
     private static final Joiner DOT_JOINER = Joiner.on(".");
 
-    private static <T> LiteralArgumentBuilder<CommandSource> create(
+    public static <T> LiteralArgumentBuilder<CommandSource> create(
             ForgeConfigSpec.ConfigValue<T> config,
             ArgumentType<T> type,
             BiFunction<CommandContext<CommandSource>, String, T> function
     ) {
-        return Commands.literal(DOT_JOINER.join(config.getPath()))
-                .then(Commands.argument("value", type).executes(context -> {
-                    config.set(function.apply(context, "value"));
-                    return 1;
-                }))
+        String name = DOT_JOINER.join(config.getPath());
+        return Commands.literal(name)
                 .executes(context -> {
-                    CommandSource source = context.getSource();
-                    source.sendSuccess(new StringTextComponent(config.get().toString()), true);
+                    context.getSource().sendSuccess(new TranslationTextComponent("commands.dragonmounts.config.query", name, config.get()), true);
                     return 1;
-                });
+                })
+                .then(Commands.argument("value", type).executes(context -> {
+                    T value = function.apply(context, "value");
+                    config.set(value);
+                    context.getSource().sendSuccess(new TranslationTextComponent("commands.dragonmounts.config.set", name, value), true);
+                    return 1;
+                }));
     }
 
     public static LiteralArgumentBuilder<CommandSource> register() {
@@ -51,6 +53,7 @@ public class ConfigCommand {
                         .then(create(SERVER.base_armor, DoubleArgumentType.doubleArg(0, 30), DoubleArgumentType::getDouble))
                         .then(create(SERVER.base_health, DoubleArgumentType.doubleArg(1, 1024), DoubleArgumentType::getDouble))
                         .then(create(SERVER.base_damage, DoubleArgumentType.doubleArg(0, 2048), DoubleArgumentType::getDouble))
+                        .then(create(SERVER.block_override, BoolArgumentType.bool(), BoolArgumentType::getBool))
                 ).then(Commands.literal("client"));
     }
 

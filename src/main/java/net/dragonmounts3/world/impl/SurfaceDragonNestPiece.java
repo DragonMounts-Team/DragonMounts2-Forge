@@ -63,7 +63,7 @@ public class SurfaceDragonNestPiece extends DragonNestPiece {
                 y = Math.min(y, level.getHeight(Heightmap.Type.WORLD_SURFACE_WG, pos.getX(), pos.getZ()));
             }
         }
-        this.templatePosition = new BlockPos(this.templatePosition.getX(), y, this.templatePosition.getZ());
+        this.templatePosition = new BlockPos(this.templatePosition.getX(), y > 0 ? y - 1 : 0, this.templatePosition.getZ());
         return super.postProcess(level, manager, generator, random, box, chunkPos, blockPos);
     }
 }

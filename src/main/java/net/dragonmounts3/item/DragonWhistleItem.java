@@ -64,7 +64,7 @@ public class DragonWhistleItem extends Item {
             }
             try {
                 String string = compound.getString("OwnerName");
-                if (!string.equals("")) {
+                if (!string.isEmpty()) {
                     components.add(new TranslationTextComponent("tooltip.dragonmounts.owner_name", ITextComponent.Serializer.fromJson(string)).withStyle(TextFormatting.GRAY));
                 }
             } catch (Exception exception) {

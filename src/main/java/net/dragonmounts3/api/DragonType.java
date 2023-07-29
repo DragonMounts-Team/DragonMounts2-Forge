@@ -4,9 +4,8 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import net.dragonmounts3.client.resource.AbstractResourceManager;
-import net.dragonmounts3.client.resource.ForestResourceManager;
-import net.dragonmounts3.client.resource.SculkResourceManager;
+import net.dragonmounts3.api.variant.DragonVariants;
+import net.dragonmounts3.api.variant.VariantManager;
 import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
 import net.dragonmounts3.util.DragonTypeBuilder;
 import net.minecraft.block.Block;
@@ -72,6 +71,9 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addHabitat(Blocks.LAPIS_BLOCK)
             .addHabitat(Blocks.LAPIS_ORE)
             .setEnvironmentPredicate(egg -> egg.getY() >= egg.level.getHeight() * 0.625)
+            .addVariant(DragonVariants.AETHER_FEMALE)
+            .addVariant(DragonVariants.AETHER_MALE)
+            .addVariant(DragonVariants.AETHER_NEW)
             .build("aether");
     public static final DragonType ENCHANT = new DragonTypeBuilder(0x8359AE)
             .addImmunity(DamageSource.MAGIC)
@@ -80,6 +82,8 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addImmunity(DamageSource.WITHER)
             .addHabitat(Blocks.BOOKSHELF)
             .addHabitat(Blocks.ENCHANTING_TABLE)
+            .addVariant(DragonVariants.ENCHANT_FEMALE)
+            .addVariant(DragonVariants.ENCHANT_MALE)
             .build("enchant");
     public static final DragonType ENDER = new DragonTypeBuilder(0xAB39BE)
             .notConvertible()
@@ -90,6 +94,8 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addImmunity(DamageSource.WITHER)
             .setSneezeParticle(ParticleTypes.PORTAL)
             .setEggParticle(ParticleTypes.PORTAL)
+            .addVariant(DragonVariants.ENDER_FEMALE)
+            .addVariant(DragonVariants.ENDER_MALE)
             .build("ender");
     public static final DragonType FIRE = new DragonTypeBuilder(0x960B0F)
             .addImmunity(DamageSource.MAGIC)
@@ -100,6 +106,8 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             //.addHabitat(Blocks.LIT_FURNACE)
             .addHabitat(Blocks.LAVA)
             //.addHabitat(Blocks.FLOWING_LAVA)
+            .addVariant(DragonVariants.FIRE_FEMALE)
+            .addVariant(DragonVariants.FIRE_MALE)
             .build("fire");
     public static final DragonType FOREST = new DragonTypeBuilder(0x298317)
             .addImmunity(DamageSource.MAGIC)
@@ -115,7 +123,13 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             //.addHabitat(Blocks.LEAVES2)
             .addHabitat(Biomes.JUNGLE)
             .addHabitat(Biomes.JUNGLE_HILLS)
-            .build("forest", new ForestResourceManager());
+            .addVariant(DragonVariants.FOREST_FEMALE)
+            .addVariant(DragonVariants.FOREST_MALE)
+            .addVariant(DragonVariants.FOREST_DRY_FEMALE)
+            .addVariant(DragonVariants.FOREST_DRY_MALE)
+            .addVariant(DragonVariants.FOREST_TAIGA_FEMALE)
+            .addVariant(DragonVariants.FOREST_TAIGA_MALE)
+            .build("forest");
     public static final DragonType ICE = new DragonTypeBuilder(0x00F2FF)
             .addImmunity(DamageSource.MAGIC)
             .addImmunity(DamageSource.HOT_FLOOR)
@@ -129,9 +143,13 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addHabitat(Biomes.FROZEN_RIVER)
             //.addHabitat(Biomes.JUNGLE)
             //.addHabitat(Biomes.JUNGLE_HILLS)
-            .build("ice", false, true);
+            .addVariant(DragonVariants.ICE_FEMALE)
+            .addVariant(DragonVariants.ICE_MALE)
+            .build("ice");
     public static final DragonType MOONLIGHT = new DragonTypeBuilder(0x2C427C)
             .addHabitat(Blocks.BLUE_GLAZED_TERRACOTTA)
+            .addVariant(DragonVariants.MOONLIGHT_FEMALE)
+            .addVariant(DragonVariants.MOONLIGHT_MALE)
             .build("moonlight");
     public static final DragonType NETHER = new DragonTypeBuilder(0xE5B81B)
             .putAttributeModifier(Attributes.MAX_HEALTH, "DragonTypeBonus", 5.0D, AttributeModifier.Operation.ADDITION)
@@ -141,6 +159,8 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addImmunity(DamageSource.WITHER)
             //.addHabitat(Biomes.HELL)
             .setEggParticle(ParticleTypes.DRIPPING_LAVA)
+            .addVariant(DragonVariants.NETHER_FEMALE)
+            .addVariant(DragonVariants.NETHER_MALE)
             .build("nether");
     public static final DragonType SCULK = new DragonTypeBuilder(0x29DFEB)
             .notConvertible()
@@ -149,7 +169,8 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addImmunity(DamageSource.HOT_FLOOR)
             .addImmunity(DamageSource.LIGHTNING_BOLT)
             .addImmunity(DamageSource.WITHER)
-            .build("sculk", new SculkResourceManager());
+            .addVariant(DragonVariants.SCULK)
+            .build("sculk");
     public static final DragonType SKELETON = new DragonTypeBuilder(0xFFFFFF)
             .isSkeleton()
             .putAttributeModifier(Attributes.MAX_HEALTH, "DragonTypeBonus", -15.0D, AttributeModifier.Operation.ADDITION)
@@ -157,14 +178,20 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addImmunity(DamageSource.WITHER)
             .addHabitat(Blocks.BONE_BLOCK)
             .setEnvironmentPredicate(egg -> egg.getY() <= egg.level.getHeight() * 0.25 || egg.level.getRawBrightness(egg.blockPosition(), 0) < 4)
+            .addVariant(DragonVariants.SKELETON_FEMALE)
+            .addVariant(DragonVariants.SKELETON_MALE)
             .build("skeleton");
     public static final DragonType STORM = new DragonTypeBuilder(0xF5F1E9)
-            .build("storm", true, false);
+            .addVariant(DragonVariants.STORM_FEMALE)
+            .addVariant(DragonVariants.STORM_MALE)
+            .build("storm");
     public static final DragonType SUNLIGHT = new DragonTypeBuilder(0xFFDE00)
             .addHabitat(Blocks.GLOWSTONE)
             .addHabitat(Blocks.JACK_O_LANTERN)
             .addHabitat(Blocks.SHROOMLIGHT)
             .addHabitat(Blocks.YELLOW_GLAZED_TERRACOTTA)
+            .addVariant(DragonVariants.SUNLIGHT_FEMALE)
+            .addVariant(DragonVariants.SUNLIGHT_MALE)
             .build("sunlight");
     public static final DragonType TERRA = new DragonTypeBuilder(0xA56C21)
             .addHabitat(Blocks.TERRACOTTA)
@@ -183,6 +210,8 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             //.addHabitat(Biomes.MESA_CLEAR_ROCK)
             //.addHabitat(Biomes.MUTATED_MESA_CLEAR_ROCK)
             //.addHabitat(Biomes.MUTATED_MESA_ROCK)
+            .addVariant(DragonVariants.TERRA_FEMALE)
+            .addVariant(DragonVariants.TERRA_MALE)
             .build("terra");
     public static final DragonType WATER = new DragonTypeBuilder(0x4F69A8)
             .addImmunity(DamageSource.DROWN)
@@ -193,7 +222,9 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addHabitat(Blocks.WATER)
             .addHabitat(Biomes.OCEAN)
             .addHabitat(Biomes.RIVER)
-            .build("water", true, false);
+            .addVariant(DragonVariants.WATER_FEMALE)
+            .addVariant(DragonVariants.WATER_MALE)
+            .build("water");
     public static final DragonType WITHER = new DragonTypeBuilder(0x50260A)
             .notConvertible()
             .isSkeleton()
@@ -202,7 +233,9 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addImmunity(DamageSource.HOT_FLOOR)
             .addImmunity(DamageSource.LIGHTNING_BOLT)
             .addImmunity(DamageSource.WITHER)
-            .build("wither", true, false);
+            .addVariant(DragonVariants.WITHER_FEMALE)
+            .addVariant(DragonVariants.WITHER_MALE)
+            .build("wither");
     public static final DragonType ZOMBIE = new DragonTypeBuilder(0x5A5602)
             .addImmunity(DamageSource.MAGIC)
             .addImmunity(DamageSource.HOT_FLOOR)
@@ -212,21 +245,22 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
             .addHabitat(Blocks.SOUL_SAND)
             .addHabitat(Blocks.NETHER_WART_BLOCK)
             .addHabitat(Blocks.WARPED_WART_BLOCK)
+            .addVariant(DragonVariants.ZOMBIE_FEMALE)
+            .addVariant(DragonVariants.ZOMBIE_MALE)
             .build("zombie");
 
     public static Collection<DragonType> values() {
         return BY_NAME.values();
     }
 
-    public static DragonType byName(String string) {
-        DragonType value = BY_NAME.get(string);
-        return value == null ? ENDER : value;
+    public static DragonType byName(String name) {
+        return BY_NAME.getOrDefault(name, ENDER);
     }
 
-    public final AbstractResourceManager resources;
     public final int color;
     public final boolean convertible;
     public final boolean isSkeleton;
+    public final VariantManager variants;
     public final BiFunction<Integer, Boolean, Vector3d> passengerOffset;
     public final Predicate<HatchableDragonEggEntity> isHabitatEnvironment;
     private final int id = COUNTER.incrementAndGet();
@@ -240,11 +274,11 @@ public class DragonType implements IStringSerializable, Comparable<DragonType> {
     private final BasicParticleType sneezeParticle;
     private final BasicParticleType eggParticle;
 
-    public DragonType(String name, DragonTypeBuilder builder, AbstractResourceManager resources) {
+    public DragonType(String name, DragonTypeBuilder builder) {
         if (BY_NAME.containsKey(name)) {
             throw new IllegalArgumentException();
         }
-        this.resources = resources;
+        this.variants = builder.variants;
         this.color = builder.color;
         this.convertible = builder.convertible;
         this.isSkeleton = builder.isSkeleton;

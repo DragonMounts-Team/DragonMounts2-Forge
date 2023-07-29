@@ -2,7 +2,6 @@ package net.dragonmounts3.client.model.dragon;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.dragonmounts3.client.DragonAnimator;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.util.math.vector.Matrix3f;
@@ -43,7 +42,7 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
 
     @Override
     public void prepareMobModel(@Nonnull TameableDragonEntity dragon, float limbSwing, float limbSwingAmount, float partialTick) {
-        boolean hasSideTailScale = dragon.getDragonType().resources.hasSideTailScale;
+        boolean hasSideTailScale = dragon.getVariant().hasSideTailScale;
         this.tail.leftScale.visible = this.tail.rightScale.visible = hasSideTailScale;
         this.tail.middleScale.visible = !hasSideTailScale;
         this.head.scaleX = this.head.scaleY = this.head.scaleZ = 0.92F;
@@ -53,9 +52,8 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
 
     @Override
     public void setupAnim(@Nonnull TameableDragonEntity dragon, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        DragonAnimator animator = dragon.animator;
-        animator.setLook(netHeadYaw, headPitch);
-        animator.setMovement(limbSwing, limbSwingAmount * dragon.getScale());
+        dragon.animator.setLook(netHeadYaw, headPitch);
+        dragon.animator.setMovement(limbSwing, limbSwingAmount * dragon.getScale());
         dragon.animator.animate(this);
     }
 

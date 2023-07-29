@@ -81,13 +81,13 @@ public class FilledDragonAmuletItem extends DragonAmuletItem implements IDragonT
         if (compound != null) {
             try {
                 String string = compound.getString("CustomName");
-                if (!string.equals("")) {
+                if (!string.isEmpty()) {
                     components.add(new TranslationTextComponent("tooltip.dragonmounts.custom_name", ITextComponent.Serializer.fromJson(string)).withStyle(TextFormatting.GRAY));
                 }
                 components.add(new TranslationTextComponent("tooltip.dragonmounts.health", new StringTextComponent(Float.toString(compound.getFloat("Health"))).withStyle(TextFormatting.GREEN)).withStyle(TextFormatting.GRAY));
                 if (compound.hasUUID("Owner")) {
                     string = compound.getString("OwnerName");
-                    if (!string.equals("")) {
+                    if (!string.isEmpty()) {
                         components.add(new TranslationTextComponent("tooltip.dragonmounts.owner_name", ITextComponent.Serializer.fromJson(string)).withStyle(TextFormatting.GRAY));
                     }
                     return;

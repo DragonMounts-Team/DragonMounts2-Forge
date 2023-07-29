@@ -2,8 +2,8 @@ package net.dragonmounts3.util;
 
 import com.google.common.collect.ImmutableMultimap;
 import net.dragonmounts3.api.DragonType;
-import net.dragonmounts3.client.resource.AbstractResourceManager;
-import net.dragonmounts3.client.resource.DefaultResourceManager;
+import net.dragonmounts3.api.variant.AbstractVariant;
+import net.dragonmounts3.api.variant.VariantManager;
 import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.ai.attributes.Attribute;
@@ -21,8 +21,6 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
-import static net.dragonmounts3.DragonMounts.MOD_ID;
-
 public class DragonTypeBuilder {
     protected static final UUID MODIFIER_UUID = UUID.fromString("12e4cc82-db6d-5676-afc5-86498f0f6464");
     public final ImmutableMultimap.Builder<Attribute, AttributeModifier> attributes = ImmutableMultimap.builder();
@@ -30,6 +28,7 @@ public class DragonTypeBuilder {
     public final Set<DamageSource> immunities = new HashSet<>();
     public final Set<Block> blocks = new HashSet<>();
     public final Set<RegistryKey<Biome>> biomes = new HashSet<>();
+    public final VariantManager variants = new VariantManager();
     public boolean convertible = true;
     public boolean isSkeleton = false;
     public BasicParticleType sneezeParticle = ParticleTypes.LARGE_SMOKE;
@@ -80,6 +79,11 @@ public class DragonTypeBuilder {
         return this;
     }
 
+    public DragonTypeBuilder addVariant(AbstractVariant variant) {
+        this.variants.add(variant);
+        return this;
+    }
+
     public DragonTypeBuilder setSneezeParticle(BasicParticleType particle) {
         this.sneezeParticle = particle;
         return this;
@@ -101,14 +105,6 @@ public class DragonTypeBuilder {
     }
 
     public DragonType build(String name) {
-        return new DragonType(name, this, new DefaultResourceManager(MOD_ID, name, false, false));
-    }
-
-    public DragonType build(String name, boolean hasTailHorns, boolean hasSideTailScale) {
-        return new DragonType(name, this, new DefaultResourceManager(MOD_ID, name, hasTailHorns, hasSideTailScale));
-    }
-
-    public DragonType build(String name, AbstractResourceManager resources) {
-        return new DragonType(name, this, resources);
+        return new DragonType(name, this);
     }
 }

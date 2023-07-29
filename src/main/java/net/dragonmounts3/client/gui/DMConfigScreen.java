@@ -22,7 +22,8 @@ public class DMConfigScreen extends Screen {
     protected OptionsRowList list;
 
     protected LazyBooleanConfigOption debug;
-    protected LazyBooleanConfigOption cameraControl;
+    protected LazyBooleanConfigOption convergePitch;
+    protected LazyBooleanConfigOption convergeYaw;
     protected LazyBooleanConfigOption toggleDescent;
     protected LazySliderConfigOption thirdPersonZoom;
 
@@ -34,14 +35,16 @@ public class DMConfigScreen extends Screen {
 
     protected void init() {
         this.debug = new LazyBooleanConfigOption("options.dragonmounts.debug", COMMON.debug, DEFAULT_STRINGIFY, null);
-        this.cameraControl = new LazyBooleanConfigOption("options.dragonmounts.camera_control", CLIENT.camera_control, DEFAULT_STRINGIFY, null);
+        this.convergePitch = new LazyBooleanConfigOption("options.dragonmounts.converge_pitch_angle", CLIENT.converge_pitch_angle, DEFAULT_STRINGIFY, null);
+        this.convergeYaw = new LazyBooleanConfigOption("options.dragonmounts.converge_yaw_angle", CLIENT.converge_yaw_angle, DEFAULT_STRINGIFY, null);
         this.toggleDescent = new LazyBooleanConfigOption("key.dragonmounts.descent", CLIENT.toggle_descent, TOGGLE_STRINGIFY, null);
         this.thirdPersonZoom = new LazySliderConfigOption("options.dragonmounts.third_person_zoom", CLIENT.third_person_zoom, 0.0, 64.0, 0.25,
                 button -> button.genericValueLabel(new StringTextComponent(String.format("%.2f", button.value)))
         );
         //noinspection DataFlowIssue
         this.list = new OptionsRowList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
-        this.list.addSmall(this.cameraControl, this.thirdPersonZoom);
+        this.list.addBig(this.thirdPersonZoom);
+        this.list.addSmall(this.convergePitch, this.convergeYaw);
         this.list.addSmall(this.debug, this.toggleDescent);
         this.children.add(this.list);
         this.addButton(new Button(this.width / 2 - 100, this.height - 27, 200, 20, DialogTexts.GUI_DONE, v -> this.onClose()));
@@ -56,7 +59,8 @@ public class DMConfigScreen extends Screen {
     @Override
     public void removed() {
         this.debug.save();
-        this.cameraControl.save();
+        this.convergePitch.save();
+        this.convergeYaw.save();
         this.toggleDescent.save();
         this.thirdPersonZoom.save();
     }

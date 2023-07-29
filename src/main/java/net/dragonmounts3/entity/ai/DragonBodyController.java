@@ -5,10 +5,10 @@ import net.minecraft.entity.ai.controller.BodyController;
 import net.minecraft.util.math.MathHelper;
 
 public class DragonBodyController extends BodyController {
+    public static final int MAX_TICKS = 20;
     protected final TameableDragonEntity dragon;
-    protected float lastDifference = 0;
-    protected boolean wasMoving = false;
-    protected float process;
+    protected float lastYHeadRot;
+    protected int ticks;
 
     public DragonBodyController(TameableDragonEntity dragon) {
         super(dragon);
@@ -19,25 +19,27 @@ public class DragonBodyController extends BodyController {
     public void clientTick() {
         double deltaX = this.dragon.getX() - this.dragon.xo;
         double deltaZ = this.dragon.getZ() - this.dragon.zo;
-        boolean flag = this.process > 0.0F;
-        boolean isMoving = deltaX * deltaX + deltaZ * deltaZ > 2.5000003E-7d;
-        float difference = Math.abs(this.dragon.yHeadRot - this.dragon.yBodyRot);
-        if (this.wasMoving && !isMoving) {
-            this.process = Math.min(this.process, 0.25F);
-        } else if (difference > 0) {
-            if (difference > this.lastDifference) {
-                this.process = 0.5F;
-                flag = true;
-            } else if (flag) {
-                this.process -= 0.05F;
-            }
-        } else if (flag) {
-            this.process -= 0.1F;
+        double distance = deltaX * deltaX + deltaZ * deltaZ;
+        float maxDifference = 90.0F;
+        // rotate instantly if flying, sitting or moving
+        if (this.dragon.isFlying() || this.dragon.isInSittingPose() || distance > 0.0001) {
+            this.dragon.yBodyRot = this.dragon.yRot;
+            this.dragon.yHeadRot = MathHelper.approachDegrees(this.dragon.yBodyRot, this.dragon.yHeadRot, maxDifference);
+            this.lastYHeadRot = this.dragon.yHeadRot;
+            this.ticks = 0;
+            return;
         }
-        float limit = this.dragon.getMaxHeadYRot() * (flag ? this.process : 1.0F);
-        this.dragon.yBodyRot = MathHelper.rotateIfNecessary(this.dragon.yBodyRot, this.dragon.yHeadRot, limit);
-        this.dragon.yRot = MathHelper.rotateIfNecessary(dragon.yRot, this.dragon.yBodyRot, limit);
-        this.wasMoving = isMoving;
-        this.lastDifference = difference;
+
+        double changeInHeadYaw = Math.abs(this.dragon.yHeadRot - this.lastYHeadRot);
+        if (changeInHeadYaw > 15) {
+            this.ticks = 0;
+            this.lastYHeadRot = this.dragon.yHeadRot;
+        } else {
+            if (++this.ticks > MAX_TICKS) {
+                maxDifference = Math.max(1 - (float) (this.ticks - MAX_TICKS) / MAX_TICKS, 0) * 75;
+            }
+        }
+        this.dragon.yBodyRot = MathHelper.rotateIfNecessary(this.dragon.yBodyRot, this.dragon.yHeadRot, maxDifference);
+        this.dragon.yRot = this.dragon.yBodyRot;
     }
 }

@@ -283,7 +283,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
                 ++temp;
             }
             if (type.isHabitatEnvironment.test(this)) {
-                ++temp;
+                temp += 3;
             }
             AtomicInteger value = score.get(type);
             if (value != null) {

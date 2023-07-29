@@ -24,7 +24,8 @@ public class DragonMountsConfig {
 	}
 
 	public static class Client {
-		public final ForgeConfigSpec.ConfigValue<Boolean> camera_control;
+		public final ForgeConfigSpec.ConfigValue<Boolean> converge_pitch_angle;
+		public final ForgeConfigSpec.ConfigValue<Boolean> converge_yaw_angle;
 		public final ForgeConfigSpec.ConfigValue<Double> third_person_zoom;
 		public final ForgeConfigSpec.ConfigValue<Boolean> toggle_descent;
 
@@ -32,9 +33,12 @@ public class DragonMountsConfig {
 			this.third_person_zoom = builder
 					.comment("Zoom out for third person 2 while riding the the dragon and dragon carriages DO NOT EXAGGERATE IF YOU DON'T WANT CORRUPTED WORLDS")
 					.define("third_person_zoom", 20.0D);
-			this.camera_control = builder
+			this.converge_pitch_angle = builder
 					.comment("Pitch Angle Convergence")
-					.define("camera_control", true);
+					.define("converge_pitch_angle", true);
+			this.converge_yaw_angle = builder
+					.comment("Yaw Angle Convergence")
+					.define("converge_yaw_angle", true);
 			this.toggle_descent = builder
 					.comment("Enables the dragon to keep descending")
 					.define("toggle_descent", false);

@@ -126,6 +126,7 @@ public class DragonAnimator {
     private final float[] yAirAll = {-0.1F, 0.1F};
 
     private DragonHeadModelPart headCache = null;
+    private float relativeHealth;
 
     public DragonAnimator(TameableDragonEntity dragon) {
         this.dragon = dragon;
@@ -146,7 +147,7 @@ public class DragonAnimator {
         if (head == null) return null;
         Vector3d bodyOrigin = this.dragon.position().add(0, this.dragon.getEyeHeight(), 0);
         float scale = this.dragon.getScale();
-        final float modelScale = scale * this.dragon.getDragonType().resources.modelPositionScale;
+        final float modelScale = scale * this.dragon.getVariant().modelPositionScale;
         final float headScale = modelScale * this.getRelativeHeadSize(scale);
         // the head offset plus the headLocation.rotationPoint is the origin of the head, i.e. the point about which the
         // head rotates, relative to the origin of the body (getPositionEyes)
@@ -233,7 +234,7 @@ public class DragonAnimator {
         }
 
         // don't move anything during death sequence
-        if (dragon.getHealth() <= 0) {
+        if (this.dragon.isDeadOrDying()) {
             animTimer.sync();
             groundTimer.sync();
             flutterTimer.sync();
@@ -242,6 +243,8 @@ public class DragonAnimator {
             //roarTimer.sync();
             return;
         }
+
+        this.relativeHealth = this.dragon.getHealth() / this.dragon.getMaxHealth();
 
         float speedMax = 0.05F;
         Vector3d motion = dragon.getDeltaMovement();
@@ -345,7 +348,6 @@ public class DragonAnimator {
         this.headCache = head;
         neck.setPos(0, 14, -8);
         applyRotateAngle(neck, 0, 0, 0);
-        float health = dragon.getHealthRelative();
         float neckSize;
         for (int i = 0; i < DragonNeckModelPart.NECK_SEGMENT_COUNT; ++i) {
             float vertMulti = (i + 1) / (float) DragonNeckModelPart.NECK_SEGMENT_COUNT;
@@ -360,7 +362,7 @@ public class DragonAnimator {
             // flex neck down when hovering
             neck.xRot += (1 - speed) * vertMulti;
             // lower neck on low health
-            neck.xRot -= MathHelper.clampedLerp(0, ofsRotX, ground * health);
+            neck.xRot -= MathHelper.clampedLerp(0, ofsRotX, this.ground * this.relativeHealth);
             // use looking yaw
             neck.yRot = (float) Math.toRadians(lookYaw) * vertMulti * speed;
             // update scale
@@ -491,7 +493,7 @@ public class DragonAnimator {
             tail.xRot -= (1 - speed) * vertMulti * 2;
             tail.yRot += Math.toRadians(180 - yawOfs);
             // display horns near the tip
-            tail.leftHorn.visible = tail.rightHorn.visible = this.dragon.getDragonType().resources.hasTailHorns
+            tail.leftHorn.visible = tail.rightHorn.visible = this.dragon.getVariant().hasTailHorns
                     && i > DragonTailModelPart.TAIL_SEGMENT_COUNT - 7
                     && i < DragonTailModelPart.TAIL_SEGMENT_COUNT - 3;
             // update scale

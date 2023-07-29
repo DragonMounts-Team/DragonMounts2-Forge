@@ -258,7 +258,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
         if (strength.getOrDefault(ICE, 0) >= 4) {
             capability.ifPresent(cooldown -> {
                 if (cooldown.get(DragonType.ICE) <= 0) {
-                    packet.flag |= 0B01;
+                    packet.flag |= 0b01;
                     for (Entity target : targets) {
                         target.hurt(DamageSource.GENERIC, 1);
                         if (target instanceof LivingEntity) {
@@ -273,7 +273,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
         if (strength.getOrDefault(NETHER, 0) >= 4) {
             capability.ifPresent(cooldown -> {
                 if (cooldown.get(DragonType.NETHER) <= 0) {
-                    packet.flag |= 0B10;
+                    packet.flag |= 0b10;
                     for (Entity target : targets) {
                         target.setSecondsOnFire(10);
                         if (target instanceof LivingEntity) {

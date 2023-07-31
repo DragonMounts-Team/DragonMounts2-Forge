@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
  * @see net.minecraft.inventory.Inventory
  */
 public class DragonInventory implements IInventory, INamedContainerProvider {
+    public static final String DATA_PARAMETER_KEY = "Items";
     public static final int SLOT_SADDLE_INDEX = 0;
     public static final int SLOT_ARMOR_INDEX = 1;
     public static final int SLOT_CHEST_INDEX = 2;

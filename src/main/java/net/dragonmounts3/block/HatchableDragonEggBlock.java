@@ -34,7 +34,7 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
     protected static void spawn(World level, BlockPos pos, DragonType type) {
         level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         HatchableDragonEggEntity entity = new HatchableDragonEggEntity(level);
-        entity.setDragonType(type, true);
+        entity.setDragonType(type, true, true);
         EntityUtil.setPos(entity, pos);
         level.addFreshEntity(entity);
     }

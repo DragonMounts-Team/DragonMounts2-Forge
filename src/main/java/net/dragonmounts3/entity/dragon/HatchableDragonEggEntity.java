@@ -63,6 +63,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     private static final int EGG_SHAKE_THRESHOLD = (int) (EGG_SHAKE_PROCESS_THRESHOLD * MIN_HATCHING_TIME);
     private static final float EGG_SHAKE_BASE_CHANCE = 20F;
     protected DragonType type = DragonType.ENDER;
+    protected Map<DragonType, AtomicInteger> conversion = new HashMap<>();
     protected float rotationAxis = 0;
     protected int amplitude = 0;
     protected int age = 0;
@@ -96,14 +97,34 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         super.addAdditionalSaveData(compound);
         compound.putString(DragonType.DATA_PARAMETER_KEY, this.entityData.get(DATA_DRAGON_TYPE));
         compound.putInt(AGE_DATA_PARAMETER_KEY, this.age);
+        CompoundNBT tag = new CompoundNBT();
+        for (Map.Entry<DragonType, AtomicInteger> entry : this.conversion.entrySet()) {
+            tag.putInt(entry.getKey().getSerializedName(), entry.getValue().get());
+        }
+        if (!tag.isEmpty()) {
+            compound.put("Conversion", tag);
+        }
     }
 
     @Override
     public void readAdditionalSaveData(CompoundNBT compound) {
         super.readAdditionalSaveData(compound);
-        this.setDragonType(DragonType.byName(compound.getString(DragonType.DATA_PARAMETER_KEY)));
+        this.setDragonType(DragonType.byName(compound.getString(DragonType.DATA_PARAMETER_KEY)), false, false);
         if (compound.contains(AGE_DATA_PARAMETER_KEY)) {
             this.age = compound.getInt(AGE_DATA_PARAMETER_KEY);
+        }
+        DragonType current = this.getDragonType();
+        if (compound.contains("Conversion")) {
+            //this.conversion.clear();
+            CompoundNBT tag = compound.getCompound("Conversion");
+            for (DragonType type : DragonType.values()) {
+                this.conversion.put(type, new AtomicInteger(tag.getInt(type.getSerializedName())));
+            }
+            if (!tag.contains(current.getSerializedName())) {
+                this.conversion.get(current).set(1000);
+            }
+        } else if (this.conversion.get(current) == null) {
+            this.conversion.put(current, new AtomicInteger(1000));
         }
     }
 
@@ -258,17 +279,15 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     public void convertDragonType() {
         DragonType current = this.getDragonType();
         if (!current.convertible) return;
-        Map<DragonType, AtomicInteger> score = new HashMap<>();
-        score.put(current, new AtomicInteger(1));
         Optional<RegistryKey<Biome>> biome = this.level.getBiomeName(this.blockPosition());
         Collection<DragonType> types = DragonType.values();
         // update egg breed every second on the server
         BlockPos.betweenClosedStream(this.getBoundingBox().inflate(CONVERSION_RANGE)).forEach(pos -> {
             for (DragonType type : types) {
                 if (type.isHabitat(this.level.getBlockState(pos).getBlock())) {
-                    AtomicInteger value = score.get(type);
+                    AtomicInteger value = this.conversion.get(type);
                     if (value == null) {
-                        score.put(type, new AtomicInteger(1));
+                        this.conversion.put(type, new AtomicInteger(1));
                     } else {
                         value.incrementAndGet();
                     }
@@ -285,7 +304,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
             if (type.isHabitatEnvironment.test(this)) {
                 temp += 3;
             }
-            AtomicInteger value = score.get(type);
+            AtomicInteger value = this.conversion.get(type);
             if (value != null) {
                 temp = value.addAndGet(temp);
             }
@@ -298,7 +317,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
             }
         }
         if (result.isEmpty() || result.contains(current)) return;
-        this.setDragonType(result.get(this.random.nextInt(result.size())), false);
+        this.setDragonType(result.get(this.random.nextInt(result.size())), false, true);
     }
 
     @Override
@@ -309,7 +328,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     @Nonnull
     @Override
     protected ITextComponent getTypeName() {
-        return this.type.getTypifiedName("entity.dragonmounts.dragon_egg.name");
+        return this.getDragonType().getTypifiedName("entity.dragonmounts.dragon_egg.name");
     }
 
     @Override
@@ -371,22 +390,26 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         this.level.playSound(Minecraft.getInstance().player, this.getX(), this.getY(), this.getZ(), DMSounds.DRAGON_HATCHING.get(), SoundCategory.NEUTRAL, 1.0F, 1.0F);
     }
 
-    public void setDragonType(DragonType type, boolean reset) {
+    public void setDragonType(DragonType type, boolean resetHealth, boolean resetConversion) {
         AttributeModifierManager manager = this.getAttributes();
         manager.removeAttributeModifiers(this.getDragonType().getAttributeModifiers());
         this.entityData.set(DATA_DRAGON_TYPE, type.getSerializedName());
         manager.addTransientAttributeModifiers(type.getAttributeModifiers());
-        if (reset) {
+        if (resetHealth) {
             ModifiableAttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
             if (health != null) {
                 this.setHealth((float) health.getValue());
             }
         }
+        if (resetConversion) {
+            this.conversion.clear();
+            this.conversion.put(type, new AtomicInteger(1000));
+        }
     }
 
     @Override
     public void setDragonType(DragonType type) {
-        this.setDragonType(type, false);
+        this.setDragonType(type, false, this.getDragonType() != type);
     }
 
     @Override

@@ -411,14 +411,14 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
     public void addAdditionalSaveData(CompoundNBT compound) {
         super.addAdditionalSaveData(compound);
         compound.putString(DragonType.DATA_PARAMETER_KEY, this.getDragonType().getSerializedName());
-        compound.putString("Variant", this.getVariant().getSerializedName());
+        compound.putString(DragonVariants.DATA_PARAMETER_KEY, this.getVariant().getSerializedName());
         compound.putString(DragonLifeStage.DATA_PARAMETER_KEY, this.stage.getSerializedName());
         compound.putBoolean(FLYING_DATA_PARAMETER_KEY, this.entityData.get(DATA_FLYING));
         compound.putBoolean(AGE_LOCKED_DATA_PARAMETER_KEY, this.entityData.get(DATA_AGE_LOCKED));
         compound.putInt(SHEARED_DATA_PARAMETER_KEY, this.isSheared() ? this.shearCooldown : 0);
         ListNBT items = this.inventory.createTag();
         if (!items.isEmpty()) {
-            compound.put("Items", items);
+            compound.put(DragonInventory.DATA_PARAMETER_KEY, items);
         }
     }
 
@@ -435,8 +435,8 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
         }
         DragonType type = DragonType.byName(compound.getString(DragonType.DATA_PARAMETER_KEY));
         this.setDragonType(type);
-        if (compound.contains("Variant")) {
-            this.setVariant(type.variants.get(compound.getString("Variant")), false);
+        if (compound.contains(DragonVariants.DATA_PARAMETER_KEY)) {
+            this.setVariant(type.variants.get(compound.getString(DragonVariants.DATA_PARAMETER_KEY)), false);
         }
         if (compound.contains(FLYING_DATA_PARAMETER_KEY)) {
             this.entityData.set(DATA_FLYING, compound.getBoolean(FLYING_DATA_PARAMETER_KEY));
@@ -450,8 +450,8 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
         if (compound.contains(AGE_LOCKED_DATA_PARAMETER_KEY)) {
             this.entityData.set(DATA_AGE_LOCKED, compound.getBoolean(AGE_LOCKED_DATA_PARAMETER_KEY));
         }
-        if (compound.contains("Items")) {
-            this.inventory.fromTag(compound.getList("Items", 10));
+        if (compound.contains(DragonInventory.DATA_PARAMETER_KEY)) {
+            this.inventory.fromTag(compound.getList(DragonInventory.DATA_PARAMETER_KEY, 10));
         }
     }
 

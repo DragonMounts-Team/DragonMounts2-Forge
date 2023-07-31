@@ -7,6 +7,7 @@ import static net.dragonmounts3.DragonMounts.prefix;
 import static net.dragonmounts3.api.variant.AbstractVariant.TEXTURES_ROOT;
 
 public class DragonVariants {
+    public static final String DATA_PARAMETER_KEY = "Variant";
     public static final AbstractVariant AETHER_FEMALE;
     public static final AbstractVariant AETHER_MALE;
     public static final AbstractVariant AETHER_NEW;

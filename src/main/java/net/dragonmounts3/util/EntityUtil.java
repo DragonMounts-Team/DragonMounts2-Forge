@@ -1,5 +1,6 @@
 package net.dragonmounts3.util;
 
+import net.dragonmounts3.inventory.DragonInventory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -65,7 +66,7 @@ public class EntityUtil {
             compound.remove("HandDropChances");
             compound.remove("HandItems");
             compound.remove("Health");
-            compound.remove("Items");
+            compound.remove(DragonInventory.DATA_PARAMETER_KEY);
             compound.remove("LifeStage");
             compound.remove("LoveCause");
             compound.remove("ShearCooldown");

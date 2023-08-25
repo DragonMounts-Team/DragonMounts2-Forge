@@ -13,7 +13,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.util.text.event.HoverEvent;
 
 import java.util.Collection;
@@ -31,19 +30,17 @@ public class DMCommand {
         dispatcher.register(builder);
     }
 
-    public static ITextComponent createClassCastException(String string, Class<?> clazz) {
-        return new TranslationTextComponent("message.class_cast_exception", string, clazz.getCanonicalName());
+    public static ITextComponent createClassCastException(Class<?> from, Class<?> to) {
+        return new StringTextComponent("java.lang.ClassCastException: " + from.getCanonicalName() + " cannot be cast to " + to.getCanonicalName());
     }
 
     public static ITextComponent createClassCastException(Entity entity, Class<?> clazz) {
-        return new TranslationTextComponent(
-                "message.class_cast_exception",
+        return new StringTextComponent("java.lang.ClassCastException: ").append(
                 new StringTextComponent(entity.getClass().getCanonicalName()).setStyle(
                         Style.EMPTY.withInsertion(entity.getStringUUID())
                                 .withHoverEvent(new HoverEvent(SHOW_ENTITY, new HoverEvent.EntityHover(entity.getType(), entity.getUUID(), entity.getName())))
-                ),
-                clazz.getCanonicalName()
-        );
+                )
+        ).append(" cannot be cast to " + clazz.getCanonicalName());
     }
 
     public static GameProfile getSingleProfileOrException(CommandContext<CommandSource> context, String name) throws CommandSyntaxException {

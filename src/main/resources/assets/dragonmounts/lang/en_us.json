@@ -80,7 +80,6 @@
   "itemGroup.dragonmounts.items": "Dragon Mounts: Utilities & Ingredients",
   "itemGroup.dragonmounts.tools": "Dragon Mounts: Combat & Tools",
   "key.dragonmounts.descent": "Descent",
-  "message.class_cast_exception": "java.lang.ClassCastException: %s cannot be cast to %s",
   "message.dragonmounts.not_owner": "You are not the owner of this dragon",
   "options.dragonmounts.config": "Dragon Mounts 3 Configuration",
   "options.dragonmounts.converge_pitch_angle": "Pitch Angle Convergence",

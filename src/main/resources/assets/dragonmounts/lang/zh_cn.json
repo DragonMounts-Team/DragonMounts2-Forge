@@ -80,7 +80,6 @@
   "itemGroup.dragonmounts.items": "龙骑士：实用物品与原材料",
   "itemGroup.dragonmounts.tools": "龙骑士：战斗用品与工具",
   "key.dragonmounts.descent": "降落",
-  "message.class_cast_exception": "java.lang.ClassCastException: %s cannot be cast to %s",
   "message.dragonmounts.not_owner": "你不是这条龙的主人",
   "options.dragonmounts.config": "龙骑士3选项",
   "options.dragonmounts.converge_pitch_angle": "俯仰角趋同",

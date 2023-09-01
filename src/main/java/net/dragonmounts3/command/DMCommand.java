@@ -31,16 +31,16 @@ public class DMCommand {
     }
 
     public static ITextComponent createClassCastException(Class<?> from, Class<?> to) {
-        return new StringTextComponent("java.lang.ClassCastException: " + from.getCanonicalName() + " cannot be cast to " + to.getCanonicalName());
+        return new StringTextComponent("java.lang.ClassCastException: " + from.getName() + " cannot be cast to " + to.getName());
     }
 
     public static ITextComponent createClassCastException(Entity entity, Class<?> clazz) {
         return new StringTextComponent("java.lang.ClassCastException: ").append(
-                new StringTextComponent(entity.getClass().getCanonicalName()).setStyle(
+                new StringTextComponent(entity.getClass().getName()).setStyle(
                         Style.EMPTY.withInsertion(entity.getStringUUID())
                                 .withHoverEvent(new HoverEvent(SHOW_ENTITY, new HoverEvent.EntityHover(entity.getType(), entity.getUUID(), entity.getName())))
                 )
-        ).append(" cannot be cast to " + clazz.getCanonicalName());
+        ).append(" cannot be cast to " + clazz.getName());
     }
 
     public static GameProfile getSingleProfileOrException(CommandContext<CommandSource> context, String name) throws CommandSyntaxException {

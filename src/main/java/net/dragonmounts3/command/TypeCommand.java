@@ -11,7 +11,6 @@ import net.dragonmounts3.block.HatchableDragonEggBlock;
 import net.dragonmounts3.init.DMBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.DragonEggBlock;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
@@ -55,28 +54,23 @@ public class TypeCommand {
             BlockState set(Block block, ServerWorld level, BlockPos pos, BlockState state, DragonType type);
         }
 
-        public static DragonType defaultGetter(Block block, ServerWorld level, BlockPos pos, BlockState state) {
-            if (block == Blocks.DRAGON_EGG) return DragonType.ENDER;
-            return null;
-        }
-
-        public static BlockState defaultSetter(Block block, ServerWorld level, BlockPos pos, BlockState state, DragonType type) {
-            if (block == Blocks.DRAGON_EGG || block instanceof HatchableDragonEggBlock) {
-                Block egg = DMBlocks.HATCHABLE_DRAGON_EGG.get(type);
-                return egg == null ? state : egg.defaultBlockState();
-            }
-            return state;
-        }
+        public static final Getter GETTER_DRAGON_EEG = (block, level, pos, state) -> DragonType.ENDER;
+        public static final Setter SETTER_DRAGON_EEG = (block, level, pos, state, type) -> {
+            Block egg = DMBlocks.HATCHABLE_DRAGON_EGG.get(type);
+            return egg == null ? state : egg.defaultBlockState();
+        };
 
         private final HashMap<Class<? extends Block>, Getter> getters = new HashMap<>();
         private final HashMap<Class<? extends Block>, Setter> setters = new HashMap<>();
 
+        @SuppressWarnings("UnusedReturnValue")
         public Getter bind(Class<? extends Block> clazz, Getter getter) {
-            return this.getters.put(clazz, getter);
+            return getter == null ? this.getters.remove(clazz) : this.getters.put(clazz, getter);
         }
 
+        @SuppressWarnings("UnusedReturnValue")
         public Setter bind(Class<? extends Block> clazz, Setter setter) {
-            return this.setters.put(clazz, setter);
+            return setter == null ? this.setters.remove(clazz) : this.setters.put(clazz, setter);
         }
 
         @Override
@@ -100,7 +94,7 @@ public class TypeCommand {
                     return 1;
                 }
             }
-            source.sendFailure(new StringTextComponent("java.lang.NullPointerException: " + clazz.getCanonicalName() + " has no bound handler"));
+            source.sendFailure(new StringTextComponent("java.lang.NullPointerException: " + clazz.getName() + " has not bound to a handler"));
             return 0;
         }
 
@@ -162,8 +156,9 @@ public class TypeCommand {
     public static final EntityHandler ENTITY_HANDLER = new EntityHandler();
 
     static {
-        BLOCK_HANDLER.bind(DragonEggBlock.class, BlockHandler::defaultGetter);
-        BLOCK_HANDLER.bind(DragonEggBlock.class, BlockHandler::defaultSetter);
+        BLOCK_HANDLER.bind(DragonEggBlock.class, BlockHandler.GETTER_DRAGON_EEG);
+        BLOCK_HANDLER.bind(DragonEggBlock.class, BlockHandler.SETTER_DRAGON_EEG);
+        BLOCK_HANDLER.bind(HatchableDragonEggBlock.class, BlockHandler.SETTER_DRAGON_EEG);
     }
 
     public static LiteralArgumentBuilder<CommandSource> register() {

@@ -1,11 +1,11 @@
 package net.dragonmounts3.data.provider;
 
-import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.data.tags.DMItemTags;
-import net.dragonmounts3.entity.carriage.CarriageType;
 import net.dragonmounts3.init.DMBlocks;
 import net.dragonmounts3.init.DMItems;
-import net.minecraft.block.Block;
+import net.dragonmounts3.item.*;
+import net.dragonmounts3.registry.DragonType;
+import net.minecraft.block.Blocks;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IFinishedRecipe;
 import net.minecraft.data.RecipeProvider;
@@ -15,6 +15,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.util.IItemProvider;
 import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nonnull;
@@ -46,35 +47,14 @@ public class DMRecipeProvider extends RecipeProvider {
         netheriteBlockSmithingBuilder(DMItems.DIAMOND_DRAGON_ARMOR.get(), DMItems.NETHERITE_DRAGON_ARMOR.get()).save(consumer, prefix("netherite_dragon_armor_from_diamond"));
         netheriteBlockSmithingBuilder(DMItems.EMERALD_DRAGON_ARMOR.get(), DMItems.NETHERITE_DRAGON_ARMOR.get()).save(consumer, prefix("netherite_dragon_armor_from_emerald"));
         netheriteIngotSmithingBuilder(DMItems.DIAMOND_SHEARS.get(), DMItems.NETHERITE_SHEARS.get()).save(consumer, DMItems.NETHERITE_SHEARS.getId());
-        for (DragonType type : DragonType.values()) {
-            Item scale = DMItems.DRAGON_SCALES.get(type);
-            if (scale != null) {
-                dragonScaleAxe(consumer, scale, DMItems.DRAGON_SCALE_AXE.get(type));
-                dragonScaleBoots(consumer, scale, DMItems.DRAGON_SCALE_BOOTS.get(type));
-                dragonScaleBow(consumer, scale, DMItems.DRAGON_SCALE_BOW.get(type));
-                dragonScaleChestplate(consumer, scale, DMItems.DRAGON_SCALE_CHESTPLATE.get(type));
-                dragonScaleHelmet(consumer, scale, DMItems.DRAGON_SCALE_HELMET.get(type));
-                dragonScaleHoe(consumer, scale, DMItems.DRAGON_SCALE_HOE.get(type));
-                dragonScaleLeggings(consumer, scale, DMItems.DRAGON_SCALE_LEGGINGS.get(type));
-                dragonScalePickaxe(consumer, scale, DMItems.DRAGON_SCALE_PICKAXE.get(type));
-                dragonScaleShovel(consumer, scale, DMItems.DRAGON_SCALE_SHOVEL.get(type));
-                dragonScaleShield(consumer, scale, DMItems.DRAGON_SCALE_SHIELD.get(type));
-                dragonScaleSword(consumer, scale, DMItems.DRAGON_SCALE_SWORD.get(type));
-            }
-        }
-        for (CarriageType type : CarriageType.values()) {
-            Item carriage = DMItems.CARRIAGE.get(type);
-            if (carriage != null) {
-                Block planks = type.getPlanks();
-                shaped(carriage)
-                        .define('X', planks)
-                        .define('#', Tags.Items.LEATHER)
-                        .pattern("X X")
-                        .pattern("###")
-                        .unlockedBy("has_planks", has(ItemTags.PLANKS))
-                        .unlockedBy("has_leather", has(Tags.Items.LEATHER))
-                        .save(consumer);
-            }
+        carriage(consumer, DMItems.OAK_CARRIAGE.get(), Blocks.OAK_PLANKS);
+        carriage(consumer, DMItems.SPRUCE_CARRIAGE.get(), Blocks.SPRUCE_PLANKS);
+        carriage(consumer, DMItems.BIRCH_CARRIAGE.get(), Blocks.BIRCH_PLANKS);
+        carriage(consumer, DMItems.JUNGLE_CARRIAGE.get(), Blocks.JUNGLE_PLANKS);
+        carriage(consumer, DMItems.ACACIA_CARRIAGE.get(), Blocks.ACACIA_PLANKS);
+        carriage(consumer, DMItems.DARK_OAK_CARRIAGE.get(), Blocks.DARK_OAK_PLANKS);
+        for (DragonType type : DragonType.REGISTRY) {//Do NOT load other mods at the same time!
+            dragonScaleDerivatives(consumer, type);
         }
         shaped(DMItems.DIAMOND_SHEARS.get())
                 .define('X', Tags.Items.GEMS_DIAMOND)
@@ -122,6 +102,34 @@ public class DMRecipeProvider extends RecipeProvider {
                 .pattern("X#X")
                 .unlockedBy("easter_egg", has(Items.SADDLE))
                 .save(consumer, prefix("easter_egg"));
+    }
+
+    private static void carriage(Consumer<IFinishedRecipe> consumer, IItemProvider carriage, IItemProvider planks) {
+        shaped(carriage)
+                .define('X', planks)
+                .define('#', Tags.Items.LEATHER)
+                .pattern("X X")
+                .pattern("###")
+                .unlockedBy("has_planks", has(ItemTags.PLANKS))
+                .unlockedBy("has_leather", has(Tags.Items.LEATHER))
+                .save(consumer);
+    }
+
+    private static void dragonScaleDerivatives(Consumer<IFinishedRecipe> consumer, DragonType type) {
+        Item scale = type.getInstance(DragonScalesItem.class, null);
+        if (scale != null) {
+            dragonScaleAxe(consumer, scale, type.getInstance(DragonScaleAxeItem.class, null));
+            dragonScaleBoots(consumer, scale, type.getInstance(DragonScaleArmorItem.Boots.class, null));
+            dragonScaleBow(consumer, scale, type.getInstance(DragonScaleBowItem.class, null));
+            dragonScaleChestplate(consumer, scale, type.getInstance(DragonScaleArmorItem.Chestplate.class, null));
+            dragonScaleHelmet(consumer, scale, type.getInstance(DragonScaleArmorItem.Helmet.class, null));
+            dragonScaleHoe(consumer, scale, type.getInstance(DragonScaleHoeItem.class, null));
+            dragonScaleLeggings(consumer, scale, type.getInstance(DragonScaleArmorItem.Leggings.class, null));
+            dragonScalePickaxe(consumer, scale, type.getInstance(DragonScalePickaxeItem.class, null));
+            dragonScaleShovel(consumer, scale, type.getInstance(DragonScaleShovelItem.class, null));
+            dragonScaleShield(consumer, scale, type.getInstance(DragonScaleShieldItem.class, null));
+            dragonScaleSword(consumer, scale, type.getInstance(DragonScaleSwordItem.class, null));
+        }
     }
 
     private static void dragonArmor(Consumer<IFinishedRecipe> consumer, ITag<Item> ingot, ITag<Item> block, Item result) {

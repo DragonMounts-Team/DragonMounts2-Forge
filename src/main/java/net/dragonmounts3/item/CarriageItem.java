@@ -1,7 +1,7 @@
 package net.dragonmounts3.item;
 
-import net.dragonmounts3.entity.carriage.CarriageEntity;
-import net.dragonmounts3.entity.carriage.CarriageType;
+import net.dragonmounts3.entity.CarriageEntity;
+import net.dragonmounts3.registry.CarriageType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;

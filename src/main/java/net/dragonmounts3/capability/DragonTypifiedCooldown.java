@@ -1,18 +1,22 @@
 package net.dragonmounts3.capability;
 
-import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.network.SSyncCooldownPacket;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,9 +37,10 @@ public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
     public void set(DragonType type, int cooldown) {
         this.map.put(type, cooldown);
         if (this.player != null && !this.player.level.isClientSide) {
-            CompoundNBT nbt = new CompoundNBT();
-            nbt.putInt(type.getSerializedName(), cooldown);
-            CHANNEL.send(PLAYER.with(() -> (ServerPlayerEntity) player), new SSyncCooldownPacket(nbt));
+            int id = DragonType.REGISTRY.getID(type);
+            if (id != -1) {
+                CHANNEL.send(PLAYER.with(() -> (ServerPlayerEntity) player), new SSyncCooldownPacket(Collections.singletonList(new SSyncCooldownPacket.Entry(id, cooldown))));
+            }
         }
     }
 
@@ -59,19 +64,44 @@ public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
     public CompoundNBT writeNBT(Direction side) {
         CompoundNBT compound = new CompoundNBT();
         for (Map.Entry<DragonType, Integer> entry : this.map.entrySet()) {
-            compound.putInt(entry.getKey().getSerializedName(), entry.getValue());
+            ResourceLocation location = entry.getKey().getRegistryName();
+            if (location != null) {
+                compound.putInt(location.toString(), entry.getValue());
+            }
         }
         return compound;
     }
 
+
     @Override
     public void readNBT(Direction side, CompoundNBT nbt) {
-        for (DragonType type : DragonType.values()) {
-            String key = type.getSerializedName();
+        for (Map.Entry<RegistryKey<DragonType>, DragonType> entry : DragonType.REGISTRY.getEntries()) {
+            String key = entry.getKey().location().toString();
             if (nbt.contains(key)) {
-                this.map.put(type, nbt.getInt(key));
+                this.map.put(entry.getValue(), nbt.getInt(key));
             }
         }
+    }
+
+    @Override
+    public void fromNetwork(SSyncCooldownPacket packet) {
+        for (SSyncCooldownPacket.Entry entry : packet.list) {
+            if (entry.id != -1) {
+                this.map.put(DragonType.REGISTRY.getValue(entry.id), entry.value);
+            }
+        }
+    }
+
+    @Override
+    public SSyncCooldownPacket createPacket() {
+        ArrayList<SSyncCooldownPacket.Entry> list = new ArrayList<>();
+        for (Map.Entry<DragonType, Integer> entry : this.map.entrySet()) {
+            int id = DragonType.REGISTRY.getID(entry.getKey());
+            if (id != -1) {
+                list.add(new SSyncCooldownPacket.Entry(id, entry.getValue()));
+            }
+        }
+        return list.isEmpty() ? null : new SSyncCooldownPacket(list);
     }
 
     public static class Storage implements Capability.IStorage<IDragonTypifiedCooldown> {

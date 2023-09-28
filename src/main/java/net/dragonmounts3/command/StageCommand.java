@@ -27,6 +27,7 @@ public class StageCommand {
     public static int egg(CommandSource source, Entity target) {
         if (target instanceof TameableDragonEntity) {
             ServerWorld level = source.getLevel();
+            ((TameableDragonEntity) target).inventory.dropContents(false, 1.25);
             HatchableDragonEggEntity egg = new HatchableDragonEggEntity(target.level);
             CompoundNBT compound = target.saveWithoutId(new CompoundNBT());
             compound.remove(AGE_DATA_PARAMETER_KEY);

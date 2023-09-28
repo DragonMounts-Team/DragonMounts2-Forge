@@ -1,6 +1,8 @@
 package net.dragonmounts3.data.loot;
 
+import net.dragonmounts3.block.HatchableDragonEggBlock;
 import net.dragonmounts3.init.DMBlocks;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.block.Block;
 import net.minecraft.data.loot.BlockLootTables;
 import net.minecraft.loot.*;
@@ -17,7 +19,12 @@ public class DMBlockLoot extends BlockLootTables {
     protected void addTables() {
         this.add(DMBlocks.DRAGON_CORE.get(), LootTable.lootTable());
         this.dropSelf(DMBlocks.DRAGON_NEST.get());
-        DMBlocks.HATCHABLE_DRAGON_EGG.forEach(this::dropDragonEgg);
+        for (DragonType type : DragonType.REGISTRY) {//Do NOT load other mods at the same time!
+            HatchableDragonEggBlock block = type.getInstance(HatchableDragonEggBlock.class, null);
+            if (block != null) {
+                this.dropDragonEgg(block);
+            }
+        }
     }
 
     public void accept(@Nonnull BiConsumer<ResourceLocation, LootTable.Builder> biConsumer) {

@@ -1,7 +1,6 @@
 package net.dragonmounts3.item;
 
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
-import net.dragonmounts3.init.DMItems;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -30,7 +29,7 @@ public class DragonAmuletItem extends Item implements IDragonContainer {
             }
             TameableDragonEntity dragon = (TameableDragonEntity) entity;
             if (dragon.isOwnedBy(player)) {
-                Item amulet = DMItems.FILLED_DRAGON_AMULET.get(dragon.getDragonType());
+                Item amulet = dragon.getDragonType().getInstance(FilledDragonAmuletItem.class, null);
                 if (amulet == null) return ActionResultType.FAIL;
                 ItemStack newStack = IDragonContainer.fill(dragon, amulet, false);
                 player.setItemInHand(hand, newStack);

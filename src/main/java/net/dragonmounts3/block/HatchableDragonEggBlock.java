@@ -1,9 +1,10 @@
 package net.dragonmounts3.block;
 
 import net.dragonmounts3.DragonMountsConfig;
-import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
+import net.dragonmounts3.init.DragonTypes;
+import net.dragonmounts3.registry.DragonType;
 import net.dragonmounts3.util.EntityUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -46,7 +47,7 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
             Block block = level.getBlockState(pos).getBlock();
             if (block == Blocks.DRAGON_EGG && !level.dimension().equals(World.END)) {
                 event.setUseBlock(Event.Result.DENY);
-                spawn(level, pos, DragonType.ENDER);
+                spawn(level, pos, DragonTypes.ENDER);
             }
         }
     }
@@ -88,7 +89,7 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(@Nonnull ItemStack stack, @Nullable IBlockReader world, List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
-        components.add(this.type.getText());
+        components.add(this.type.getName());
     }
 
     @Nonnull

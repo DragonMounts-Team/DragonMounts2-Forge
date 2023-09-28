@@ -2,7 +2,7 @@ package net.dragonmounts3.client.model;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.dragonmounts3.entity.carriage.CarriageEntity;
+import net.dragonmounts3.entity.CarriageEntity;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 

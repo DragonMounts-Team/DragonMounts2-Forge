@@ -1,6 +1,7 @@
 package net.dragonmounts3.capability;
 
-import net.dragonmounts3.api.DragonType;
+import net.dragonmounts3.network.SSyncCooldownPacket;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -17,4 +18,8 @@ public interface IDragonTypifiedCooldown {
     CompoundNBT writeNBT(Direction side);
 
     void readNBT(Direction side, CompoundNBT nbt);
+
+    void fromNetwork(SSyncCooldownPacket packet);
+
+    SSyncCooldownPacket createPacket();
 }

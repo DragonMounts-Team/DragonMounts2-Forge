@@ -42,7 +42,7 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
 
     @Override
     public void prepareMobModel(@Nonnull TameableDragonEntity dragon, float limbSwing, float limbSwingAmount, float partialTick) {
-        boolean hasSideTailScale = dragon.getVariant().hasSideTailScale;
+        boolean hasSideTailScale = dragon.getVariant().hasSideTailScale(dragon);
         this.tail.leftScale.visible = this.tail.rightScale.visible = hasSideTailScale;
         this.tail.middleScale.visible = !hasSideTailScale;
         this.head.scaleX = this.head.scaleY = this.head.scaleZ = 0.92F;

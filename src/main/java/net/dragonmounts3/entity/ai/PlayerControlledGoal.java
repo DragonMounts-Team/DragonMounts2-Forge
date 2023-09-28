@@ -1,6 +1,6 @@
 package net.dragonmounts3.entity.ai;
 
-import net.dragonmounts3.api.DragonType;
+import net.dragonmounts3.init.DragonTypes;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.network.CRideDragonPacket;
 import net.dragonmounts3.util.EntityUtil;
@@ -48,7 +48,7 @@ public class PlayerControlledGoal extends Goal {
 
     @Override
     public void tick() {
-        if (this.dragon.getDragonType() == DragonType.WATER && this.controller.isInWaterOrBubble()) {
+        if (this.dragon.getDragonType() == DragonTypes.WATER && this.controller.isInWaterOrBubble()) {
             EntityUtil.addOrResetEffect(this.controller, Effects.WATER_BREATHING, 200, 0, true, true, true, 21);
         }
 

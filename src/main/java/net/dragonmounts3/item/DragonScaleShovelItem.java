@@ -1,8 +1,8 @@
 package net.dragonmounts3.item;
 
 import net.dragonmounts3.api.DragonScaleTier;
-import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShovelItem;
@@ -35,7 +35,7 @@ public class DragonScaleShovelItem extends ShovelItem implements IDragonTypified
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
-        components.add(this.type.getText());
+        components.add(this.type.getName());
     }
 
     @Nonnull

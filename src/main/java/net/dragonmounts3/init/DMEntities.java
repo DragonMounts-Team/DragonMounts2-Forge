@@ -1,7 +1,7 @@
 package net.dragonmounts3.init;
 
 import net.dragonmounts3.DragonMounts;
-import net.dragonmounts3.entity.carriage.CarriageEntity;
+import net.dragonmounts3.entity.CarriageEntity;
 import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.minecraft.entity.Entity;

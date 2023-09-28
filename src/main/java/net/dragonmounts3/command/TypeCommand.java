@@ -4,11 +4,11 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.api.IMutableDragonTypified;
 import net.dragonmounts3.block.HatchableDragonEggBlock;
-import net.dragonmounts3.init.DMBlocks;
+import net.dragonmounts3.init.DragonTypes;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DragonEggBlock;
@@ -17,12 +17,14 @@ import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.BlockPosArgument;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static net.dragonmounts3.command.DMCommand.createClassCastException;
 
@@ -35,8 +37,8 @@ public class TypeCommand {
         protected abstract int getType(CommandContext<CommandSource> context, A argument);
 
         public <T> RequiredArgumentBuilder<CommandSource, T> load(RequiredArgumentBuilder<CommandSource, T> builder) {
-            for (DragonType type : DragonType.values()) {
-                builder.then(Commands.literal(type.getSerializedName()).executes(context -> this.setType(context, this.getArgument(context), type)));
+            for (Map.Entry<RegistryKey<DragonType>, DragonType> entry : DragonType.REGISTRY.getEntries()) {
+                builder.then(Commands.literal(entry.getKey().location().toString()).executes(context -> this.setType(context, this.getArgument(context), entry.getValue())));
             }
             builder.executes(context -> this.getType(context, this.getArgument(context)));
             return builder;
@@ -54,9 +56,9 @@ public class TypeCommand {
             BlockState set(Block block, ServerWorld level, BlockPos pos, BlockState state, DragonType type);
         }
 
-        public static final Getter GETTER_DRAGON_EEG = (block, level, pos, state) -> DragonType.ENDER;
+        public static final Getter GETTER_DRAGON_EEG = (block, level, pos, state) -> DragonTypes.ENDER;
         public static final Setter SETTER_DRAGON_EEG = (block, level, pos, state, type) -> {
-            Block egg = DMBlocks.HATCHABLE_DRAGON_EGG.get(type);
+            Block egg = type.getInstance(HatchableDragonEggBlock.class, null);
             return egg == null ? state : egg.defaultBlockState();
         };
 
@@ -90,7 +92,7 @@ public class TypeCommand {
                 BlockState state = setter.set(block, level, pos, original, type);
                 if (state != original) {
                     level.setBlockAndUpdate(pos, state);
-                    source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.block.set", pos.getX(), pos.getY(), pos.getZ(), type.getText()), true);
+                    source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.block.set", pos.getX(), pos.getY(), pos.getZ(), type.getName()), true);
                     return 1;
                 }
             }
@@ -109,12 +111,12 @@ public class TypeCommand {
             if (getter != null) {
                 DragonType type = getter.get(block, level, pos, state);
                 if (type != null) {
-                    source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.block.get", pos.getX(), pos.getY(), pos.getZ(), type.getText()), true);
+                    source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.block.get", pos.getX(), pos.getY(), pos.getZ(), type.getName()), true);
                     return 1;
                 }
             }
             if (block instanceof IDragonTypified) {
-                source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.block.get", pos.getX(), pos.getY(), pos.getZ(), ((IDragonTypified) block).getDragonType().getText()), true);
+                source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.block.get", pos.getX(), pos.getY(), pos.getZ(), ((IDragonTypified) block).getDragonType().getName()), true);
                 return 1;
             }
             source.sendFailure(createClassCastException(clazz, IDragonTypified.class));
@@ -133,7 +135,7 @@ public class TypeCommand {
             CommandSource source = context.getSource();
             if (entity instanceof IMutableDragonTypified) {
                 ((IMutableDragonTypified) entity).setDragonType(type);
-                source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.entity.set", entity.getDisplayName(), type.getText()), true);
+                source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.entity.set", entity.getDisplayName(), type.getName()), true);
                 return 1;
             }
             source.sendFailure(createClassCastException(entity, IMutableDragonTypified.class));
@@ -144,7 +146,7 @@ public class TypeCommand {
         protected int getType(CommandContext<CommandSource> context, Entity entity) {
             CommandSource source = context.getSource();
             if (entity instanceof IDragonTypified) {
-                source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.entity.get", entity.getDisplayName(), ((IDragonTypified) entity).getDragonType().getText()), true);
+                source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.entity.get", entity.getDisplayName(), ((IDragonTypified) entity).getDragonType().getName()), true);
                 return 1;
             }
             source.sendFailure(createClassCastException(entity, IDragonTypified.class));

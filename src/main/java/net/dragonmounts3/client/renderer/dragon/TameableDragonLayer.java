@@ -2,10 +2,10 @@ package net.dragonmounts3.client.renderer.dragon;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.dragonmounts3.api.variant.AbstractVariant;
 import net.dragonmounts3.client.model.dragon.DragonModel;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.item.DragonArmorItem;
+import net.dragonmounts3.registry.DragonVariant;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderType;
@@ -28,7 +28,7 @@ public class TameableDragonLayer extends LayerRenderer<TameableDragonEntity, Dra
     @Override
     public void render(@Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int packedLight, TameableDragonEntity dragon, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         DragonModel model = this.getParentModel();
-        AbstractVariant variant = dragon.getVariant();
+        DragonVariant variant = dragon.getVariant();
         if (dragon.deathTime > 0) {
             model.renderToBuffer(matrixStack, buffer.getBuffer(variant.getDissolve(dragon)), packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
             model.renderToBuffer(matrixStack, buffer.getBuffer(variant.getDecal(dragon)), packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);

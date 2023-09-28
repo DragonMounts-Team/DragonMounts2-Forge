@@ -1,8 +1,10 @@
 package net.dragonmounts3.api;
 
 import net.dragonmounts3.init.DMItems;
+import net.dragonmounts3.init.DragonTypes;
+import net.dragonmounts3.item.DragonScalesItem;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.item.IItemTier;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.LazyValue;
 
@@ -27,21 +29,21 @@ public class DragonScaleTier implements IItemTier, IDragonTypified {
 
     static {
         Builder builder = new Builder(4, 2700, 8.0F, 5.0F).setEnchantmentValue(11);
-        FIRE = builder.build(DragonType.FIRE);
-        FOREST = builder.build(DragonType.FOREST);
-        ICE = builder.build(DragonType.ICE);
-        MOONLIGHT = builder.build(DragonType.MOONLIGHT);
-        STORM = builder.build(DragonType.STORM);
-        SUNLIGHT = builder.build(DragonType.SUNLIGHT);
-        TERRA = builder.build(DragonType.TERRA);
-        WATER = builder.build(DragonType.WATER);
-        ZOMBIE = builder.build(DragonType.ZOMBIE);
-        ENCHANT = builder.setEnchantmentValue(30).build(DragonType.ENCHANT);
+        FIRE = builder.build(DragonTypes.FIRE);
+        FOREST = builder.build(DragonTypes.FOREST);
+        ICE = builder.build(DragonTypes.ICE);
+        MOONLIGHT = builder.build(DragonTypes.MOONLIGHT);
+        STORM = builder.build(DragonTypes.STORM);
+        SUNLIGHT = builder.build(DragonTypes.SUNLIGHT);
+        TERRA = builder.build(DragonTypes.TERRA);
+        WATER = builder.build(DragonTypes.WATER);
+        ZOMBIE = builder.build(DragonTypes.ZOMBIE);
+        ENCHANT = builder.setEnchantmentValue(30).build(DragonTypes.ENCHANT);
         builder = new Builder(5, 3000, 8.0F, 6.0F).setEnchantmentValue(11);
-        ENDER = builder.build(DragonType.ENDER);
-        SCULK = builder.build(DragonType.SCULK);
-        AETHER = new Builder(5, 2700, 8.0F, 5.0F).setEnchantmentValue(11).build(DragonType.AETHER);
-        NETHER = new Builder(5, 2700, 8.0F, 6.0F).setEnchantmentValue(11).build(DragonType.NETHER);
+        ENDER = builder.build(DragonTypes.ENDER);
+        SCULK = builder.build(DragonTypes.SCULK);
+        AETHER = new Builder(5, 2700, 8.0F, 5.0F).setEnchantmentValue(11).build(DragonTypes.AETHER);
+        NETHER = new Builder(5, 2700, 8.0F, 6.0F).setEnchantmentValue(11).build(DragonTypes.NETHER);
     }
 
     private final DragonType type;
@@ -59,7 +61,7 @@ public class DragonScaleTier implements IItemTier, IDragonTypified {
         this.speed = builder.speed;
         this.damage = builder.damage;
         this.enchantmentValue = builder.enchantmentValue;
-        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(() -> Ingredient.of(new ItemStack(DMItems.DRAGON_SCALES.get(type)))) : builder.repairIngredient;
+        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(() -> Ingredient.of(type.getInstance(DragonScalesItem.class, DMItems.ENDER_DRAGON_SCALES.get()))) : builder.repairIngredient;
     }
 
     @Override

@@ -1,8 +1,11 @@
 package net.dragonmounts3.data.provider;
 
 import net.dragonmounts3.DragonMounts;
+import net.dragonmounts3.block.HatchableDragonEggBlock;
 import net.dragonmounts3.data.tags.DMBlockTags;
 import net.dragonmounts3.init.DMBlocks;
+import net.dragonmounts3.registry.DragonType;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
@@ -20,6 +23,12 @@ public class DMBlockTagsProvider extends BlockTagsProvider {
     protected void addTags() {
         this.tag(BlockTags.PIGLIN_REPELLENTS)
                 .add(DMBlocks.DRAGON_CORE.get());
-        DMBlocks.HATCHABLE_DRAGON_EGG.forEach(this.tag(DMBlockTags.DRAGON_EGGS).add(Blocks.DRAGON_EGG)::add);
+        Builder<Block> tag = this.tag(DMBlockTags.DRAGON_EGGS).add(Blocks.DRAGON_EGG);
+        for (DragonType type : DragonType.REGISTRY) {//Do NOT load other mods at the same time!
+            HatchableDragonEggBlock egg = type.getInstance(HatchableDragonEggBlock.class, null);
+            if (egg != null) {
+                tag.add(egg);
+            }
+        }
     }
 }

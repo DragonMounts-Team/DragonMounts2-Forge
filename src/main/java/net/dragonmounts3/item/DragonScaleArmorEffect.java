@@ -1,6 +1,6 @@
 package net.dragonmounts3.item;
 
-import net.dragonmounts3.api.DragonType;
+import net.dragonmounts3.init.DragonTypes;
 import net.dragonmounts3.api.IArmorEffect;
 import net.dragonmounts3.capability.IDragonTypifiedCooldown;
 import net.dragonmounts3.network.SRiposteEffectPacket;
@@ -52,9 +52,9 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
         public void invoke(PlayerEntity player, int strength) {
             if (strength >= 4 && !player.level.isClientSide && player.isSprinting()) {
                 player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
-                    if (cooldown.get(DragonType.AETHER) <= 0 && addOrMergeEffect(player, Effects.MOVEMENT_SPEED, 100, 1, true, true, true)) {
+                    if (cooldown.get(DragonTypes.AETHER) <= 0 && addOrMergeEffect(player, Effects.MOVEMENT_SPEED, 100, 1, true, true, true)) {
                         player.level.playSound(null, player, SoundEvents.GUARDIAN_HURT, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-                        cooldown.set(DragonType.AETHER, this.cooldown);
+                        cooldown.set(DragonTypes.AETHER, this.cooldown);
                     }
                 });
             }
@@ -107,10 +107,10 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
             if (strength < 4 || player.getHealth() >= 10) return;
             player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
                 //Trying to add these two effects in any case requires using `|` instead of `||`
-                if (cooldown.get(DragonType.ENDER) <= 0 && (addOrMergeEffect(player, Effects.DAMAGE_RESISTANCE, 600, 2, true, true, true) | addOrMergeEffect(player, Effects.DAMAGE_BOOST, 300, 1, true, true, true))) {
+                if (cooldown.get(DragonTypes.ENDER) <= 0 && (addOrMergeEffect(player, Effects.DAMAGE_RESISTANCE, 600, 2, true, true, true) | addOrMergeEffect(player, Effects.DAMAGE_BOOST, 300, 1, true, true, true))) {
                     player.level.levelEvent(2003, player.blockPosition(), 0);
                     player.level.playSound(null, player, SoundEvents.END_PORTAL_SPAWN, SoundCategory.HOSTILE, 0.05F, 1.0F);
-                    cooldown.set(DragonType.ENDER, this.cooldown);
+                    cooldown.set(DragonTypes.ENDER, this.cooldown);
                 }
             });
         }
@@ -121,9 +121,9 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
         public void invoke(PlayerEntity player, int strength) {
             if (strength >= 4 && !player.level.isClientSide && player.isOnFire()) {
                 player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
-                    if (cooldown.get(DragonType.FIRE) <= 0) {
+                    if (cooldown.get(DragonTypes.FIRE) <= 0) {
                         if (addOrMergeEffect(player, Effects.FIRE_RESISTANCE, 600, 0, true, true, true)) {
-                            cooldown.set(DragonType.FIRE, this.cooldown);
+                            cooldown.set(DragonTypes.FIRE, this.cooldown);
                         }
                         player.clearFire();
                     }
@@ -141,9 +141,9 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
                 }
                 if (player.getHealth() >= 10) return;
                 player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
-                    if (cooldown.get(DragonType.FOREST) <= 0) {
+                    if (cooldown.get(DragonTypes.FOREST) <= 0) {
                         if (addOrMergeEffect(player, Effects.REGENERATION, 200, 1, true, true, true)) {
-                            cooldown.set(DragonType.FOREST, this.cooldown);
+                            cooldown.set(DragonTypes.FOREST, this.cooldown);
                         }
                     }
                 });
@@ -175,9 +175,9 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
                 }
                 if (player.getFoodData().getFoodLevel() >= 6) return;
                 player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
-                    if (cooldown.get(DragonType.SUNLIGHT) <= 0) {
+                    if (cooldown.get(DragonTypes.SUNLIGHT) <= 0) {
                         if (addOrMergeEffect(player, Effects.SATURATION, 200, 0, true, true, true)) {
-                            cooldown.set(DragonType.SUNLIGHT, this.cooldown);
+                            cooldown.set(DragonTypes.SUNLIGHT, this.cooldown);
                         }
                     }
                 });
@@ -208,8 +208,8 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
         public void invoke(PlayerEntity player, int strength) {
             if (strength >= 4 && !player.level.isClientSide && !player.level.isDay()) {
                 player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
-                    if (cooldown.get(DragonType.ZOMBIE) <= 0 && addOrMergeEffect(player, Effects.DAMAGE_BOOST, 300, 0, true, true, true)) {
-                        cooldown.set(DragonType.ZOMBIE, this.cooldown);
+                    if (cooldown.get(DragonTypes.ZOMBIE) <= 0 && addOrMergeEffect(player, Effects.DAMAGE_BOOST, 300, 0, true, true, true)) {
+                        cooldown.set(DragonTypes.ZOMBIE, this.cooldown);
                     }
                 });
             }
@@ -230,7 +230,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
         Entity entity = event.getTarget();
         if (ArmorEffect.getCache(player).getOrDefault(STORM, 0) >= 4 && player.getRandom().nextBoolean()) {
             player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
-                if (cooldown.get(DragonType.STORM) <= 0) {
+                if (cooldown.get(DragonTypes.STORM) <= 0) {
                     BlockPos pos = entity.blockPosition();
                     if (entity.level.canSeeSky(pos)) {
                         LightningBoltEntity bolt = EntityType.LIGHTNING_BOLT.create(entity.level);
@@ -239,7 +239,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
                         bolt.setCause((ServerPlayerEntity) player);
                         entity.level.addFreshEntity(bolt);
                     }
-                    cooldown.set(DragonType.STORM, STORM.cooldown);
+                    cooldown.set(DragonTypes.STORM, STORM.cooldown);
                 }
             });
         }
@@ -257,7 +257,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
         SRiposteEffectPacket packet = new SRiposteEffectPacket(player.getId());
         if (strength.getOrDefault(ICE, 0) >= 4) {
             capability.ifPresent(cooldown -> {
-                if (cooldown.get(DragonType.ICE) <= 0) {
+                if (cooldown.get(DragonTypes.ICE) <= 0) {
                     packet.flag |= 0b01;
                     for (Entity target : targets) {
                         target.hurt(DamageSource.GENERIC, 1);
@@ -266,13 +266,13 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
                             ((LivingEntity) target).knockback(0.4F, 1, 1);
                         }
                     }
-                    cooldown.set(DragonType.ICE, ICE.cooldown);
+                    cooldown.set(DragonTypes.ICE, ICE.cooldown);
                 }
             });
         }
         if (strength.getOrDefault(NETHER, 0) >= 4) {
             capability.ifPresent(cooldown -> {
-                if (cooldown.get(DragonType.NETHER) <= 0) {
+                if (cooldown.get(DragonTypes.NETHER) <= 0) {
                     packet.flag |= 0b10;
                     for (Entity target : targets) {
                         target.setSecondsOnFire(10);
@@ -280,7 +280,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
                             ((LivingEntity) target).knockback(0.4F, 1, 1);
                         }
                     }
-                    cooldown.set(DragonType.NETHER, NETHER.cooldown);
+                    cooldown.set(DragonTypes.NETHER, NETHER.cooldown);
                 }
             });
         }

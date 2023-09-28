@@ -1,15 +1,15 @@
 package net.dragonmounts3.entity.dragon;
 
 import net.dragonmounts3.DragonMountsConfig;
-import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IMutableDragonTypified;
 import net.dragonmounts3.block.HatchableDragonEggBlock;
 import net.dragonmounts3.init.DMBlocks;
 import net.dragonmounts3.init.DMEntities;
-import net.dragonmounts3.init.DMItems;
 import net.dragonmounts3.init.DMSounds;
+import net.dragonmounts3.init.DragonTypes;
 import net.dragonmounts3.item.DragonScalesItem;
 import net.dragonmounts3.network.SShakeDragonEggPacket;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -24,13 +24,14 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -55,15 +56,15 @@ import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
 
 @ParametersAreNonnullByDefault
 public class HatchableDragonEggEntity extends LivingEntity implements IMutableDragonTypified {
-    private static final DataParameter<String> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DataSerializers.STRING);
+    protected static final DataParameter<DragonType> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DragonType.SERIALIZER);
     public static final int MIN_HATCHING_TIME = 36000;
     private static final int CONVERSION_RANGE = 2;
     private static final float EGG_CRACK_PROCESS_THRESHOLD = 0.9F;
     private static final float EGG_SHAKE_PROCESS_THRESHOLD = 0.75F;
     private static final int EGG_SHAKE_THRESHOLD = (int) (EGG_SHAKE_PROCESS_THRESHOLD * MIN_HATCHING_TIME);
     private static final float EGG_SHAKE_BASE_CHANCE = 20F;
-    protected DragonType type = DragonType.ENDER;
     protected Map<DragonType, AtomicInteger> conversion = new HashMap<>();
+    protected UUID owner = null;
     protected float rotationAxis = 0;
     protected int amplitude = 0;
     protected int age = 0;
@@ -89,17 +90,21 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(DATA_DRAGON_TYPE, DragonType.ENDER.getSerializedName());
+        this.entityData.define(DATA_DRAGON_TYPE, DragonTypes.ENDER);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundNBT compound) {
         super.addAdditionalSaveData(compound);
-        compound.putString(DragonType.DATA_PARAMETER_KEY, this.entityData.get(DATA_DRAGON_TYPE));
+        ResourceLocation key = DragonType.REGISTRY.getKey(this.entityData.get(DATA_DRAGON_TYPE));
+        compound.putString(DragonType.DATA_PARAMETER_KEY, (key == null ? DragonType.DEFAULT_KEY : key).toString());
         compound.putInt(AGE_DATA_PARAMETER_KEY, this.age);
-        CompoundNBT tag = new CompoundNBT();
+        CompoundNBT tag = new CompoundNBT();/*TODO: rewrite conversion
         for (Map.Entry<DragonType, AtomicInteger> entry : this.conversion.entrySet()) {
             tag.putInt(entry.getKey().getSerializedName(), entry.getValue().get());
+        }*/
+        if (this.owner != null) {
+            compound.putUUID("Owner", this.owner);
         }
         if (!tag.isEmpty()) {
             compound.put("Conversion", tag);
@@ -113,33 +118,32 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         if (compound.contains(AGE_DATA_PARAMETER_KEY)) {
             this.age = compound.getInt(AGE_DATA_PARAMETER_KEY);
         }
-        DragonType current = this.getDragonType();
+        //DragonType current = this.getDragonType();
+        if (compound.hasUUID("Owner")) {
+            this.owner = compound.getUUID("Owner");
+        } else {
+            MinecraftServer server = this.getServer();
+            if (server != null) {
+                this.owner = PreYggdrasilConverter.convertMobOwnerIfNecessary(server, compound.getString("Owner"));
+            }
+        }/*TODO: rewrite conversion
         if (compound.contains("Conversion")) {
             //this.conversion.clear();
             CompoundNBT tag = compound.getCompound("Conversion");
-            for (DragonType type : DragonType.values()) {
-                this.conversion.put(type, new AtomicInteger(tag.getInt(type.getSerializedName())));
+            for (Map.Entry<RegistryKey<DragonType>, DragonType> entry : DragonType.REGISTRY.getEntries()) {
+                this.conversion.put(entry.getValue(), new AtomicInteger(tag.getInt(entry.getKey().location().toString())));
             }
             if (!tag.contains(current.getSerializedName())) {
                 this.conversion.get(current).set(1000);
             }
         } else if (this.conversion.get(current) == null) {
             this.conversion.put(current, new AtomicInteger(1000));
-        }
-    }
-
-    @Override
-    public void onSyncedDataUpdated(DataParameter<?> key) {
-        if (DATA_DRAGON_TYPE.equals(key)) {
-            this.type = DragonType.byName(this.entityData.get(DATA_DRAGON_TYPE));
-        } else {
-            super.onSyncedDataUpdated(key);
-        }
+        }*/
     }
 
     protected void spawnScales(int amount) {
         if (amount > 0) {
-            DragonScalesItem scales = DMItems.DRAGON_SCALES.get(this.getDragonType());
+            DragonScalesItem scales = this.getDragonType().getInstance(DragonScalesItem.class, null);
             if (scales != null && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
                 this.spawnAtLocation(new ItemStack(scales, amount), 1.25F);
             }
@@ -214,7 +218,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         if (!this.isAlive()) {
             return ActionResultType.PASS;
         } else if (player.isShiftKeyDown()) {
-            HatchableDragonEggBlock block = DMBlocks.HATCHABLE_DRAGON_EGG.get(this.getDragonType());
+            HatchableDragonEggBlock block = this.getDragonType().getInstance(HatchableDragonEggBlock.class, null);
             if (block == null) {
                 return ActionResultType.FAIL;
             }
@@ -242,9 +246,9 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
             double ox = (this.random.nextDouble() - 0.5) * 2;
             double oy = (this.random.nextDouble() - 0.3) * 2;
             double oz = (this.random.nextDouble() - 0.5) * 2;
-            this.level.addParticle(type.getEggParticle(), px, py, pz, ox, oy, oz);
-            if ((this.tickCount & 1) == 0 && type != DragonType.ENDER) {
-                int color = type.getColor();
+            this.level.addParticle(type.eggParticle, px, py, pz, ox, oy, oz);
+            if ((this.tickCount & 1) == 0 && type != DragonTypes.ENDER) {
+                int color = type.color;
                 this.level.addParticle(new RedstoneParticleData(getColor(color, 2), getColor(color, 1), getColor(color, 0), 1.0F), px, py + 0.8, pz, ox, oy, oz);
             }
             return;
@@ -270,17 +274,17 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
                         new SShakeDragonEggPacket(this.getId(), this.rotationAxis, this.amplitude, flag)
                 );
             }
-        }
+        }/*TODO: rewrite conversion
         if ((this.tickCount & 0b0001_1111) == 0) {//check every 32 ticks
             this.convertDragonType();
-        }
+        }*/
     }
 
     public void convertDragonType() {
         DragonType current = this.getDragonType();
         if (!current.convertible) return;
         Optional<RegistryKey<Biome>> biome = this.level.getBiomeName(this.blockPosition());
-        Collection<DragonType> types = DragonType.values();
+        Collection<DragonType> types = DragonType.REGISTRY.getValues();
         // update egg breed every second on the server
         BlockPos.betweenClosedStream(this.getBoundingBox().inflate(CONVERSION_RANGE)).forEach(pos -> {
             for (DragonType type : types) {
@@ -322,13 +326,13 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
 
     @Override
     public ItemStack getPickedResult(RayTraceResult target) {
-        return new ItemStack(DMBlocks.HATCHABLE_DRAGON_EGG.get(this.getDragonType()));
+        return new ItemStack(this.getDragonType().getInstance(HatchableDragonEggBlock.class, DMBlocks.ENDER_DRAGON_EGG.get()));
     }
 
     @Nonnull
     @Override
     protected ITextComponent getTypeName() {
-        return this.getDragonType().getTypifiedName("entity.dragonmounts.dragon_egg.name");
+        return this.getDragonType().getFormattedName("entity.dragonmounts.dragon_egg.name");
     }
 
     @Override
@@ -381,8 +385,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         this.rotationAxis = packet.axis;
         this.amplitude = packet.amplitude;
         if (packet.particle) {
-            DragonType type = this.getDragonType();
-            HatchableDragonEggBlock block = DMBlocks.HATCHABLE_DRAGON_EGG.get(type);
+            HatchableDragonEggBlock block = this.getDragonType().getInstance(HatchableDragonEggBlock.class, DMBlocks.ENDER_DRAGON_EGG.get());
             if (block != null) {
                 this.level.levelEvent(2001, this.blockPosition(), Block.getId(block.defaultBlockState()));
             }
@@ -393,7 +396,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     public void setDragonType(DragonType type, boolean resetHealth, boolean resetConversion) {
         AttributeModifierManager manager = this.getAttributes();
         manager.removeAttributeModifiers(this.getDragonType().getAttributeModifiers());
-        this.entityData.set(DATA_DRAGON_TYPE, type.getSerializedName());
+        this.entityData.set(DATA_DRAGON_TYPE, type);
         manager.addTransientAttributeModifiers(type.getAttributeModifiers());
         if (resetHealth) {
             ModifiableAttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
@@ -414,6 +417,6 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
 
     @Override
     public DragonType getDragonType() {
-        return this.type;
+        return this.entityData.get(DATA_DRAGON_TYPE);
     }
 }

@@ -216,10 +216,10 @@ public class DragonInventory implements IInventory, INamedContainerProvider {
         return new DragonInventoryContainer(id, inventory, this, this.dragon);
     }
 
-    public void dropContents(boolean keepEquipments) {
+    public void dropContents(boolean keepEquipments, double offsetY) {
         World level = this.dragon.level;
         double x = this.dragon.getX();
-        double y = this.dragon.getY();
+        double y = this.dragon.getY() + offsetY;
         double z = this.dragon.getZ();
         if (!keepEquipments) {
             InventoryHelper.dropItemStack(level, x, y, z, this.dragon.getSaddle());

@@ -67,9 +67,12 @@ public class ArmorEffect {
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         PlayerEntity player = event.getPlayer();
         if (player instanceof ServerPlayerEntity) {
-            player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown ->
-                    CHANNEL.send(PLAYER.with(() -> (ServerPlayerEntity) player), new SSyncCooldownPacket(cooldown.writeNBT(null)))
-            );
+            player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
+                SSyncCooldownPacket packet = cooldown.createPacket();
+                if (packet != null) {
+                    CHANNEL.send(PLAYER.with(() -> (ServerPlayerEntity) player), packet);
+                }
+            });
         }
     }
 

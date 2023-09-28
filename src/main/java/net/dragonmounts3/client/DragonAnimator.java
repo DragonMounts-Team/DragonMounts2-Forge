@@ -147,7 +147,7 @@ public class DragonAnimator {
         if (head == null) return null;
         Vector3d bodyOrigin = this.dragon.position().add(0, this.dragon.getEyeHeight(), 0);
         float scale = this.dragon.getScale();
-        final float modelScale = scale * this.dragon.getVariant().modelPositionScale;
+        final float modelScale = scale * this.dragon.getVariant().positionScale;
         final float headScale = modelScale * this.getRelativeHeadSize(scale);
         // the head offset plus the headLocation.rotationPoint is the origin of the head, i.e. the point about which the
         // head rotates, relative to the origin of the body (getPositionEyes)
@@ -493,7 +493,7 @@ public class DragonAnimator {
             tail.xRot -= (1 - speed) * vertMulti * 2;
             tail.yRot += Math.toRadians(180 - yawOfs);
             // display horns near the tip
-            tail.leftHorn.visible = tail.rightHorn.visible = this.dragon.getVariant().hasTailHorns
+            tail.leftHorn.visible = tail.rightHorn.visible = this.dragon.getVariant().hasTailHorns(this.dragon)
                     && i > DragonTailModelPart.TAIL_SEGMENT_COUNT - 7
                     && i < DragonTailModelPart.TAIL_SEGMENT_COUNT - 3;
             // update scale

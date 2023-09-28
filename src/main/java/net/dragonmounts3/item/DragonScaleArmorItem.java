@@ -1,7 +1,11 @@
 package net.dragonmounts3.item;
 
-import net.dragonmounts3.api.*;
+import net.dragonmounts3.api.DragonScaleMaterial;
+import net.dragonmounts3.api.IArmorEffect;
+import net.dragonmounts3.api.IArmorEffectSource;
+import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.init.DMCapabilities;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,20 +28,12 @@ import static net.dragonmounts3.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
 import static net.dragonmounts3.util.TimeUtil.formatAsFloat;
 
 public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified, IArmorEffectSource {
-    private static final String[] TRANSLATION_KEY_SUFFIX = new String[]{"boots", "leggings", "chestplate", "helmet"};
-    private final String translationKey;
     protected DragonType type;
     public final DragonScaleArmorEffect effect;
 
-    public DragonScaleArmorItem(
-            DragonScaleMaterial material,
-            EquipmentSlotType slot,
-            DragonScaleArmorEffect effect,
-            Properties properties
-    ) {
+    public DragonScaleArmorItem(DragonScaleMaterial material, EquipmentSlotType slot, DragonScaleArmorEffect effect, Properties properties) {
         super(material, slot, properties);
         this.type = material.getDragonType();
-        this.translationKey = ITEM_TRANSLATION_KEY_PREFIX + "dragon_scale_" + TRANSLATION_KEY_SUFFIX[slot.getIndex()];
         this.effect = effect;
     }
 
@@ -55,7 +51,7 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified, 
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
-        components.add(this.type.getText());
+        components.add(this.type.getName());
         if (this.effect == null) return;
         components.add(StringTextComponent.EMPTY);
         components.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_piece_4"));
@@ -79,14 +75,64 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified, 
         }
     }
 
-    @Nonnull
-    @Override
-    public String getDescriptionId() {
-        return this.translationKey;
-    }
-
     @Override
     public DragonType getDragonType() {
         return this.type;
+    }
+
+    public static class Boots extends DragonScaleArmorItem {
+        private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_scale_boots";
+
+        public Boots(DragonScaleMaterial material, DragonScaleArmorEffect effect, Properties properties) {
+            super(material, EquipmentSlotType.FEET, effect, properties);
+        }
+
+        @Nonnull
+        @Override
+        public String getDescriptionId() {
+            return TRANSLATION_KEY;
+        }
+    }
+
+    public static class Leggings extends DragonScaleArmorItem {
+        private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_scale_leggings";
+
+        public Leggings(DragonScaleMaterial material, DragonScaleArmorEffect effect, Properties properties) {
+            super(material, EquipmentSlotType.LEGS, effect, properties);
+        }
+
+        @Nonnull
+        @Override
+        public String getDescriptionId() {
+            return TRANSLATION_KEY;
+        }
+    }
+
+    public static class Chestplate extends DragonScaleArmorItem {
+        private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_scale_chestplate";
+
+        public Chestplate(DragonScaleMaterial material, DragonScaleArmorEffect effect, Properties properties) {
+            super(material, EquipmentSlotType.CHEST, effect, properties);
+        }
+
+        @Nonnull
+        @Override
+        public String getDescriptionId() {
+            return TRANSLATION_KEY;
+        }
+    }
+
+    public static class Helmet extends DragonScaleArmorItem {
+        private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_scale_helmet";
+
+        public Helmet(DragonScaleMaterial material, DragonScaleArmorEffect effect, Properties properties) {
+            super(material, EquipmentSlotType.HEAD, effect, properties);
+        }
+
+        @Nonnull
+        @Override
+        public String getDescriptionId() {
+            return TRANSLATION_KEY;
+        }
     }
 }

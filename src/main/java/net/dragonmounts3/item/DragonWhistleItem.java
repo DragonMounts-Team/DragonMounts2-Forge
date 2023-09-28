@@ -1,7 +1,7 @@
 package net.dragonmounts3.item;
 
-import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -41,7 +41,8 @@ public class DragonWhistleItem extends Item {
             if (dragon.isOwnedBy(player)) {
                 CompoundNBT compound = new CompoundNBT();
                 compound.putUUID("UUID", dragon.getUUID());
-                compound.putString("Type", dragon.getDragonType().getSerializedName());
+                DragonType type = dragon.getDragonType();
+                compound.putString("Type", type.getSerializedName().toString());
                 compound.putString("OwnerName", ITextComponent.Serializer.toJson(player.getName()));
                 stack.setTag(compound);
                 player.setItemSlot(hand == Hand.MAIN_HAND ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND, stack);
@@ -60,7 +61,7 @@ public class DragonWhistleItem extends Item {
         CompoundNBT compound = stack.getTag();
         if (compound != null && compound.contains("UUID")) {
             if (compound.contains("Type")) {
-                components.add(new TranslationTextComponent("tooltip.dragonmounts.type", DragonType.byName(compound.getString("Type")).getText()).withStyle(TextFormatting.GRAY));
+                DragonType.byName(compound.getString("Type")).getFormattedName("tooltip.dragonmounts.type").withStyle(TextFormatting.GRAY);
             }
             try {
                 String string = compound.getString("OwnerName");

@@ -34,7 +34,7 @@ public class TameableDragonRenderer extends LivingRenderer<TameableDragonEntity,
     @Override
     protected void setupRotations(@Nonnull TameableDragonEntity dragon, @Nonnull MatrixStack matrixStack, float ageInTicks, float rotationYaw, float partialTicks) {
         super.setupRotations(dragon, matrixStack, ageInTicks, rotationYaw, partialTicks);
-        float scale = dragon.getScale() * dragon.getVariant().modelRenderScale;
+        float scale = dragon.getScale() * dragon.getVariant().renderScale;
         matrixStack.scale(scale, scale, scale);
         this.shadowRadius = dragon.isBaby() ? 4 * scale : 2 * scale;
         matrixStack.translate(dragon.animator.getModelOffsetX(), dragon.animator.getModelOffsetY(), dragon.animator.getModelOffsetZ());

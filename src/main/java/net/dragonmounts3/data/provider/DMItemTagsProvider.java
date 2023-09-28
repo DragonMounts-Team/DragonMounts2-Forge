@@ -5,9 +5,13 @@ import net.dragonmounts3.data.tags.DMBlockTags;
 import net.dragonmounts3.data.tags.DMItemTags;
 import net.dragonmounts3.init.DMBlocks;
 import net.dragonmounts3.init.DMItems;
+import net.dragonmounts3.item.DragonScaleBowItem;
+import net.dragonmounts3.item.DragonScalesItem;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.Tags;
@@ -34,7 +38,17 @@ public class DMItemTagsProvider extends ItemTagsProvider {
                 .addTag(Tags.Items.BONES)
                 .add(Items.BAMBOO);
         this.copy(DMBlockTags.DRAGON_EGGS, DMItemTags.DRAGON_EGGS);
-        DMItems.DRAGON_SCALE_BOW.forEach(this.tag(DMItemTags.DRAGON_SCALE_BOWS)::add);
-        DMItems.DRAGON_SCALES.forEach(this.tag(DMItemTags.DRAGON_SCALES)::add);
+        Builder<Item> tagBow = this.tag(DMItemTags.DRAGON_SCALE_BOWS);
+        Builder<Item> tagScales = this.tag(DMItemTags.DRAGON_SCALES);
+        for (DragonType type : DragonType.REGISTRY) {//Do NOT load other mods at the same time!
+            DragonScaleBowItem bow = type.getInstance(DragonScaleBowItem.class, null);
+            if (bow != null) {
+                tagBow.add(bow);
+            }
+            DragonScalesItem scales = type.getInstance(DragonScalesItem.class, null);
+            if (scales != null) {
+                tagScales.add(scales);
+            }
+        }
     }
 }

@@ -1,9 +1,9 @@
 package net.dragonmounts3.item;
 
-import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.DragonLifeStage;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
+import net.dragonmounts3.registry.DragonType;
 import net.dragonmounts3.util.EntityUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -72,7 +72,7 @@ public class DragonEssenceItem extends Item implements IDragonTypified, IDragonC
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
-        components.add(this.type.getText());
+        components.add(this.type.getName());
     }
 
     @Nonnull

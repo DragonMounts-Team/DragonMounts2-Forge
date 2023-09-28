@@ -3,9 +3,8 @@ package net.dragonmounts3.client.renderer;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.dragonmounts3.DragonMounts;
 import net.dragonmounts3.client.model.CarriageModel;
-import net.dragonmounts3.entity.carriage.CarriageEntity;
+import net.dragonmounts3.entity.CarriageEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -17,16 +16,6 @@ import javax.annotation.Nonnull;
 
 public class CarriageRenderer extends EntityRenderer<CarriageEntity> {
     protected final CarriageModel model = new CarriageModel();
-
-    private static final ResourceLocation[] CARRIAGE_TEXTURES = new ResourceLocation[]{
-            DragonMounts.prefix("textures/entities/dragon_carriage/carriage_oak.png"),
-            DragonMounts.prefix("textures/entities/dragon_carriage/carriage_spruce.png"),
-            DragonMounts.prefix("textures/entities/dragon_carriage/carriage_birch.png"),
-            DragonMounts.prefix("textures/entities/dragon_carriage/carriage_jungle.png"),
-            DragonMounts.prefix("textures/entities/dragon_carriage/carriage_acacia.png"),
-            DragonMounts.prefix("textures/entities/dragon_carriage/carriage_dark_oak.png"),
-            DragonMounts.prefix("textures/entities/dragon_carriage/carriage_oak.png"),/*crimson*/
-            DragonMounts.prefix("textures/entities/dragon_carriage/carriage_oak.png")/*warped*/};
 
     public CarriageRenderer(EntityRendererManager entityRenderDispatcher) {
         super(entityRenderDispatcher);
@@ -67,7 +56,7 @@ public class CarriageRenderer extends EntityRenderer<CarriageEntity> {
     @Nonnull
     @Override
     public ResourceLocation getTextureLocation(CarriageEntity entity) {
-        return CARRIAGE_TEXTURES[entity.getCarriageTypeId()];
+        return entity.getCarriageType().getTexture(entity);
     }
 
 }

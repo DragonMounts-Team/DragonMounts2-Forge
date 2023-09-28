@@ -3,8 +3,8 @@ package net.dragonmounts3.init;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import net.dragonmounts3.DragonMounts;
-import net.dragonmounts3.api.DragonType;
-import net.dragonmounts3.util.registry.StructureRegistry;
+import net.dragonmounts3.registry.DragonType;
+import net.dragonmounts3.registry.StructureRegistry;
 import net.dragonmounts3.world.DragonNestConfig;
 import net.dragonmounts3.world.DragonNestStructure;
 import net.dragonmounts3.world.impl.*;
@@ -42,42 +42,42 @@ public class DMFeatures {
     public static final IStructurePieceType UNDERGROUND_DRAGON_NEST_PIECE_TYPE = setPieceId(UndergroundDragonNestPiece::new, MOD_ID + ":underground_dragon_nest");
     public static final StructureRegistry<DragonType> DRAGON_NEST = new StructureRegistry<>();
     public static final StructureRegistry.Holder<AerialDragonNestConfig> AETHER_DRAGON_NEST =
-            registerDragonNest("aether_dragon_nest", DragonType.AETHER, AerialDragonNestConfig.CODEC, new AerialDragonNestConfig(0.25, 32, 56, Arrays.asList(
+            registerDragonNest("aether_dragon_nest", DragonTypes.AETHER, AerialDragonNestConfig.CODEC, new AerialDragonNestConfig(0.25, 32, 56, Arrays.asList(
                     prefix("aether"),
                     prefix("aether2")
             )), 32, 8, 12345678);
     public static final StructureRegistry.Holder<AerialDragonNestConfig> ENCHANT_DRAGON_NEST =
-            registerDragonNest("enchant_dragon_nest", DragonType.ENCHANT, AerialDragonNestConfig.CODEC, new AerialDragonNestConfig(0.25, 0, 32, Collections.singletonList(prefix("enchant"))), 32, 8, 23456789);
+            registerDragonNest("enchant_dragon_nest", DragonTypes.ENCHANT, AerialDragonNestConfig.CODEC, new AerialDragonNestConfig(0.25, 0, 32, Collections.singletonList(prefix("enchant"))), 32, 8, 23456789);
     public static final StructureRegistry.Holder<SurfaceDragonNestConfig> FIRE_DRAGON_NEST =
-            registerDragonNest("fire_dragon_nest", DragonType.FIRE, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Arrays.asList(
+            registerDragonNest("fire_dragon_nest", DragonTypes.FIRE, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Arrays.asList(
                     prefix("fire"),
                     prefix("fire2")
             )), 32, 8, 34567890);
     public static final StructureRegistry.Holder<SurfaceDragonNestConfig> FOREST_DRAGON_NEST =
-            registerDragonNest("forest_dragon_nest", DragonType.FOREST, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Arrays.asList(
+            registerDragonNest("forest_dragon_nest", DragonTypes.FOREST, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Arrays.asList(
                     prefix("forest1"),
                     prefix("forest2")
             )), 32, 8, 45678901);
     public static final StructureRegistry.Holder<SurfaceDragonNestConfig> ICE_DRAGON_NEST =
-            registerDragonNest("ice_dragon_nest", DragonType.ICE, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Collections.singletonList(prefix("ice"))), 32, 8, 56789012);
+            registerDragonNest("ice_dragon_nest", DragonTypes.ICE, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Collections.singletonList(prefix("ice"))), 32, 8, 56789012);
     public static final StructureRegistry.Holder<SurfaceDragonNestConfig> MOONLIGHT_DRAGON_NEST =
-            registerDragonNest("moonlight_dragon_nest", DragonType.MOONLIGHT, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Collections.singletonList(prefix("moonlight"))), 32, 8, 67890123);
+            registerDragonNest("moonlight_dragon_nest", DragonTypes.MOONLIGHT, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Collections.singletonList(prefix("moonlight"))), 32, 8, 67890123);
     public static final StructureRegistry.Holder<UndergroundDragonNestConfig> NETHER_DRAGON_NEST =
-            registerDragonNest("nether_dragon_nest", DragonType.NETHER, UndergroundDragonNestConfig.CODEC, new UndergroundDragonNestConfig(0.25, Collections.singletonList(prefix("nether"))), 32, 8, 78901234);
+            registerDragonNest("nether_dragon_nest", DragonTypes.NETHER, UndergroundDragonNestConfig.CODEC, new UndergroundDragonNestConfig(0.25, Collections.singletonList(prefix("nether"))), 32, 8, 78901234);
     public static final StructureRegistry.Holder<UndergroundDragonNestConfig> SKELETON_DRAGON_NEST =
-            registerDragonNest("skeleton_dragon_nest", DragonType.SKELETON, UndergroundDragonNestConfig.CODEC, new UndergroundDragonNestConfig(0.25, Collections.singletonList(prefix("skeleton"))), 32, 8, 89012345);
+            registerDragonNest("skeleton_dragon_nest", DragonTypes.SKELETON, UndergroundDragonNestConfig.CODEC, new UndergroundDragonNestConfig(0.25, Collections.singletonList(prefix("skeleton"))), 32, 8, 89012345);
     public static final StructureRegistry.Holder<SurfaceDragonNestConfig> SUNLIGHT_DRAGON_NEST =
-            registerDragonNest("sunlight_dragon_nest", DragonType.SUNLIGHT, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Collections.singletonList(prefix("sunlight"))), 32, 8, 90123456);
+            registerDragonNest("sunlight_dragon_nest", DragonTypes.SUNLIGHT, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Collections.singletonList(prefix("sunlight"))), 32, 8, 90123456);
     public static final StructureRegistry.Holder<SurfaceDragonNestConfig> TERRA_DRAGON_NEST =
-            registerDragonNest("terra_dragon_nest", DragonType.TERRA, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Collections.singletonList(prefix("terra"))), 32, 8, 66666666);
+            registerDragonNest("terra_dragon_nest", DragonTypes.TERRA, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Collections.singletonList(prefix("terra"))), 32, 8, 66666666);
     public static final StructureRegistry.Holder<SurfaceDragonNestConfig> WATER_DRAGON_NEST =
-            registerDragonNest("water_dragon_nest", DragonType.WATER, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Arrays.asList(
+            registerDragonNest("water_dragon_nest", DragonTypes.WATER, SurfaceDragonNestConfig.CODEC, new SurfaceDragonNestConfig(0.25, Arrays.asList(
                     prefix("water1"),
                     prefix("water2"),
                     prefix("water3")
             )), 32, 8, 88888888);
     public static final StructureRegistry.Holder<UndergroundDragonNestConfig> ZOMBIE_DRAGON_NEST =
-            registerDragonNest("zombie_dragon_nest", DragonType.ZOMBIE, UndergroundDragonNestConfig.CODEC, new UndergroundDragonNestConfig(0.25, Collections.singletonList(prefix("zombie"))), 32, 8, 99999999);
+            registerDragonNest("zombie_dragon_nest", DragonTypes.ZOMBIE, UndergroundDragonNestConfig.CODEC, new UndergroundDragonNestConfig(0.25, Collections.singletonList(prefix("zombie"))), 32, 8, 99999999);
 
     public static <C extends DragonNestConfig> StructureRegistry.Holder<C> registerDragonNest(
             String name,

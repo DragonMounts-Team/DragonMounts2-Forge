@@ -14,6 +14,7 @@ import static net.dragonmounts3.DragonMounts.prefix;
 public class DMCapabilities {
     public static final String DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN_ID = "dragon_scale_armor_cd";
 
+    @SuppressWarnings("CanBeFinal")
     @CapabilityInject(IDragonTypifiedCooldown.class)
     public static Capability<IDragonTypifiedCooldown> DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN = null;
 

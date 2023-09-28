@@ -1,40 +1,40 @@
-package net.dragonmounts3.api.variant;
+package net.dragonmounts3.variant;
 
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
+import net.dragonmounts3.registry.DragonType;
+import net.dragonmounts3.registry.DragonVariant;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.ResourceLocation;
-
-import javax.annotation.Nonnull;
 
 import static net.dragonmounts3.util.RenderStateAccessor.createGlowDecalRenderType;
 import static net.dragonmounts3.util.RenderStateAccessor.createGlowRenderType;
 
-public class DefaultVariant extends AbstractVariant {
-    public final String name;
+public class DefaultVariant extends DragonVariant {
     public final ResourceLocation body;
     public final RenderType decal;
     public final RenderType glow;
     public final RenderType glowDecal;
+    public final boolean hasTailHorns;
+    public final boolean hasSideTailScale;
 
-    public DefaultVariant(String name, ResourceLocation body, ResourceLocation glow, boolean hasTailHorns, boolean hasSideTailScale) {
-        super(hasTailHorns, hasSideTailScale, 1.6F);
-        this.name = name;
+    public DefaultVariant(DragonType type, ResourceLocation body, ResourceLocation glow, boolean hasTailHorns, boolean hasSideTailScale) {
+        super(type, 1.6F);
         this.body = body;
         this.decal = RenderType.entityDecal(body);
         this.glow = createGlowRenderType(glow);
         this.glowDecal = createGlowDecalRenderType(glow);
+        this.hasTailHorns = hasTailHorns;
+        this.hasSideTailScale = hasSideTailScale;
     }
 
-    public static DefaultVariant create(String namespace, String path, boolean hasTailHorns, boolean hasSideTailScale) {
-        StringBuilder builder = new StringBuilder(TEXTURES_ROOT + path);
-        int length = builder.length();
-        return new DefaultVariant(
-                path.substring(path.indexOf('/') + 1),
-                new ResourceLocation(namespace, builder.append("/body.png").toString()),
-                new ResourceLocation(namespace, builder.replace(length + 6, length + 10, "glow").toString()),
-                hasTailHorns,
-                hasSideTailScale
-        );
+    @Override
+    public boolean hasTailHorns(TameableDragonEntity dragon) {
+        return this.hasTailHorns;
+    }
+
+    @Override
+    public boolean hasSideTailScale(TameableDragonEntity dragon) {
+        return this.hasSideTailScale;
     }
 
     @Override
@@ -55,11 +55,5 @@ public class DefaultVariant extends AbstractVariant {
     @Override
     public RenderType getGlowDecal(TameableDragonEntity dragon) {
         return this.glowDecal;
-    }
-
-    @Nonnull
-    @Override
-    public String getSerializedName() {
-        return this.name;
     }
 }

@@ -1,11 +1,15 @@
 package net.dragonmounts3.api;
 
 import net.dragonmounts3.init.DMItems;
+import net.dragonmounts3.init.DragonTypes;
+import net.dragonmounts3.item.DragonScalesItem;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.LazyValue;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 
@@ -34,29 +38,29 @@ public class DragonScaleMaterial implements IArmorMaterial, IDragonTypified {
         Builder builder = new Builder(0x03080703, 50)
                 .setEnchantmentValue(11)
                 .setToughness(7.0F);
-        MOONLIGHT = builder.build(DragonType.MOONLIGHT);
-        STORM = builder.build(DragonType.STORM);
-        TERRA = builder.build(DragonType.TERRA);
-        ZOMBIE = builder.build(DragonType.ZOMBIE);
+        MOONLIGHT = builder.build(DragonTypes.MOONLIGHT);
+        STORM = builder.build(DragonTypes.STORM);
+        TERRA = builder.build(DragonTypes.TERRA);
+        ZOMBIE = builder.build(DragonTypes.ZOMBIE);
         builder = new Builder(0x04080704, 50)
                 .setEnchantmentValue(11)
                 .setToughness(7.0F);
-        AETHER = builder.build(DragonType.AETHER);
-        FIRE = builder.build(DragonType.FIRE);
-        FOREST = builder.build(DragonType.FOREST);
-        ICE = builder.build(DragonType.ICE);
-        SUNLIGHT = builder.build(DragonType.SUNLIGHT);
-        WATER = builder.build(DragonType.WATER);
-        ENCHANT = builder.setEnchantmentValue(30).build(DragonType.ENCHANT);
+        AETHER = builder.build(DragonTypes.AETHER);
+        FIRE = builder.build(DragonTypes.FIRE);
+        FOREST = builder.build(DragonTypes.FOREST);
+        ICE = builder.build(DragonTypes.ICE);
+        SUNLIGHT = builder.build(DragonTypes.SUNLIGHT);
+        WATER = builder.build(DragonTypes.WATER);
+        ENCHANT = builder.setEnchantmentValue(30).build(DragonTypes.ENCHANT);
         builder = new Builder(0x04090704, 70)
                 .setEnchantmentValue(11)
                 .setToughness(9.0F);
-        ENDER = builder.build(DragonType.ENDER);
-        SCULK = builder.build(DragonType.SCULK);
+        ENDER = builder.build(DragonTypes.ENDER);
+        SCULK = builder.build(DragonTypes.SCULK);
         NETHER = new Builder(0x04090704, 55)
                 .setEnchantmentValue(11)
                 .setToughness(8.0F)
-                .build(DragonType.NETHER);
+                .build(DragonTypes.NETHER);
     }
 
     private static final int SHIELD_DURABILITY = 50;
@@ -72,7 +76,8 @@ public class DragonScaleMaterial implements IArmorMaterial, IDragonTypified {
     private final LazyValue<Ingredient> repairIngredient;
 
     public DragonScaleMaterial(String namespace, DragonType type, Builder builder) {
-        this.name = namespace + ':' + type.getSerializedName();
+        ResourceLocation key = type.getRegistryName();
+        this.name = namespace + ':' + (key == null ? DragonType.DEFAULT_KEY : key).getPath();
         this.type = type;
         this.protection = builder.protection;
         this.durabilityFactor = builder.durabilityFactor;
@@ -80,7 +85,7 @@ public class DragonScaleMaterial implements IArmorMaterial, IDragonTypified {
         this.sound = builder.sound;
         this.toughness = builder.toughness;
         this.knockbackResistance = builder.knockbackResistance;
-        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(() -> Ingredient.of(new ItemStack(DMItems.DRAGON_SCALES.get(type)))) : builder.repairIngredient;
+        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(() -> Ingredient.of(new ItemStack(type.getInstance(DragonScalesItem.class, DMItems.ENDER_DRAGON_SCALES.get())))) : builder.repairIngredient;
     }
 
     public int getDurabilityForShield() {

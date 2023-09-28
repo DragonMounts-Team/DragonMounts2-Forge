@@ -1,9 +1,9 @@
 package net.dragonmounts3.item;
 
-import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.init.DMEntities;
+import net.dragonmounts3.registry.DragonType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
@@ -47,7 +47,7 @@ public final class DragonSpawnEggItem extends ForgeSpawnEggItem implements IDrag
         super(DMEntities.TAMEABLE_DRAGON, backgroundColor, highlightColor, props);
         this.type = type;
         this.spawnData.putString("id", DMEntities.TAMEABLE_DRAGON.getId().toString());
-        this.spawnData.putString(DragonType.DATA_PARAMETER_KEY, type.getSerializedName());
+        this.spawnData.putString(DragonType.DATA_PARAMETER_KEY, type.getSerializedName().toString());
     }
 
     @Nonnull
@@ -125,7 +125,7 @@ public final class DragonSpawnEggItem extends ForgeSpawnEggItem implements IDrag
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
-        components.add(this.type.getText());
+        components.add(this.type.getName());
     }
 
     @Nonnull

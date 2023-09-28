@@ -1,9 +1,9 @@
 package net.dragonmounts3.item;
 
-import net.dragonmounts3.api.DragonType;
 import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.init.DMItems;
+import net.dragonmounts3.registry.DragonType;
 import net.dragonmounts3.util.EntityUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
@@ -77,7 +77,7 @@ public class FilledDragonAmuletItem extends DragonAmuletItem implements IDragonT
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, @Nonnull List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
         CompoundNBT compound = stack.getTag();
-        components.add(new TranslationTextComponent("tooltip.dragonmounts.type", this.type.getText()).withStyle(TextFormatting.GRAY));
+        components.add(new TranslationTextComponent("tooltip.dragonmounts.type", this.type.getName()).withStyle(TextFormatting.GRAY));
         if (compound != null) {
             try {
                 String string = compound.getString("CustomName");

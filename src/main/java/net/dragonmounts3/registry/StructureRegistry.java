@@ -1,4 +1,4 @@
-package net.dragonmounts3.util.registry;
+package net.dragonmounts3.registry;
 
 import net.minecraft.world.gen.feature.IFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;

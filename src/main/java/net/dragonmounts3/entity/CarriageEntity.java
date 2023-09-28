@@ -1,6 +1,8 @@
-package net.dragonmounts3.entity.carriage;
+package net.dragonmounts3.entity;
 
+import net.dragonmounts3.init.CarriageTypes;
 import net.dragonmounts3.init.DMEntities;
+import net.dragonmounts3.registry.CarriageType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
@@ -18,7 +20,7 @@ public class CarriageEntity extends Entity {
     private static final DataParameter<Float> DAMAGE = EntityDataManager.defineId(CarriageEntity.class, DataSerializers.FLOAT);
     private static final DataParameter<Integer> FORWARD_DIRECTION = EntityDataManager.defineId(CarriageEntity.class, DataSerializers.INT);
     private static final DataParameter<Integer> TIME_SINCE_HIT = EntityDataManager.defineId(CarriageEntity.class, DataSerializers.INT);
-    private static final DataParameter<Integer> TYPE = EntityDataManager.defineId(CarriageEntity.class, DataSerializers.INT);
+    private static final DataParameter<CarriageType> DATA_TYPE = EntityDataManager.defineId(CarriageEntity.class, CarriageType.SERIALIZER);
     public static float defaultMaxSpeedAirLateral = 0.4F;
     public static float defaultMaxSpeedAirVertical = -1F;
     public static double defaultDragAir = 0.94999998807907104D;
@@ -68,7 +70,7 @@ public class CarriageEntity extends Entity {
         this.entityData.define(DAMAGE, 0.0F);
         this.entityData.define(FORWARD_DIRECTION, 1);
         this.entityData.define(TIME_SINCE_HIT, 2);
-        this.entityData.define(TYPE, 0);
+        this.entityData.define(DATA_TYPE, CarriageTypes.OAK);
     }
 
     @Override
@@ -76,7 +78,7 @@ public class CarriageEntity extends Entity {
         this.entityData.set(DAMAGE, compound.getFloat("damage"));
         this.entityData.set(FORWARD_DIRECTION, compound.getInt("forward"));
         this.entityData.set(TIME_SINCE_HIT, compound.getInt("TimeSinceHit"));
-        this.entityData.set(TYPE, compound.getInt("Type"));
+        this.entityData.set(DATA_TYPE, CarriageType.byName(compound.getString("Type")));
     }
 
     @Override
@@ -84,19 +86,15 @@ public class CarriageEntity extends Entity {
         compound.putFloat("damage", this.getDamage());
         compound.putInt("forward", this.getForwardDirection());
         compound.putInt("TimeSinceHit", this.getTimeSinceHit());
-        compound.putInt("Type", this.entityData.get(TYPE));
+        compound.putString("Type", this.getCarriageType().getSerializedName().toString());
     }
 
     public void setCarriageType(CarriageType type) {
-        this.entityData.set(TYPE, type.ordinal());
-    }
-
-    public int getCarriageTypeId() {
-        return this.entityData.get(TYPE);
+        this.entityData.set(DATA_TYPE, type);
     }
 
     public CarriageType getCarriageType() {
-        return CarriageType.byId(this.getCarriageTypeId());
+        return this.entityData.get(DATA_TYPE);
     }
 
     @Nonnull

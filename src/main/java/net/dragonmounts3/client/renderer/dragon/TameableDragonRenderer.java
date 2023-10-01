@@ -2,6 +2,7 @@ package net.dragonmounts3.client.renderer.dragon;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.dragonmounts3.client.model.dragon.DragonModel;
+import net.dragonmounts3.client.variant.VariantAppearances;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
@@ -34,7 +35,7 @@ public class TameableDragonRenderer extends LivingRenderer<TameableDragonEntity,
     @Override
     protected void setupRotations(@Nonnull TameableDragonEntity dragon, @Nonnull MatrixStack matrixStack, float ageInTicks, float rotationYaw, float partialTicks) {
         super.setupRotations(dragon, matrixStack, ageInTicks, rotationYaw, partialTicks);
-        float scale = dragon.getScale() * dragon.getVariant().renderScale;
+        float scale = dragon.getScale() * dragon.getVariant().getAppearance(VariantAppearances.ENDER_FEMALE).renderScale;
         matrixStack.scale(scale, scale, scale);
         this.shadowRadius = dragon.isBaby() ? 4 * scale : 2 * scale;
         matrixStack.translate(dragon.animator.getModelOffsetX(), dragon.animator.getModelOffsetY(), dragon.animator.getModelOffsetZ());
@@ -65,7 +66,7 @@ public class TameableDragonRenderer extends LivingRenderer<TameableDragonEntity,
     @Nonnull
     @Override
     public ResourceLocation getTextureLocation(@Nonnull TameableDragonEntity dragon) {
-        return dragon.getVariant().getBody(dragon);
+        return dragon.getVariant().getAppearance(VariantAppearances.ENDER_FEMALE).getBody(dragon);
     }
 
     @Override

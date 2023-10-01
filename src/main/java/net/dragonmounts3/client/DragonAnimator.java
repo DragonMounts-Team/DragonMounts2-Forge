@@ -1,6 +1,7 @@
 package net.dragonmounts3.client;
 
 import net.dragonmounts3.client.model.dragon.*;
+import net.dragonmounts3.client.variant.VariantAppearances;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.util.CircularBuffer;
 import net.dragonmounts3.util.math.LinearInterpolation;
@@ -147,7 +148,7 @@ public class DragonAnimator {
         if (head == null) return null;
         Vector3d bodyOrigin = this.dragon.position().add(0, this.dragon.getEyeHeight(), 0);
         float scale = this.dragon.getScale();
-        final float modelScale = scale * this.dragon.getVariant().positionScale;
+        final float modelScale = scale * this.dragon.getVariant().getAppearance(VariantAppearances.ENDER_FEMALE).positionScale;
         final float headScale = modelScale * this.getRelativeHeadSize(scale);
         // the head offset plus the headLocation.rotationPoint is the origin of the head, i.e. the point about which the
         // head rotates, relative to the origin of the body (getPositionEyes)
@@ -352,8 +353,8 @@ public class DragonAnimator {
         for (int i = 0; i < DragonNeckModelPart.NECK_SEGMENT_COUNT; ++i) {
             float vertMulti = (i + 1) / (float) DragonNeckModelPart.NECK_SEGMENT_COUNT;
             float baseRotX = MathHelper.cos((float) i * 0.45F + animBase) * 0.15F;
-            baseRotX *= MathHelper.clampedLerp(0.2F, 1, flutter);
-            baseRotX *= MathHelper.clampedLerp(1, 0.2F, sit);
+            baseRotX *= clampedLinear(0.2F, 1, flutter);
+            baseRotX *= clampedLinear(1, 0.2F, sit);
             float ofsRotX = MathHelper.sin(vertMulti * ((float) Math.PI) * 0.9F) * 0.63F;
             // basic up/down movement
             neck.xRot = baseRotX;
@@ -362,7 +363,7 @@ public class DragonAnimator {
             // flex neck down when hovering
             neck.xRot += (1 - speed) * vertMulti;
             // lower neck on low health
-            neck.xRot -= MathHelper.clampedLerp(0, ofsRotX, this.ground * this.relativeHealth);
+            neck.xRot -= clampedLinear(0, ofsRotX, this.ground * this.relativeHealth);
             // use looking yaw
             neck.yRot = (float) Math.toRadians(lookYaw) * vertMulti * speed;
             // update scale
@@ -478,7 +479,7 @@ public class DragonAnimator {
             rotXSit = rotXStand * 0.8F;
             rotYStand = (rotYStand + MathHelper.sin(i * 0.45F + animBase * 0.5F)) * amp * 0.4F;
             rotYSit = MathHelper.sin(vertMulti * MathUtil.PI * MathUtil.PI * 1.2F - 0.5F); // curl to the left
-            rotXAir -= MathHelper.sin(i * 0.45F + animBase) * 0.04F * MathHelper.clampedLerp(0.3F, 1, flutter);
+            rotXAir -= MathHelper.sin(i * 0.45F + animBase) * 0.04F * clampedLinear(0.3F, 1, flutter);
             // interpolate between sitting and standing
             tail.xRot = clampedLinear(rotXStand, rotXSit, sit);
             tail.yRot = clampedLinear(rotYStand, rotYSit, sit);
@@ -489,11 +490,11 @@ public class DragonAnimator {
             float angleLimit = 160 * vertMulti;
             float yawOfs = MathHelper.clamp(yawTrail.get(partialTicks, 0, i + 1) * 2, -angleLimit, angleLimit);
             float pitchOfs = MathHelper.clamp(pitchTrail.get(partialTicks, 0, i + 1) * 2, -angleLimit, angleLimit);
-            tail.xRot += Math.toRadians(pitchOfs);
+            tail.xRot += (float) Math.toRadians(pitchOfs);
             tail.xRot -= (1 - speed) * vertMulti * 2;
-            tail.yRot += Math.toRadians(180 - yawOfs);
+            tail.yRot += (float) Math.toRadians(180 - yawOfs);
             // display horns near the tip
-            tail.leftHorn.visible = tail.rightHorn.visible = this.dragon.getVariant().hasTailHorns(this.dragon)
+            tail.leftHorn.visible = tail.rightHorn.visible = this.dragon.getVariant().getAppearance(VariantAppearances.ENDER_FEMALE).hasTailHorns(this.dragon)
                     && i > DragonTailModelPart.TAIL_SEGMENT_COUNT - 7
                     && i < DragonTailModelPart.TAIL_SEGMENT_COUNT - 3;
             // update scale

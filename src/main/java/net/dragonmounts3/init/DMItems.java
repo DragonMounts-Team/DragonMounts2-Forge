@@ -246,6 +246,8 @@ public class DMItems {
     public static final RegistryObject<DragonSpawnEggItem> WATER_DRAGON_SPAWN_EGG = createDragonSpawnEgg("water_dragon_spawn_egg", DragonTypes.WATER, 0x546FAD, 0x2B427E, item());
     public static final RegistryObject<DragonSpawnEggItem> WITHER_DRAGON_SPAWN_EGG = createDragonSpawnEgg("wither_dragon_spawn_egg", DragonTypes.WITHER, 0x8A9999, 0x474F51, item());
     public static final RegistryObject<DragonSpawnEggItem> ZOMBIE_DRAGON_SPAWN_EGG = createDragonSpawnEgg("zombie_dragon_spawn_egg", DragonTypes.ZOMBIE, 0x66664B, 0xB6D035, item());
+    //?
+    public static final RegistryObject<VariantSwitcherItem> VARIANT_SWITCHER = ITEMS.register("variant_switcher", () -> new VariantSwitcherItem(item()));
     //Shears
     public static final RegistryObject<Item> DIAMOND_SHEARS = createTieredShearsItem("diamond_shears", ItemTier.DIAMOND, item());
     public static final RegistryObject<Item> NETHERITE_SHEARS = createTieredShearsItem("netherite_shears", ItemTier.NETHERITE, item().fireResistant());

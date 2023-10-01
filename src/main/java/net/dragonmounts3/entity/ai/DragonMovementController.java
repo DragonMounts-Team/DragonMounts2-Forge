@@ -12,6 +12,7 @@ public class DragonMovementController extends MovementController {
     public DragonMovementController(TameableDragonEntity dragon) {
         super(dragon);
         this.dragon = dragon;
+        this.speedModifier = 0.9D;
     }
 
     @Override

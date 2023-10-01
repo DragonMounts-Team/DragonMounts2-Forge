@@ -22,8 +22,6 @@ import static net.dragonmounts3.DragonMountsConfig.SERVER;
 
 
 public class ConfigCommand {
-    private static final String OPEN_CONFIG_SCREEN = "/dragonmounts config client";
-    private static boolean OPEN_CONFIG_SCREEN_FLAG = false;
     private static final Joiner DOT_JOINER = Joiner.on(".");
 
     public static <T> LiteralArgumentBuilder<CommandSource> create(
@@ -57,20 +55,24 @@ public class ConfigCommand {
                 ).then(Commands.literal("client"));
     }
 
-    public static void onClientSendMessage(ClientChatEvent event) {
-        if (OPEN_CONFIG_SCREEN.equals(event.getOriginalMessage())) {
-            event.setCanceled(true);
-            OPEN_CONFIG_SCREEN_FLAG = true;
+    public static class Client {
+        private static final String OPEN_CONFIG_SCREEN = "/dragonmounts config client";
+        private static boolean OPEN_CONFIG_SCREEN_FLAG = false;
+
+        public static void onClientSendMessage(ClientChatEvent event) {
+            if (OPEN_CONFIG_SCREEN.equals(event.getOriginalMessage())) {
+                event.setCanceled(true);
+                OPEN_CONFIG_SCREEN_FLAG = true;
+            }
+        }
+
+        public static void onGuiOpen(GuiOpenEvent event) {
+            if (OPEN_CONFIG_SCREEN_FLAG && event.getGui() == null) {
+                OPEN_CONFIG_SCREEN_FLAG = false;
+                Minecraft minecraft = Minecraft.getInstance();
+                minecraft.gui.getChat().addRecentChat(OPEN_CONFIG_SCREEN);
+                event.setGui(new DMConfigScreen(minecraft, minecraft.screen));
+            }
         }
     }
-
-    public static void onGuiOpen(GuiOpenEvent event) {
-        if (OPEN_CONFIG_SCREEN_FLAG && event.getGui() == null) {
-            OPEN_CONFIG_SCREEN_FLAG = false;
-            Minecraft minecraft = Minecraft.getInstance();
-            minecraft.gui.getChat().addRecentChat(OPEN_CONFIG_SCREEN);
-            event.setGui(new DMConfigScreen(minecraft, minecraft.screen));
-        }
-    }
-
 }

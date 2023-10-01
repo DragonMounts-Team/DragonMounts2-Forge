@@ -43,6 +43,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.GroundPathNavigator;
+import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.tileentity.TileEntity;
@@ -94,7 +95,6 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
     private static final DataParameter<Boolean> DATA_ALT_BREATHING = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> GOING_DOWN = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> ALLOW_OTHER_PLAYERS = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<Boolean> BOOSTING = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> HOVER_CANCELLED = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> ALT_TEXTURE = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Optional<UUID>> DATA_BREEDER = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.OPTIONAL_UUID);
@@ -141,9 +141,9 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
         this.maxUpStep = 1.0F;
         this.blocksBuilding = true;
         this.moveControl = new DragonMovementController(this);
-        this.groundNavigation = new GroundPathNavigator(this, level);
+        this.groundNavigation = new GroundPathNavigator(this, world);
         this.groundNavigation.setCanFloat(true);
-        this.flyingNavigation = new DragonFlyingPathNavigator(this, level);
+        this.flyingNavigation = new DragonFlyingPathNavigator(this, world);
         this.flyingNavigation.setCanFloat(true);
         this.navigation = this.groundNavigation;
         if (world.isClientSide) {
@@ -535,35 +535,29 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
         ItemStack stack = player.getItemInHand(hand);
         Item item = stack.getItem();
         if (this.level.isClientSide) {
-            if (DragonFood.test(item) || DMItemTags.BATONS.contains(item) || Tags.Items.CHESTS_WOODEN.contains(item) || item instanceof SaddleItem || item instanceof DragonArmorItem || this.isOwnedBy(player)) {
-                return ActionResultType.CONSUME;
-            }
-            return ActionResultType.PASS;
+            return DragonFood.test(item) || (this.isOwnedBy(player) && (
+                    item instanceof SaddleItem ||
+                    item instanceof DragonArmorItem ||
+                    DMItemTags.BATONS.contains(item) ||
+                    Tags.Items.CHESTS_WOODEN.contains(item)
+            )) ? ActionResultType.CONSUME : ActionResultType.PASS;
         }
         IDragonFood food = DragonFood.get(item);
         if (food != null) {
             if (!food.isEatable(this, player, stack, hand)) return ActionResultType.FAIL;
             food.eat(this, player, stack, hand);
             CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SFeedDragonPacket(this, item));
-            return ActionResultType.SUCCESS;
-        }
-        if (this.isOwnedBy(player)) {
-            if (DMItemTags.BATONS.contains(item)) {
-                this.setOrderedToSit(!this.isOrderedToSit());
-                return ActionResultType.SUCCESS;
-            }
-            if (!this.isBaby() && this.getSaddle().isEmpty() && LimitedSlot.Saddle.mayPlace(item)) {
+        } else if (!this.isOwnedBy(player)) {
+            return ActionResultType.PASS;
+        } else if (DMItemTags.BATONS.contains(item)) {
+            this.setOrderedToSit(!this.isOrderedToSit());
+        } else if (!this.isBaby() && this.getSaddle().isEmpty() && LimitedSlot.Saddle.mayPlace(item)) {
                 this.setSaddle(stack.split(1), true);
-                return ActionResultType.SUCCESS;
-            }
-            if (this.getArmor().isEmpty() && LimitedSlot.DragonArmor.mayPlace(item)) {
-                this.setArmor(stack.split(1), true);
-                return ActionResultType.SUCCESS;
-            }
-            if (this.getChest().isEmpty() && LimitedSlot.SingleWoodenChest.mayPlace(item)) {
-                this.setChest(stack.split(1), true);
-                return ActionResultType.SUCCESS;
-            }
+        } else if (this.getArmor().isEmpty() && LimitedSlot.DragonArmor.mayPlace(item)) {
+            this.setArmor(stack.split(1), true);
+        } else if (this.getChest().isEmpty() && LimitedSlot.SingleWoodenChest.mayPlace(item)) {
+            this.setChest(stack.split(1), true);
+        } else {
             ActionResultType result = item.interactLivingEntity(stack, player, this, hand);
             if (result.consumesAction()) return result;
             boolean flag = player.isSecondaryUseActive();
@@ -572,18 +566,15 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
                 this.getNavigator().clearPath();
                 this.getAISit().setSitting(false);*/
                 this.startRiding(player, true);
-                return ActionResultType.SUCCESS;
-            }
-            if (!this.isSaddled || flag || this.isVehicle()) {
+            } else if (!this.isSaddled || flag || this.isVehicle()) {
                 NetworkHooks.openGui((ServerPlayerEntity) player, this.inventory, buffer -> buffer.writeVarInt(this.getId()));
             }/* else {
                 player.yRot = this.yRot;
                 player.xRot = this.xRot;
                 player.startRiding(this);
             }*/
-            return ActionResultType.SUCCESS;
         }
-        return ActionResultType.PASS;
+        return ActionResultType.SUCCESS;
     }
 
     @Override
@@ -594,7 +585,7 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
         if (current == DragonTypes.SKELETON) {
             this.setDragonType(DragonTypes.WITHER, false);
         } else if (current == DragonTypes.WATER) {
-            this.setDragonType(DragonTypes.STORM);
+            this.setDragonType(DragonTypes.STORM, false);
         } else {
             return;
         }
@@ -772,12 +763,24 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
 
     //----------MobEntity----------
 
+    @Nonnull
+    @Override
+    public PathNavigator getNavigation() {
+        if (this.isPassenger()) {//?
+            Entity vehicle = this.getVehicle();
+            if (vehicle instanceof MobEntity) {
+                return ((MobEntity) vehicle).getNavigation();
+            }
+        }
+        return this.isFlying() ? this.flyingNavigation : this.groundNavigation;
+    }
+
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new SitGoal(this));
+        //this.goalSelector.addGoal(6, new FollowOwnerGoal(this, 1.0D, 10.0F, 2.0F, false));
         /*this.goalSelector.addGoal(4, new LeapAtTargetGoal(this, 0.4F));
         this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.0D, true));
-        this.goalSelector.addGoal(6, new FollowOwnerGoal(this, 1.0D, 10.0F, 2.0F, false));
         this.goalSelector.addGoal(7, new BreedGoal(this, 1.0D));
         this.goalSelector.addGoal(8, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
         this.goalSelector.addGoal(9, new BegGoal(this, 8.0F));
@@ -906,11 +909,11 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
     public void setDragonType(DragonType type, boolean reset) {
         AttributeModifierManager manager = this.getAttributes();
         DragonType previous = this.getDragonType();
-        manager.removeAttributeModifiers(previous.getAttributeModifiers());
+        manager.removeAttributeModifiers(previous.attributes);
         if (previous != type || reset) {
             this.setVariant(DragonVariant.REGISTRY.getValue(type, this.random));
         }
-        manager.addTransientAttributeModifiers(type.getAttributeModifiers());
+        manager.addTransientAttributeModifiers(type.attributes);
         if (reset) {
             this.setHealth((float) Objects.requireNonNull(manager.getInstance(Attributes.MAX_HEALTH)).getValue());
         }

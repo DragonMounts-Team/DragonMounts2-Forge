@@ -8,6 +8,10 @@ public class TimeUtil {
     public static final int TICKS_PER_REAL_SECOND = 20;
     public static final int TICKS_PER_GAME_HOUR = TICKS_PER_REAL_SECOND * SECOND_PRE_HOUR / RATE;
 
+    /**
+     * @param value raw time (in ticks)
+     * @return formatted time (in seconds)
+     */
     public static String formatAsFloat(int value) {
         value = (value + 1) >> 1;
         if (value < 10) {

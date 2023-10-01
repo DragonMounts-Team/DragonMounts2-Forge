@@ -5,6 +5,7 @@ import net.dragonmounts3.client.gui.DMConfigScreen;
 import net.dragonmounts3.client.renderer.CarriageRenderer;
 import net.dragonmounts3.client.renderer.DragonEggRenderer;
 import net.dragonmounts3.client.renderer.dragon.TameableDragonRenderer;
+import net.dragonmounts3.client.variant.VariantAppearances;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.init.DMBlockEntities;
 import net.dragonmounts3.init.DMContainers;
@@ -43,6 +44,12 @@ public class DMClientEvents {
 
         private static void onFMLClientSetupEnqueueWork() {
             DMContainers.registerScreens();
+            DMBlockEntities.registerBlockEntityRenders();
+            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
+                CompoundNBT tag = stack.getTag();
+                DragonType type = tag != null && tintIndex == 1 && tag.contains("Type") ? DragonType.REGISTRY.getRaw(new ResourceLocation(tag.getString("Type"))) : null;
+                return type == null ? 0xFFFFFF : type.color;
+            }, DRAGON_WHISTLE::get);
         }
 
         @SubscribeEvent
@@ -52,12 +59,7 @@ public class DMClientEvents {
             RenderingRegistry.registerEntityRenderingHandler(CARRIAGE.get(), CarriageRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(HATCHABLE_DRAGON_EGG.get(), DragonEggRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(TAMEABLE_DRAGON.get(), TameableDragonRenderer::new);
-            DMBlockEntities.registerBlockEntityRenders();
-            Minecraft.getInstance().getItemColors().register((stack, tintIndex) -> {
-                CompoundNBT tag = stack.getTag();
-                DragonType type = tag != null && tintIndex == 1 && tag.contains("Type") ? DragonType.REGISTRY.getRaw(new ResourceLocation(tag.getString("Type"))) : null;
-                return type == null ? 0xFFFFFF : type.color;
-            }, DRAGON_WHISTLE::get);
+            VariantAppearances.bindAppearance();
         }
 
         @SubscribeEvent
@@ -82,7 +84,7 @@ public class DMClientEvents {
          * Credit to AlexModGuy: Ice and Fire
          */
         @SubscribeEvent
-        public static void extendZoom(EntityViewRenderEvent.CameraSetup event) {
+        public static void setupCamera(EntityViewRenderEvent.CameraSetup event) {
             Minecraft minecraft = Minecraft.getInstance();
             PlayerEntity player = minecraft.player;
             if (player == null) return;
@@ -91,7 +93,11 @@ public class DMClientEvents {
             if (entity instanceof TameableDragonEntity) {
                 if (!minecraft.options.getCameraType().isFirstPerson()) {
                     ActiveRenderInfo info = event.getInfo();
-                    info.move(-info.getMaxZoom(DragonMountsConfig.CLIENT.third_person_zoom.get()), 0.0D, 0.0D);
+                    info.move(
+                            -info.getMaxZoom(DragonMountsConfig.CLIENT.camera_distance.get()),
+                            0.0D,
+                            -DragonMountsConfig.CLIENT.camera_offset.get()
+                    );
                 }
             }
         }

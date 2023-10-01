@@ -3,9 +3,10 @@ package net.dragonmounts3.client.renderer.dragon;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.dragonmounts3.client.model.dragon.DragonModel;
+import net.dragonmounts3.client.variant.VariantAppearance;
+import net.dragonmounts3.client.variant.VariantAppearances;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.item.DragonArmorItem;
-import net.dragonmounts3.registry.DragonVariant;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderType;
@@ -28,20 +29,20 @@ public class TameableDragonLayer extends LayerRenderer<TameableDragonEntity, Dra
     @Override
     public void render(@Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int packedLight, TameableDragonEntity dragon, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         DragonModel model = this.getParentModel();
-        DragonVariant variant = dragon.getVariant();
+        VariantAppearance appearance = dragon.getVariant().getAppearance(VariantAppearances.ENDER_FEMALE);
         if (dragon.deathTime > 0) {
-            model.renderToBuffer(matrixStack, buffer.getBuffer(variant.getDissolve(dragon)), packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-            model.renderToBuffer(matrixStack, buffer.getBuffer(variant.getDecal(dragon)), packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-            model.renderToBuffer(matrixStack, buffer.getBuffer(variant.getGlowDecal(dragon)), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            model.renderToBuffer(matrixStack, buffer.getBuffer(appearance.getDissolve(dragon)), packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            model.renderToBuffer(matrixStack, buffer.getBuffer(appearance.getDecal(dragon)), packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            model.renderToBuffer(matrixStack, buffer.getBuffer(appearance.getGlowDecal(dragon)), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
             return;
         }
         //saddle
         if (dragon.isSaddled()) {
-            renderColoredCutoutModel(model, variant.getSaddle(dragon), matrixStack, buffer, packedLight, dragon, 1.0F, 1.0F, 1.0F);
+            renderColoredCutoutModel(model, appearance.getSaddle(dragon), matrixStack, buffer, packedLight, dragon, 1.0F, 1.0F, 1.0F);
         }
         //chest
         if (dragon.hasChest()) {
-            renderColoredCutoutModel(model, variant.getChest(dragon), matrixStack, buffer, packedLight, dragon, 1.0F, 1.0F, 1.0F);
+            renderColoredCutoutModel(model, appearance.getChest(dragon), matrixStack, buffer, packedLight, dragon, 1.0F, 1.0F, 1.0F);
         }
         //armor
         ItemStack stack = dragon.getArmor();
@@ -52,6 +53,6 @@ public class TameableDragonLayer extends LayerRenderer<TameableDragonEntity, Dra
             model.renderToBuffer(matrixStack, builder, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         }
         //glow
-        model.renderToBuffer(matrixStack, buffer.getBuffer(variant.getGlow(dragon)), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        model.renderToBuffer(matrixStack, buffer.getBuffer(appearance.getGlow(dragon)), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

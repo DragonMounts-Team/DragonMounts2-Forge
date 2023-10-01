@@ -1,9 +1,7 @@
 package net.dragonmounts3.registry;
 
 import net.dragonmounts3.api.IDragonTypified;
-import net.dragonmounts3.entity.dragon.TameableDragonEntity;
-import net.dragonmounts3.init.DragonVariants;
-import net.minecraft.client.renderer.RenderType;
+import net.dragonmounts3.client.variant.VariantAppearance;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.IDataSerializer;
 import net.minecraft.util.ResourceLocation;
@@ -19,13 +17,9 @@ import java.util.function.Function;
 import static net.dragonmounts3.DragonMounts.MOD_ID;
 import static net.dragonmounts3.DragonMounts.prefix;
 
-public abstract class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements IDragonTypified {
+public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements IDragonTypified {
     public static final String DATA_PARAMETER_KEY = "Variant";
-    public final static String TEXTURES_ROOT = "textures/entities/dragon/";
     public static final ResourceLocation DEFAULT_KEY = prefix("ender_female");
-    public final static ResourceLocation DEFAULT_CHEST = prefix(TEXTURES_ROOT + "chest.png");
-    public final static ResourceLocation DEFAULT_SADDLE = prefix(TEXTURES_ROOT + "saddle.png");
-    public final static ResourceLocation DEFAULT_DISSOLVE = prefix(TEXTURES_ROOT + "dissolve.png");
     public static final DragonVariantRegistry REGISTRY = new DragonVariantRegistry(MOD_ID, "dragon_variant", new RegistryBuilder<DragonVariant>().setDefaultKey(DEFAULT_KEY));
     public static final IDataSerializer<DragonVariant> SERIALIZER = new IDataSerializer<DragonVariant>() {
         public void write(PacketBuffer buffer, @Nonnull DragonVariant value) {
@@ -44,42 +38,14 @@ public abstract class DragonVariant extends ForgeRegistryEntry<DragonVariant> im
     };
 
     public static DragonVariant byName(String name) {
-        DragonVariant variant = REGISTRY.getValue(new ResourceLocation(name));
-        return variant == null ? DragonVariants.AETHER_FEMALE : variant;
+        return REGISTRY.getValue(new ResourceLocation(name));
     }
 
     public final DragonType type;
-    public final float positionScale;
-    public final float renderScale;
+    private VariantAppearance appearance;
 
-    public DragonVariant(DragonType type, float modelScale) {
+    public DragonVariant(DragonType type) {
         this.type = type;
-        this.renderScale = modelScale;
-        this.positionScale = modelScale / 16.0F;
-    }
-
-    public abstract boolean hasTailHorns(@SuppressWarnings("unused") TameableDragonEntity dragon);
-
-    public abstract boolean hasSideTailScale(@SuppressWarnings("unused") TameableDragonEntity dragon);
-
-    public abstract ResourceLocation getBody(@SuppressWarnings("unused") TameableDragonEntity dragon);
-
-    public abstract RenderType getGlow(@SuppressWarnings("unused") TameableDragonEntity dragon);
-
-    public abstract RenderType getDecal(@SuppressWarnings("unused") TameableDragonEntity dragon);
-
-    public abstract RenderType getGlowDecal(@SuppressWarnings("unused") TameableDragonEntity dragon);
-
-    public ResourceLocation getChest(@SuppressWarnings("unused") TameableDragonEntity dragon) {
-        return DEFAULT_CHEST;
-    }
-
-    public ResourceLocation getSaddle(@SuppressWarnings("unused") TameableDragonEntity dragon) {
-        return DEFAULT_SADDLE;
-    }
-
-    public RenderType getDissolve(TameableDragonEntity dragon) {
-        return RenderType.dragonExplosionAlpha(DEFAULT_DISSOLVE, dragon.deathTime / dragon.getMaxDeathTime());
     }
 
     public final ResourceLocation getSerializedName() {
@@ -90,6 +56,17 @@ public abstract class DragonVariant extends ForgeRegistryEntry<DragonVariant> im
     @Override
     public final DragonType getDragonType() {
         return this.type;
+    }
+
+    public VariantAppearance getAppearance(VariantAppearance defaultValue) {
+        return this.appearance == null ? defaultValue : this.appearance;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public VariantAppearance setAppearance(VariantAppearance value) {
+        VariantAppearance old = this.appearance;
+        this.appearance = value;
+        return old;
     }
 
     public static class DragonVariantRegistry extends DeferredRegistry<DragonVariant> implements IForgeRegistry.AddCallback<DragonVariant>, IForgeRegistry.ClearCallback<DragonVariant> {
@@ -103,7 +80,7 @@ public abstract class DragonVariant extends ForgeRegistryEntry<DragonVariant> im
         public DragonVariant getValue(DragonType type, Random random) {
             ArrayList<DragonVariant> list = this.map.computeIfAbsent(type, CREATE_ARRAY);
             int size = list.size();
-            return size == 0 ? DragonVariants.ENDER_FEMALE : list.get(random.nextInt(size));
+            return size == 0 ? this.getValue(DEFAULT_KEY) : list.get(random.nextInt(size));
         }
 
         public DragonVariant getNext(DragonVariant variant) {

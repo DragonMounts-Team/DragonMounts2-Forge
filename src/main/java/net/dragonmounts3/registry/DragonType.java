@@ -1,7 +1,6 @@
 package net.dragonmounts3.registry;
 
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
 import net.dragonmounts3.init.DragonTypes;
 import net.minecraft.block.Block;
@@ -79,13 +78,13 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
     public final int color;
     public final boolean convertible;
     public final boolean isSkeleton;
-    public final BiFunction<Integer, Boolean, Vector3d> passengerOffset;
+    public final ImmutableMultimap<Attribute, AttributeModifier> attributes;
     public final Predicate<HatchableDragonEggEntity> isHabitatEnvironment;
+    public final BiFunction<Integer, Boolean, Vector3d> passengerOffset;
     public final BasicParticleType sneezeParticle;
     public final BasicParticleType eggParticle;
     private final HashMap<Class<?>, Object> map = new HashMap<>();
     private final Style style;
-    private final ImmutableMultimap<Attribute, AttributeModifier> attributes;
     private final Set<DamageSource> immunities;
     private final Set<Block> blocks;
     private final List<RegistryKey<Biome>> biomes;
@@ -130,10 +129,6 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
         return new TranslationTextComponent(pattern, new TranslationTextComponent(this.getTranslationKey()));
     }
 
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers() {
-        return this.attributes;
-    }
-
     public ResourceLocation getLootTable() {
         if (this.lootTable == null) {
             ResourceLocation key = this.getSerializedName();
@@ -159,7 +154,6 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
         return clazz.cast(this.map.put(clazz, instance));
     }
 
-    @SuppressWarnings("UnusedReturnValue")
     public <T> T getInstance(Class<T> clazz, T defaultValue) {
         return clazz.cast(this.map.getOrDefault(clazz, defaultValue));
     }

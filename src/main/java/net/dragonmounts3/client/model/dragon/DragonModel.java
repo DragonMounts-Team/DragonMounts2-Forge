@@ -2,6 +2,7 @@ package net.dragonmounts3.client.model.dragon;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.dragonmounts3.client.variant.VariantAppearances;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.util.math.vector.Matrix3f;
@@ -15,6 +16,8 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class DragonModel extends EntityModel<TameableDragonEntity> {
+    private static final Matrix4f INVERSE_SCALE = Matrix4f.createScaleMatrix(-1, 1, 1);
+    private static final Matrix3f INVERSE_NORMS = new Matrix3f(INVERSE_SCALE);
     public final DragonHeadModelPart head;
     public final DragonNeckModelPart neck;
     public final DragonBodyModelPart body;
@@ -42,7 +45,7 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
 
     @Override
     public void prepareMobModel(@Nonnull TameableDragonEntity dragon, float limbSwing, float limbSwingAmount, float partialTick) {
-        boolean hasSideTailScale = dragon.getVariant().hasSideTailScale(dragon);
+        boolean hasSideTailScale = dragon.getVariant().getAppearance(VariantAppearances.ENDER_FEMALE).hasSideTailScale(dragon);
         this.tail.leftScale.visible = this.tail.rightScale.visible = hasSideTailScale;
         this.tail.middleScale.visible = !hasSideTailScale;
         this.head.scaleX = this.head.scaleY = this.head.scaleZ = 0.92F;
@@ -70,9 +73,6 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
     protected void renderHead(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         this.head.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }
-
-    private static final Matrix4f INVERSE_SCALE = Matrix4f.createScaleMatrix(-1, 1, 1);
-    private static final Matrix3f INVERSE_NORMS = new Matrix3f(INVERSE_SCALE);
 
     public void renderWings(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         matrixStack.pushPose();

@@ -8,6 +8,7 @@ import net.dragonmounts3.registry.CarriageType;
 import net.dragonmounts3.registry.DragonType;
 import net.dragonmounts3.registry.DragonVariant;
 import net.dragonmounts3.util.ArmorEffect;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
@@ -37,10 +38,10 @@ public class DragonMounts {
 
     public DragonMounts() {
         DragonMountsConfig.init();
-        DMPacketHandler.init();
         CarriageType.REGISTRY.register(this.eventBus);
         DragonType.REGISTRY.register(this.eventBus);
         DragonVariant.REGISTRY.register(this.eventBus);
+        this.eventBus.addListener(DragonMounts::preInit);
         this.eventBus.addGenericListener(DataSerializerEntry.class, DragonMounts::registerDataSerializers);
         this.eventBus.addGenericListener(CarriageType.class, CarriageTypes::register);
         this.eventBus.addGenericListener(DragonType.class, DragonTypes::register);
@@ -54,15 +55,17 @@ public class DragonMounts {
         DMBlockEntities.BLOCK_ENTITY.register(this.eventBus);
         DMContainers.CONTAINERS.register(this.eventBus);
         DMFeatures.STRUCTURE_FEATURE.register(this.eventBus);
-        DMKeyBindings.register();
-        this.eventBus.addListener(DragonMounts::preInit);
         MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, DMCapabilities::attachCapabilities);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(ArmorEffect.class);
         DMItems.subscribeEvents();
         if (FMLLoader.getDist().isClient()) {
-            MinecraftForge.EVENT_BUS.addListener(ConfigCommand::onClientSendMessage);
-            MinecraftForge.EVENT_BUS.addListener(ConfigCommand::onGuiOpen);
+            //noinspection ConstantValue
+            if (Minecraft.getInstance() != null) {
+                DMKeyBindings.register();
+            }
+            MinecraftForge.EVENT_BUS.addListener(ConfigCommand.Client::onClientSendMessage);
+            MinecraftForge.EVENT_BUS.addListener(ConfigCommand.Client::onGuiOpen);
         }
     }
 
@@ -87,6 +90,11 @@ public class DragonMounts {
     }
 
     public static void preInit(FMLCommonSetupEvent event) {
+        if (FMLLoader.getDist().isDedicatedServer()) {
+            DMPacketHandler.initServer();
+        } else {
+            DMPacketHandler.initClient();
+        }
         DMCapabilities.register();
         DMFeatures.setup();
     }

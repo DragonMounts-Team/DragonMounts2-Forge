@@ -1,5 +1,6 @@
 package net.dragonmounts3.util;
 
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.dragonmounts3.api.IArmorEffect;
 import net.dragonmounts3.api.IArmorEffectSource;
 import net.dragonmounts3.capability.IDragonTypifiedCooldown;
@@ -10,12 +11,12 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.NonNullConsumer;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -24,7 +25,8 @@ import static net.dragonmounts3.network.DMPacketHandler.CHANNEL;
 import static net.minecraftforge.fml.network.PacketDistributor.PLAYER;
 
 public class ArmorEffect {
-    private static final WeakHashMap<PlayerEntity, HashMap<IArmorEffect, Integer>> EFFECT_CACHE = new WeakHashMap<>();
+    private static final WeakHashMap<PlayerEntity, Object2IntOpenHashMap<IArmorEffect>> EFFECT_CACHE = new WeakHashMap<>();
+    private static final NonNullConsumer<IDragonTypifiedCooldown> TICK_COOLDOWN = IDragonTypifiedCooldown::tick;
 
     /**
      * Do not modify the Map returned by this!
@@ -46,10 +48,10 @@ public class ArmorEffect {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) return;
-        event.player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(IDragonTypifiedCooldown::tick);
-        HashMap<IArmorEffect, Integer> map = EFFECT_CACHE.get(event.player);
+        event.player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(TICK_COOLDOWN);
+        Object2IntOpenHashMap<IArmorEffect> map = EFFECT_CACHE.get(event.player);
         if (map == null) {
-            map = new HashMap<>();
+            map = new Object2IntOpenHashMap<>();
             EFFECT_CACHE.put(event.player, map);
         } else {
             map.clear();
@@ -58,7 +60,7 @@ public class ArmorEffect {
         checkSlot(map, event.player, EquipmentSlotType.CHEST);
         checkSlot(map, event.player, EquipmentSlotType.LEGS);
         checkSlot(map, event.player, EquipmentSlotType.FEET);
-        for (Map.Entry<IArmorEffect, Integer> entry : map.entrySet()) {
+        for (Map.Entry<IArmorEffect, Integer> entry : map.object2IntEntrySet()) {
             entry.getKey().invoke(event.player, entry.getValue());
         }
     }

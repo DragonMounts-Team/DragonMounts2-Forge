@@ -1,45 +1,44 @@
 package net.dragonmounts3.client.gui;
 
 import net.minecraft.client.GameSettings;
-import net.minecraft.client.gui.DialogTexts;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.OptionButton;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
-public class LazyBooleanConfigOption extends AbstractLazyConfigOption<Boolean> {
-    public static final Function<LazyBooleanConfigOption, ITextComponent> DEFAULT_STRINGIFY =
-            option -> DialogTexts.optionStatus(option.getCaption(), option.get());
-    public static final Function<LazyBooleanConfigOption, ITextComponent> TOGGLE_STRINGIFY =
-            option -> option.genericValueLabel(new TranslationTextComponent(option.get() ? "options.key.toggle" : "options.key.hold"));
-    public final Function<LazyBooleanConfigOption, ITextComponent> stringify;
-    protected boolean value;
+@SuppressWarnings("unused")//万一以后要用呢
+public class LazyEnumConfigOption<T extends Enum<T>> extends AbstractLazyConfigOption<T> {
+    public final Function<LazyEnumConfigOption<T>, ITextComponent> stringify;
+    protected T value;
+    protected final T[] values;
 
-    public LazyBooleanConfigOption(
+    public LazyEnumConfigOption(
             String caption,
-            ForgeConfigSpec.ConfigValue<Boolean> config,
-            Function<LazyBooleanConfigOption, ITextComponent> stringify,
+            ForgeConfigSpec.ConfigValue<T> config,
+            Class<T> clazz,
+            Function<LazyEnumConfigOption<T>, ITextComponent> stringify,
             @Nullable ITextComponent tooltip
     ) {
         super(caption, config, tooltip);
+        this.values = clazz.getEnumConstants();
         this.stringify = stringify;
         this.value = config.get();
     }
 
     public void toggle() {
-        this.set(!this.get());
+        int i = this.get().ordinal();
+        this.set(++i >= this.values.length ? this.values[0] : this.values[i]);
     }
 
-    public void set(boolean value) {
+    public void set(T value) {
         this.value = value;
     }
 
-    public boolean get() {
+    public T get() {
         return this.value;
     }
 

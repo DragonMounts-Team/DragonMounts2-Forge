@@ -1,5 +1,6 @@
 package net.dragonmounts3.capability;
 
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.dragonmounts3.network.SSyncCooldownPacket;
 import net.dragonmounts3.registry.DragonType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,7 +18,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static net.dragonmounts3.init.DMCapabilities.DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN;
@@ -25,7 +25,7 @@ import static net.dragonmounts3.network.DMPacketHandler.CHANNEL;
 import static net.minecraftforge.fml.network.PacketDistributor.PLAYER;
 
 public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
-    protected final HashMap<DragonType, Integer> map = new HashMap<>();
+    protected final Object2IntOpenHashMap<DragonType> map = new Object2IntOpenHashMap<>();
     protected PlayerEntity player = null;
 
     @Override
@@ -51,7 +51,7 @@ public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
 
     @Override
     public void tick() {
-        for (Map.Entry<DragonType, Integer> entry : map.entrySet()) {
+        for (Map.Entry<DragonType, Integer> entry : this.map.object2IntEntrySet()) {
             int value = entry.getValue() - 1;
             if (value >= 0) {
                 this.map.put(entry.getKey(), value);
@@ -63,7 +63,7 @@ public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
     @Override
     public CompoundNBT writeNBT(Direction side) {
         CompoundNBT compound = new CompoundNBT();
-        for (Map.Entry<DragonType, Integer> entry : this.map.entrySet()) {
+        for (Map.Entry<DragonType, Integer> entry : this.map.object2IntEntrySet()) {
             ResourceLocation location = entry.getKey().getRegistryName();
             if (location != null) {
                 compound.putInt(location.toString(), entry.getValue());
@@ -95,7 +95,7 @@ public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
     @Override
     public SSyncCooldownPacket createPacket() {
         ArrayList<SSyncCooldownPacket.Entry> list = new ArrayList<>();
-        for (Map.Entry<DragonType, Integer> entry : this.map.entrySet()) {
+        for (Map.Entry<DragonType, Integer> entry : this.map.object2IntEntrySet()) {
             int id = DragonType.REGISTRY.getID(entry.getKey());
             if (id != -1) {
                 list.add(new SSyncCooldownPacket.Entry(id, entry.getValue()));

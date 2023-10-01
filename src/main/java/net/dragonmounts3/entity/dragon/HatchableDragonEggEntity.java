@@ -395,9 +395,9 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
 
     public void setDragonType(DragonType type, boolean resetHealth, boolean resetConversion) {
         AttributeModifierManager manager = this.getAttributes();
-        manager.removeAttributeModifiers(this.getDragonType().getAttributeModifiers());
+        manager.removeAttributeModifiers(this.getDragonType().attributes);
         this.entityData.set(DATA_DRAGON_TYPE, type);
-        manager.addTransientAttributeModifiers(type.getAttributeModifiers());
+        manager.addTransientAttributeModifiers(type.attributes);
         if (resetHealth) {
             ModifiableAttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
             if (health != null) {

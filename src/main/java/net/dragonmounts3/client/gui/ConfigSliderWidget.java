@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ConfigSliderWidget extends AbstractSlider implements IBidiTooltip {
-    private final LazySliderConfigOption option;
+    protected final LazySliderConfigOption option;
 
     public ConfigSliderWidget(int x, int y, int width, int height, LazySliderConfigOption option) {
         super(x, y, width, height, StringTextComponent.EMPTY, option.toPct(option.get()));

@@ -1,16 +1,9 @@
 package net.dragonmounts3.network;
 
-import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 public class SShakeDragonEggPacket {
-    private final int id;
+    public final int id;
     public float axis;
     public int amplitude;
     public boolean particle;
@@ -35,18 +28,4 @@ public class SShakeDragonEggPacket {
         buffer.writeVarInt(this.amplitude);
         buffer.writeBoolean(this.particle);
     }
-
-    public void handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-            World level = Minecraft.getInstance().level;
-            if (level == null) return;
-            Entity entity = level.getEntity(this.id);
-            if (entity instanceof HatchableDragonEggEntity) {
-                ((HatchableDragonEggEntity) entity).applyPacket(this);
-            }
-        });
-        context.setPacketHandled(true);
-    }
-
 }

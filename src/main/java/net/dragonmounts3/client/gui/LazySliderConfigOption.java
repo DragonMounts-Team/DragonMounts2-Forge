@@ -1,25 +1,24 @@
 package net.dragonmounts3.client.gui;
 
-import net.minecraft.client.AbstractOption;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Function;
 
-public class LazySliderConfigOption extends AbstractOption {
-    private final Function<LazySliderConfigOption, ITextComponent> stringify;
-    public final ForgeConfigSpec.ConfigValue<Double> config;
+public class LazySliderConfigOption extends AbstractLazyConfigOption<Double> {
+    public static final Function<LazySliderConfigOption, ITextComponent> STRINGIFY_X_2F = button -> button.genericValueLabel(new StringTextComponent(String.format("%.2f", button.value)));
+    public final Function<LazySliderConfigOption, ITextComponent> stringify;
     public final double minValue;
     public final double maxValue;
     public final double distance;
     public final double steps;
-    public double value;
+    protected double value;
 
     public LazySliderConfigOption(
             String caption,
@@ -27,10 +26,10 @@ public class LazySliderConfigOption extends AbstractOption {
             double minValue,
             double maxValue,
             double steps,
-            Function<LazySliderConfigOption, ITextComponent> stringify
+            Function<LazySliderConfigOption, ITextComponent> stringify,
+            @Nullable ITextComponent tooltip
     ) {
-        super(caption);
-        this.config = config;
+        super(caption, config, tooltip);
         this.value = config.get();
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -40,6 +39,7 @@ public class LazySliderConfigOption extends AbstractOption {
     }
 
     @Nonnull
+    @Override
     public Widget createButton(@Nullable GameSettings options, int pX, int pY, int pWidth) {
         return new ConfigSliderWidget(pX, pY, pWidth, 20, this);
     }
@@ -64,40 +64,12 @@ public class LazySliderConfigOption extends AbstractOption {
         return this.value;
     }
 
+    @Override
     public void save() {
         this.config.set(this.value);
     }
 
     public ITextComponent getMessage() {
         return this.stringify.apply(this);
-    }
-
-    @Nonnull
-    public ITextComponent pixelValueLabel(int value) {
-        return super.pixelValueLabel(value);
-    }
-
-    @Nonnull
-    @Override
-    public ITextComponent percentValueLabel(double percentage) {
-        return new TranslationTextComponent("options.percent_value", this.getCaption(), (int) (percentage * 100.0D));
-    }
-
-    @Nonnull
-    @Override
-    public ITextComponent percentAddValueLabel(int value) {
-        return new TranslationTextComponent("options.percent_add_value", this.getCaption(), value);
-    }
-
-    @Nonnull
-    @Override
-    public ITextComponent genericValueLabel(@Nonnull ITextComponent value) {
-        return new TranslationTextComponent("options.generic_value", this.getCaption(), value);
-    }
-
-    @Nonnull
-    @Override
-    public ITextComponent genericValueLabel(int value) {
-        return super.genericValueLabel(value);
     }
 }

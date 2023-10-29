@@ -7,6 +7,7 @@ import net.dragonmounts3.api.DragonScaleTier;
 import net.dragonmounts3.block.HatchableDragonEggBlock;
 import net.dragonmounts3.item.*;
 import net.dragonmounts3.registry.DragonType;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.Properties;
@@ -259,23 +260,23 @@ public class DMItems {
     public static final RegistryObject<CarriageItem> OAK_CARRIAGE = ITEMS.register("oak_carriage", () -> new CarriageItem(CarriageTypes.OAK, item()));
     public static final RegistryObject<CarriageItem> SPRUCE_CARRIAGE = ITEMS.register("spruce_carriage", () -> new CarriageItem(CarriageTypes.SPRUCE, item()));
     //Dragon Amulets
-    public static final RegistryObject<DragonAmuletItem> DRAGON_AMULET = ITEMS.register("dragon_amulet", () -> new DragonAmuletItem(item()));
-    public static final RegistryObject<FilledDragonAmuletItem> FOREST_DRAGON_AMULET = createDragonAmuletItem("forest_dragon_amulet", DragonTypes.FOREST, none());
-    public static final RegistryObject<FilledDragonAmuletItem> FIRE_DRAGON_AMULET = createDragonAmuletItem("fire_dragon_amulet", DragonTypes.FIRE, none());
-    public static final RegistryObject<FilledDragonAmuletItem> ICE_DRAGON_AMULET = createDragonAmuletItem("ice_dragon_amulet", DragonTypes.ICE, none());
-    public static final RegistryObject<FilledDragonAmuletItem> WATER_DRAGON_AMULET = createDragonAmuletItem("water_dragon_amulet", DragonTypes.WATER, none());
-    public static final RegistryObject<FilledDragonAmuletItem> AETHER_DRAGON_AMULET = createDragonAmuletItem("aether_dragon_amulet", DragonTypes.AETHER, none());
-    public static final RegistryObject<FilledDragonAmuletItem> NETHER_DRAGON_AMULET = createDragonAmuletItem("nether_dragon_amulet", DragonTypes.NETHER, none());
-    public static final RegistryObject<FilledDragonAmuletItem> ENDER_DRAGON_AMULET = createDragonAmuletItem("ender_dragon_amulet", DragonTypes.ENDER, none());
-    public static final RegistryObject<FilledDragonAmuletItem> SUNLIGHT_DRAGON_AMULET = createDragonAmuletItem("sunlight_dragon_amulet", DragonTypes.SUNLIGHT, none());
-    public static final RegistryObject<FilledDragonAmuletItem> ENCHANT_DRAGON_AMULET = createDragonAmuletItem("enchant_dragon_amulet", DragonTypes.ENCHANT, none());
-    public static final RegistryObject<FilledDragonAmuletItem> STORM_DRAGON_AMULET = createDragonAmuletItem("storm_dragon_amulet", DragonTypes.STORM, none());
-    public static final RegistryObject<FilledDragonAmuletItem> TERRA_DRAGON_AMULET = createDragonAmuletItem("terra_dragon_amulet", DragonTypes.TERRA, none());
-    public static final RegistryObject<FilledDragonAmuletItem> ZOMBIE_DRAGON_AMULET = createDragonAmuletItem("zombie_dragon_amulet", DragonTypes.ZOMBIE, none());
-    public static final RegistryObject<FilledDragonAmuletItem> MOONLIGHT_DRAGON_AMULET = createDragonAmuletItem("moonlight_dragon_amulet", DragonTypes.MOONLIGHT, none());
-    public static final RegistryObject<FilledDragonAmuletItem> SCULK_DRAGON_AMULET = createDragonAmuletItem("sculk_dragon_amulet", DragonTypes.SCULK, none().fireResistant());
-    public static final RegistryObject<FilledDragonAmuletItem> SKELETON_DRAGON_AMULET = createDragonAmuletItem("skeleton_dragon_amulet", DragonTypes.SKELETON, none());
-    public static final RegistryObject<FilledDragonAmuletItem> WITHER_DRAGON_AMULET = createDragonAmuletItem("wither_dragon_amulet", DragonTypes.WITHER, none());
+    public static final RegistryObject<AmuletItem<Entity>> AMULET = ITEMS.register("amulet", () -> new AmuletItem<>(item()));
+    public static final RegistryObject<DragonAmuletItem> FOREST_DRAGON_AMULET = createDragonAmuletItem("forest_dragon_amulet", DragonTypes.FOREST, none());
+    public static final RegistryObject<DragonAmuletItem> FIRE_DRAGON_AMULET = createDragonAmuletItem("fire_dragon_amulet", DragonTypes.FIRE, none());
+    public static final RegistryObject<DragonAmuletItem> ICE_DRAGON_AMULET = createDragonAmuletItem("ice_dragon_amulet", DragonTypes.ICE, none());
+    public static final RegistryObject<DragonAmuletItem> WATER_DRAGON_AMULET = createDragonAmuletItem("water_dragon_amulet", DragonTypes.WATER, none());
+    public static final RegistryObject<DragonAmuletItem> AETHER_DRAGON_AMULET = createDragonAmuletItem("aether_dragon_amulet", DragonTypes.AETHER, none());
+    public static final RegistryObject<DragonAmuletItem> NETHER_DRAGON_AMULET = createDragonAmuletItem("nether_dragon_amulet", DragonTypes.NETHER, none());
+    public static final RegistryObject<DragonAmuletItem> ENDER_DRAGON_AMULET = createDragonAmuletItem("ender_dragon_amulet", DragonTypes.ENDER, none());
+    public static final RegistryObject<DragonAmuletItem> SUNLIGHT_DRAGON_AMULET = createDragonAmuletItem("sunlight_dragon_amulet", DragonTypes.SUNLIGHT, none());
+    public static final RegistryObject<DragonAmuletItem> ENCHANT_DRAGON_AMULET = createDragonAmuletItem("enchant_dragon_amulet", DragonTypes.ENCHANT, none());
+    public static final RegistryObject<DragonAmuletItem> STORM_DRAGON_AMULET = createDragonAmuletItem("storm_dragon_amulet", DragonTypes.STORM, none());
+    public static final RegistryObject<DragonAmuletItem> TERRA_DRAGON_AMULET = createDragonAmuletItem("terra_dragon_amulet", DragonTypes.TERRA, none());
+    public static final RegistryObject<DragonAmuletItem> ZOMBIE_DRAGON_AMULET = createDragonAmuletItem("zombie_dragon_amulet", DragonTypes.ZOMBIE, none());
+    public static final RegistryObject<DragonAmuletItem> MOONLIGHT_DRAGON_AMULET = createDragonAmuletItem("moonlight_dragon_amulet", DragonTypes.MOONLIGHT, none());
+    public static final RegistryObject<DragonAmuletItem> SCULK_DRAGON_AMULET = createDragonAmuletItem("sculk_dragon_amulet", DragonTypes.SCULK, none().fireResistant());
+    public static final RegistryObject<DragonAmuletItem> SKELETON_DRAGON_AMULET = createDragonAmuletItem("skeleton_dragon_amulet", DragonTypes.SKELETON, none());
+    public static final RegistryObject<DragonAmuletItem> WITHER_DRAGON_AMULET = createDragonAmuletItem("wither_dragon_amulet", DragonTypes.WITHER, none());
     //Dragon Essences
     public static final RegistryObject<DragonEssenceItem> FOREST_DRAGON_ESSENCE = createDragonEssenceItem("forest_dragon_essence", DragonTypes.FOREST, none());
     public static final RegistryObject<DragonEssenceItem> FIRE_DRAGON_ESSENCE = createDragonEssenceItem("fire_dragon_essence", DragonTypes.FIRE, none());
@@ -295,9 +296,9 @@ public class DMItems {
     public static final RegistryObject<DragonEssenceItem> WITHER_DRAGON_ESSENCE = createDragonEssenceItem("wither_dragon_essence", DragonTypes.WITHER, none());
     public static final RegistryObject<Item> DRAGON_WHISTLE = ITEMS.register("dragon_whistle", () -> new DragonWhistleItem(item()));
 
-    private static RegistryObject<FilledDragonAmuletItem> createDragonAmuletItem(String name, DragonType type, Properties properties) {
-        FilledDragonAmuletItem item = new FilledDragonAmuletItem(type, properties);
-        type.bindInstance(FilledDragonAmuletItem.class, item);
+    private static RegistryObject<DragonAmuletItem> createDragonAmuletItem(String name, DragonType type, Properties properties) {
+        DragonAmuletItem item = new DragonAmuletItem(type, properties);
+        type.bindInstance(DragonAmuletItem.class, item);
         return ITEMS.register(name, () -> item);
     }
 

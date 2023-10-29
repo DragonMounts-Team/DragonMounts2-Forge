@@ -1,9 +1,11 @@
 package net.dragonmounts3.client;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.dragonmounts3.DragonMountsConfig;
 import net.dragonmounts3.client.gui.DMConfigScreen;
 import net.dragonmounts3.client.renderer.CarriageRenderer;
 import net.dragonmounts3.client.renderer.DragonEggRenderer;
+import net.dragonmounts3.client.renderer.dragon.TameableDragonLayer;
 import net.dragonmounts3.client.renderer.dragon.TameableDragonRenderer;
 import net.dragonmounts3.client.variant.VariantAppearances;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
@@ -14,6 +16,7 @@ import net.dragonmounts3.item.DragonScaleShieldItem;
 import net.dragonmounts3.registry.DragonType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.IItemPropertyGetter;
@@ -24,6 +27,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -100,6 +104,18 @@ public class DMClientEvents {
                     );
                 }
             }
+        }
+
+        @SubscribeEvent
+        public static void render(RenderPlayerEvent.Post event) {
+            PlayerEntity player = event.getPlayer();
+            if (!DragonMountsConfig.CLIENT.debug.get() || player.isSpectator()) return;
+            MatrixStack matrixStack = event.getMatrixStack();
+            IRenderTypeBuffer buffer = event.getBuffers();
+            int packedLight = event.getLight();
+            //float partialTicks = event.getPartialRenderTick();
+            TameableDragonLayer.Player.render(player, matrixStack, buffer, packedLight, true);
+            TameableDragonLayer.Player.render(player, matrixStack, buffer, packedLight, false);
         }
     }
 }

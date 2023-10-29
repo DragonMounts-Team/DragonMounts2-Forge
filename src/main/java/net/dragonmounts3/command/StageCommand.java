@@ -19,7 +19,7 @@ import static net.dragonmounts3.entity.dragon.TameableDragonEntity.AGE_DATA_PARA
 public class StageCommand {
     public static LiteralArgumentBuilder<CommandSource> register() {
         return Commands.literal("stage").requires(source -> source.hasPermission(3)).then(
-               DragonLifeStage.applyValues(Commands.argument("target", EntityArgument.entity()))
+                DragonLifeStage.applyValues(Commands.argument("target", EntityArgument.entity()))
                         .executes(context -> get(context.getSource(), EntityArgument.getEntity(context, "target")))
         );
     }
@@ -27,12 +27,14 @@ public class StageCommand {
     public static int egg(CommandSource source, Entity target) {
         if (target instanceof TameableDragonEntity) {
             ServerWorld level = source.getLevel();
-            ((TameableDragonEntity) target).inventory.dropContents(false, 1.25);
-            HatchableDragonEggEntity egg = new HatchableDragonEggEntity(target.level);
-            CompoundNBT compound = target.saveWithoutId(new CompoundNBT());
+            HatchableDragonEggEntity egg = new HatchableDragonEggEntity(level);
+            TameableDragonEntity dragon = (TameableDragonEntity) target;
+            dragon.inventory.dropContents(false, 1.25);
+            CompoundNBT compound = dragon.saveWithoutId(new CompoundNBT());
             compound.remove(AGE_DATA_PARAMETER_KEY);
             egg.load(compound);
-            level.removeEntity(target, false);
+            egg.setDragonType(dragon.getDragonType(), false);
+            level.removeEntity(dragon, false);
             level.addFreshEntity(egg);
         } else if (target instanceof HatchableDragonEggEntity) {
             ((HatchableDragonEggEntity) target).setAge(0);

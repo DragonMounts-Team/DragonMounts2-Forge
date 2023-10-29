@@ -9,6 +9,7 @@ import net.minecraft.util.math.vector.Vector3d;
 
 public class DragonMovementController extends MovementController {
     public final TameableDragonEntity dragon;
+
     public DragonMovementController(TameableDragonEntity dragon) {
         super(dragon);
         this.dragon = dragon;

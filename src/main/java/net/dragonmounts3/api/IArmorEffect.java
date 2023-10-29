@@ -4,5 +4,5 @@ import net.minecraft.entity.player.PlayerEntity;
 
 @FunctionalInterface
 public interface IArmorEffect {
-    void invoke(PlayerEntity player, int strength);
+    void apply(PlayerEntity player, int strength);
 }

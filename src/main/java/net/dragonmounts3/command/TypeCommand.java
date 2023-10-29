@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.dragonmounts3.api.IDragonTypified;
-import net.dragonmounts3.api.IMutableDragonTypified;
 import net.dragonmounts3.block.HatchableDragonEggBlock;
 import net.dragonmounts3.init.DragonTypes;
 import net.dragonmounts3.registry.DragonType;
@@ -133,12 +132,12 @@ public class TypeCommand {
         @Override
         protected int setType(CommandContext<CommandSource> context, Entity entity, DragonType type) {
             CommandSource source = context.getSource();
-            if (entity instanceof IMutableDragonTypified) {
-                ((IMutableDragonTypified) entity).setDragonType(type);
+            if (entity instanceof IDragonTypified.Mutable) {
+                ((IDragonTypified.Mutable) entity).setDragonType(type);
                 source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.type.entity.set", entity.getDisplayName(), type.getName()), true);
                 return 1;
             }
-            source.sendFailure(createClassCastException(entity, IMutableDragonTypified.class));
+            source.sendFailure(createClassCastException(entity, IDragonTypified.Mutable.class));
             return 0;
         }
 

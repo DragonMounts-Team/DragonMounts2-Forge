@@ -3,7 +3,6 @@ package net.dragonmounts3.api;
 import net.dragonmounts3.entity.dragon.DragonLifeStage;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.util.math.MathUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
@@ -29,18 +28,17 @@ public interface IDragonFood {
 
     default void act(TameableDragonEntity dragon, Item item) {
         if (item == Items.AIR) return;
-        Minecraft minecraft = Minecraft.getInstance();
-        PlayerEntity player = minecraft.player;
         World level = dragon.level;
         if (dragon.getLifeStage() != DragonLifeStage.ADULT) {
             dragon.refreshForcedAgeTimer();
         }
+        //noinspection DataFlowIssue
         Vector3d pos = dragon.animator.getThroatPosition(0, 0, -4);
         if (pos == null) return;
-        level.playSound(player, pos.x, pos.y, pos.z, item.getEatingSound(), SoundCategory.NEUTRAL, 1F, 0.75F);
+        level.playLocalSound(pos.x, pos.y, pos.z, item.getEatingSound(), SoundCategory.NEUTRAL, 1F, 0.75F, false);
         if (item == Items.HONEY_BOTTLE) return;
         if (item instanceof BucketItem) {
-            level.playSound(player, pos.x, pos.y, pos.z, item.getDrinkingSound(), SoundCategory.NEUTRAL, 0.25F, 0.75F);
+            level.playLocalSound(pos.x, pos.y, pos.z, item.getDrinkingSound(), SoundCategory.NEUTRAL, 0.25F, 0.75F, false);
             if (item == Items.COD_BUCKET) {
                 item = Items.COD;
             } else if (item == Items.SALMON_BUCKET) {

@@ -10,6 +10,8 @@ import net.minecraft.util.Hand;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 
+import static net.dragonmounts3.util.EntityUtil.consume;
+
 public class DragonFood implements IDragonFood {
     private static final HashMap<Item, IDragonFood> REGISTRY = new HashMap<>();
     public static final DragonFood RAW_MEAT = new DragonFood(1500, 2);
@@ -23,15 +25,7 @@ public class DragonFood implements IDragonFood {
         }
         dragon.setHealth(dragon.getHealth() + 1);
         if (!player.abilities.instabuild) {
-            stack.shrink(1);
-            ItemStack resultStack = new ItemStack(Items.GLASS_BOTTLE);
-            if (!player.inventory.add(resultStack)) {//PlayerInventory.getFreeSlot() won't check the offhand slot
-                if (stack.isEmpty()) {
-                    player.setItemInHand(hand, resultStack);
-                } else {
-                    player.drop(resultStack, false);
-                }
-            }
+            consume(player, hand, stack, new ItemStack(Items.GLASS_BOTTLE));
         }
         if (dragon.isOwnedBy(player)) {
             if (dragon.getLifeStage() == DragonLifeStage.ADULT && dragon.canFallInLove()) {
@@ -129,17 +123,7 @@ public class DragonFood implements IDragonFood {
             } else if (item instanceof BucketItem) {
                 result = Items.BUCKET;
             }
-            stack.shrink(1);
-            if (result != null) {
-                ItemStack resultStack = new ItemStack(result);
-                if (!player.inventory.add(resultStack)) {//PlayerInventory.getFreeSlot() won't check the offhand slot
-                    if (stack.isEmpty()) {
-                        player.setItemInHand(hand, resultStack);
-                    } else {
-                        player.drop(resultStack, false);
-                    }
-                }
-            }
+            consume(player, hand, stack, result == null ? null : new ItemStack(result));
         }
         if (dragon.isOwnedBy(player)) {
             if (dragon.getLifeStage() == DragonLifeStage.ADULT && dragon.canFallInLove()) {

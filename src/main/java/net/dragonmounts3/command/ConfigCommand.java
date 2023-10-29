@@ -17,7 +17,6 @@ import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.function.BiFunction;
 
-import static net.dragonmounts3.DragonMountsConfig.COMMON;
 import static net.dragonmounts3.DragonMountsConfig.SERVER;
 
 
@@ -47,7 +46,7 @@ public class ConfigCommand {
         return Commands.literal("config")
                 .then(Commands.literal("server")
                         .requires(source -> source.hasPermission(3))
-                        .then(create(COMMON.debug, BoolArgumentType.bool(), BoolArgumentType::getBool))
+                        .then(create(SERVER.debug, BoolArgumentType.bool(), BoolArgumentType::getBool))
                         .then(create(SERVER.base_armor, DoubleArgumentType.doubleArg(0, 30), DoubleArgumentType::getDouble))
                         .then(create(SERVER.base_health, DoubleArgumentType.doubleArg(1, 1024), DoubleArgumentType::getDouble))
                         .then(create(SERVER.base_damage, DoubleArgumentType.doubleArg(0, 2048), DoubleArgumentType::getDouble))

@@ -23,6 +23,10 @@ public abstract class VariantAppearance {
 
     public abstract boolean hasSideTailScale(@SuppressWarnings("unused") TameableDragonEntity dragon);
 
+    public abstract boolean hasTailHornsOnShoulder();
+
+    public abstract boolean hasSideTailScaleOnShoulder();
+
     public abstract ResourceLocation getBody(@SuppressWarnings("unused") TameableDragonEntity dragon);
 
     public abstract RenderType getGlow(@SuppressWarnings("unused") TameableDragonEntity dragon);
@@ -30,6 +34,10 @@ public abstract class VariantAppearance {
     public abstract RenderType getDecal(@SuppressWarnings("unused") TameableDragonEntity dragon);
 
     public abstract RenderType getGlowDecal(@SuppressWarnings("unused") TameableDragonEntity dragon);
+
+    public abstract RenderType getBodyOnShoulder();
+
+    public abstract RenderType getGlowOnShoulder();
 
     public ResourceLocation getChest(@SuppressWarnings("unused") TameableDragonEntity dragon) {
         return DEFAULT_CHEST;

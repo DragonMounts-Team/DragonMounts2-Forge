@@ -5,7 +5,6 @@ import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
 import net.dragonmounts3.init.DragonTypes;
 import net.dragonmounts3.registry.DragonType;
-import net.dragonmounts3.util.EntityUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -35,8 +34,8 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
     protected static void spawn(World level, BlockPos pos, DragonType type) {
         level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         HatchableDragonEggEntity entity = new HatchableDragonEggEntity(level);
-        entity.setDragonType(type, true, true);
-        EntityUtil.setPos(entity, pos);
+        entity.setDragonType(type, true);
+        entity.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
         level.addFreshEntity(entity);
     }
 

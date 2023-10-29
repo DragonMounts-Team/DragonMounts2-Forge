@@ -28,7 +28,7 @@ public class VariantAppearances {
         int length = builder.length();
         return new DefaultAppearance(
                 new ResourceLocation(namespace, builder.append("/body.png").toString()),
-                new ResourceLocation(namespace, builder.replace(length + 6, length + 10, "glow").toString()),
+                new ResourceLocation(namespace, builder.replace(length + 1, length + 5, "glow").toString()),
                 hasTailHorns,
                 hasSideTailScale
         );
@@ -71,6 +71,7 @@ public class VariantAppearances {
     public static final VariantAppearance ZOMBIE_MALE;
     public static final VariantAppearance SCULK = new VariantAppearance(1.6F) {
         public final ResourceLocation body = new ResourceLocation(MOD_ID, TEXTURES_ROOT + "sculk/body.png");
+        public final RenderType bodyOnShoulder = RenderType.entityCutoutNoCull(body);
         public final RenderType decal = RenderType.entityDecal(this.body);
 
         @Override
@@ -80,6 +81,16 @@ public class VariantAppearances {
 
         @Override
         public boolean hasSideTailScale(TameableDragonEntity dragon) {
+            return false;
+        }
+
+        @Override
+        public boolean hasTailHornsOnShoulder() {
+            return false;
+        }
+
+        @Override
+        public boolean hasSideTailScaleOnShoulder() {
             return false;
         }
 
@@ -101,6 +112,16 @@ public class VariantAppearances {
         @Override
         public RenderType getGlowDecal(TameableDragonEntity dragon) {
             return VariantAppearances.ENDER_FEMALE.getGlowDecal(dragon);
+        }
+
+        @Override
+        public RenderType getBodyOnShoulder() {
+            return this.bodyOnShoulder;
+        }
+
+        @Override
+        public RenderType getGlowOnShoulder() {
+            return VariantAppearances.ENDER_FEMALE.getGlowOnShoulder();
         }
     };
 

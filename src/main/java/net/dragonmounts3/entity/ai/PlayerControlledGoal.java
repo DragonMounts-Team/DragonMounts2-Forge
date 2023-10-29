@@ -1,7 +1,7 @@
 package net.dragonmounts3.entity.ai;
 
-import net.dragonmounts3.init.DragonTypes;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
+import net.dragonmounts3.init.DragonTypes;
 import net.dragonmounts3.network.CRideDragonPacket;
 import net.dragonmounts3.util.EntityUtil;
 import net.dragonmounts3.util.math.MathUtil;

@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "dragonmounts:dragon_amulet"
+      "dragonmounts:amulet"
     ]
   },
   "criteria": {
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "dragonmounts:dragon_amulet"
+        "recipe": "dragonmounts:amulet"
       }
     }
   },

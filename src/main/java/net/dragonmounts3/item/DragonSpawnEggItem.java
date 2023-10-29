@@ -4,6 +4,7 @@ import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.init.DMEntities;
 import net.dragonmounts3.registry.DragonType;
+import net.dragonmounts3.registry.DragonVariant;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
@@ -41,13 +42,10 @@ import static net.dragonmounts3.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
 public final class DragonSpawnEggItem extends ForgeSpawnEggItem implements IDragonTypified {
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_spawn_egg";
     private final DragonType type;
-    private final CompoundNBT spawnData = new CompoundNBT();
 
     public DragonSpawnEggItem(DragonType type, int backgroundColor, int highlightColor, Properties props) {
         super(DMEntities.TAMEABLE_DRAGON, backgroundColor, highlightColor, props);
         this.type = type;
-        this.spawnData.putString("id", DMEntities.TAMEABLE_DRAGON.getId().toString());
-        this.spawnData.putString(DragonType.DATA_PARAMETER_KEY, type.getSerializedName().toString());
     }
 
     @Nonnull
@@ -66,8 +64,15 @@ public final class DragonSpawnEggItem extends ForgeSpawnEggItem implements IDrag
                 TileEntity tileentity = world.getBlockEntity(pos1);
                 if (tileentity instanceof MobSpawnerTileEntity) {
                     AbstractSpawner spawner = ((MobSpawnerTileEntity) tileentity).getSpawner();
-                    WeightedSpawnerEntity spawnerEntity = new WeightedSpawnerEntity(1, this.spawnData.copy());
-                    spawner.setNextSpawnData(spawnerEntity);
+                    if (entityType == DMEntities.TAMEABLE_DRAGON.get()) {
+                        CompoundNBT tag = new CompoundNBT();
+                        tag.putString("id", DMEntities.TAMEABLE_DRAGON.getId().toString());
+                        tag.putString(DragonVariant.DATA_PARAMETER_KEY, this.type.variants.draw(random, null).getSerializedName().toString());
+                        WeightedSpawnerEntity spawnerEntity = new WeightedSpawnerEntity(1, tag);
+                        spawner.setNextSpawnData(spawnerEntity);
+                    } else {
+                        spawner.setEntityId(entityType);
+                    }
                     tileentity.setChanged();
                     world.sendBlockUpdated(pos1, blockstate, blockstate, 3);
                     itemstack.shrink(1);

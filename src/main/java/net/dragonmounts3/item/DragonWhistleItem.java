@@ -26,6 +26,7 @@ import java.util.List;
 
 public class DragonWhistleItem extends Item {
     private static final Logger LOGGER = LogManager.getLogger();
+
     public DragonWhistleItem(Properties properties) {
         super(properties.stacksTo(1));
     }

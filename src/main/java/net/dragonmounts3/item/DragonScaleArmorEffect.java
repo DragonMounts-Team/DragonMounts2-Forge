@@ -1,8 +1,9 @@
 package net.dragonmounts3.item;
 
-import net.dragonmounts3.init.DragonTypes;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.dragonmounts3.api.IArmorEffect;
 import net.dragonmounts3.capability.IDragonTypifiedCooldown;
+import net.dragonmounts3.init.DragonTypes;
 import net.dragonmounts3.network.SRiposteEffectPacket;
 import net.dragonmounts3.util.ArmorEffect;
 import net.minecraft.entity.Entity;
@@ -27,7 +28,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import static net.dragonmounts3.init.DMCapabilities.DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN;
@@ -41,7 +41,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
     private static DragonScaleArmorEffect placeholder(String description, int cooldown) {
         return new DragonScaleArmorEffect(description, cooldown, false) {
             @Override
-            public void invoke(PlayerEntity player, int strength) {
+            public void apply(PlayerEntity player, int strength) {
             }
         };
     }
@@ -49,7 +49,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
     public static final String TRANSLATION_KEY_PREFIX = "tooltip.dragonmounts.armor_effect.";
     public static final DragonScaleArmorEffect AETHER = new DragonScaleArmorEffect(TRANSLATION_KEY_PREFIX + "aether", 300, false) {
         @Override
-        public void invoke(PlayerEntity player, int strength) {
+        public void apply(PlayerEntity player, int strength) {
             if (strength >= 4 && !player.level.isClientSide && player.isSprinting()) {
                 player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
                     if (cooldown.get(DragonTypes.AETHER) <= 0 && addOrMergeEffect(player, Effects.MOVEMENT_SPEED, 100, 1, true, true, true)) {
@@ -63,7 +63,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
 
     public static final DragonScaleArmorEffect ENCHANT = new DragonScaleArmorEffect(TRANSLATION_KEY_PREFIX + "enchant", 0, false) {
         @Override
-        public void invoke(PlayerEntity player, int strength) {
+        public void apply(PlayerEntity player, int strength) {
             if (player.level.isClientSide) {
                 Random random = player.getRandom();
                 for (int i = -2; i <= 2; ++i) {
@@ -90,7 +90,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
 
     public static final DragonScaleArmorEffect ENDER = new DragonScaleArmorEffect(TRANSLATION_KEY_PREFIX + "ender", 1200, false) {
         @Override
-        public void invoke(PlayerEntity player, int strength) {
+        public void apply(PlayerEntity player, int strength) {
             if (player.level.isClientSide) {
                 Random random = player.getRandom();
                 player.level.addParticle(
@@ -118,7 +118,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
 
     public static final DragonScaleArmorEffect FIRE = new DragonScaleArmorEffect(TRANSLATION_KEY_PREFIX + "fire", 900, false) {
         @Override
-        public void invoke(PlayerEntity player, int strength) {
+        public void apply(PlayerEntity player, int strength) {
             if (strength >= 4 && !player.level.isClientSide && player.isOnFire()) {
                 player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
                     if (cooldown.get(DragonTypes.FIRE) <= 0) {
@@ -134,7 +134,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
 
     public static final DragonScaleArmorEffect FOREST = new DragonScaleArmorEffect(TRANSLATION_KEY_PREFIX + "forest", 1200, true) {
         @Override
-        public void invoke(PlayerEntity player, int strength) {
+        public void apply(PlayerEntity player, int strength) {
             if (strength >= 4 && !player.level.isClientSide) {
                 if (player.fishing != null) {
                     addOrResetEffect(player, Effects.LUCK, 200, 0, true, true, true, 21);
@@ -155,7 +155,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
 
     public static final DragonScaleArmorEffect MOONLIGHT = new DragonScaleArmorEffect(TRANSLATION_KEY_PREFIX + "moonlight", 0, false) {
         @Override
-        public void invoke(PlayerEntity player, int strength) {
+        public void apply(PlayerEntity player, int strength) {
             if (strength >= 4 && !player.level.isClientSide) {
                 addOrResetEffect(player, Effects.NIGHT_VISION, 600, 0, true, true, true, 201);
             }
@@ -168,7 +168,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
 
     public static final DragonScaleArmorEffect SUNLIGHT = new DragonScaleArmorEffect(TRANSLATION_KEY_PREFIX + "sunlight", 1200, true) {
         @Override
-        public void invoke(PlayerEntity player, int strength) {
+        public void apply(PlayerEntity player, int strength) {
             if (strength >= 4 && !player.level.isClientSide) {
                 if (player.fishing != null) {
                     addOrResetEffect(player, Effects.LUCK, 200, 0, true, true, true, 21);
@@ -187,7 +187,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
 
     public static final DragonScaleArmorEffect TERRA = new DragonScaleArmorEffect(TRANSLATION_KEY_PREFIX + "terra", 0, false) {
         @Override
-        public void invoke(PlayerEntity player, int strength) {
+        public void apply(PlayerEntity player, int strength) {
             if (strength >= 4 && !player.level.isClientSide) {
                 addOrResetEffect(player, Effects.DIG_SPEED, 600, 0, true, true, true, 201);
             }
@@ -196,7 +196,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
 
     public static final DragonScaleArmorEffect WATER = new DragonScaleArmorEffect(TRANSLATION_KEY_PREFIX + "water", 0, false) {
         @Override
-        public void invoke(PlayerEntity player, int strength) {
+        public void apply(PlayerEntity player, int strength) {
             if (strength >= 4 && !player.level.isClientSide && player.isEyeInFluid(FluidTags.WATER)) {
                 addOrResetEffect(player, Effects.WATER_BREATHING, 600, 0, true, true, true, 201);
             }
@@ -205,7 +205,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
 
     public static final DragonScaleArmorEffect ZOMBIE = new DragonScaleArmorEffect(TRANSLATION_KEY_PREFIX + "zombie", 400, false) {
         @Override
-        public void invoke(PlayerEntity player, int strength) {
+        public void apply(PlayerEntity player, int strength) {
             if (strength >= 4 && !player.level.isClientSide && !player.level.isDay()) {
                 player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
                     if (cooldown.get(DragonTypes.ZOMBIE) <= 0 && addOrMergeEffect(player, Effects.DAMAGE_BOOST, 300, 0, true, true, true)) {
@@ -252,7 +252,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
         PlayerEntity player = (PlayerEntity) entity;
         List<Entity> targets = player.level.getEntities(player, player.getBoundingBox().inflate(5.0D), EntityPredicates.ATTACK_ALLOWED);
         if (targets.isEmpty()) return;
-        Map<IArmorEffect, Integer> strength = ArmorEffect.getCache(player);
+        Object2IntMap<IArmorEffect> strength = ArmorEffect.getCache(player);
         LazyOptional<IDragonTypifiedCooldown> capability = player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN);
         SRiposteEffectPacket packet = new SRiposteEffectPacket(player.getId());
         if (strength.getOrDefault(ICE, 0) >= 4) {

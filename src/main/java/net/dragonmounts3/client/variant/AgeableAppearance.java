@@ -51,6 +51,16 @@ public class AgeableAppearance extends VariantAppearance {
     }
 
     @Override
+    public boolean hasTailHornsOnShoulder() {
+        return this.hasTailHorns;
+    }
+
+    @Override
+    public boolean hasSideTailScaleOnShoulder() {
+        return this.hasSideTailScale;
+    }
+
+    @Override
     public ResourceLocation getBody(TameableDragonEntity dragon) {
         return dragon.isBaby() ? this.babyBody : this.body;
     }
@@ -68,5 +78,15 @@ public class AgeableAppearance extends VariantAppearance {
     @Override
     public RenderType getGlowDecal(TameableDragonEntity dragon) {
         return dragon.isBaby() ? this.babyGlowDecal : this.glowDecal;
+    }
+
+    @Override
+    public RenderType getBodyOnShoulder() {
+        return this.babyGlow;
+    }
+
+    @Override
+    public RenderType getGlowOnShoulder() {
+        return this.babyDecal;
     }
 }

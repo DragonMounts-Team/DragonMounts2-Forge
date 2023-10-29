@@ -9,6 +9,7 @@ import static net.dragonmounts3.util.RenderStateAccessor.createGlowRenderType;
 
 public class DefaultAppearance extends VariantAppearance {
     public final ResourceLocation body;
+    public final RenderType bodyOnShoulder;
     public final RenderType decal;
     public final RenderType glow;
     public final RenderType glowDecal;
@@ -18,6 +19,7 @@ public class DefaultAppearance extends VariantAppearance {
     public DefaultAppearance(ResourceLocation body, ResourceLocation glow, boolean hasTailHorns, boolean hasSideTailScale) {
         super(1.6F);
         this.body = body;
+        this.bodyOnShoulder = RenderType.entityCutoutNoCull(body);
         this.decal = RenderType.entityDecal(body);
         this.glow = createGlowRenderType(glow);
         this.glowDecal = createGlowDecalRenderType(glow);
@@ -32,6 +34,16 @@ public class DefaultAppearance extends VariantAppearance {
 
     @Override
     public boolean hasSideTailScale(TameableDragonEntity dragon) {
+        return this.hasSideTailScale;
+    }
+
+    @Override
+    public boolean hasTailHornsOnShoulder() {
+        return this.hasTailHorns;
+    }
+
+    @Override
+    public boolean hasSideTailScaleOnShoulder() {
         return this.hasSideTailScale;
     }
 
@@ -53,5 +65,15 @@ public class DefaultAppearance extends VariantAppearance {
     @Override
     public RenderType getGlowDecal(TameableDragonEntity dragon) {
         return this.glowDecal;
+    }
+
+    @Override
+    public RenderType getBodyOnShoulder() {
+        return this.bodyOnShoulder;
+    }
+
+    @Override
+    public RenderType getGlowOnShoulder() {
+        return this.glow;
     }
 }

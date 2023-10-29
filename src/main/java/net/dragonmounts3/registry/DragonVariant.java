@@ -9,10 +9,8 @@ import net.minecraftforge.registries.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Random;
-import java.util.function.Function;
 
 import static net.dragonmounts3.DragonMounts.MOD_ID;
 import static net.dragonmounts3.DragonMounts.prefix;
@@ -20,7 +18,7 @@ import static net.dragonmounts3.DragonMounts.prefix;
 public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements IDragonTypified {
     public static final String DATA_PARAMETER_KEY = "Variant";
     public static final ResourceLocation DEFAULT_KEY = prefix("ender_female");
-    public static final DragonVariantRegistry REGISTRY = new DragonVariantRegistry(MOD_ID, "dragon_variant", new RegistryBuilder<DragonVariant>().setDefaultKey(DEFAULT_KEY));
+    public static final Registry REGISTRY = new Registry(MOD_ID, "dragon_variant", new RegistryBuilder<DragonVariant>().setDefaultKey(DEFAULT_KEY));
     public static final IDataSerializer<DragonVariant> SERIALIZER = new IDataSerializer<DragonVariant>() {
         public void write(PacketBuffer buffer, @Nonnull DragonVariant value) {
             buffer.writeVarInt(REGISTRY.getID(value));
@@ -42,6 +40,7 @@ public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements 
     }
 
     public final DragonType type;
+    private int index = -1;
     private VariantAppearance appearance;
 
     public DragonVariant(DragonType type) {
@@ -69,51 +68,111 @@ public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements 
         return old;
     }
 
-    public static class DragonVariantRegistry extends DeferredRegistry<DragonVariant> implements IForgeRegistry.AddCallback<DragonVariant>, IForgeRegistry.ClearCallback<DragonVariant> {
-        protected static final Function<DragonType, ArrayList<DragonVariant>> CREATE_ARRAY = k -> new ArrayList<>();
-        protected final HashMap<DragonType, ArrayList<DragonVariant>> map = new HashMap<>();
+    /**
+     * Simplified {@link it.unimi.dsi.fastutil.objects.ReferenceArrayList}
+     */
+    @ParametersAreNonnullByDefault
+    public static final class Manager implements IDragonTypified {
+        public static final int DEFAULT_INITIAL_CAPACITY = 8;
+        public final DragonType type;
+        private DragonVariant[] variants = {};
+        private int size;
 
-        public DragonVariantRegistry(String namespace, String name, RegistryBuilder<DragonVariant> builder) {
-            super(namespace, name, DragonVariant.class, builder);
+        public Manager(DragonType type) {
+            this.type = type;
         }
 
-        public DragonVariant getValue(DragonType type, Random random) {
-            ArrayList<DragonVariant> list = this.map.computeIfAbsent(type, CREATE_ARRAY);
-            int size = list.size();
-            return size == 0 ? this.getValue(DEFAULT_KEY) : list.get(random.nextInt(size));
+        private void grow(int capacity) {
+            if (capacity <= this.variants.length)
+                return;
+            if (this.variants.length > 0)
+                capacity = (int) Math.max(
+                        Math.min((long) this.variants.length + (this.variants.length >> 1), it.unimi.dsi.fastutil.Arrays.MAX_ARRAY_SIZE), capacity);
+            else if (capacity < DEFAULT_INITIAL_CAPACITY)
+                capacity = DEFAULT_INITIAL_CAPACITY;
+            final DragonVariant[] array = new DragonVariant[capacity];
+            System.arraycopy(this.variants, 0, array, 0, size);
+            this.variants = array;
+            assert size <= this.variants.length;
         }
 
-        public DragonVariant getNext(DragonVariant variant) {
-            ArrayList<DragonVariant> list = this.map.computeIfAbsent(variant.type, CREATE_ARRAY);
-            int end = list.size();
-            if (end-- == 0) return variant;
-            DragonVariant first = list.get(0);
-            DragonVariant cache = first;
-            int i = 1;
-            while (i < end) {
-                if (cache == variant) return list.get(i);
-                cache = list.get(i++);
+        @SuppressWarnings("UnusedReturnValue")
+        private boolean add(final DragonVariant variant) {
+            if (variant.type != this.type || variant.index >= 0) return false;
+            this.grow(this.size + 1);
+            variant.index = this.size;
+            this.variants[this.size++] = variant;
+            assert size <= this.variants.length;
+            return true;
+        }
+
+        @SuppressWarnings("UnusedReturnValue")
+        private boolean remove(final DragonVariant variant) {
+            if (variant.type != this.type || variant.index < 0) return false;
+            if (variant.index >= this.size)
+                throw new IndexOutOfBoundsException("Index (" + variant.index + ") is greater than or equal to list size (" + this.size + ")");
+            this.size--;
+            if (variant.index != this.size) {
+                System.arraycopy(this.variants, variant.index + 1, this.variants, variant.index, this.size - variant.index);
             }
-            return cache == variant ? list.get(i) : first;
+            variant.index = -1;
+            this.variants[this.size] = null;
+            assert this.size <= this.variants.length;
+            return true;
+        }
+
+        private void clear() {
+            for (int i = 0; i < this.size; ++i) {
+                this.variants[i].index = -1;
+                this.variants[i] = null;
+            }
+            this.size = 0;
+        }
+
+        public DragonVariant draw(Random random, @Nullable DragonVariant current) {
+            switch (this.size) {
+                case 0: return current;
+                case 1: return this.variants[0];
+            }
+            if (current == null || current.type != this.type) {
+                return this.variants[random.nextInt(this.size)];
+            }
+            if (this.size == 2) return this.variants[(current.index ^ 1) & 1];//current.index == 0 ? 1 : 0
+            int index = random.nextInt(this.size - 1);
+            return this.variants[index < current.index ? index : index + 1];
+        }
+
+        public int size() {
+            return this.size;
+        }
+
+        @Override
+        public DragonType getDragonType() {
+            return this.type;
+        }
+    }
+
+    public static class Registry extends DeferredRegistry<DragonVariant> implements IForgeRegistry.AddCallback<DragonVariant>, IForgeRegistry.ClearCallback<DragonVariant> {
+        public Registry(String namespace, String name, RegistryBuilder<DragonVariant> builder) {
+            super(namespace, name, DragonVariant.class, builder);
         }
 
         @Override
         public void onAdd(IForgeRegistryInternal<DragonVariant> owner, RegistryManager stage, int id, DragonVariant obj, @Nullable DragonVariant oldObj) {
             if (owner == this.registry) {//public -> protected
-                ArrayList<DragonVariant> list;
                 if (oldObj != null) {
-                    list = this.map.computeIfAbsent(oldObj.type, CREATE_ARRAY);
-                    list.remove(oldObj);
+                    oldObj.type.variants.remove(oldObj);
                 }
-                list = this.map.computeIfAbsent(obj.type, CREATE_ARRAY);
-                list.add(obj);
+                obj.type.variants.add(obj);
             }
         }
 
         @Override
         public void onClear(IForgeRegistryInternal<DragonVariant> owner, RegistryManager stage) {
             if (owner == this.registry) {//public -> protected
-                this.map.clear();
+                for (DragonType type : DragonType.REGISTRY) {
+                    type.variants.clear();
+                }
             }
         }
     }

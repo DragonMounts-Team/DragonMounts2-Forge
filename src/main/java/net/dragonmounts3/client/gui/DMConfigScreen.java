@@ -13,7 +13,6 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 import static net.dragonmounts3.DragonMountsConfig.CLIENT;
-import static net.dragonmounts3.DragonMountsConfig.COMMON;
 import static net.dragonmounts3.client.gui.LazyBooleanConfigOption.DEFAULT_STRINGIFY;
 import static net.dragonmounts3.client.gui.LazyBooleanConfigOption.TOGGLE_STRINGIFY;
 import static net.minecraft.client.gui.screen.SettingsScreen.tooltipAt;
@@ -37,7 +36,7 @@ public class DMConfigScreen extends Screen {
     }
 
     protected void init() {
-        this.debug = new LazyBooleanConfigOption("options.dragonmounts.debug", COMMON.debug, DEFAULT_STRINGIFY, null);
+        this.debug = new LazyBooleanConfigOption("options.dragonmounts.debug", CLIENT.debug, DEFAULT_STRINGIFY, null);
         TranslationTextComponent cameraNote = new TranslationTextComponent("options.dragonmounts.camera.note");
         this.cameraDistance = new LazySliderConfigOption("options.dragonmounts.camera_distance", CLIENT.camera_distance, 0.0D, 64.0D, 0.25D, LazySliderConfigOption.STRINGIFY_X_2F, cameraNote);
         this.cameraOffset = new LazySliderConfigOption("options.dragonmounts.camera_offset", CLIENT.camera_offset, -16.0D, 16.0D, 0.25D, LazySliderConfigOption.STRINGIFY_X_2F, cameraNote);

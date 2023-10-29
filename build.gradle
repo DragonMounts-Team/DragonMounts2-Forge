@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net' }
@@ -96,6 +98,12 @@ jar {
 }
 
 jar.finalizedBy('reobfJar')
+
+processResources {
+    filesMatching("META-INF/mods.toml") {
+        filter(ReplaceTokens, tokens: [mod_version: version])
+    }
+}
 
 publishing {
     publications {

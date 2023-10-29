@@ -1,7 +1,7 @@
 package net.dragonmounts3.entity.dragon;
 
 import net.dragonmounts3.DragonMountsConfig;
-import net.dragonmounts3.api.IMutableDragonTypified;
+import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.block.HatchableDragonEggBlock;
 import net.dragonmounts3.init.DMBlocks;
 import net.dragonmounts3.init.DMEntities;
@@ -10,6 +10,7 @@ import net.dragonmounts3.init.DragonTypes;
 import net.dragonmounts3.item.DragonScalesItem;
 import net.dragonmounts3.network.SShakeDragonEggPacket;
 import net.dragonmounts3.registry.DragonType;
+import net.dragonmounts3.registry.DragonVariant;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -33,12 +34,10 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -46,8 +45,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 import static net.dragonmounts3.entity.dragon.TameableDragonEntity.AGE_DATA_PARAMETER_KEY;
 import static net.dragonmounts3.network.DMPacketHandler.CHANNEL;
@@ -55,16 +56,15 @@ import static net.dragonmounts3.util.math.MathUtil.getColor;
 import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
 
 @ParametersAreNonnullByDefault
-public class HatchableDragonEggEntity extends LivingEntity implements IMutableDragonTypified {
+public class HatchableDragonEggEntity extends LivingEntity implements IDragonTypified.Mutable {
     protected static final DataParameter<DragonType> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DragonType.SERIALIZER);
     public static final int MIN_HATCHING_TIME = 36000;
-    private static final int CONVERSION_RANGE = 2;
     private static final float EGG_CRACK_PROCESS_THRESHOLD = 0.9F;
     private static final float EGG_SHAKE_PROCESS_THRESHOLD = 0.75F;
     private static final int EGG_SHAKE_THRESHOLD = (int) (EGG_SHAKE_PROCESS_THRESHOLD * MIN_HATCHING_TIME);
     private static final float EGG_SHAKE_BASE_CHANCE = 20F;
-    protected Map<DragonType, AtomicInteger> conversion = new HashMap<>();
-    protected UUID owner = null;
+    protected String variant;
+    protected UUID owner;
     protected float rotationAxis = 0;
     protected int amplitude = 0;
     protected int age = 0;
@@ -99,26 +99,26 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         ResourceLocation key = DragonType.REGISTRY.getKey(this.entityData.get(DATA_DRAGON_TYPE));
         compound.putString(DragonType.DATA_PARAMETER_KEY, (key == null ? DragonType.DEFAULT_KEY : key).toString());
         compound.putInt(AGE_DATA_PARAMETER_KEY, this.age);
-        CompoundNBT tag = new CompoundNBT();/*TODO: rewrite conversion
-        for (Map.Entry<DragonType, AtomicInteger> entry : this.conversion.entrySet()) {
-            tag.putInt(entry.getKey().getSerializedName(), entry.getValue().get());
-        }*/
         if (this.owner != null) {
             compound.putUUID("Owner", this.owner);
         }
-        if (!tag.isEmpty()) {
-            compound.put("Conversion", tag);
+        if (this.variant != null) {
+            compound.putString(DragonVariant.DATA_PARAMETER_KEY, this.variant);
         }
     }
 
     @Override
     public void readAdditionalSaveData(CompoundNBT compound) {
         super.readAdditionalSaveData(compound);
-        this.setDragonType(DragonType.byName(compound.getString(DragonType.DATA_PARAMETER_KEY)), false, false);
+        if (compound.contains(DragonType.DATA_PARAMETER_KEY)) {
+            this.setDragonType(DragonType.byName(compound.getString(DragonType.DATA_PARAMETER_KEY)), false);
+        }
+        if (compound.contains(DragonVariant.DATA_PARAMETER_KEY)) {
+            this.variant = compound.getString(DragonVariant.DATA_PARAMETER_KEY);
+        }
         if (compound.contains(AGE_DATA_PARAMETER_KEY)) {
             this.age = compound.getInt(AGE_DATA_PARAMETER_KEY);
         }
-        //DragonType current = this.getDragonType();
         if (compound.hasUUID("Owner")) {
             this.owner = compound.getUUID("Owner");
         } else {
@@ -126,19 +126,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
             if (server != null) {
                 this.owner = PreYggdrasilConverter.convertMobOwnerIfNecessary(server, compound.getString("Owner"));
             }
-        }/*TODO: rewrite conversion
-        if (compound.contains("Conversion")) {
-            //this.conversion.clear();
-            CompoundNBT tag = compound.getCompound("Conversion");
-            for (Map.Entry<RegistryKey<DragonType>, DragonType> entry : DragonType.REGISTRY.getEntries()) {
-                this.conversion.put(entry.getValue(), new AtomicInteger(tag.getInt(entry.getKey().location().toString())));
-            }
-            if (!tag.contains(current.getSerializedName())) {
-                this.conversion.get(current).set(1000);
-            }
-        } else if (this.conversion.get(current) == null) {
-            this.conversion.put(current, new AtomicInteger(1000));
-        }*/
+        }
     }
 
     protected void spawnScales(int amount) {
@@ -274,54 +262,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
                         new SShakeDragonEggPacket(this.getId(), this.rotationAxis, this.amplitude, flag)
                 );
             }
-        }/*TODO: rewrite conversion
-        if ((this.tickCount & 0b0001_1111) == 0) {//check every 32 ticks
-            this.convertDragonType();
-        }*/
-    }
-
-    public void convertDragonType() {
-        DragonType current = this.getDragonType();
-        if (!current.convertible) return;
-        Optional<RegistryKey<Biome>> biome = this.level.getBiomeName(this.blockPosition());
-        Collection<DragonType> types = DragonType.REGISTRY.getValues();
-        // update egg breed every second on the server
-        BlockPos.betweenClosedStream(this.getBoundingBox().inflate(CONVERSION_RANGE)).forEach(pos -> {
-            for (DragonType type : types) {
-                if (type.isHabitat(this.level.getBlockState(pos).getBlock())) {
-                    AtomicInteger value = this.conversion.get(type);
-                    if (value == null) {
-                        this.conversion.put(type, new AtomicInteger(1));
-                    } else {
-                        value.incrementAndGet();
-                    }
-                }
-            }
-        });
-        int maxScore = 0;
-        ArrayList<DragonType> result = new ArrayList<>();
-        for (DragonType type : types) {
-            int temp = 0;
-            if (type.isHabitat(biome.orElse(null))) {
-                ++temp;
-            }
-            if (type.isHabitatEnvironment.test(this)) {
-                temp += 3;
-            }
-            AtomicInteger value = this.conversion.get(type);
-            if (value != null) {
-                temp = value.addAndGet(temp);
-            }
-            if (temp > maxScore) {
-                maxScore = temp;
-                result.clear();
-                result.add(type);
-            } else if (temp == maxScore) {
-                result.add(type);
-            }
         }
-        if (result.isEmpty() || result.contains(current)) return;
-        this.setDragonType(result.get(this.random.nextInt(result.size())), false, true);
     }
 
     @Override
@@ -351,8 +292,10 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
     }
 
     @Override
-    public void push(Entity entity) {
-    }
+    public void push(Entity entity) {}
+
+    @Override
+    public void push(double x, double y, double z) {}
 
     @Override
     public boolean isPushedByFluid() {
@@ -393,7 +336,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
         this.level.playSound(Minecraft.getInstance().player, this.getX(), this.getY(), this.getZ(), DMSounds.DRAGON_HATCHING.get(), SoundCategory.NEUTRAL, 1.0F, 1.0F);
     }
 
-    public void setDragonType(DragonType type, boolean resetHealth, boolean resetConversion) {
+    public void setDragonType(DragonType type, boolean resetHealth) {
         AttributeModifierManager manager = this.getAttributes();
         manager.removeAttributeModifiers(this.getDragonType().attributes);
         this.entityData.set(DATA_DRAGON_TYPE, type);
@@ -404,15 +347,11 @@ public class HatchableDragonEggEntity extends LivingEntity implements IMutableDr
                 this.setHealth((float) health.getValue());
             }
         }
-        if (resetConversion) {
-            this.conversion.clear();
-            this.conversion.put(type, new AtomicInteger(1000));
-        }
     }
 
     @Override
     public void setDragonType(DragonType type) {
-        this.setDragonType(type, false, this.getDragonType() != type);
+        this.setDragonType(type, false);
     }
 
     @Override

@@ -83,6 +83,7 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
     public final BiFunction<Integer, Boolean, Vector3d> passengerOffset;
     public final BasicParticleType sneezeParticle;
     public final BasicParticleType eggParticle;
+    public final DragonVariant.Manager variants = new DragonVariant.Manager(this);
     private final HashMap<Class<?>, Object> map = new HashMap<>();
     private final Style style;
     private final Set<DamageSource> immunities;

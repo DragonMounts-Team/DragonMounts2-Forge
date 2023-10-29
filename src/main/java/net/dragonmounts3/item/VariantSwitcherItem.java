@@ -24,7 +24,8 @@ public class VariantSwitcherItem extends Item {
             if (player.level.isClientSide) return ActionResultType.SUCCESS;
             TameableDragonEntity dragon = (TameableDragonEntity) entity;
             if (dragon.isOwnedBy(player)) {
-                dragon.setVariant(DragonVariant.REGISTRY.getNext(dragon.getVariant()));
+                DragonVariant previous = dragon.getVariant();
+                dragon.setVariant(previous.type.variants.draw(random, previous));
                 if (!player.abilities.instabuild) {
                     stack.shrink(1);
                 }

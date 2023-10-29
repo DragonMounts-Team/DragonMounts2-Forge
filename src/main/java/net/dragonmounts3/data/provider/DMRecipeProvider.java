@@ -71,7 +71,7 @@ public class DMRecipeProvider extends RecipeProvider {
                 .pattern("#R#")
                 .unlockedBy("has_bow", has(DMItemTags.DRAGON_SCALE_BOWS))
                 .save(consumer, prefix(Objects.requireNonNull(Items.DISPENSER.getRegistryName()).getPath()));
-        shaped(DMItems.DRAGON_AMULET.get())
+        shaped(DMItems.AMULET.get())
                 .define('#', Tags.Items.STRING)
                 .define('Y', Tags.Items.COBBLESTONE)
                 .define('X', Tags.Items.ENDER_PEARLS)

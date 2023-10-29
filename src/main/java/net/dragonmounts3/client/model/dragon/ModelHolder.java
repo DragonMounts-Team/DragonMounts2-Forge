@@ -10,12 +10,12 @@ import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class ModelHolder<K, V extends ModelRenderer> {
-    interface Supplier<K, V extends ModelRenderer> {
+    public interface Supplier<K, V extends ModelRenderer> {
         V get(Model model, K type);
     }
 
     protected HashMap<K, V> map = new HashMap<>();
-    protected K last = null;
+    protected K key = null;
     protected V current = null;
 
     public ModelHolder(Model model, Supplier<K, V> supplier, List<K> keys) {
@@ -29,7 +29,7 @@ public class ModelHolder<K, V extends ModelRenderer> {
     }
 
     public V load(K key) {
-        if (key != this.last) {
+        if (key != this.key) {
             this.current = this.map.get(key);
         }
         return this.current;

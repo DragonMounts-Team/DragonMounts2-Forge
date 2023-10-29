@@ -213,8 +213,8 @@ public class DragonAnimator {
         cycleOfs = (cycleOfs * cycleOfs + cycleOfs * 2) * 0.05F;
 
         // reduce up/down amplitude
-        cycleOfs *= MathHelper.clampedLerp(0.5F, 1, flutter);
-        cycleOfs *= MathHelper.clampedLerp(1, 0.5F, ground);
+        cycleOfs *= clampedLinear(0.5F, 1.0F, flutter);
+        cycleOfs *= clampedLinear(1.0F, 0.5F, ground);
 
         // animate body parts
         this.animHeadAndNeck(model.head, model.neck);
@@ -495,8 +495,8 @@ public class DragonAnimator {
             tail.yRot += (float) Math.toRadians(180 - yawOfs);
             // display horns near the tip
             tail.leftHorn.visible = tail.rightHorn.visible = this.dragon.getVariant().getAppearance(VariantAppearances.ENDER_FEMALE).hasTailHorns(this.dragon)
-                    && i > DragonTailModelPart.TAIL_SEGMENT_COUNT - 7
-                    && i < DragonTailModelPart.TAIL_SEGMENT_COUNT - 3;
+                                                             && i > DragonTailModelPart.TAIL_SEGMENT_COUNT - 7
+                                                             && i < DragonTailModelPart.TAIL_SEGMENT_COUNT - 3;
             // update scale
             float neckScale = clampedLinear(1.5F, 0.3F, vertMulti);
             tail.scaleX = tail.scaleY = tail.scaleZ = neckScale;

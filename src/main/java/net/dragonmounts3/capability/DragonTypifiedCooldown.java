@@ -1,6 +1,8 @@
 package net.dragonmounts3.capability;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.dragonmounts3.network.SSyncCooldownPacket;
 import net.dragonmounts3.registry.DragonType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -51,8 +53,9 @@ public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
 
     @Override
     public void tick() {
-        for (Map.Entry<DragonType, Integer> entry : this.map.object2IntEntrySet()) {
-            int value = entry.getValue() - 1;
+        for (ObjectIterator<Object2IntMap.Entry<DragonType>> it = this.map.object2IntEntrySet().fastIterator(); it.hasNext(); ) {
+            Object2IntMap.Entry<DragonType> entry = it.next();
+            int value = entry.getIntValue() - 1;
             if (value >= 0) {
                 this.map.put(entry.getKey(), value);
             }
@@ -63,10 +66,11 @@ public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
     @Override
     public CompoundNBT writeNBT(Direction side) {
         CompoundNBT compound = new CompoundNBT();
-        for (Map.Entry<DragonType, Integer> entry : this.map.object2IntEntrySet()) {
+        for (ObjectIterator<Object2IntMap.Entry<DragonType>> it = this.map.object2IntEntrySet().fastIterator(); it.hasNext(); ) {
+            Object2IntMap.Entry<DragonType> entry = it.next();
             ResourceLocation location = entry.getKey().getRegistryName();
             if (location != null) {
-                compound.putInt(location.toString(), entry.getValue());
+                compound.putInt(location.toString(), entry.getIntValue());
             }
         }
         return compound;
@@ -95,10 +99,11 @@ public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
     @Override
     public SSyncCooldownPacket createPacket() {
         ArrayList<SSyncCooldownPacket.Entry> list = new ArrayList<>();
-        for (Map.Entry<DragonType, Integer> entry : this.map.object2IntEntrySet()) {
+        for (ObjectIterator<Object2IntMap.Entry<DragonType>> it = this.map.object2IntEntrySet().fastIterator(); it.hasNext(); ) {
+            Object2IntMap.Entry<DragonType> entry = it.next();
             int id = DragonType.REGISTRY.getID(entry.getKey());
             if (id != -1) {
-                list.add(new SSyncCooldownPacket.Entry(id, entry.getValue()));
+                list.add(new SSyncCooldownPacket.Entry(id, entry.getIntValue()));
             }
         }
         return list.isEmpty() ? null : new SSyncCooldownPacket(list);

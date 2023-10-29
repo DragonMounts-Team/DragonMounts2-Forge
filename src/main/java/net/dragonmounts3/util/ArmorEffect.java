@@ -1,6 +1,9 @@
 package net.dragonmounts3.util;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.dragonmounts3.api.IArmorEffect;
 import net.dragonmounts3.api.IArmorEffectSource;
 import net.dragonmounts3.capability.IDragonTypifiedCooldown;
@@ -17,7 +20,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 import static net.dragonmounts3.init.DMCapabilities.DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN;
@@ -26,29 +28,35 @@ import static net.minecraftforge.fml.network.PacketDistributor.PLAYER;
 
 public class ArmorEffect {
     private static final WeakHashMap<PlayerEntity, Object2IntOpenHashMap<IArmorEffect>> EFFECT_CACHE = new WeakHashMap<>();
+    private static final WeakHashMap<PlayerEntity, Object2IntMap<IArmorEffect>> READONLY_EFFECT_CACHE = new WeakHashMap<>();
     private static final NonNullConsumer<IDragonTypifiedCooldown> TICK_COOLDOWN = IDragonTypifiedCooldown::tick;
 
     /**
      * Do not modify the Map returned by this!
      */
-    public static Map<IArmorEffect, Integer> getCache(PlayerEntity player) {
-        Map<IArmorEffect, Integer> map = EFFECT_CACHE.get(player);
-        if (map == null) return Collections.emptyMap();
-        return map;
+    @SuppressWarnings("unchecked")
+    public static Object2IntMap<IArmorEffect> getCache(PlayerEntity player) {
+        Object2IntMap<IArmorEffect> result = READONLY_EFFECT_CACHE.get(player);
+        if (result == null) {
+            Object2IntMap<IArmorEffect> map = EFFECT_CACHE.get(player);
+            if (map == null) return (Object2IntMap<IArmorEffect>) Collections.EMPTY_MAP;
+            result = Object2IntMaps.unmodifiable(map);
+            READONLY_EFFECT_CACHE.put(player, result);
+        }
+        return result;
     }
 
-    private static void checkSlot(Map<IArmorEffect, Integer> map, PlayerEntity player, EquipmentSlotType slot) {
+    private static void checkSlot(Object2IntMap<IArmorEffect> map, PlayerEntity player, EquipmentSlotType slot) {
         ItemStack stack = player.getItemBySlot(slot);
         Item item = stack.getItem();
         if (item instanceof IArmorEffectSource) {
-            ((IArmorEffectSource) item).putEffect(map, player, stack);
+            ((IArmorEffectSource) item).attachEffect(map, player, stack);
         }
     }
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) return;
-        event.player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(TICK_COOLDOWN);
         Object2IntOpenHashMap<IArmorEffect> map = EFFECT_CACHE.get(event.player);
         if (map == null) {
             map = new Object2IntOpenHashMap<>();
@@ -60,9 +68,11 @@ public class ArmorEffect {
         checkSlot(map, event.player, EquipmentSlotType.CHEST);
         checkSlot(map, event.player, EquipmentSlotType.LEGS);
         checkSlot(map, event.player, EquipmentSlotType.FEET);
-        for (Map.Entry<IArmorEffect, Integer> entry : map.object2IntEntrySet()) {
-            entry.getKey().invoke(event.player, entry.getValue());
+        for (ObjectIterator<Object2IntMap.Entry<IArmorEffect>> it = map.object2IntEntrySet().fastIterator(); it.hasNext(); ) {
+            Object2IntMap.Entry<IArmorEffect> entry = it.next();
+            entry.getKey().apply(event.player, entry.getIntValue());
         }
+        event.player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(TICK_COOLDOWN);
     }
 
     @SubscribeEvent

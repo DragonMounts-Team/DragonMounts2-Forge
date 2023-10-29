@@ -2,9 +2,12 @@ package net.dragonmounts3.client.model.dragon;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.dragonmounts3.client.variant.VariantAppearance;
 import net.dragonmounts3.client.variant.VariantAppearances;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.model.EntityModel;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.math.vector.Matrix3f;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraftforge.api.distmarker.Dist;
@@ -68,6 +71,19 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
         this.tail.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         renderWings(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         renderLegs(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+    }
+
+    public void renderOnShoulder(VariantAppearance appearance, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int packedLight, float size) {
+        matrixStack.pushPose();
+        float scale = size * appearance.renderScale;
+        matrixStack.scale(-scale, -scale, scale);
+        boolean hasSideTailScale = appearance.hasSideTailScaleOnShoulder();
+        this.tail.leftScale.visible = this.tail.rightScale.visible = hasSideTailScale;
+        this.tail.middleScale.visible = !hasSideTailScale;
+        this.head.scaleX = this.head.scaleY = this.head.scaleZ = 0.92F;
+        this.renderToBuffer(matrixStack, buffer.getBuffer(appearance.getBodyOnShoulder()), packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.renderToBuffer(matrixStack, buffer.getBuffer(appearance.getGlowOnShoulder()), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        matrixStack.popPose();
     }
 
     protected void renderHead(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {

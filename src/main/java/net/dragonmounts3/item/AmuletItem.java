@@ -73,6 +73,7 @@ public class AmuletItem<T extends Entity> extends Item implements IEntityContain
     public ItemStack saveEntity(T entity) {
         ItemStack stack = new ItemStack(this);
         CompoundNBT tag = new CompoundNBT();
+        entity.ejectPassengers();
         entity.saveAsPassenger(tag);
         stack.setTag(IEntityContainer.simplifyData(tag));
         return stack;

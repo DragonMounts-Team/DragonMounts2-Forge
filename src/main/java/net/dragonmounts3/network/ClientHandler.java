@@ -3,6 +3,7 @@ package net.dragonmounts3.network;
 import net.dragonmounts3.api.IDragonFood;
 import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
+import net.dragonmounts3.registry.DragonType;
 import net.dragonmounts3.util.DragonFood;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -18,6 +19,7 @@ import java.util.function.Supplier;
 import static net.dragonmounts3.init.DMCapabilities.DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN;
 
 public class ClientHandler {
+    private static final IDragonFood DEFAULT_DRAGON_FOOD_IMPL = (dragon, player, stack, hand) -> {};
     public static void handle(SFeedDragonPacket packet, Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
@@ -27,10 +29,18 @@ public class ClientHandler {
             if (entity instanceof TameableDragonEntity) {
                 TameableDragonEntity dragon = (TameableDragonEntity) entity;
                 dragon.applyPacket(packet);
-                IDragonFood food = DragonFood.get(packet.item);
-                if (food != null) {
-                    food.act(dragon, packet.item);
-                }
+                DragonFood.get(packet.item, DEFAULT_DRAGON_FOOD_IMPL).act(dragon, packet.item);
+            }
+        });
+        context.setPacketHandled(true);
+    }
+
+    public static void handle(SInitCooldownPacket packet, Supplier<NetworkEvent.Context> supplier) {
+        NetworkEvent.Context context = supplier.get();
+        context.enqueueWork(() -> {
+            PlayerEntity player = Minecraft.getInstance().player;
+            if (player != null) {
+                player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> cooldown.init(packet));
             }
         });
         context.setPacketHandled(true);
@@ -82,7 +92,8 @@ public class ClientHandler {
         context.enqueueWork(() -> {
             PlayerEntity player = Minecraft.getInstance().player;
             if (player != null) {
-                player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> cooldown.fromNetwork(packet));
+                player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN)
+                        .ifPresent(cooldown -> cooldown.set(DragonType.REGISTRY.getValue(packet.id), packet.cd));
             }
         });
         context.setPacketHandled(true);

@@ -175,11 +175,13 @@ public class DragonEssenceItem extends Item implements IDragonTypified, IEntityC
             boolean extraOffset
     ) {
         TameableDragonEntity dragon = new TameableDragonEntity(level);
-        finalizeSpawn(level, dragon, pos, SpawnReason.EVENT, null, tag, false, false);
         if (tag != null) {
+            tag.remove("Passengers");
+            finalizeSpawn(level, dragon, pos, SpawnReason.EVENT, null, tag, false, false);
             dragon.load(dragon.saveWithoutId(new CompoundNBT()).merge(tag));
             dragon.setDragonType(this.type, false);
         } else {
+            finalizeSpawn(level, dragon, pos, SpawnReason.EVENT, null, null, false, false);
             dragon.setDragonType(this.type, true);
         }
         return dragon;

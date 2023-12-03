@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.dragonmounts3.api.IDragonTypified;
 import net.dragonmounts3.block.HatchableDragonEggBlock;
 import net.dragonmounts3.init.DragonTypes;
@@ -22,7 +23,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static net.dragonmounts3.command.DMCommand.createClassCastException;
@@ -61,8 +61,8 @@ public class TypeCommand {
             return egg == null ? state : egg.defaultBlockState();
         };
 
-        private final HashMap<Class<? extends Block>, Getter> getters = new HashMap<>();
-        private final HashMap<Class<? extends Block>, Setter> setters = new HashMap<>();
+        private final Reference2ObjectOpenHashMap<Class<? extends Block>, Getter> getters = new Reference2ObjectOpenHashMap<>();
+        private final Reference2ObjectOpenHashMap<Class<? extends Block>, Setter> setters = new Reference2ObjectOpenHashMap<>();
 
         @SuppressWarnings("UnusedReturnValue")
         public Getter bind(Class<? extends Block> clazz, Getter getter) {

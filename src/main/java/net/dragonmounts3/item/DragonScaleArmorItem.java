@@ -1,6 +1,6 @@
 package net.dragonmounts3.item;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import net.dragonmounts3.api.DragonScaleMaterial;
 import net.dragonmounts3.api.IArmorEffect;
 import net.dragonmounts3.api.IArmorEffectSource;
@@ -38,7 +38,7 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified, 
     }
 
     @Override
-    public void attachEffect(Object2IntMap<IArmorEffect> map, PlayerEntity player, ItemStack stack) {
+    public void attachEffect(Reference2IntMap<IArmorEffect> map, PlayerEntity player, ItemStack stack) {
         if (this.effect != null) {
             if (map.containsKey(this.effect)) {
                 map.put(this.effect, map.getOrDefault(this.effect, 0) + 1);

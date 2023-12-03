@@ -1,8 +1,9 @@
 package net.dragonmounts3.capability;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import net.dragonmounts3.network.SInitCooldownPacket;
 import net.dragonmounts3.network.SSyncCooldownPacket;
 import net.dragonmounts3.registry.DragonType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,8 +19,6 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Map;
 
 import static net.dragonmounts3.init.DMCapabilities.DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN;
@@ -27,7 +26,7 @@ import static net.dragonmounts3.network.DMPacketHandler.CHANNEL;
 import static net.minecraftforge.fml.network.PacketDistributor.PLAYER;
 
 public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
-    protected final Object2IntOpenHashMap<DragonType> map = new Object2IntOpenHashMap<>();
+    protected final Reference2IntOpenHashMap<DragonType> map = new Reference2IntOpenHashMap<>();
     protected PlayerEntity player = null;
 
     @Override
@@ -36,12 +35,22 @@ public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
     }
 
     @Override
+    public void init(SInitCooldownPacket packet) {
+        for (int i = 0; i < packet.size; ++i) {
+            int id = packet.data[i++];
+            if (id != -1) {
+                this.map.put(DragonType.REGISTRY.getValue(id), packet.data[i]);
+            }
+        }
+    }
+
+    @Override
     public void set(DragonType type, int cooldown) {
         this.map.put(type, cooldown);
         if (this.player != null && !this.player.level.isClientSide) {
             int id = DragonType.REGISTRY.getID(type);
             if (id != -1) {
-                CHANNEL.send(PLAYER.with(() -> (ServerPlayerEntity) player), new SSyncCooldownPacket(Collections.singletonList(new SSyncCooldownPacket.Entry(id, cooldown))));
+                CHANNEL.send(PLAYER.with(() -> (ServerPlayerEntity) player), new SSyncCooldownPacket(id, cooldown));
             }
         }
     }
@@ -53,8 +62,8 @@ public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
 
     @Override
     public void tick() {
-        for (ObjectIterator<Object2IntMap.Entry<DragonType>> it = this.map.object2IntEntrySet().fastIterator(); it.hasNext(); ) {
-            Object2IntMap.Entry<DragonType> entry = it.next();
+        for (ObjectIterator<Reference2IntMap.Entry<DragonType>> it = this.map.reference2IntEntrySet().fastIterator(); it.hasNext(); ) {
+            Reference2IntMap.Entry<DragonType> entry = it.next();
             int value = entry.getIntValue() - 1;
             if (value >= 0) {
                 this.map.put(entry.getKey(), value);
@@ -66,8 +75,8 @@ public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
     @Override
     public CompoundNBT writeNBT(Direction side) {
         CompoundNBT compound = new CompoundNBT();
-        for (ObjectIterator<Object2IntMap.Entry<DragonType>> it = this.map.object2IntEntrySet().fastIterator(); it.hasNext(); ) {
-            Object2IntMap.Entry<DragonType> entry = it.next();
+        for (ObjectIterator<Reference2IntMap.Entry<DragonType>> it = this.map.reference2IntEntrySet().fastIterator(); it.hasNext(); ) {
+            Reference2IntMap.Entry<DragonType> entry = it.next();
             ResourceLocation location = entry.getKey().getRegistryName();
             if (location != null) {
                 compound.putInt(location.toString(), entry.getIntValue());
@@ -88,25 +97,9 @@ public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
     }
 
     @Override
-    public void fromNetwork(SSyncCooldownPacket packet) {
-        for (SSyncCooldownPacket.Entry entry : packet.list) {
-            if (entry.id != -1) {
-                this.map.put(DragonType.REGISTRY.getValue(entry.id), entry.value);
-            }
-        }
-    }
-
-    @Override
-    public SSyncCooldownPacket createPacket() {
-        ArrayList<SSyncCooldownPacket.Entry> list = new ArrayList<>();
-        for (ObjectIterator<Object2IntMap.Entry<DragonType>> it = this.map.object2IntEntrySet().fastIterator(); it.hasNext(); ) {
-            Object2IntMap.Entry<DragonType> entry = it.next();
-            int id = DragonType.REGISTRY.getID(entry.getKey());
-            if (id != -1) {
-                list.add(new SSyncCooldownPacket.Entry(id, entry.getIntValue()));
-            }
-        }
-        return list.isEmpty() ? null : new SSyncCooldownPacket(list);
+    public SInitCooldownPacket createPacket() {
+        SInitCooldownPacket packet = new SInitCooldownPacket(this.map);
+        return packet.size > 0 ? packet : null;
     }
 
     public static class Storage implements Capability.IStorage<IDragonTypifiedCooldown> {

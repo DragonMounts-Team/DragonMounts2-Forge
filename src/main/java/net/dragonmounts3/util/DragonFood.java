@@ -1,5 +1,6 @@
 package net.dragonmounts3.util;
 
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.dragonmounts3.api.IDragonFood;
 import net.dragonmounts3.entity.dragon.DragonLifeStage;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
@@ -7,13 +8,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.util.Hand;
 
-import javax.annotation.Nullable;
-import java.util.HashMap;
-
 import static net.dragonmounts3.util.EntityUtil.consume;
 
 public class DragonFood implements IDragonFood {
-    private static final HashMap<Item, IDragonFood> REGISTRY = new HashMap<>();
+    private static final Reference2ObjectOpenHashMap<Item, IDragonFood> REGISTRY = new Reference2ObjectOpenHashMap<>(32);
     public static final DragonFood RAW_MEAT = new DragonFood(1500, 2);
     public static final DragonFood COOKED_MEAT = new DragonFood(2500, 3);
 
@@ -84,15 +82,14 @@ public class DragonFood implements IDragonFood {
         REGISTRY.put(item, food);
     }
 
-    @Nullable
-    public static IDragonFood get(Item item) {
+    public static IDragonFood get(Item item, IDragonFood defaultValue) {
         if (item instanceof IDragonFood) {
             return (IDragonFood) item;
         }
         if (REGISTRY.containsKey(item)) {
             return REGISTRY.get(item);
         }
-        return null;
+        return defaultValue;
     }
 
     public static boolean test(Item item) {

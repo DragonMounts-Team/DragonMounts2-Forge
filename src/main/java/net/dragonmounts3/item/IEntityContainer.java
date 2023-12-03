@@ -25,6 +25,7 @@ public interface IEntityContainer<T extends Entity> {
         tag.remove("Leash");
         tag.remove("Motion");
         tag.remove("OnGround");
+        tag.remove("Passengers");
         tag.remove("PortalCooldown");
         tag.remove("Pos");
         tag.remove("Rotation");

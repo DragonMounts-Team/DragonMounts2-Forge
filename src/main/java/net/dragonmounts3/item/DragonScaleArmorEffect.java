@@ -1,6 +1,6 @@
 package net.dragonmounts3.item;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import net.dragonmounts3.api.IArmorEffect;
 import net.dragonmounts3.capability.IDragonTypifiedCooldown;
 import net.dragonmounts3.init.DragonTypes;
@@ -252,7 +252,7 @@ public abstract class DragonScaleArmorEffect implements IArmorEffect {
         PlayerEntity player = (PlayerEntity) entity;
         List<Entity> targets = player.level.getEntities(player, player.getBoundingBox().inflate(5.0D), EntityPredicates.ATTACK_ALLOWED);
         if (targets.isEmpty()) return;
-        Object2IntMap<IArmorEffect> strength = ArmorEffect.getCache(player);
+        Reference2IntMap<IArmorEffect> strength = ArmorEffect.getCache(player);
         LazyOptional<IDragonTypifiedCooldown> capability = player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN);
         SRiposteEffectPacket packet = new SRiposteEffectPacket(player.getId());
         if (strength.getOrDefault(ICE, 0) >= 4) {

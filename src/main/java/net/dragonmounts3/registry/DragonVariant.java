@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Random;
 
+import static it.unimi.dsi.fastutil.Arrays.MAX_ARRAY_SIZE;
 import static net.dragonmounts3.DragonMounts.MOD_ID;
 import static net.dragonmounts3.DragonMounts.prefix;
 
@@ -86,14 +87,13 @@ public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements 
             if (capacity <= this.variants.length)
                 return;
             if (this.variants.length > 0)
-                capacity = (int) Math.max(
-                        Math.min((long) this.variants.length + (this.variants.length >> 1), it.unimi.dsi.fastutil.Arrays.MAX_ARRAY_SIZE), capacity);
+                capacity = (int) Math.max(Math.min((long) this.variants.length + (this.variants.length >> 1), MAX_ARRAY_SIZE), capacity);
             else if (capacity < DEFAULT_INITIAL_CAPACITY)
                 capacity = DEFAULT_INITIAL_CAPACITY;
             final DragonVariant[] array = new DragonVariant[capacity];
             System.arraycopy(this.variants, 0, array, 0, size);
             this.variants = array;
-            assert size <= this.variants.length;
+            assert this.size <= this.variants.length;
         }
 
         @SuppressWarnings("UnusedReturnValue")
@@ -102,7 +102,7 @@ public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements 
             this.grow(this.size + 1);
             variant.index = this.size;
             this.variants[this.size++] = variant;
-            assert size <= this.variants.length;
+            assert this.size <= this.variants.length;
             return true;
         }
 

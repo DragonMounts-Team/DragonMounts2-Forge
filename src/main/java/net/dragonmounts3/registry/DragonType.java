@@ -1,6 +1,7 @@
 package net.dragonmounts3.registry;
 
 import com.google.common.collect.ImmutableMultimap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
 import net.dragonmounts3.init.DragonTypes;
 import net.minecraft.block.Block;
@@ -84,7 +85,7 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
     public final BasicParticleType sneezeParticle;
     public final BasicParticleType eggParticle;
     public final DragonVariant.Manager variants = new DragonVariant.Manager(this);
-    private final HashMap<Class<?>, Object> map = new HashMap<>();
+    private final Reference2ObjectOpenHashMap<Class<?>, Object> map = new Reference2ObjectOpenHashMap<>();
     private final Style style;
     private final Set<DamageSource> immunities;
     private final Set<Block> blocks;

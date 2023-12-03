@@ -541,7 +541,7 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
                     Tags.Items.CHESTS_WOODEN.contains(item)
             )) ? ActionResultType.CONSUME : ActionResultType.PASS;
         }
-        IDragonFood food = DragonFood.get(item);
+        IDragonFood food = DragonFood.get(item, null);
         if (food != null) {
             if (!food.isEatable(this, player, stack, hand)) return ActionResultType.FAIL;
             food.eat(this, player, stack, hand);

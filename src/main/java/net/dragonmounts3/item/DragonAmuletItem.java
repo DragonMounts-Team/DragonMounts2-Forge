@@ -171,6 +171,7 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
     @Override
     public ItemStack saveEntity(TameableDragonEntity entity) {
         ItemStack stack = new ItemStack(this);
+        entity.ejectPassengers();
         CompoundNBT compound = IEntityContainer.simplifyData(entity.saveWithoutId(new CompoundNBT()));
         compound.remove(FLYING_DATA_PARAMETER_KEY);
         compound.remove("UUID");
@@ -195,11 +196,13 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
             boolean extraOffset
     ) {
         TameableDragonEntity dragon = new TameableDragonEntity(level);
-        finalizeSpawn(level, dragon, pos, SpawnReason.EVENT, null, tag, false, false);
         if (tag != null) {
+            tag.remove("Passengers");
+            finalizeSpawn(level, dragon, pos, SpawnReason.EVENT, null, tag, false, false);
             dragon.load(dragon.saveWithoutId(new CompoundNBT()).merge(tag));
             loadScores(dragon, tag).setDragonType(this.type, false);
         } else {
+            finalizeSpawn(level, dragon, pos, SpawnReason.EVENT, null, null, false, false);
             dragon.setDragonType(this.type, true);
         }
         return dragon;

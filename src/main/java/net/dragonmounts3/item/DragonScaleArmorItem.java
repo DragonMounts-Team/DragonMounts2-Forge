@@ -5,9 +5,8 @@ import net.dragonmounts3.api.DragonScaleMaterial;
 import net.dragonmounts3.api.IArmorEffect;
 import net.dragonmounts3.api.IArmorEffectSource;
 import net.dragonmounts3.api.IDragonTypified;
-import net.dragonmounts3.init.DMCapabilities;
+import net.dragonmounts3.capability.DragonTypifiedCooldown;
 import net.dragonmounts3.registry.DragonType;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -59,18 +58,10 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified, 
             components.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_fishing_luck"));
         }
         components.add(new TranslationTextComponent(this.effect.description));
-        PlayerEntity player = Minecraft.getInstance().player;
-        if (player != null) {
-            player.getCapability(DMCapabilities.DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> {
-                int value = cooldown.get(this.type);
-                if (value > 0) {
-                    components.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_remaining_cooldown", formatAsFloat(value)));
-                } else if (this.effect.cooldown > 0) {
-                    components.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_cooldown", formatAsFloat(this.effect.cooldown)));
-                }
-            });
+        int value = DragonTypifiedCooldown.getLocal(this.type);
+        if (value > 0) {
+            components.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_remaining_cooldown", formatAsFloat(value)));
         } else if (this.effect.cooldown > 0) {
-            //throw new NullPointerException();
             components.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_cooldown", formatAsFloat(this.effect.cooldown)));
         }
     }

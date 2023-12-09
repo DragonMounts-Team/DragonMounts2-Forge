@@ -1,6 +1,7 @@
 package net.dragonmounts3.network;
 
 import net.dragonmounts3.api.IDragonFood;
+import net.dragonmounts3.capability.DragonTypifiedCooldown;
 import net.dragonmounts3.entity.dragon.HatchableDragonEggEntity;
 import net.dragonmounts3.entity.dragon.TameableDragonEntity;
 import net.dragonmounts3.registry.DragonType;
@@ -37,12 +38,7 @@ public class ClientHandler {
 
     public static void handle(SInitCooldownPacket packet, Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-            PlayerEntity player = Minecraft.getInstance().player;
-            if (player != null) {
-                player.getCapability(DRAGON_SCALE_ARMOR_EFFECT_COOLDOWN).ifPresent(cooldown -> cooldown.init(packet));
-            }
-        });
+        context.enqueueWork(() -> DragonTypifiedCooldown.init(packet));
         context.setPacketHandled(true);
     }
 

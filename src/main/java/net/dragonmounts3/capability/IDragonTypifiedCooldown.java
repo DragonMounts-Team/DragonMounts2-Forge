@@ -9,8 +9,6 @@ import net.minecraft.util.Direction;
 public interface IDragonTypifiedCooldown {
     void bind(PlayerEntity player);
 
-    void init(SInitCooldownPacket packet);
-
     int get(DragonType type);
 
     void set(DragonType type, int cooldown);

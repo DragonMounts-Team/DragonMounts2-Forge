@@ -26,21 +26,29 @@ import static net.dragonmounts3.network.DMPacketHandler.CHANNEL;
 import static net.minecraftforge.fml.network.PacketDistributor.PLAYER;
 
 public class DragonTypifiedCooldown implements IDragonTypifiedCooldown {
+    private static Reference2IntOpenHashMap<DragonType> LOCAL_COOLDOWN = null;
     protected final Reference2IntOpenHashMap<DragonType> map = new Reference2IntOpenHashMap<>();
     protected PlayerEntity player = null;
+
+    public static int getLocal(DragonType type) {
+        return LOCAL_COOLDOWN == null ? 0 : LOCAL_COOLDOWN.getOrDefault(type, 0);
+    }
+
+    public static void init(SInitCooldownPacket packet) {
+        if (LOCAL_COOLDOWN == null) return;//?
+        for (int i = 0; i < packet.size; ++i) {
+            int id = packet.data[i++];
+            if (id != -1) {
+                LOCAL_COOLDOWN.put(DragonType.REGISTRY.getValue(id), packet.data[i]);
+            }
+        }
+    }
 
     @Override
     public void bind(PlayerEntity player) {
         this.player = player;
-    }
-
-    @Override
-    public void init(SInitCooldownPacket packet) {
-        for (int i = 0; i < packet.size; ++i) {
-            int id = packet.data[i++];
-            if (id != -1) {
-                this.map.put(DragonType.REGISTRY.getValue(id), packet.data[i]);
-            }
+        if (player.isLocalPlayer()) {
+            LOCAL_COOLDOWN = this.map;
         }
     }
 

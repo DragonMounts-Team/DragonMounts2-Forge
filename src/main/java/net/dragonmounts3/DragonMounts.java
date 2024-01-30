@@ -1,13 +1,14 @@
 package net.dragonmounts3;
 
+import net.dragonmounts3.capability.ArmorEffectManager;
 import net.dragonmounts3.command.ConfigCommand;
 import net.dragonmounts3.command.DMCommand;
 import net.dragonmounts3.init.*;
 import net.dragonmounts3.network.DMPacketHandler;
 import net.dragonmounts3.registry.CarriageType;
+import net.dragonmounts3.registry.CooldownCategory;
 import net.dragonmounts3.registry.DragonType;
 import net.dragonmounts3.registry.DragonVariant;
-import net.dragonmounts3.util.ArmorEffect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.DamageSource;
@@ -16,7 +17,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -39,11 +39,13 @@ public class DragonMounts {
     public DragonMounts() {
         DragonMountsConfig.init();
         CarriageType.REGISTRY.register(this.eventBus);
+        CooldownCategory.REGISTRY.register(this.eventBus);
         DragonType.REGISTRY.register(this.eventBus);
         DragonVariant.REGISTRY.register(this.eventBus);
         this.eventBus.addListener(DragonMounts::preInit);
         this.eventBus.addGenericListener(DataSerializerEntry.class, DragonMounts::registerDataSerializers);
         this.eventBus.addGenericListener(CarriageType.class, CarriageTypes::register);
+        this.eventBus.addGenericListener(CooldownCategory.class, DMArmorEffects::register);
         this.eventBus.addGenericListener(DragonType.class, DragonTypes::register);
         this.eventBus.addGenericListener(DragonVariant.class, DragonVariants::register);
         MinecraftForge.EVENT_BUS.addListener(DMFeatures::addDimensionalSpacing);
@@ -56,8 +58,9 @@ public class DragonMounts {
         DMContainers.CONTAINERS.register(this.eventBus);
         DMFeatures.STRUCTURE_FEATURE.register(this.eventBus);
         MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, DMCapabilities::attachCapabilities);
+        MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(ArmorEffect.class);
+        MinecraftForge.EVENT_BUS.register(ArmorEffectManager.class);
         DMItems.subscribeEvents();
         if (FMLLoader.getDist().isClient()) {
             //noinspection ConstantValue
@@ -76,7 +79,6 @@ public class DragonMounts {
         registry.register(new DataSerializerEntry(DragonVariant.SERIALIZER).setRegistryName(MOD_ID, "dragon_variant"));
     }
 
-    @SubscribeEvent
     public void registerCommands(RegisterCommandsEvent event) {
         DMCommand.register(event.getDispatcher());
     }

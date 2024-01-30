@@ -21,7 +21,7 @@ public class DragonTypes {
             .addHabitat(Blocks.LAPIS_BLOCK)
             .addHabitat(Blocks.LAPIS_ORE)
             .setEnvironmentPredicate(egg -> egg.getY() >= egg.level.getHeight() * 0.625)
-    ).setRegistryName(MOD_ID, "aether");
+    ).setRegistryName(MOD_ID + ":aether");
     public static final DragonType ENCHANT = new DragonType(new DragonType.Properties(0x8359AE)
             .addImmunity(DamageSource.MAGIC)
             .addImmunity(DamageSource.HOT_FLOOR)
@@ -29,7 +29,7 @@ public class DragonTypes {
             .addImmunity(DamageSource.WITHER)
             .addHabitat(Blocks.BOOKSHELF)
             .addHabitat(Blocks.ENCHANTING_TABLE)
-    ).setRegistryName(MOD_ID, "enchant");
+    ).setRegistryName(MOD_ID + ":enchant");
     public static final DragonType ENDER = new DragonType(new DragonType.Properties(0xAB39BE)
             .notConvertible()
             .putAttributeModifier(Attributes.MAX_HEALTH, "DragonTypeBonus", 10.0D, AttributeModifier.Operation.ADDITION)
@@ -49,7 +49,7 @@ public class DragonTypes {
             //.addHabitat(Blocks.LIT_FURNACE)
             .addHabitat(Blocks.LAVA)
             //.addHabitat(Blocks.FLOWING_LAVA)
-    ).setRegistryName(MOD_ID, "fire");
+    ).setRegistryName(MOD_ID + ":fire");
     public static final DragonType FOREST = new DragonType(new DragonType.Properties(0x298317)
             .addImmunity(DamageSource.MAGIC)
             .addImmunity(DamageSource.HOT_FLOOR)
@@ -64,7 +64,7 @@ public class DragonTypes {
             //.addHabitat(Blocks.LEAVES2)
             .addHabitat(Biomes.JUNGLE)
             .addHabitat(Biomes.JUNGLE_HILLS)
-    ).setRegistryName(MOD_ID, "forest");
+    ).setRegistryName(MOD_ID + ":forest");
     public static final DragonType ICE = new DragonType(new DragonType.Properties(0x00F2FF)
             .addImmunity(DamageSource.MAGIC)
             .addImmunity(DamageSource.HOT_FLOOR)
@@ -78,10 +78,10 @@ public class DragonTypes {
             .addHabitat(Biomes.FROZEN_RIVER)
             //.addHabitat(Biomes.JUNGLE)
             //.addHabitat(Biomes.JUNGLE_HILLS)
-    ).setRegistryName(MOD_ID, "ice");
+    ).setRegistryName(MOD_ID + ":ice");
     public static final DragonType MOONLIGHT = new DragonType(new DragonType.Properties(0x2C427C)
             .addHabitat(Blocks.BLUE_GLAZED_TERRACOTTA)
-    ).setRegistryName(MOD_ID, "moonlight");
+    ).setRegistryName(MOD_ID + ":moonlight");
     public static final DragonType NETHER = new DragonType(new DragonType.Properties(0xE5B81B)
             .putAttributeModifier(Attributes.MAX_HEALTH, "DragonTypeBonus", 5.0D, AttributeModifier.Operation.ADDITION)
             .addImmunity(DamageSource.MAGIC)
@@ -90,7 +90,7 @@ public class DragonTypes {
             .addImmunity(DamageSource.WITHER)
             //.addHabitat(Biomes.HELL)
             .setEggParticle(ParticleTypes.DRIPPING_LAVA)
-    ).setRegistryName(MOD_ID, "nether");
+    ).setRegistryName(MOD_ID + ":nether");
     public static final DragonType SCULK = new DragonType(new DragonType.Properties(0x29DFEB)
             .notConvertible()
             .putAttributeModifier(Attributes.MAX_HEALTH, "DragonTypeBonus", 10.0D, AttributeModifier.Operation.ADDITION)
@@ -98,7 +98,7 @@ public class DragonTypes {
             .addImmunity(DamageSource.HOT_FLOOR)
             .addImmunity(DamageSource.LIGHTNING_BOLT)
             .addImmunity(DamageSource.WITHER)
-    ).setRegistryName(MOD_ID, "sculk");
+    ).setRegistryName(MOD_ID + ":sculk");
     public static final DragonType SKELETON = new DragonType(new DragonType.Properties(0xFFFFFF)
             .isSkeleton()
             .putAttributeModifier(Attributes.MAX_HEALTH, "DragonTypeBonus", -15.0D, AttributeModifier.Operation.ADDITION)
@@ -106,16 +106,16 @@ public class DragonTypes {
             .addImmunity(DamageSource.WITHER)
             .addHabitat(Blocks.BONE_BLOCK)
             .setEnvironmentPredicate(egg -> egg.getY() <= egg.level.getHeight() * 0.25 || egg.level.getRawBrightness(egg.blockPosition(), 0) < 4)
-    ).setRegistryName(MOD_ID, "skeleton");
+    ).setRegistryName(MOD_ID + ":skeleton");
     public static final DragonType STORM = new DragonType(
             new DragonType.Properties(0xF5F1E9)
-    ).setRegistryName(MOD_ID, "storm");
+    ).setRegistryName(MOD_ID + ":storm");
     public static final DragonType SUNLIGHT = new DragonType(new DragonType.Properties(0xFFDE00)
             .addHabitat(Blocks.GLOWSTONE)
             .addHabitat(Blocks.JACK_O_LANTERN)
             .addHabitat(Blocks.SHROOMLIGHT)
             .addHabitat(Blocks.YELLOW_GLAZED_TERRACOTTA)
-    ).setRegistryName(MOD_ID, "sunlight");
+    ).setRegistryName(MOD_ID + ":sunlight");
     public static final DragonType TERRA = new DragonType(new DragonType.Properties(0xA56C21)
             .addHabitat(Blocks.TERRACOTTA)
             .addHabitat(Blocks.SAND)
@@ -133,7 +133,7 @@ public class DragonTypes {
             //.addHabitat(Biomes.MESA_CLEAR_ROCK)
             //.addHabitat(Biomes.MUTATED_MESA_CLEAR_ROCK)
             //.addHabitat(Biomes.MUTATED_MESA_ROCK)
-    ).setRegistryName(MOD_ID, "terra");
+    ).setRegistryName(MOD_ID + ":terra");
     public static final DragonType WATER = new DragonType(new DragonType.Properties(0x4F69A8)
             .addImmunity(DamageSource.DROWN)
             .addImmunity(DamageSource.MAGIC)
@@ -143,7 +143,7 @@ public class DragonTypes {
             .addHabitat(Blocks.WATER)
             .addHabitat(Biomes.OCEAN)
             .addHabitat(Biomes.RIVER)
-    ).setRegistryName(MOD_ID, "water");
+    ).setRegistryName(MOD_ID + ":water");
     public static final DragonType WITHER = new DragonType(new DragonType.Properties(0x50260A)
             .notConvertible()
             .isSkeleton()
@@ -152,7 +152,7 @@ public class DragonTypes {
             .addImmunity(DamageSource.HOT_FLOOR)
             .addImmunity(DamageSource.LIGHTNING_BOLT)
             .addImmunity(DamageSource.WITHER)
-    ).setRegistryName(MOD_ID, "wither");
+    ).setRegistryName(MOD_ID + ":wither");
     public static final DragonType ZOMBIE = new DragonType(new DragonType.Properties(0x5A5602)
             .addImmunity(DamageSource.MAGIC)
             .addImmunity(DamageSource.HOT_FLOOR)
@@ -162,7 +162,7 @@ public class DragonTypes {
             .addHabitat(Blocks.SOUL_SAND)
             .addHabitat(Blocks.NETHER_WART_BLOCK)
             .addHabitat(Blocks.WARPED_WART_BLOCK)
-    ).setRegistryName(MOD_ID, "zombie");
+    ).setRegistryName(MOD_ID + ":zombie");
 
     public static void register(RegistryEvent.Register<DragonType> event) {
         IForgeRegistry<DragonType> registry = event.getRegistry();

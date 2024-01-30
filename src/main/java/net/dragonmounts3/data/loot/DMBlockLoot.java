@@ -13,12 +13,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+import static net.minecraft.loot.LootTable.lootTable;
+
 public class DMBlockLoot extends BlockLootTables {
 
     @Override
     protected void addTables() {
-        this.add(DMBlocks.DRAGON_CORE.get(), LootTable.lootTable());
-        this.dropSelf(DMBlocks.DRAGON_NEST.get());
+        this.add(DMBlocks.DRAGON_CORE, lootTable());
+        this.dropSelf(DMBlocks.DRAGON_NEST);
         for (DragonType type : DragonType.REGISTRY) {//Do NOT load other mods at the same time!
             HatchableDragonEggBlock block = type.getInstance(HatchableDragonEggBlock.class, null);
             if (block != null) {
@@ -46,6 +48,6 @@ public class DMBlockLoot extends BlockLootTables {
     }
 
     protected void dropDragonEgg(Block block) {
-        this.add(block, LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantRange.exactly(1)).add(ItemLootEntry.lootTableItem(block))));
+        this.add(block, lootTable().withPool(LootPool.lootPool().setRolls(ConstantRange.exactly(1)).add(ItemLootEntry.lootTableItem(block))));
     }
 }

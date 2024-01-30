@@ -106,7 +106,7 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
                     true,
                     !Objects.equals(clickedPos, spawnPos) && direction == Direction.UP
             ));
-            consume(player, context.getHand(), stack, new ItemStack(DMItems.AMULET.get()));
+            consume(player, context.getHand(), stack, new ItemStack(DMItems.AMULET));
             return ActionResultType.CONSUME;
         }
     }
@@ -136,7 +136,7 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
                         false
                 ));
                 player.awardStat(Stats.ITEM_USED.get(this));
-                return ActionResult.success(consume(player, hand, stack, new ItemStack(DMItems.AMULET.get())));
+                return ActionResult.success(consume(player, hand, stack, new ItemStack(DMItems.AMULET)));
             }
             return ActionResult.fail(stack);
         }

@@ -1,24 +1,18 @@
 package net.dragonmounts3.network;
 
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import it.unimi.dsi.fastutil.objects.Reference2IntMap;
-import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-import net.dragonmounts3.registry.DragonType;
 import net.minecraft.network.PacketBuffer;
 
 public class SInitCooldownPacket {
     public final int size;
     public final int[] data;
 
-    public SInitCooldownPacket(Reference2IntOpenHashMap<DragonType> data) {
-        this.data = new int[data.size() << 1];
+    public SInitCooldownPacket(final int size, final int[] reference, final int[] category, final int[] cooldown) {
+        this.data = new int[size << 1];
         int index = 0;
-        for (ObjectIterator<Reference2IntMap.Entry<DragonType>> it = data.reference2IntEntrySet().fastIterator(); it.hasNext(); ) {
-            Reference2IntMap.Entry<DragonType> entry = it.next();
-            int id = DragonType.REGISTRY.getID(entry.getKey());
-            if (id != -1) {
-                this.data[index++] = id;
-                this.data[index++] = entry.getIntValue();
+        for (int i = 0, j, k; i < size; ++i) {
+            if ((k = category[j = reference[i]]) != -1) {
+                this.data[index++] = k;
+                this.data[index++] = cooldown[j];
             }
         }
         this.size = index;

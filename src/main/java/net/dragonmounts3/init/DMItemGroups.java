@@ -13,7 +13,7 @@ public class DMItemGroups {
         @Nonnull
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(DMBlocks.ENDER_DRAGON_EGG.get());
+            return new ItemStack(DMBlocks.ENDER_DRAGON_EGG);
         }
     };
 
@@ -21,7 +21,7 @@ public class DMItemGroups {
         @Nonnull
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(DMItems.ENDER_DRAGON_SCALES.get());
+            return new ItemStack(DMItems.ENDER_DRAGON_SCALES);
         }
     };
 
@@ -29,7 +29,7 @@ public class DMItemGroups {
         @Nonnull
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(DMItems.ENDER_DRAGON_SCALE_SWORD.get());
+            return new ItemStack(DMItems.ENDER_DRAGON_SCALE_SWORD);
         }
     };
 

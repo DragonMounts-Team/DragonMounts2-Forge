@@ -20,7 +20,6 @@ import net.dragonmounts3.network.SSyncDragonAgePacket;
 import net.dragonmounts3.registry.DragonType;
 import net.dragonmounts3.registry.DragonVariant;
 import net.dragonmounts3.util.DragonFood;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalBlock;
 import net.minecraft.entity.*;
@@ -334,10 +333,9 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
     }
 
     public void spawnEssence(ItemStack stack) {
-        Block block = DMBlocks.DRAGON_CORE.get();
         BlockPos pos = this.blockPosition();
         if (this.level.isEmptyBlock(pos)) {
-            BlockState state = block.defaultBlockState().setValue(HorizontalBlock.FACING, this.getDirection());
+            BlockState state = DMBlocks.DRAGON_CORE.defaultBlockState().setValue(HorizontalBlock.FACING, this.getDirection());
             if (this.level.setBlock(pos, state, 3)) {
                 TileEntity entity = this.level.getBlockEntity(pos);
                 if (entity instanceof DragonCoreBlockEntity) {
@@ -611,7 +609,7 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
         super.die(cause);
         if (!this.level.isClientSide && this.isTame()) {
             this.setLifeStage(DragonLifeStage.NEWBORN, true, false);
-            this.spawnEssence(this.getDragonType().getInstance(DragonEssenceItem.class, DMItems.ENDER_DRAGON_ESSENCE.get()).saveEntity(this));
+            this.spawnEssence(this.getDragonType().getInstance(DragonEssenceItem.class, DMItems.ENDER_DRAGON_ESSENCE).saveEntity(this));
         }
     }
 
@@ -682,7 +680,7 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
 
     @Override
     public ItemStack getPickedResult(RayTraceResult target) {
-        return new ItemStack(this.getDragonType().getInstance(DragonSpawnEggItem.class, DMItems.ENDER_DRAGON_SPAWN_EGG.get()));
+        return new ItemStack(this.getDragonType().getInstance(DragonSpawnEggItem.class, DMItems.ENDER_DRAGON_SPAWN_EGG));
     }
 
     @Nonnull

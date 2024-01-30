@@ -1,5 +1,6 @@
 package net.dragonmounts3.data.provider;
 
+import net.dragonmounts3.api.DragonScaleArmorSuit;
 import net.dragonmounts3.data.tags.DMItemTags;
 import net.dragonmounts3.init.DMBlocks;
 import net.dragonmounts3.init.DMItems;
@@ -36,27 +37,27 @@ public class DMRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildShapelessRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
-        smelting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR.get()), Items.IRON_INGOT, 0.1F, 200).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR.get())).save(consumer, prefix("iron_ingot_form_smelting"));
-        smelting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR.get()), Items.GOLD_INGOT, 0.1F, 200).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR.get())).save(consumer, prefix("gold_ingot_form_smelting"));
-        blasting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR.get()), Items.IRON_INGOT, 0.1F, 100).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR.get())).save(consumer, prefix("iron_ingot_form_blasting"));
-        blasting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR.get()), Items.GOLD_INGOT, 0.1F, 100).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR.get())).save(consumer, prefix("gold_ingot_form_blasting"));
-        dragonArmor(consumer, Tags.Items.INGOTS_IRON, Tags.Items.STORAGE_BLOCKS_IRON, DMItems.IRON_DRAGON_ARMOR.get());
-        dragonArmor(consumer, Tags.Items.INGOTS_GOLD, Tags.Items.STORAGE_BLOCKS_GOLD, DMItems.GOLDEN_DRAGON_ARMOR.get());
-        dragonArmor(consumer, Tags.Items.GEMS_EMERALD, Tags.Items.STORAGE_BLOCKS_EMERALD, DMItems.EMERALD_DRAGON_ARMOR.get());
-        dragonArmor(consumer, Tags.Items.GEMS_DIAMOND, Tags.Items.STORAGE_BLOCKS_DIAMOND, DMItems.DIAMOND_DRAGON_ARMOR.get());
-        netheriteBlockSmithingBuilder(DMItems.DIAMOND_DRAGON_ARMOR.get(), DMItems.NETHERITE_DRAGON_ARMOR.get()).save(consumer, prefix("netherite_dragon_armor_from_diamond"));
-        netheriteBlockSmithingBuilder(DMItems.EMERALD_DRAGON_ARMOR.get(), DMItems.NETHERITE_DRAGON_ARMOR.get()).save(consumer, prefix("netherite_dragon_armor_from_emerald"));
-        netheriteIngotSmithingBuilder(DMItems.DIAMOND_SHEARS.get(), DMItems.NETHERITE_SHEARS.get()).save(consumer, DMItems.NETHERITE_SHEARS.getId());
-        carriage(consumer, DMItems.OAK_CARRIAGE.get(), Blocks.OAK_PLANKS);
-        carriage(consumer, DMItems.SPRUCE_CARRIAGE.get(), Blocks.SPRUCE_PLANKS);
-        carriage(consumer, DMItems.BIRCH_CARRIAGE.get(), Blocks.BIRCH_PLANKS);
-        carriage(consumer, DMItems.JUNGLE_CARRIAGE.get(), Blocks.JUNGLE_PLANKS);
-        carriage(consumer, DMItems.ACACIA_CARRIAGE.get(), Blocks.ACACIA_PLANKS);
-        carriage(consumer, DMItems.DARK_OAK_CARRIAGE.get(), Blocks.DARK_OAK_PLANKS);
-        for (DragonType type : DragonType.REGISTRY) {//Do NOT load other mods at the same time!
+        smelting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR), Items.IRON_INGOT, 0.1F, 200).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR)).save(consumer, prefix("iron_ingot_form_smelting"));
+        smelting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR), Items.GOLD_INGOT, 0.1F, 200).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR)).save(consumer, prefix("gold_ingot_form_smelting"));
+        blasting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR), Items.IRON_INGOT, 0.1F, 100).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR)).save(consumer, prefix("iron_ingot_form_blasting"));
+        blasting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR), Items.GOLD_INGOT, 0.1F, 100).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR)).save(consumer, prefix("gold_ingot_form_blasting"));
+        dragonArmor(consumer, Tags.Items.INGOTS_IRON, Tags.Items.STORAGE_BLOCKS_IRON, DMItems.IRON_DRAGON_ARMOR);
+        dragonArmor(consumer, Tags.Items.INGOTS_GOLD, Tags.Items.STORAGE_BLOCKS_GOLD, DMItems.GOLDEN_DRAGON_ARMOR);
+        dragonArmor(consumer, Tags.Items.GEMS_EMERALD, Tags.Items.STORAGE_BLOCKS_EMERALD, DMItems.EMERALD_DRAGON_ARMOR);
+        dragonArmor(consumer, Tags.Items.GEMS_DIAMOND, Tags.Items.STORAGE_BLOCKS_DIAMOND, DMItems.DIAMOND_DRAGON_ARMOR);
+        netheriteBlockSmithingBuilder(DMItems.DIAMOND_DRAGON_ARMOR, DMItems.NETHERITE_DRAGON_ARMOR).save(consumer, prefix("netherite_dragon_armor_from_diamond"));
+        netheriteBlockSmithingBuilder(DMItems.EMERALD_DRAGON_ARMOR, DMItems.NETHERITE_DRAGON_ARMOR).save(consumer, prefix("netherite_dragon_armor_from_emerald"));
+        netheriteIngotSmithingBuilder(DMItems.DIAMOND_SHEARS, DMItems.NETHERITE_SHEARS).save(consumer, prefix("netherite_shears"));
+        carriage(consumer, DMItems.OAK_CARRIAGE, Blocks.OAK_PLANKS);
+        carriage(consumer, DMItems.SPRUCE_CARRIAGE, Blocks.SPRUCE_PLANKS);
+        carriage(consumer, DMItems.BIRCH_CARRIAGE, Blocks.BIRCH_PLANKS);
+        carriage(consumer, DMItems.JUNGLE_CARRIAGE, Blocks.JUNGLE_PLANKS);
+        carriage(consumer, DMItems.ACACIA_CARRIAGE, Blocks.ACACIA_PLANKS);
+        carriage(consumer, DMItems.DARK_OAK_CARRIAGE, Blocks.DARK_OAK_PLANKS);
+        for (DragonType type : DragonType.REGISTRY) {
             dragonScaleDerivatives(consumer, type);
         }
-        shaped(DMItems.DIAMOND_SHEARS.get())
+        shaped(DMItems.DIAMOND_SHEARS)
                 .define('X', Tags.Items.GEMS_DIAMOND)
                 .pattern(" X")
                 .pattern("X ")
@@ -71,7 +72,7 @@ public class DMRecipeProvider extends RecipeProvider {
                 .pattern("#R#")
                 .unlockedBy("has_bow", has(DMItemTags.DRAGON_SCALE_BOWS))
                 .save(consumer, prefix(Objects.requireNonNull(Items.DISPENSER.getRegistryName()).getPath()));
-        shaped(DMItems.AMULET.get())
+        shaped(DMItems.AMULET)
                 .define('#', Tags.Items.STRING)
                 .define('Y', Tags.Items.COBBLESTONE)
                 .define('X', Tags.Items.ENDER_PEARLS)
@@ -80,14 +81,14 @@ public class DMRecipeProvider extends RecipeProvider {
                 .pattern(" # ")
                 .unlockedBy("has_pearls", has(Tags.Items.ENDER_PEARLS))
                 .save(consumer);
-        shaped(DMBlocks.DRAGON_NEST.get())
+        shaped(DMBlocks.DRAGON_NEST)
                 .define('X', Tags.Items.RODS_WOODEN)
                 .pattern("XXX")
                 .pattern("XXX")
                 .pattern("XXX")
                 .unlockedBy("has_sticks", has(Tags.Items.RODS_WOODEN))
                 .save(consumer);
-        shaped(DMItems.DRAGON_WHISTLE.get())
+        shaped(DMItems.DRAGON_WHISTLE)
                 .define('P', Tags.Items.RODS_WOODEN)
                 .define('#', Tags.Items.ENDER_PEARLS)
                 .define('X', Tags.Items.STRING)
@@ -119,12 +120,9 @@ public class DMRecipeProvider extends RecipeProvider {
         Item scale = type.getInstance(DragonScalesItem.class, null);
         if (scale != null) {
             dragonScaleAxe(consumer, scale, type.getInstance(DragonScaleAxeItem.class, null));
-            dragonScaleBoots(consumer, scale, type.getInstance(DragonScaleArmorItem.Boots.class, null));
+            dragonScaleArmors(consumer, scale, type.getInstance(DragonScaleArmorSuit.class, null));
             dragonScaleBow(consumer, scale, type.getInstance(DragonScaleBowItem.class, null));
-            dragonScaleChestplate(consumer, scale, type.getInstance(DragonScaleArmorItem.Chestplate.class, null));
-            dragonScaleHelmet(consumer, scale, type.getInstance(DragonScaleArmorItem.Helmet.class, null));
             dragonScaleHoe(consumer, scale, type.getInstance(DragonScaleHoeItem.class, null));
-            dragonScaleLeggings(consumer, scale, type.getInstance(DragonScaleArmorItem.Leggings.class, null));
             dragonScalePickaxe(consumer, scale, type.getInstance(DragonScalePickaxeItem.class, null));
             dragonScaleShovel(consumer, scale, type.getInstance(DragonScaleShovelItem.class, null));
             dragonScaleShield(consumer, scale, type.getInstance(DragonScaleShieldItem.class, null));
@@ -142,9 +140,13 @@ public class DMRecipeProvider extends RecipeProvider {
             shaped(result).define('#', Tags.Items.RODS_WOODEN).define('X', scales).pattern("XX").pattern("X#").pattern(" #").unlockedBy("has_dragon_scales", has(scales)).save(consumer);
     }
 
-    private static void dragonScaleBoots(Consumer<IFinishedRecipe> consumer, Item scales, Item result) {
-        if (result != null)
-            shaped(result).define('X', scales).pattern("X X").pattern("X X").unlockedBy("has_dragon_scales", has(scales)).save(consumer);
+    private static void dragonScaleArmors(Consumer<IFinishedRecipe> consumer, Item scales, DragonScaleArmorSuit suit) {
+        if (suit != null) {
+            shaped(suit.helmet).define('X', scales).pattern("XXX").pattern("X X").unlockedBy("has_dragon_scales", has(scales)).save(consumer);
+            shaped(suit.chestplate).define('X', scales).pattern("X X").pattern("XXX").pattern("XXX").unlockedBy("has_dragon_scales", has(scales)).save(consumer);
+            shaped(suit.leggings).define('X', scales).pattern("XXX").pattern("X X").pattern("X X").unlockedBy("has_dragon_scales", has(scales)).save(consumer);
+            shaped(suit.boots).define('X', scales).pattern("X X").pattern("X X").unlockedBy("has_dragon_scales", has(scales)).save(consumer);
+        }
     }
 
     private static void dragonScaleBow(Consumer<IFinishedRecipe> consumer, Item scales, Item result) {
@@ -152,24 +154,9 @@ public class DMRecipeProvider extends RecipeProvider {
             shaped(result).define('#', scales).define('X', Tags.Items.STRING).pattern(" #X").pattern("# X").pattern(" #X").unlockedBy("has_dragon_scales", has(scales)).save(consumer);
     }
 
-    private static void dragonScaleChestplate(Consumer<IFinishedRecipe> consumer, Item scales, Item result) {
-        if (result != null)
-            shaped(result).define('X', scales).pattern("X X").pattern("XXX").pattern("XXX").unlockedBy("has_dragon_scales", has(scales)).save(consumer);
-    }
-
-    private static void dragonScaleHelmet(Consumer<IFinishedRecipe> consumer, Item scales, Item result) {
-        if (result != null)
-            shaped(result).define('X', scales).pattern("XXX").pattern("X X").unlockedBy("has_dragon_scales", has(scales)).save(consumer);
-    }
-
     private static void dragonScaleHoe(Consumer<IFinishedRecipe> consumer, Item scales, Item result) {
         if (result != null)
             shaped(result).define('#', Tags.Items.RODS_WOODEN).define('X', scales).pattern("XX").pattern(" #").pattern(" #").unlockedBy("has_dragon_scales", has(scales)).save(consumer);
-    }
-
-    private static void dragonScaleLeggings(Consumer<IFinishedRecipe> consumer, Item scales, Item result) {
-        if (result != null)
-            shaped(result).define('X', scales).pattern("XXX").pattern("X X").pattern("X X").unlockedBy("has_dragon_scales", has(scales)).save(consumer);
     }
 
     private static void dragonScalePickaxe(Consumer<IFinishedRecipe> consumer, Item scales, Item result) {

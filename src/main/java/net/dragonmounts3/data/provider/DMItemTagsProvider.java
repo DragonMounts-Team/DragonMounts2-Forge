@@ -27,12 +27,12 @@ public class DMItemTagsProvider extends ItemTagsProvider {
     @Override
     protected void addTags() {
         this.tag(Tags.Items.SHEARS)
-                .add(DMItems.DIAMOND_SHEARS.get())
-                .add(DMItems.NETHERITE_SHEARS.get());
+                .add(DMItems.DIAMOND_SHEARS)
+                .add(DMItems.NETHERITE_SHEARS);
         this.tag(ItemTags.PIGLIN_LOVED)
-                .add(DMItems.GOLDEN_DRAGON_ARMOR.get());
+                .add(DMItems.GOLDEN_DRAGON_ARMOR);
         this.tag(ItemTags.PIGLIN_REPELLENTS)
-                .add(DMBlocks.DRAGON_CORE.get().asItem());
+                .add(DMBlocks.DRAGON_CORE.asItem());
         this.tag(DMItemTags.BATONS)
                 .addTag(Tags.Items.RODS_WOODEN)
                 .addTag(Tags.Items.BONES)
@@ -40,7 +40,7 @@ public class DMItemTagsProvider extends ItemTagsProvider {
         this.copy(DMBlockTags.DRAGON_EGGS, DMItemTags.DRAGON_EGGS);
         Builder<Item> tagBow = this.tag(DMItemTags.DRAGON_SCALE_BOWS);
         Builder<Item> tagScales = this.tag(DMItemTags.DRAGON_SCALES);
-        for (DragonType type : DragonType.REGISTRY) {//Do NOT load other mods at the same time!
+        for (DragonType type : DragonType.REGISTRY) {
             DragonScaleBowItem bow = type.getInstance(DragonScaleBowItem.class, null);
             if (bow != null) {
                 tagBow.add(bow);

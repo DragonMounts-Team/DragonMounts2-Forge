@@ -267,7 +267,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
 
     @Override
     public ItemStack getPickedResult(RayTraceResult target) {
-        return new ItemStack(this.getDragonType().getInstance(HatchableDragonEggBlock.class, DMBlocks.ENDER_DRAGON_EGG.get()));
+        return new ItemStack(this.getDragonType().getInstance(HatchableDragonEggBlock.class, DMBlocks.ENDER_DRAGON_EGG));
     }
 
     @Nonnull
@@ -328,7 +328,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
         this.rotationAxis = packet.axis;
         this.amplitude = packet.amplitude;
         if (packet.particle) {
-            HatchableDragonEggBlock block = this.getDragonType().getInstance(HatchableDragonEggBlock.class, DMBlocks.ENDER_DRAGON_EGG.get());
+            HatchableDragonEggBlock block = this.getDragonType().getInstance(HatchableDragonEggBlock.class, DMBlocks.ENDER_DRAGON_EGG);
             if (block != null) {
                 this.level.levelEvent(2001, this.blockPosition(), Block.getId(block.defaultBlockState()));
             }

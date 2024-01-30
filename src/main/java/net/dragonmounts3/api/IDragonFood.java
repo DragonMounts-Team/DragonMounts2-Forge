@@ -17,7 +17,6 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-
 @FunctionalInterface
 public interface IDragonFood {
     void eat(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand);

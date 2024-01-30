@@ -1,8 +1,9 @@
 package net.dragonmounts3.api;
 
+import net.dragonmounts3.capability.IArmorEffectManager;
 import net.minecraft.entity.player.PlayerEntity;
 
 @FunctionalInterface
 public interface IArmorEffect {
-    void apply(PlayerEntity player, int strength);
+    boolean activate(IArmorEffectManager manager, PlayerEntity player, int level);
 }

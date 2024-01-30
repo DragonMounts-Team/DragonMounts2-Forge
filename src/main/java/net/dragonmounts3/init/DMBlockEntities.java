@@ -15,7 +15,7 @@ public class DMBlockEntities {
 
     public static final DeferredRegister<TileEntityType<?>> BLOCK_ENTITY = DragonMounts.create(ForgeRegistries.TILE_ENTITIES);
 
-    public static final RegistryObject<TileEntityType<DragonCoreBlockEntity>> DRAGON_CORE = BLOCK_ENTITY.register("dragon_core", () -> TileEntityType.Builder.of(DragonCoreBlockEntity::new, DMBlocks.DRAGON_CORE.get()).build(null));
+    public static final RegistryObject<TileEntityType<DragonCoreBlockEntity>> DRAGON_CORE = BLOCK_ENTITY.register("dragon_core", () -> TileEntityType.Builder.of(DragonCoreBlockEntity::new, DMBlocks.DRAGON_CORE).build(null));
 
     @OnlyIn(Dist.CLIENT)
     public static void registerBlockEntityRenders() {

@@ -53,7 +53,7 @@ public class DMClientEvents {
                 CompoundNBT tag = stack.getTag();
                 DragonType type = tag != null && tintIndex == 1 && tag.contains("Type") ? DragonType.REGISTRY.getRaw(new ResourceLocation(tag.getString("Type"))) : null;
                 return type == null ? 0xFFFFFF : type.color;
-            }, DRAGON_WHISTLE::get);
+            }, DRAGON_WHISTLE);
         }
 
         @SubscribeEvent

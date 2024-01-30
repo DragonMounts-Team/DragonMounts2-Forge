@@ -23,6 +23,7 @@ public class DMCommand {
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         LiteralArgumentBuilder<CommandSource> builder = Commands.literal("dragonmounts")
                 .then(ConfigCommand.register())
+                .then(CooldownCommand.register())
                 .then(FreeCommand.register())
                 .then(StageCommand.register())
                 .then(TameCommand.register())

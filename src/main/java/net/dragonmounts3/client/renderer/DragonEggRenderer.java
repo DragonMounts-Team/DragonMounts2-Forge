@@ -34,7 +34,7 @@ public class DragonEggRenderer extends EntityRenderer<HatchableDragonEggEntity> 
 
     @Override
     public void render(@Nonnull HatchableDragonEggEntity entity, float entityYaw, float partialTicks, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int packedLight) {
-        HatchableDragonEggBlock block = entity.getDragonType().getInstance(HatchableDragonEggBlock.class, DMBlocks.ENDER_DRAGON_EGG.get());
+        HatchableDragonEggBlock block = entity.getDragonType().getInstance(HatchableDragonEggBlock.class, DMBlocks.ENDER_DRAGON_EGG);
         BlockState blockstate = block.defaultBlockState();
         World world = entity.level;
         if (blockstate.getRenderShape() != BlockRenderType.INVISIBLE) {

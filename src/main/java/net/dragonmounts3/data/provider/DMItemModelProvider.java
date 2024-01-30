@@ -31,7 +31,7 @@ public class DMItemModelProvider extends ItemModelProvider {
         ModelFile shieldBlockingModel = getExistingFile(prefix("item/shield/shield_blocking"));
         ResourceLocation blockingPredicate = new ResourceLocation("blocking");
         ModelFile vanillaSpawnModel = getExistingFile(new ResourceLocation("item/template_spawn_egg"));
-        for (DragonType type : DragonType.REGISTRY) {//Do NOT load other mods at the same time!
+        for (DragonType type : DragonType.REGISTRY) {
             DragonScaleBowItem bow = type.getInstance(DragonScaleBowItem.class, null);
             if (bow != null) {
                 StringBuilder root = new StringBuilder(Objects.requireNonNull(bow.getRegistryName()).getPath())

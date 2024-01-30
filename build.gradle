@@ -16,7 +16,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
-version = 'Preview ' + Calendar.instance.get(Calendar.YEAR) % 100 + 'w' + Calendar.instance.get(Calendar.WEEK_OF_YEAR) + 'a'
+version = String.format("Preview %dw%02da", Calendar.instance.get(Calendar.YEAR) % 100, Calendar.instance.get(Calendar.WEEK_OF_YEAR))
 group = 'com.TheRPGAdventurer.ROTD'
 archivesBaseName = 'DragonMounts3-1.16.5'
 

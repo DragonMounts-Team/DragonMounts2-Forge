@@ -46,13 +46,13 @@ public class DragonScaleTier implements IItemTier, IDragonTypified {
         NETHER = new Builder(5, 2700, 8.0F, 6.0F).setEnchantmentValue(11).build(DragonTypes.NETHER);
     }
 
-    private final DragonType type;
-    private final int level;
-    private final int uses;
-    private final float speed;
-    private final float damage;
-    private final int enchantmentValue;
-    private final LazyValue<Ingredient> repairIngredient;
+    public final DragonType type;
+    public final int level;
+    public final int uses;
+    public final float speed;
+    public final float damage;
+    public final int enchantmentValue;
+    public final LazyValue<Ingredient> repairIngredient;
 
     public DragonScaleTier(DragonType type, Builder builder) {
         this.type = type;
@@ -61,7 +61,7 @@ public class DragonScaleTier implements IItemTier, IDragonTypified {
         this.speed = builder.speed;
         this.damage = builder.damage;
         this.enchantmentValue = builder.enchantmentValue;
-        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(() -> Ingredient.of(type.getInstance(DragonScalesItem.class, DMItems.ENDER_DRAGON_SCALES.get()))) : builder.repairIngredient;
+        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(() -> Ingredient.of(type.getInstance(DragonScalesItem.class, DMItems.ENDER_DRAGON_SCALES))) : builder.repairIngredient;
     }
 
     @Override
@@ -91,12 +91,12 @@ public class DragonScaleTier implements IItemTier, IDragonTypified {
 
     @Nonnull
     @Override
-    public Ingredient getRepairIngredient() {
+    public final Ingredient getRepairIngredient() {
         return this.repairIngredient.get();
     }
 
     @Override
-    public DragonType getDragonType() {
+    public final DragonType getDragonType() {
         return this.type;
     }
 
@@ -128,6 +128,5 @@ public class DragonScaleTier implements IItemTier, IDragonTypified {
         public DragonScaleTier build(DragonType type) {
             return new DragonScaleTier(type, this);
         }
-
     }
 }

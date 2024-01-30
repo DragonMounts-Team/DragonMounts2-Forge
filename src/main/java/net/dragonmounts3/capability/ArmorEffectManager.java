@@ -122,7 +122,7 @@ public final class ArmorEffectManager implements IArmorEffectManager {
                 this.cdRef[i] = pos;
                 this.cdKey[pos] = k;
                 this.cdDat[pos] = this.cdDat[j];
-                reassign(j, i);
+                this.reassign(j, i);
                 return;
             }
         this.cdKey[pos] = -1;//it is unnecessary to reset `this.cdDat[pos]`

@@ -1,4 +1,4 @@
-package net.dragonmounts.data.tags;
+package net.dragonmounts.data.tag;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.tags.EntityTypeTags;

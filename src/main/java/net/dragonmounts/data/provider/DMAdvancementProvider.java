@@ -1,6 +1,6 @@
 package net.dragonmounts.data.provider;
 
-import net.dragonmounts.data.tags.DMItemTags;
+import net.dragonmounts.data.tag.DMItemTags;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.FrameType;
 import net.minecraft.advancements.criterion.ItemPredicate;

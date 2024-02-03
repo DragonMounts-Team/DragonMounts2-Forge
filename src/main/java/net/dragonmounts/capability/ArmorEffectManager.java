@@ -212,7 +212,7 @@ public final class ArmorEffectManager implements IArmorEffectManager {
 
     @Override
     public void sendInitPacket() {
-        SInitCooldownPacket packet = new SInitCooldownPacket(this.cdRef.length, this.cdRef, this.cdKey, this.cdDat);
+        SInitCooldownPacket packet = new SInitCooldownPacket(this.cdN, this.cdRef, this.cdKey, this.cdDat);
         if (packet.size > 0) CHANNEL.send(PLAYER.with(() -> (ServerPlayerEntity) this.player), packet);
     }
 

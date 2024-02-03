@@ -68,16 +68,15 @@ public class DMClientEvents {
 
         @SubscribeEvent
         public static void modelBake(ModelBakeEvent event) {
-            for (DragonType type : DragonType.REGISTRY) {//Do NOT load other mods at the same time!
+            for (DragonType type : DragonType.REGISTRY) {
                 DragonScaleBowItem bow = type.getInstance(DragonScaleBowItem.class, null);
                 if (bow != null) {
                     ItemModelsProperties.register(bow, new ResourceLocation("pull"), DURATION);
                     ItemModelsProperties.register(bow, new ResourceLocation("pulling"), IS_USING_ITEM);
                 }
                 DragonScaleShieldItem shield = type.getInstance(DragonScaleShieldItem.class, null);
-                if (shield != null) {
+                if (shield != null)
                     ItemModelsProperties.register(shield, new ResourceLocation("blocking"), IS_USING_ITEM);
-                }
             }
         }
     }

@@ -20,9 +20,9 @@ import java.util.Collection;
 import static net.minecraft.util.text.event.HoverEvent.Action.SHOW_ENTITY;
 
 public class DMCommand {
-    public static void register(CommandDispatcher<CommandSource> dispatcher) {
+    public static void register(CommandDispatcher<CommandSource> dispatcher, Commands.EnvironmentType environment) {
         LiteralArgumentBuilder<CommandSource> builder = Commands.literal("dragonmounts")
-                .then(ConfigCommand.register())
+                .then(ConfigCommand.register(environment))
                 .then(CooldownCommand.register())
                 .then(FreeCommand.register())
                 .then(StageCommand.register())

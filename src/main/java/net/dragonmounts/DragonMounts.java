@@ -80,7 +80,7 @@ public class DragonMounts {
     }
 
     public void registerCommands(RegisterCommandsEvent event) {
-        DMCommand.register(event.getDispatcher());
+        DMCommand.register(event.getDispatcher(), event.getEnvironment());
     }
 
     public static <B extends IForgeRegistryEntry<B>> DeferredRegister<B> create(IForgeRegistry<B> reg) {

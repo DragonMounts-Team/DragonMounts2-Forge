@@ -3,6 +3,7 @@ package net.dragonmounts.client.gui;
 import net.minecraft.client.AbstractOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.ForgeConfigSpec;
 
@@ -24,13 +25,13 @@ public abstract class AbstractLazyConfigOption<T> extends AbstractOption {
 
     @Nonnull
     public ITextComponent pixelValueLabel(int value) {
-        return super.pixelValueLabel(value);
+        return new TranslationTextComponent("options.pixel_value", this.getCaption(), value);
     }
 
     @Nonnull
     @Override
     public ITextComponent percentValueLabel(double percentage) {
-        return new TranslationTextComponent("options.percent_value", this.getCaption(), percentage * 100);
+        return new TranslationTextComponent("options.percent_value", this.getCaption(), (int) (percentage * 100));
     }
 
     @Nonnull
@@ -48,6 +49,6 @@ public abstract class AbstractLazyConfigOption<T> extends AbstractOption {
     @Nonnull
     @Override
     public ITextComponent genericValueLabel(int value) {
-        return super.genericValueLabel(value);
+        return this.genericValueLabel(new StringTextComponent(Integer.toString(value)));
     }
 }

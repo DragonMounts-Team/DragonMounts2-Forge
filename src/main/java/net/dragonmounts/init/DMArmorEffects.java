@@ -12,7 +12,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.DamageSource;
@@ -58,7 +57,9 @@ public class DMArmorEffects {
         }
     }.withRegistryName(MOD_ID + ":aether");
 
-    public static final IDragonScaleArmorEffect ENCHANT = (manager, player, level) -> {
+    public static final IDragonScaleArmorEffect ENCHANT = new IDragonScaleArmorEffect() {
+        @Override
+        public boolean activate(IArmorEffectManager manager, PlayerEntity player, int level) {
         if (player.level.isClientSide) {
             Random random = player.getRandom();
             for (int i = -2; i <= 2; ++i) {
@@ -81,6 +82,12 @@ public class DMArmorEffects {
             }
         }
         return level > 3;
+        }
+
+        @Override
+        public void appendHoverText(@Nonnull ItemStack stack, World world, List<ITextComponent> components) {
+            components.add(new TranslationTextComponent("tooltip.armor_effect.dragonmounts.water"));
+        }
     };
 
     public static final IDragonScaleArmorEffect.Advanced ENDER = new IDragonScaleArmorEffect.Advanced(1200) {
@@ -152,12 +159,20 @@ public class DMArmorEffects {
 
     public static final IDragonScaleArmorEffect.Advanced ICE = new IDragonScaleArmorEffect.Advanced(1200).withRegistryName(MOD_ID + ":ice");
 
-    public static final IDragonScaleArmorEffect MOONLIGHT = (manager, player, level) -> {
+    public static final IDragonScaleArmorEffect MOONLIGHT = new IDragonScaleArmorEffect() {
+        @Override
+        public boolean activate(IArmorEffectManager manager, PlayerEntity player, int level) {
         boolean flag = level > 3;
         if (flag && !player.level.isClientSide) {
             addOrResetEffect(player, Effects.NIGHT_VISION, 600, 0, true, true, true, 201);
         }
         return flag;
+        }
+
+        @Override
+        public void appendHoverText(@Nonnull ItemStack stack, World world, List<ITextComponent> components) {
+            components.add(new TranslationTextComponent("tooltip.armor_effect.dragonmounts.water"));
+        }
     };
 
     public static final IDragonScaleArmorEffect.Advanced NETHER = new IDragonScaleArmorEffect.Advanced(1200).withRegistryName(MOD_ID + ":nether");
@@ -188,29 +203,42 @@ public class DMArmorEffects {
         }
     }.withRegistryName(MOD_ID + ":sunlight");
 
-    public static final IDragonScaleArmorEffect TERRA = (manager, player, level) -> {
+    public static final IDragonScaleArmorEffect TERRA = new IDragonScaleArmorEffect() {
+        @Override
+        public boolean activate(IArmorEffectManager manager, PlayerEntity player, int level) {
         boolean flag = level > 3;
-        if (flag && !player.level.isClientSide) {
-            addOrResetEffect(player, Effects.DIG_SPEED, 600, 0, true, true, true, 201);
+            if (flag && !player.level.isClientSide)
+                addOrResetEffect(player, Effects.DIG_SPEED, 600, 0, true, true, true, 201);
+            return flag;
         }
-        return flag;
+
+        @Override
+        public void appendHoverText(@Nonnull ItemStack stack, World world, List<ITextComponent> components) {
+            components.add(new TranslationTextComponent("tooltip.armor_effect.dragonmounts.water"));
+        }
     };
 
-    public static final IDragonScaleArmorEffect WATER = (manager, player, level) -> {
-        boolean flag = level > 3;
-        if (flag && !player.level.isClientSide && player.isEyeInFluid(FluidTags.WATER)) {
-            addOrResetEffect(player, Effects.WATER_BREATHING, 600, 0, true, true, true, 201);
+    public static final IDragonScaleArmorEffect WATER = new IDragonScaleArmorEffect() {
+        @Override
+        public boolean activate(IArmorEffectManager manager, PlayerEntity player, int level) {
+            boolean flag = level > 3;
+            if (flag && !player.level.isClientSide && player.isEyeInFluid(FluidTags.WATER))
+                addOrResetEffect(player, Effects.WATER_BREATHING, 600, 0, true, true, true, 201);
+            return flag;
         }
-        return flag;
+
+        @Override
+        public void appendHoverText(@Nonnull ItemStack stack, World world, List<ITextComponent> components) {
+            components.add(new TranslationTextComponent("tooltip.armor_effect.dragonmounts.water"));
+        }
     };
 
     public static final IDragonScaleArmorEffect.Advanced ZOMBIE = new IDragonScaleArmorEffect.Advanced(400) {
         @Override
         public boolean activate(IArmorEffectManager manager, PlayerEntity player, int level) {
             boolean flag = level > 3;
-            if (flag && !player.level.isClientSide && !player.level.isDay() && manager.getCooldown(this) <= 0 && addOrMergeEffect(player, Effects.DAMAGE_BOOST, 300, 0, true, true, true)) {
+            if (flag && !player.level.isClientSide && !player.level.isDay() && manager.getCooldown(this) <= 0 && addOrMergeEffect(player, Effects.DAMAGE_BOOST, 300, 0, true, true, true))
                 manager.setCooldown(this, this.cooldown);
-            }
             return flag;
         }
     }.withRegistryName(MOD_ID + ":zombie");
@@ -247,40 +275,31 @@ public class DMArmorEffects {
     }
 
     public static void riposte(LivingHurtEvent event) {
-        Entity entity = event.getEntity();
+        final Entity self = event.getEntity();
         //In fact, entity.level.isClientSide -> false
-        if (entity.level.isClientSide || !(entity instanceof PlayerEntity)) return;
-        PlayerEntity player = (PlayerEntity) entity;
-        List<Entity> targets = player.level.getEntities(player, player.getBoundingBox().inflate(5.0D), EntityPredicates.ATTACK_ALLOWED);
-        if (targets.isEmpty()) return;
-        SRiposteEffectPacket packet = new SRiposteEffectPacket(player.getId());
+        if (self.level.isClientSide || !(self instanceof PlayerEntity)) return;
+        final PlayerEntity player = (PlayerEntity) self;
+        final List<Entity> entities = player.level.getEntities(player, player.getBoundingBox().inflate(5.0D), EntityPredicates.NO_CREATIVE_OR_SPECTATOR);
+        if (entities.isEmpty()) return;
+        final SRiposteEffectPacket packet = new SRiposteEffectPacket(player.getId());
         player.getCapability(ARMOR_EFFECT_MANAGER).ifPresent(manager -> {
-            if (manager.isActive(ICE) && manager.getCooldown(ICE) <= 0) {
-                packet.flag |= 0b01;
-                for (Entity target : targets) {
-                    target.hurt(DamageSource.GENERIC, 1);
-                    if (target instanceof LivingEntity) {
-                        ((LivingEntity) target).addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 200, 1));
-                        ((LivingEntity) target).knockback(0.4F, 1, 1);
+            final boolean ice = manager.isActive(ICE) && manager.getCooldown(ICE) <= 0;
+            final boolean nether = manager.isActive(NETHER) && manager.getCooldown(NETHER) <= 0;
+            for (Entity entity : entities) {
+                if (entity instanceof LivingEntity) {
+                    LivingEntity target = (LivingEntity) entity;
+                    target.knockback(0.4F, 1, 1);
+                    if (ice) {
+                        addOrMergeEffect(target, Effects.MOVEMENT_SLOWDOWN, 200, 1, false, true, true);
+                        entity.hurt(DamageSource.GENERIC, 1F);
                     }
-                }
-                manager.setCooldown(ICE, ICE.cooldown);
+                } else if (ice) entity.hurt(DamageSource.GENERIC, 1F);
+                if (nether) entity.setSecondsOnFire(10);
             }
-            if (manager.isActive(NETHER) && manager.getCooldown(NETHER) <= 0) {
-                packet.flag |= 0b10;
-                for (Entity target : targets) {
-                    target.setSecondsOnFire(10);
-                    if (target instanceof LivingEntity) {
-                        ((LivingEntity) target).knockback(0.4F, 1, 1);
-                    }
-                }
-                manager.setCooldown(NETHER, NETHER.cooldown);
-            }
-
+            if (ice) manager.setCooldown(NETHER, NETHER.cooldown);
+            if (nether) manager.setCooldown(NETHER, NETHER.cooldown);
         });
-        if (packet.flag != 0) {
-            CHANNEL.send(TRACKING_ENTITY_AND_SELF.with(() -> player), packet);
-        }
+        if (packet.flag != 0) CHANNEL.send(TRACKING_ENTITY_AND_SELF.with(() -> player), packet);
     }
 
     public static void register(RegistryEvent.Register<CooldownCategory> event) {

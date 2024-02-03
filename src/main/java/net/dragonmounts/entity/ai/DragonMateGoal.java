@@ -1,6 +1,6 @@
-package net.dragonmounts3.entity.ai;
+package net.dragonmounts.entity.ai;
 
-import net.dragonmounts3.entity.dragon.TameableDragonEntity;
+import net.dragonmounts.entity.dragon.TameableDragonEntity;
 
 public class DragonMateGoal extends DragonBaseGoal {
 

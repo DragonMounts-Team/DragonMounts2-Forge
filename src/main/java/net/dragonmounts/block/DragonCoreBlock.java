@@ -43,9 +43,7 @@ public class DragonCoreBlock extends ContainerBlock {
 
     private static boolean testPositionPredicate(BlockState state, IBlockReader world, BlockPos pos) {
         TileEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof DragonCoreBlockEntity) {
-            return ((DragonCoreBlockEntity) blockEntity).isClosed();
-        }
+        if (blockEntity instanceof DragonCoreBlockEntity) return ((DragonCoreBlockEntity) blockEntity).isClosed();
         return true;
     }
 
@@ -83,33 +81,26 @@ public class DragonCoreBlock extends ContainerBlock {
     @Override
     @SuppressWarnings("deprecation")
     public ActionResultType use(@Nonnull BlockState state, @Nonnull World level, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult hit) {
-        if (level.isClientSide) {
-            return ActionResultType.SUCCESS;
-        } else if (player.isSpectator()) {
-            return ActionResultType.CONSUME;
-        } else {
-            TileEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof DragonCoreBlockEntity) {
-                DragonCoreBlockEntity dragonCoreBlockEntity = (DragonCoreBlockEntity) blockEntity;
-                ShulkerBoxTileEntity.AnimationStatus status = dragonCoreBlockEntity.getAnimationStatus();
-                if (status != ShulkerBoxTileEntity.AnimationStatus.CLOSING && (status != ShulkerBoxTileEntity.AnimationStatus.CLOSED || level.noCollision(ShulkerAABBHelper.openBoundingBox(pos, Direction.UP)))) {
-                    player.openMenu(dragonCoreBlockEntity);
-                    player.awardStat(Stats.OPEN_SHULKER_BOX);
-                }
-                return ActionResultType.CONSUME;
-            } else {
-                return ActionResultType.PASS;
+        if (level.isClientSide) return ActionResultType.SUCCESS;
+        if (player.isSpectator()) return ActionResultType.CONSUME;
+        TileEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof DragonCoreBlockEntity) {
+            DragonCoreBlockEntity dragonCoreBlockEntity = (DragonCoreBlockEntity) blockEntity;
+            ShulkerBoxTileEntity.AnimationStatus status = dragonCoreBlockEntity.getAnimationStatus();
+            if (status != ShulkerBoxTileEntity.AnimationStatus.CLOSING && (status != ShulkerBoxTileEntity.AnimationStatus.CLOSED || level.noCollision(ShulkerAABBHelper.openBoundingBox(pos, Direction.UP)))) {
+                player.openMenu(dragonCoreBlockEntity);
+                player.awardStat(Stats.OPEN_SHULKER_BOX);
             }
-        }
+            return ActionResultType.CONSUME;
+        } else return ActionResultType.PASS;
     }
 
     @Override
     public void setPlacedBy(@Nonnull World level, @Nonnull BlockPos pos, @Nonnull BlockState state, LivingEntity placer, ItemStack stack) {
         if (stack.hasCustomHoverName()) {
             TileEntity tileEntity = level.getBlockEntity(pos);
-            if (tileEntity instanceof DragonCoreBlockEntity) {
+            if (tileEntity instanceof DragonCoreBlockEntity)
                 ((DragonCoreBlockEntity) tileEntity).setCustomName(stack.getHoverName());
-            }
         }
     }
 

@@ -2,7 +2,7 @@ package net.dragonmounts.data.provider;
 
 import net.dragonmounts.DragonMounts;
 import net.dragonmounts.block.HatchableDragonEggBlock;
-import net.dragonmounts.data.tags.DMBlockTags;
+import net.dragonmounts.data.tag.DMBlockTags;
 import net.dragonmounts.init.DMBlocks;
 import net.dragonmounts.registry.DragonType;
 import net.minecraft.block.Block;
@@ -26,9 +26,7 @@ public class DMBlockTagsProvider extends BlockTagsProvider {
         Builder<Block> tag = this.tag(DMBlockTags.DRAGON_EGGS).add(Blocks.DRAGON_EGG);
         for (DragonType type : DragonType.REGISTRY) {
             HatchableDragonEggBlock egg = type.getInstance(HatchableDragonEggBlock.class, null);
-            if (egg != null) {
-                tag.add(egg);
-            }
+            if (egg != null) tag.add(egg);
         }
     }
 }

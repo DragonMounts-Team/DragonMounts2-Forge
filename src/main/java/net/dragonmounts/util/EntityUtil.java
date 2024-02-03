@@ -23,8 +23,8 @@ import java.util.Map;
 
 public class EntityUtil extends EntityType<Entity> {//to access protected methods
 
-    private EntityUtil(IFactory<Entity> p1, EntityClassification p2, boolean p3, boolean p4, boolean p5, boolean p6, ImmutableSet<Block> p7, EntitySize p8, int p9, int p10) {
-        super(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10);
+    private EntityUtil(IFactory<Entity> a, EntityClassification b, boolean c, boolean d, boolean e, boolean f, ImmutableSet<Block> g, EntitySize h, int i, int j) {
+        super(a, b, c, d, e, f, g, h, i, j);
     }
 
     public static void finalizeSpawn(ServerWorld level, Entity entity, BlockPos pos, SpawnReason reason, @Nullable ILivingEntityData data, @Nullable CompoundNBT tag, boolean yOffset, boolean extraOffset) {

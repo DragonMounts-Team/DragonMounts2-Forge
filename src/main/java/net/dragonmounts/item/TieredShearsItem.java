@@ -15,21 +15,19 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.Random;
 
 /**
  * @see net.minecraft.item.TieredItem
  */
 public class TieredShearsItem extends ShearsItem {
-    private final IItemTier tier;
+    protected final IItemTier tier;
     private final float speedFactor;
 
     public TieredShearsItem(IItemTier tier, Properties properties) {
-        super(properties.defaultDurability(tier.getUses() / 10 + 213));
+        super(properties.defaultDurability((int) (tier.getUses() * 0.952F)));
         this.tier = tier;
         this.speedFactor = tier.getSpeed() / ItemTier.IRON.getSpeed();
     }
@@ -41,17 +39,15 @@ public class TieredShearsItem extends ShearsItem {
     @Nonnull
     @Override
     public ActionResultType interactLivingEntity(@Nonnull ItemStack stack, @Nonnull PlayerEntity player, @Nonnull LivingEntity entity, @Nonnull Hand hand) {
-        World level = player.level;
-        if (level.isClientSide) return ActionResultType.PASS;
+        if (player.level.isClientSide) return super.interactLivingEntity(stack, player, entity, hand);
         if (entity instanceof TameableDragonEntity) {
             TameableDragonEntity dragon = (TameableDragonEntity) entity;
             BlockPos pos = dragon.blockPosition();
-            if (dragon.isShearable(stack, level, pos)) {
+            if (dragon.isShearable(stack, dragon.level, pos)) {
                 if (dragon.isOwnedBy(player)) {
-                    List<ItemStack> drops = dragon.onSheared(player, stack, level, pos, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, stack));
                     Random random = dragon.getRandom();
                     boolean flag = false;
-                    for (ItemStack drop : drops) {
+                    for (ItemStack drop : dragon.onSheared(player, stack, dragon.level, pos, EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, stack))) {
                         ItemEntity item = entity.spawnAtLocation(drop, 1.0F);
                         if (item != null) {
                             flag = true;
@@ -62,9 +58,8 @@ public class TieredShearsItem extends ShearsItem {
                         stack.hurtAndBreak(20, dragon, e -> e.broadcastBreakEvent(hand));
                         return ActionResultType.SUCCESS;
                     }
-                } else {
+                } else
                     player.displayClientMessage(new TranslationTextComponent("message.dragonmounts.not_owner"), true);
-                }
                 return ActionResultType.FAIL;
             }
             return ActionResultType.PASS;
@@ -85,9 +80,6 @@ public class TieredShearsItem extends ShearsItem {
     @Override
     public float getDestroySpeed(@Nonnull ItemStack stack, @Nonnull BlockState state) {
         float speed = super.getDestroySpeed(stack, state);
-        if (speed > 1.0F) {
-            return speed * this.speedFactor;
-        }
-        return speed;
+        return speed > 1.0F ? speed * this.speedFactor : speed;
     }
 }

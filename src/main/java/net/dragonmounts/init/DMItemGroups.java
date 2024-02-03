@@ -15,7 +15,7 @@ public class DMItemGroups {
         public ItemStack makeIcon() {
             return new ItemStack(DMBlocks.ENDER_DRAGON_EGG);
         }
-    };
+    }.setRecipeFolderName(MOD_ID + "/blocks");
 
     public static final ItemGroup ITEM_TAB = new ItemGroup(MOD_ID + ".items") {
         @Nonnull
@@ -23,7 +23,7 @@ public class DMItemGroups {
         public ItemStack makeIcon() {
             return new ItemStack(DMItems.ENDER_DRAGON_SCALES);
         }
-    };
+    }.setRecipeFolderName(MOD_ID + "/items");
 
     public static final ItemGroup TOOL_TAB = new ItemGroup(MOD_ID + ".tools") {
         @Nonnull
@@ -31,13 +31,7 @@ public class DMItemGroups {
         public ItemStack makeIcon() {
             return new ItemStack(DMItems.ENDER_DRAGON_SCALE_SWORD);
         }
-    };
-
-    static {
-        BLOCK_TAB.setRecipeFolderName(MOD_ID + "/blocks");
-        ITEM_TAB.setRecipeFolderName(MOD_ID + "/items");
-        TOOL_TAB.setRecipeFolderName(MOD_ID + "/tools");
-    }
+    }.setRecipeFolderName(MOD_ID + "/tools");
 
     public static Properties none() {
         return new Properties();

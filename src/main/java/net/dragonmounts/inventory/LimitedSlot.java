@@ -18,7 +18,6 @@ public abstract class LimitedSlot extends Slot {
     @Override
     public abstract boolean mayPlace(@Nonnull ItemStack stack);
 
-
     public static class Reject extends LimitedSlot {
         public Reject(IInventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
@@ -51,11 +50,9 @@ public abstract class LimitedSlot extends Slot {
 
         @Override
         public void setChanged() {
-            if (this.container instanceof DragonInventory) {
+            if (this.container instanceof DragonInventory)
                 ((DragonInventory) this.container).dragon.setSaddle(this.getItem(), false);
-            } else {
-                this.container.setChanged();
-            }
+            else this.container.setChanged();
         }
     }
 
@@ -80,11 +77,9 @@ public abstract class LimitedSlot extends Slot {
 
         @Override
         public void setChanged() {
-            if (this.container instanceof DragonInventory) {
+            if (this.container instanceof DragonInventory)
                 ((DragonInventory) this.container).dragon.setArmor(this.getItem(), false);
-            } else {
-                this.container.setChanged();
-            }
+            else this.container.setChanged();
         }
     }
 
@@ -109,11 +104,9 @@ public abstract class LimitedSlot extends Slot {
 
         @Override
         public void setChanged() {
-            if (this.container instanceof DragonInventory) {
+            if (this.container instanceof DragonInventory)
                 ((DragonInventory) this.container).dragon.setChest(this.getItem(), false);
-            } else {
-                this.container.setChanged();
-            }
+            else this.container.setChanged();
         }
     }
 }

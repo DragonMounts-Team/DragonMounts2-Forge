@@ -5,7 +5,7 @@ import net.dragonmounts.api.IDragonFood;
 import net.dragonmounts.api.IDragonTypified;
 import net.dragonmounts.block.entity.DragonCoreBlockEntity;
 import net.dragonmounts.client.DragonAnimator;
-import net.dragonmounts.data.tags.DMItemTags;
+import net.dragonmounts.data.tag.DMItemTags;
 import net.dragonmounts.entity.ai.DragonBodyController;
 import net.dragonmounts.entity.ai.DragonMovementController;
 import net.dragonmounts.entity.ai.PlayerControlledGoal;
@@ -690,9 +690,18 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
     }
 
     @Nullable
+    @Override
     public Entity getControllingPassenger() {
         List<Entity> passengers = this.getPassengers();
         return passengers.isEmpty() ? null : passengers.get(0);
+    }
+
+    @Nullable
+    public PlayerEntity getControllingPlayer() {
+        List<Entity> passengers = this.getPassengers();
+        if (passengers.isEmpty()) return null;
+        Entity entity = passengers.get(0);
+        return entity instanceof PlayerEntity ? (PlayerEntity) entity : null;
     }
 
     @Override

@@ -6,7 +6,6 @@ import net.dragonmounts.item.DragonScalesItem;
 import net.dragonmounts.registry.DragonType;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.LazyValue;
 import net.minecraft.util.ResourceLocation;
@@ -85,7 +84,7 @@ public class DragonScaleMaterial implements IArmorMaterial, IDragonTypified {
         this.enchantmentValue = builder.enchantmentValue;
         this.toughness = builder.toughness;
         this.knockbackResistance = builder.knockbackResistance;
-        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(() -> Ingredient.of(new ItemStack(type.getInstance(DragonScalesItem.class, DMItems.ENDER_DRAGON_SCALES)))) : builder.repairIngredient;
+        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(() -> Ingredient.of(type.getInstance(DragonScalesItem.class, DMItems.ENDER_DRAGON_SCALES))) : builder.repairIngredient;
     }
 
     public int getDurabilityForShield() {

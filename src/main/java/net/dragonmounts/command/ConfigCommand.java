@@ -42,16 +42,16 @@ public class ConfigCommand {
                 }));
     }
 
-    public static LiteralArgumentBuilder<CommandSource> register() {
-        return Commands.literal("config")
-                .then(Commands.literal("server")
-                        .requires(source -> source.hasPermission(3))
-                        .then(create(SERVER.debug, BoolArgumentType.bool(), BoolArgumentType::getBool))
-                        .then(create(SERVER.base_armor, DoubleArgumentType.doubleArg(0, 30), DoubleArgumentType::getDouble))
-                        .then(create(SERVER.base_health, DoubleArgumentType.doubleArg(1, 1024), DoubleArgumentType::getDouble))
-                        .then(create(SERVER.base_damage, DoubleArgumentType.doubleArg(0, 2048), DoubleArgumentType::getDouble))
-                        .then(create(SERVER.block_override, BoolArgumentType.bool(), BoolArgumentType::getBool))
-                ).then(Commands.literal("client"));
+    public static LiteralArgumentBuilder<CommandSource> register(Commands.EnvironmentType environment) {
+        LiteralArgumentBuilder<CommandSource> builder = Commands.literal("config").then(Commands.literal("server")
+                .requires(source -> source.hasPermission(3))
+                .then(create(SERVER.debug, BoolArgumentType.bool(), BoolArgumentType::getBool))
+                .then(create(SERVER.base_armor, DoubleArgumentType.doubleArg(0, 30), DoubleArgumentType::getDouble))
+                .then(create(SERVER.base_health, DoubleArgumentType.doubleArg(1, 1024), DoubleArgumentType::getDouble))
+                .then(create(SERVER.base_damage, DoubleArgumentType.doubleArg(0, 2048), DoubleArgumentType::getDouble))
+                .then(create(SERVER.block_override, BoolArgumentType.bool(), BoolArgumentType::getBool))
+        );
+        return environment == Commands.EnvironmentType.INTEGRATED ? builder.then(Commands.literal("client")) : builder;
     }
 
     public static class Client {

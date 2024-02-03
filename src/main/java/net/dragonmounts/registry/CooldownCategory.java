@@ -11,7 +11,7 @@ public class CooldownCategory extends ForgeRegistryEntry<CooldownCategory> {
     public static final ResourceLocation DEFAULT_KEY = new ResourceLocation(MOD_ID, "ender");
     public static final Registry REGISTRY = new Registry(MOD_ID, "cooldown_category", new RegistryBuilder<CooldownCategory>().setDefaultKey(DEFAULT_KEY));
 
-    private int id = -1;
+    int id = -1;// non-private to simplify nested class access
 
     public final int getId() {
         return id;

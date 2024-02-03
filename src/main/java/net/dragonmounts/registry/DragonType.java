@@ -9,7 +9,7 @@ import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.IDataSerializer;
-import net.minecraft.particles.BasicParticleType;
+import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.RegistryKey;
@@ -36,16 +36,19 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
     public static final ResourceLocation DEFAULT_KEY = new ResourceLocation(MOD_ID, "ender");
     public static final DeferredRegistry<DragonType> REGISTRY = new DeferredRegistry<>(MOD_ID, "dragon_type", DragonType.class, new RegistryBuilder<DragonType>().setDefaultKey(DEFAULT_KEY));
     public static final IDataSerializer<DragonType> SERIALIZER = new IDataSerializer<DragonType>() {
+        @Override
         public void write(PacketBuffer buffer, @Nonnull DragonType value) {
             buffer.writeVarInt(REGISTRY.getID(value));
         }
 
         @Nonnull
+        @Override
         public DragonType read(@Nonnull PacketBuffer buffer) {
             return REGISTRY.getValue(buffer.readVarInt());
         }
 
         @Nonnull
+        @Override
         public DragonType copy(@Nonnull DragonType value) {
             return value;
         }
@@ -82,8 +85,8 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
     public final ImmutableMultimap<Attribute, AttributeModifier> attributes;
     public final Predicate<HatchableDragonEggEntity> isHabitatEnvironment;
     public final BiFunction<Integer, Boolean, Vector3d> passengerOffset;
-    public final BasicParticleType sneezeParticle;
-    public final BasicParticleType eggParticle;
+    public final IParticleData sneezeParticle;
+    public final IParticleData eggParticle;
     public final DragonVariant.Manager variants = new DragonVariant.Manager(this);
     private final Reference2ObjectOpenHashMap<Class<?>, Object> map = new Reference2ObjectOpenHashMap<>();
     private final Style style;
@@ -169,8 +172,8 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
         public final Set<RegistryKey<Biome>> biomes = new HashSet<>();
         public boolean convertible = true;
         public boolean isSkeleton = false;
-        public BasicParticleType sneezeParticle = ParticleTypes.LARGE_SMOKE;
-        public BasicParticleType eggParticle = ParticleTypes.MYCELIUM;
+        public IParticleData sneezeParticle = ParticleTypes.LARGE_SMOKE;
+        public IParticleData eggParticle = ParticleTypes.MYCELIUM;
         public BiFunction<Integer, Boolean, Vector3d> passengerOffset = DragonType.DEFAULT_PASSENGER_OFFSET;
         public Predicate<HatchableDragonEggEntity> isHabitatEnvironment = DragonType.DEFAULT_ENVIRONMENT_PREDICATE;
 
@@ -216,12 +219,12 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
             return this;
         }
 
-        public Properties setSneezeParticle(BasicParticleType particle) {
+        public Properties setSneezeParticle(IParticleData particle) {
             this.sneezeParticle = particle;
             return this;
         }
 
-        public Properties setEggParticle(BasicParticleType particle) {
+        public Properties setEggParticle(IParticleData particle) {
             this.eggParticle = particle;
             return this;
         }

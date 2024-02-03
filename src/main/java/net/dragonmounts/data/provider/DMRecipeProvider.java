@@ -1,7 +1,7 @@
 package net.dragonmounts.data.provider;
 
 import net.dragonmounts.api.DragonScaleArmorSuit;
-import net.dragonmounts.data.tags.DMItemTags;
+import net.dragonmounts.data.tag.DMItemTags;
 import net.dragonmounts.init.DMBlocks;
 import net.dragonmounts.init.DMItems;
 import net.dragonmounts.item.*;
@@ -54,9 +54,8 @@ public class DMRecipeProvider extends RecipeProvider {
         carriage(consumer, DMItems.JUNGLE_CARRIAGE, Blocks.JUNGLE_PLANKS);
         carriage(consumer, DMItems.ACACIA_CARRIAGE, Blocks.ACACIA_PLANKS);
         carriage(consumer, DMItems.DARK_OAK_CARRIAGE, Blocks.DARK_OAK_PLANKS);
-        for (DragonType type : DragonType.REGISTRY) {
+        for (DragonType type : DragonType.REGISTRY)
             dragonScaleDerivatives(consumer, type);
-        }
         shaped(DMItems.DIAMOND_SHEARS)
                 .define('X', Tags.Items.GEMS_DIAMOND)
                 .pattern(" X")

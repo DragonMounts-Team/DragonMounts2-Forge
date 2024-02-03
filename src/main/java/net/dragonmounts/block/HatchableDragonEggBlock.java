@@ -41,7 +41,7 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
 
     public static void interact(PlayerInteractEvent.RightClickBlock event) {
         World level = event.getWorld();
-        if (DragonMountsConfig.SERVER.block_override.get() && !level.isClientSide) {
+        if (!level.isClientSide && DragonMountsConfig.SERVER.block_override.get()) {
             BlockPos pos = event.getPos();
             Block block = level.getBlockState(pos).getBlock();
             if (block == Blocks.DRAGON_EGG && !level.dimension().equals(World.END)) {
@@ -61,9 +61,7 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
 
     @Override
     public void attack(@Nonnull BlockState state, World level, @Nonnull BlockPos pos, @Nonnull PlayerEntity player) {
-        if (level.dimension().equals(World.END)) {
-            super.attack(state, level, pos, player);
-        }
+        if (level.dimension().equals(World.END)) super.attack(state, level, pos, player);
     }
 
     @Override
@@ -76,11 +74,8 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
     @Nonnull
     @Override
     public ActionResultType use(@Nonnull BlockState state, World level, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult hit) {
-        if (level.isClientSide) {
-            return ActionResultType.SUCCESS;
-        } else if (level.dimension().equals(World.END)) {
-            return super.use(state, level, pos, player, hand, hit);
-        }
+        if (level.isClientSide) return ActionResultType.SUCCESS;
+        else if (level.dimension().equals(World.END)) return super.use(state, level, pos, player, hand, hit);
         spawn(level, pos, this.type);
         return ActionResultType.CONSUME;
     }

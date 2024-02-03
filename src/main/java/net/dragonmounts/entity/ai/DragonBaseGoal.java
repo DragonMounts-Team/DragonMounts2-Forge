@@ -1,6 +1,6 @@
-package net.dragonmounts3.entity.ai;
+package net.dragonmounts.entity.ai;
 
-import net.dragonmounts3.entity.dragon.TameableDragonEntity;
+import net.dragonmounts.entity.dragon.TameableDragonEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;

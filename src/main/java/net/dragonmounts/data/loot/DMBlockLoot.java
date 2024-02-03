@@ -23,9 +23,7 @@ public class DMBlockLoot extends BlockLootTables {
         this.dropSelf(DMBlocks.DRAGON_NEST);
         for (DragonType type : DragonType.REGISTRY) {//Do NOT load other mods at the same time!
             HatchableDragonEggBlock block = type.getInstance(HatchableDragonEggBlock.class, null);
-            if (block != null) {
-                this.dropDragonEgg(block);
-            }
+            if (block != null) this.dropDragonEgg(block);
         }
     }
 

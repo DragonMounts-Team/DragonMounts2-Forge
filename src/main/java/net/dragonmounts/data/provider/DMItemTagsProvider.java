@@ -1,8 +1,8 @@
 package net.dragonmounts.data.provider;
 
 import net.dragonmounts.DragonMounts;
-import net.dragonmounts.data.tags.DMBlockTags;
-import net.dragonmounts.data.tags.DMItemTags;
+import net.dragonmounts.data.tag.DMBlockTags;
+import net.dragonmounts.data.tag.DMItemTags;
 import net.dragonmounts.init.DMBlocks;
 import net.dragonmounts.init.DMItems;
 import net.dragonmounts.item.DragonScaleBowItem;
@@ -42,13 +42,9 @@ public class DMItemTagsProvider extends ItemTagsProvider {
         Builder<Item> tagScales = this.tag(DMItemTags.DRAGON_SCALES);
         for (DragonType type : DragonType.REGISTRY) {
             DragonScaleBowItem bow = type.getInstance(DragonScaleBowItem.class, null);
-            if (bow != null) {
-                tagBow.add(bow);
-            }
+            if (bow != null) tagBow.add(bow);
             DragonScalesItem scales = type.getInstance(DragonScalesItem.class, null);
-            if (scales != null) {
-                tagScales.add(scales);
-            }
+            if (scales != null) tagScales.add(scales);
         }
     }
 }

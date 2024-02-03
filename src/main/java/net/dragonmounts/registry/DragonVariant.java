@@ -41,7 +41,7 @@ public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements 
     }
 
     public final DragonType type;
-    private int index = -1;
+    int index = -1;// non-private to simplify nested class access
     private VariantAppearance appearance;
 
     public DragonVariant(DragonType type) {
@@ -97,7 +97,7 @@ public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements 
         }
 
         @SuppressWarnings("UnusedReturnValue")
-        private boolean add(final DragonVariant variant) {
+        boolean add(final DragonVariant variant) {// non-private to simplify nested class access
             if (variant.type != this.type || variant.index >= 0) return false;
             this.grow(this.size + 1);
             variant.index = this.size;
@@ -107,7 +107,7 @@ public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements 
         }
 
         @SuppressWarnings("UnusedReturnValue")
-        private boolean remove(final DragonVariant variant) {
+        boolean remove(final DragonVariant variant) {// non-private to simplify nested class access
             if (variant.type != this.type || variant.index < 0) return false;
             if (variant.index >= this.size)
                 throw new IndexOutOfBoundsException("Index (" + variant.index + ") is greater than or equal to list size (" + this.size + ")");
@@ -121,7 +121,7 @@ public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements 
             return true;
         }
 
-        private void clear() {
+        void clear() {// non-private to simplify nested class access
             for (int i = 0; i < this.size; ++i) {
                 this.variants[i].index = -1;
                 this.variants[i] = null;
@@ -170,9 +170,8 @@ public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements 
         @Override
         public void onClear(IForgeRegistryInternal<DragonVariant> owner, RegistryManager stage) {
             if (owner == this.registry) {//public -> protected
-                for (DragonType type : DragonType.REGISTRY) {
+                for (DragonType type : DragonType.REGISTRY)
                     type.variants.clear();
-                }
             }
         }
     }

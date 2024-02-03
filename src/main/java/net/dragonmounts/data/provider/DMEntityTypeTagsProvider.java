@@ -1,7 +1,7 @@
 package net.dragonmounts.data.provider;
 
 import net.dragonmounts.DragonMounts;
-import net.dragonmounts.data.tags.DMEntityTypeTags;
+import net.dragonmounts.data.tag.DMEntityTypeTags;
 import net.dragonmounts.init.DMEntities;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.EntityTypeTagsProvider;

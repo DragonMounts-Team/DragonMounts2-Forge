@@ -203,13 +203,9 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
     @Nonnull
     @Override
     public ActionResultType interact(PlayerEntity player, Hand hand) {
-        if (!this.isAlive()) {
-            return ActionResultType.PASS;
-        } else if (player.isShiftKeyDown()) {
+        if (this.isAlive() && player.isShiftKeyDown()) {
             HatchableDragonEggBlock block = this.getDragonType().getInstance(HatchableDragonEggBlock.class, null);
-            if (block == null) {
-                return ActionResultType.FAIL;
-            }
+            if (block == null) return ActionResultType.FAIL;
             this.remove();
             this.level.setBlockAndUpdate(this.blockPosition(), block.defaultBlockState());
             return ActionResultType.SUCCESS;

@@ -69,10 +69,10 @@ public class DragonTailModelPart extends ScaledModelPart {
     }
 
     @Override
-    public void render(@Nonnull MatrixStack poseStack, @Nonnull IVertexBuilder vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void render(@Nonnull MatrixStack poseStack, @Nonnull IVertexBuilder vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
         for (Segment segment : this.segments) {
             segment.apply(this);
-            super.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+            super.render(poseStack, vertexConsumer, light, overlay, red, green, blue, alpha);
         }
     }
 

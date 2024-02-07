@@ -33,28 +33,28 @@ public class TameableDragonRenderer extends LivingRenderer<TameableDragonEntity,
     }
 
     @Override
-    protected void setupRotations(@Nonnull TameableDragonEntity dragon, @Nonnull MatrixStack matrixStack, float ageInTicks, float rotationYaw, float partialTicks) {
-        super.setupRotations(dragon, matrixStack, ageInTicks, rotationYaw, partialTicks);
+    protected void setupRotations(@Nonnull TameableDragonEntity dragon, @Nonnull MatrixStack matrices, float ageInTicks, float rotationYaw, float partialTicks) {
+        super.setupRotations(dragon, matrices, ageInTicks, rotationYaw, partialTicks);
         float scale = dragon.getScale() * dragon.getVariant().getAppearance(VariantAppearances.ENDER_FEMALE).renderScale;
-        matrixStack.scale(scale, scale, scale);
+        matrices.scale(scale, scale, scale);
         this.shadowRadius = dragon.isBaby() ? 4 * scale : 2 * scale;
-        matrixStack.translate(dragon.animator.getModelOffsetX(), dragon.animator.getModelOffsetY(), dragon.animator.getModelOffsetZ());
-        matrixStack.translate(0, 1.5, 0.5); // change rotation point
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(dragon.animator.getModelPitch(partialTicks))); // rotate near the saddle so we can support the player
-        matrixStack.translate(0, -1.5, -0.5); // restore rotation point
+        matrices.translate(dragon.animator.getModelOffsetX(), dragon.animator.getModelOffsetY(), dragon.animator.getModelOffsetZ());
+        matrices.translate(0, 1.5, 0.5); // change rotation point
+        matrices.mulPose(Vector3f.XP.rotationDegrees(dragon.animator.getModelPitch(partialTicks))); // rotate near the saddle so we can support the player
+        matrices.translate(0, -1.5, -0.5); // restore rotation point
     }
 
     @Override
-    public void render(@Nonnull TameableDragonEntity dragon, float entityYaw, float partialTicks, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int packedLight) {
+    public void render(@Nonnull TameableDragonEntity dragon, float entityYaw, float partialTicks, @Nonnull MatrixStack matrices, @Nonnull IRenderTypeBuffer buffer, int light) {
         if (dragon.nearestCrystal != null) {
-            matrixStack.pushPose();
+            matrices.pushPose();
             float x = (float) (dragon.nearestCrystal.getX() - MathHelper.lerp(partialTicks, dragon.xo, dragon.getX()));
             float y = (float) (dragon.nearestCrystal.getY() - MathHelper.lerp(partialTicks, dragon.yo, dragon.getY()));
             float z = (float) (dragon.nearestCrystal.getZ() - MathHelper.lerp(partialTicks, dragon.zo, dragon.getZ()));
-            renderCrystalBeams(x, y + EnderCrystalRenderer.getY(dragon.nearestCrystal, partialTicks), z, partialTicks, dragon.tickCount, matrixStack, buffer, packedLight);
-            matrixStack.popPose();
+            renderCrystalBeams(x, y + EnderCrystalRenderer.getY(dragon.nearestCrystal, partialTicks), z, partialTicks, dragon.tickCount, matrices, buffer, light);
+            matrices.popPose();
         }
-        super.render(dragon, entityYaw, partialTicks, matrixStack, buffer, packedLight);
+        super.render(dragon, entityYaw, partialTicks, matrices, buffer, light);
     }
 
     @Override

@@ -21,7 +21,7 @@ import java.util.List;
 public class DragonModel extends EntityModel<TameableDragonEntity> {
     private static final Matrix4f INVERSE_SCALE = Matrix4f.createScaleMatrix(-1, 1, 1);
     private static final Matrix3f INVERSE_NORMS = new Matrix3f(INVERSE_SCALE);
-    public final DragonHeadModelPart head;
+    public final DragonHeadModel.Part head;
     public final DragonNeckModelPart neck;
     public final DragonBodyModelPart body;
     public final DragonTailModelPart tail;
@@ -34,7 +34,7 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
     public DragonModel() {
         this.texWidth = 256;
         this.texHeight = 256;
-        this.head = new DragonHeadModelPart(this);
+        this.head = new DragonHeadModel.Part(this);
         this.neck = new DragonNeckModelPart(this);
         this.body = new DragonBodyModelPart(this);
         this.tail = new DragonTailModelPart(this);
@@ -64,50 +64,50 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
     }
 
     @Override
-    public void renderToBuffer(@Nonnull MatrixStack matrixStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        this.body.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        renderHead(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.neck.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.tail.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        renderWings(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        renderLegs(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+    public void renderToBuffer(@Nonnull MatrixStack matrices, @Nonnull IVertexBuilder buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+        this.body.render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        renderHead(matrices, buffer, light, overlay, red, green, blue, alpha);
+        this.neck.render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        this.tail.render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        renderWings(matrices, buffer, light, overlay, red, green, blue, alpha);
+        renderLegs(matrices, buffer, light, overlay, red, green, blue, alpha);
     }
 
-    public void renderOnShoulder(VariantAppearance appearance, @Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int packedLight, float size) {
-        matrixStack.pushPose();
+    public void renderOnShoulder(VariantAppearance appearance, @Nonnull MatrixStack matrices, @Nonnull IRenderTypeBuffer buffer, int light, float size) {
+        matrices.pushPose();
         float scale = size * appearance.renderScale;
-        matrixStack.scale(-scale, -scale, scale);
+        matrices.scale(-scale, -scale, scale);
         boolean hasSideTailScale = appearance.hasSideTailScaleOnShoulder();
         this.tail.leftScale.visible = this.tail.rightScale.visible = hasSideTailScale;
         this.tail.middleScale.visible = !hasSideTailScale;
         this.head.scaleX = this.head.scaleY = this.head.scaleZ = 0.92F;
-        this.renderToBuffer(matrixStack, buffer.getBuffer(appearance.getBodyOnShoulder()), packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-        this.renderToBuffer(matrixStack, buffer.getBuffer(appearance.getGlowOnShoulder()), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-        matrixStack.popPose();
+        this.renderToBuffer(matrices, buffer.getBuffer(appearance.getBodyForShoulder()), light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.renderToBuffer(matrices, buffer.getBuffer(appearance.getGlowForShoulder()), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        matrices.popPose();
     }
 
-    protected void renderHead(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        this.head.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+    protected void renderHead(MatrixStack matrices, IVertexBuilder buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+        this.head.render(matrices, buffer, light, overlay, red, green, blue, alpha);
     }
 
-    public void renderWings(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        matrixStack.pushPose();
-        matrixStack.scale(1.1F, 1.1F, 1.1F);
-        this.wing.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        matrixStack.last().pose().multiply(INVERSE_SCALE);
-        matrixStack.last().normal().mul(INVERSE_NORMS);
-        this.wing.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        matrixStack.popPose();
+    public void renderWings(MatrixStack matrices, IVertexBuilder buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+        matrices.pushPose();
+        matrices.scale(1.1F, 1.1F, 1.1F);
+        this.wing.render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        matrices.last().pose().multiply(INVERSE_SCALE);
+        matrices.last().normal().mul(INVERSE_NORMS);
+        this.wing.render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        matrices.popPose();
     }
 
-    protected void renderLegs(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        matrixStack.pushPose();
-        this.foreRightLeg.getCurrent().render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.hindRightLeg.getCurrent().render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        matrixStack.last().pose().multiply(INVERSE_SCALE);
-        matrixStack.last().normal().mul(INVERSE_NORMS);
-        this.foreLeftLeg.getCurrent().render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.hindLeftLeg.getCurrent().render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        matrixStack.popPose();
+    protected void renderLegs(MatrixStack matrices, IVertexBuilder buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+        matrices.pushPose();
+        this.foreRightLeg.getCurrent().render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        this.hindRightLeg.getCurrent().render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        matrices.last().pose().multiply(INVERSE_SCALE);
+        matrices.last().normal().mul(INVERSE_NORMS);
+        this.foreLeftLeg.getCurrent().render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        this.hindLeftLeg.getCurrent().render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        matrices.popPose();
     }
 }

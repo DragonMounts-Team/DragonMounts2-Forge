@@ -21,8 +21,7 @@ public class DMBlockTagsProvider extends BlockTagsProvider {
 
     @Override
     protected void addTags() {
-        this.tag(BlockTags.PIGLIN_REPELLENTS)
-                .add(DMBlocks.DRAGON_CORE);
+        this.tag(BlockTags.PIGLIN_REPELLENTS).add(DMBlocks.DRAGON_CORE);
         Builder<Block> tag = this.tag(DMBlockTags.DRAGON_EGGS).add(Blocks.DRAGON_EGG);
         for (DragonType type : DragonType.REGISTRY) {
             HatchableDragonEggBlock egg = type.getInstance(HatchableDragonEggBlock.class, null);

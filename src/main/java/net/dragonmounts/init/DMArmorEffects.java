@@ -85,8 +85,8 @@ public class DMArmorEffects {
         }
 
         @Override
-        public void appendHoverText(@Nonnull ItemStack stack, World world, List<ITextComponent> components) {
-            components.add(new TranslationTextComponent("tooltip.armor_effect.dragonmounts.water"));
+        public void appendHoverText(@Nonnull ItemStack stack, World world, List<ITextComponent> tooltips) {
+            tooltips.add(new TranslationTextComponent("tooltip.armor_effect.dragonmounts.water"));
         }
     };
 
@@ -149,11 +149,11 @@ public class DMArmorEffects {
         }
 
         @Override
-        public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> components) {
-            components.add(StringTextComponent.EMPTY);
-            this.appendTriggerInfo(stack, world, components);
-            components.add(new TranslationTextComponent(FISHING_LUCK));
-            this.appendCooldownInfo(stack, world, components);
+        public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> tooltips) {
+            tooltips.add(StringTextComponent.EMPTY);
+            this.appendTriggerInfo(stack, world, tooltips);
+            tooltips.add(new TranslationTextComponent(FISHING_LUCK));
+            this.appendCooldownInfo(stack, world, tooltips);
         }
     }.withRegistryName(MOD_ID + ":forest");
 
@@ -170,8 +170,8 @@ public class DMArmorEffects {
         }
 
         @Override
-        public void appendHoverText(@Nonnull ItemStack stack, World world, List<ITextComponent> components) {
-            components.add(new TranslationTextComponent("tooltip.armor_effect.dragonmounts.water"));
+        public void appendHoverText(@Nonnull ItemStack stack, World world, List<ITextComponent> tooltips) {
+            tooltips.add(new TranslationTextComponent("tooltip.armor_effect.dragonmounts.water"));
         }
     };
 
@@ -195,11 +195,11 @@ public class DMArmorEffects {
         }
 
         @Override
-        public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> components) {
-            components.add(StringTextComponent.EMPTY);
-            this.appendTriggerInfo(stack, world, components);
-            components.add(new TranslationTextComponent(FISHING_LUCK));
-            this.appendCooldownInfo(stack, world, components);
+        public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> tooltips) {
+            tooltips.add(StringTextComponent.EMPTY);
+            this.appendTriggerInfo(stack, world, tooltips);
+            tooltips.add(new TranslationTextComponent(FISHING_LUCK));
+            this.appendCooldownInfo(stack, world, tooltips);
         }
     }.withRegistryName(MOD_ID + ":sunlight");
 
@@ -213,8 +213,8 @@ public class DMArmorEffects {
         }
 
         @Override
-        public void appendHoverText(@Nonnull ItemStack stack, World world, List<ITextComponent> components) {
-            components.add(new TranslationTextComponent("tooltip.armor_effect.dragonmounts.water"));
+        public void appendHoverText(@Nonnull ItemStack stack, World world, List<ITextComponent> tooltips) {
+            tooltips.add(new TranslationTextComponent("tooltip.armor_effect.dragonmounts.water"));
         }
     };
 
@@ -228,8 +228,8 @@ public class DMArmorEffects {
         }
 
         @Override
-        public void appendHoverText(@Nonnull ItemStack stack, World world, List<ITextComponent> components) {
-            components.add(new TranslationTextComponent("tooltip.armor_effect.dragonmounts.water"));
+        public void appendHoverText(@Nonnull ItemStack stack, World world, List<ITextComponent> tooltips) {
+            tooltips.add(new TranslationTextComponent("tooltip.armor_effect.dragonmounts.water"));
         }
     };
 

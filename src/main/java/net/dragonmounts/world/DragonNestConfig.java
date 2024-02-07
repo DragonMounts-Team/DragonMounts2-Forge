@@ -36,8 +36,8 @@ public abstract class DragonNestConfig implements IFeatureConfig {
             int l = 0;
             blockpos$mutable.set(0, k, 0);
             for (IBlockReader iblockreader : list) {
-                BlockState blockstate = iblockreader.getBlockState(blockpos$mutable);
-                if (Heightmap.Type.WORLD_SURFACE_WG.isOpaque().test(blockstate)) {
+                BlockState state = iblockreader.getBlockState(blockpos$mutable);
+                if (Heightmap.Type.WORLD_SURFACE_WG.isOpaque().test(state)) {
                     ++l;
                     if (l == 3) {
                         return k;

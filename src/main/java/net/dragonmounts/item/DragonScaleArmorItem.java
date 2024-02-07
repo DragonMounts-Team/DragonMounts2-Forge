@@ -33,7 +33,7 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified, 
     protected DragonType type;
     public final IDragonScaleArmorEffect effect;
 
-    public DragonScaleArmorItem(DragonScaleMaterial material, EquipmentSlotType slot, IDragonScaleArmorEffect effect, Properties properties) {
+    public DragonScaleArmorItem(DragonScaleMaterial material, EquipmentSlotType slot, @Nullable IDragonScaleArmorEffect effect, Properties properties) {
         super(material, slot, properties);
         this.type = material.getDragonType();
         this.effect = effect;
@@ -52,10 +52,10 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified, 
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
-        components.add(this.type.getName());
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltips, ITooltipFlag flag) {
+        tooltips.add(this.type.getName());
         if (this.effect == null) return;
-        this.effect.appendHoverText(stack, world, components);
+        this.effect.appendHoverText(stack, world, tooltips);
     }
 
     @Override

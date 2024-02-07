@@ -32,6 +32,7 @@ public class DragonFood implements IDragonFood {
         } else if (dragon.getRandom().nextFloat() < 0.25) {
             dragon.tame(player);
         }
+
     };
 
     public static final IDragonFood POISONOUS_POTATO = new IDragonFood() {
@@ -76,19 +77,13 @@ public class DragonFood implements IDragonFood {
     }
 
     public static void bind(Item item, IDragonFood food) {
-        if (REGISTRY.containsKey(item)) {
-            throw new IllegalArgumentException();
-        }
+        if (REGISTRY.containsKey(item)) throw new IllegalArgumentException();
         REGISTRY.put(item, food);
     }
 
     public static IDragonFood get(Item item, IDragonFood defaultValue) {
-        if (item instanceof IDragonFood) {
-            return (IDragonFood) item;
-        }
-        if (REGISTRY.containsKey(item)) {
-            return REGISTRY.get(item);
-        }
+        if (item instanceof IDragonFood) return (IDragonFood) item;
+        if (REGISTRY.containsKey(item)) return REGISTRY.get(item);
         return defaultValue;
     }
 
@@ -107,12 +102,8 @@ public class DragonFood implements IDragonFood {
     @Override
     public void eat(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand) {
         Item item = stack.getItem();
-        if (this.age != 0) {
-            dragon.ageUp(this.age, true);
-        }
-        if (this.health != 0) {
-            dragon.setHealth(dragon.getHealth() + this.health);
-        }
+        if (this.age != 0) dragon.ageUp(this.age, true);
+        if (this.health != 0) dragon.setHealth(dragon.getHealth() + this.health);
         if (!player.abilities.instabuild) {
             Item result = null;
             if (item instanceof SoupItem) {

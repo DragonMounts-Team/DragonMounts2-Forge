@@ -86,7 +86,7 @@ public class AmuletItem<T extends Entity> extends Item implements IEntityContain
 
     @Nonnull
     @Override
-    public ActionResultType interactLivingEntity(@Nonnull ItemStack stack, @Nonnull PlayerEntity player, @Nonnull LivingEntity target, @Nonnull Hand hand) {
+    public ActionResultType interactLivingEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
         if (target instanceof TameableDragonEntity) {
             if (player.level.isClientSide) return ActionResultType.SUCCESS;
             TameableDragonEntity dragon = (TameableDragonEntity) target;
@@ -105,9 +105,7 @@ public class AmuletItem<T extends Entity> extends Item implements IEntityContain
                             false,
                             false
                     );
-                    if (entity != null) {
-                        player.level.addFreshEntity(entity);
-                    }
+                    if (entity != null) player.level.addFreshEntity(entity);
                 }
                 consume(player, hand, stack, amulet.saveEntity(dragon));
                 dragon.remove(false);
@@ -127,57 +125,49 @@ public class AmuletItem<T extends Entity> extends Item implements IEntityContain
         CompoundNBT tag = stack.getTag();
         if (tag == null || this.isEmpty(tag)) return ActionResultType.PASS;
         World level = context.getLevel();
-        if (level.isClientSide) {
-            return ActionResultType.SUCCESS;
-        } else {
-            ServerWorld world = (ServerWorld) level;
-            PlayerEntity player = context.getPlayer();
-            BlockPos clickedPos = context.getClickedPos();
-            Direction direction = context.getClickedFace();
-            BlockState blockstate = world.getBlockState(clickedPos);
-            BlockPos spawnPos = blockstate.getCollisionShape(world, clickedPos).isEmpty() ? clickedPos : clickedPos.relative(direction);
-            Entity entity = this.spwanEntity(world,
-                    player,
-                    tag,
-                    spawnPos,
-                    SpawnReason.EVENT,
-                    null,
-                    true,
-                    !Objects.equals(clickedPos, spawnPos) && direction == Direction.UP
-            );
-            if (entity != null) {
-                world.addFreshEntity(entity);
-                consume(player, context.getHand(), stack, new ItemStack(this));
-            }
-            return ActionResultType.CONSUME;
+        if (level.isClientSide) return ActionResultType.SUCCESS;
+        ServerWorld world = (ServerWorld) level;
+        PlayerEntity player = context.getPlayer();
+        BlockPos clickedPos = context.getClickedPos();
+        Direction direction = context.getClickedFace();
+        BlockState state = world.getBlockState(clickedPos);
+        BlockPos spawnPos = state.getCollisionShape(world, clickedPos).isEmpty() ? clickedPos : clickedPos.relative(direction);
+        Entity entity = this.spwanEntity(world,
+                player,
+                tag,
+                spawnPos,
+                SpawnReason.EVENT,
+                null,
+                true,
+                !Objects.equals(clickedPos, spawnPos) && direction == Direction.UP
+        );
+        if (entity != null) {
+            world.addFreshEntity(entity);
+            consume(player, context.getHand(), stack, new ItemStack(this));
         }
+        return ActionResultType.CONSUME;
     }
 
     @Nonnull
     @Override
-    public ActionResult<ItemStack> use(@Nonnull World level, PlayerEntity player, @Nonnull Hand hand) {
+    public ActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getItemInHand(hand);
         CompoundNBT tag = stack.getTag();
         if (tag == null || this.isEmpty(tag)) return ActionResult.pass(stack);
         BlockRayTraceResult result = getPlayerPOVHitResult(level, player, RayTraceContext.FluidMode.SOURCE_ONLY);
-        if (result.getType() != RayTraceResult.Type.BLOCK) {
-            return ActionResult.pass(stack);
-        } else if (level.isClientSide) {
-            return ActionResult.success(stack);
-        } else {
-            BlockPos pos = result.getBlockPos();
-            if (!(level.getBlockState(pos).getBlock() instanceof FlowingFluidBlock)) {
-                return ActionResult.pass(stack);
-            } else if (level.mayInteract(player, pos) && player.mayUseItemAt(pos, result.getDirection(), stack)) {
-                ServerWorld world = (ServerWorld) level;
-                Entity entity = this.spwanEntity(world, player, tag, pos, SpawnReason.EVENT, null, false, false);
-                if (entity == null) return ActionResult.pass(stack);
-                world.addFreshEntity(entity);
-                player.awardStat(Stats.ITEM_USED.get(this));
-                return ActionResult.success(consume(player, hand, stack, new ItemStack(this)));
-            }
-            return ActionResult.fail(stack);
+        if (result.getType() != RayTraceResult.Type.BLOCK) return ActionResult.pass(stack);
+        else if (level.isClientSide) return ActionResult.success(stack);
+        BlockPos pos = result.getBlockPos();
+        if (!(level.getBlockState(pos).getBlock() instanceof FlowingFluidBlock)) return ActionResult.pass(stack);
+        else if (level.mayInteract(player, pos) && player.mayUseItemAt(pos, result.getDirection(), stack)) {
+            ServerWorld world = (ServerWorld) level;
+            Entity entity = this.spwanEntity(world, player, tag, pos, SpawnReason.EVENT, null, false, false);
+            if (entity == null) return ActionResult.pass(stack);
+            world.addFreshEntity(entity);
+            player.awardStat(Stats.ITEM_USED.get(this));
+            return ActionResult.success(consume(player, hand, stack, new ItemStack(this)));
         }
+        return ActionResult.fail(stack);
     }
 
     @Nonnull

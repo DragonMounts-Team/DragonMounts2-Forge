@@ -30,8 +30,8 @@ public class LazyEnumConfigOption<T extends Enum<T>> extends AbstractLazyConfigO
     }
 
     public void toggle() {
-        int i = this.get().ordinal();
-        this.set(++i >= this.values.length ? this.values[0] : this.values[i]);
+        int i = this.get().ordinal() + 1;
+        this.set(i < this.values.length ? this.values[i] : this.values[0]);
     }
 
     public void set(T value) {
@@ -49,8 +49,8 @@ public class LazyEnumConfigOption<T extends Enum<T>> extends AbstractLazyConfigO
 
     @Nonnull
     @Override
-    public Widget createButton(@Nullable GameSettings options, int pX, int pY, int pWidth) {
-        return new OptionButton(pX, pY, pWidth, 20, this, this.stringify.apply(this), button -> {
+    public Widget createButton(@Nullable GameSettings options, int x, int y, int width) {
+        return new OptionButton(x, y, width, 20, this, this.stringify.apply(this), button -> {
             this.toggle();
             button.setMessage(this.stringify.apply(this));
         });

@@ -33,11 +33,9 @@ public class DragonWhistleItem extends Item {
 
     @Nonnull
     @Override
-    public ActionResultType interactLivingEntity(@Nonnull ItemStack stack, @Nonnull PlayerEntity player, @Nonnull LivingEntity entity, @Nonnull Hand hand) {
+    public ActionResultType interactLivingEntity(ItemStack stack, PlayerEntity player, LivingEntity entity, Hand hand) {
         if (entity instanceof TameableDragonEntity) {
-            if (player.level.isClientSide) {
-                return ActionResultType.SUCCESS;
-            }
+            if (player.level.isClientSide) return ActionResultType.SUCCESS;
             TameableDragonEntity dragon = (TameableDragonEntity) entity;
             if (dragon.isOwnedBy(player)) {
                 CompoundNBT compound = new CompoundNBT();
@@ -58,17 +56,15 @@ public class DragonWhistleItem extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, @Nonnull List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltips, ITooltipFlag flag) {
         CompoundNBT compound = stack.getTag();
         if (compound != null && compound.contains("UUID")) {
-            if (compound.contains("Type")) {
+            if (compound.contains("Type"))
                 DragonType.byName(compound.getString("Type")).getFormattedName("tooltip.dragonmounts.type").withStyle(TextFormatting.GRAY);
-            }
             try {
                 String string = compound.getString("OwnerName");
-                if (!string.isEmpty()) {
-                    components.add(new TranslationTextComponent("tooltip.dragonmounts.owner_name", ITextComponent.Serializer.fromJson(string)).withStyle(TextFormatting.GRAY));
-                }
+                if (!string.isEmpty())
+                    tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.owner_name", ITextComponent.Serializer.fromJson(string)).withStyle(TextFormatting.GRAY));
             } catch (Exception exception) {
                 LOGGER.warn(exception);
             }

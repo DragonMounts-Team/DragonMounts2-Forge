@@ -13,7 +13,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
@@ -41,10 +40,10 @@ public class DragonArmorItem extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, @Nonnull List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
-        components.add(StringTextComponent.EMPTY);
-        components.add((new TranslationTextComponent("item.modifiers.equipped").withStyle(TextFormatting.GRAY)));
-        components.add((new TranslationTextComponent("attribute.modifier.plus.0", this.protection, new TranslationTextComponent(ARMOR.getDescriptionId()))).withStyle(TextFormatting.BLUE));
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltips, ITooltipFlag flag) {
+        tooltips.add(StringTextComponent.EMPTY);
+        tooltips.add((new TranslationTextComponent("item.modifiers.equipped").withStyle(TextFormatting.GRAY)));
+        tooltips.add((new TranslationTextComponent("attribute.modifier.plus.0", this.protection, new TranslationTextComponent(ARMOR.getDescriptionId()))).withStyle(TextFormatting.BLUE));
     }
 
     public ResourceLocation getDragonArmorTexture(ItemStack stack, TameableDragonEntity dragon) {

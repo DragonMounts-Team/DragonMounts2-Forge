@@ -40,8 +40,8 @@ public class LazySliderConfigOption extends AbstractLazyConfigOption<Double> {
 
     @Nonnull
     @Override
-    public Widget createButton(@Nullable GameSettings options, int pX, int pY, int pWidth) {
-        return new ConfigSliderWidget(pX, pY, pWidth, 20, this);
+    public Widget createButton(@Nullable GameSettings options, int x, int y, int width) {
+        return new ConfigSliderWidget(x, y, width, 20, this);
     }
 
     public double toPct(double value) {

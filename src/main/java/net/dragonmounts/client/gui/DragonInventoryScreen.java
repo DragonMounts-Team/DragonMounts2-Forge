@@ -27,24 +27,23 @@ public class DragonInventoryScreen extends DisplayEffectsScreen<DragonInventoryC
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrixStack);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.renderTooltip(matrixStack, mouseX, mouseY);
+    public void render(@Nonnull MatrixStack matrices, int x, int y, float ticks) {
+        this.renderBackground(matrices);
+        super.render(matrices, x, y, ticks);
+        this.renderTooltip(matrices, x, y);
     }
 
     @Override
-    protected void renderBg(@Nonnull MatrixStack matrixStack, float partialTicks, int x, int y) {
-        if (this.minecraft == null) return;
+    protected void renderBg(@Nonnull MatrixStack matrices, float ticks, int x, int y) {
+        //noinspection DataFlowIssue
         this.minecraft.getTextureManager().bind(TEXTURE_LOCATION);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         int i = (this.width - this.imageWidth) >> 1;
         int j = (this.height - this.imageHeight) >> 1;
-        this.blit(matrixStack, i, j, 0, 0, this.imageWidth, this.imageHeight);
+        this.blit(matrices, i, j, 0, 0, this.imageWidth, this.imageHeight);
         if (this.menu.dragon.hasChest()) {
-            this.blit(matrixStack, (this.width - 162) >> 1, (this.height - 74) >> 1, 7, 141, 162, 54);
+            this.blit(matrices, (this.width - 162) >> 1, (this.height - 74) >> 1, 7, 141, 162, 54);
         }
         InventoryScreen.renderEntityInInventory(i + 60, j + 62, 5, (float) (i + 60) - x, (float) (j + 75 - 62) - y, this.menu.dragon);
-
     }
 }

@@ -126,7 +126,7 @@ public class DragonAnimator {
     // Y rotation angles for air, thigh only
     private final float[] yAirAll = {-0.1F, 0.1F};
 
-    private DragonHeadModelPart headCache = null;
+    private DragonHeadModel.Part headCache = null;
     private float relativeHealth;
 
     public DragonAnimator(TameableDragonEntity dragon) {
@@ -144,7 +144,7 @@ public class DragonAnimator {
      * @return the world [x,y,z] of the throat
      */
     @Nullable
-    public Vector3d getThroatPosition(DragonHeadModelPart head, double offsetX, double offsetY, double offsetZ) {
+    public Vector3d getThroatPosition(DragonHeadModel.Part head, double offsetX, double offsetY, double offsetZ) {
         if (head == null) return null;
         Vector3d bodyOrigin = this.dragon.position().add(0, this.dragon.getEyeHeight(), 0);
         float scale = this.dragon.getScale();
@@ -345,7 +345,7 @@ public class DragonAnimator {
         pitchTrail.update(getModelPitch());
     }
 
-    protected void animHeadAndNeck(DragonHeadModelPart head, DragonNeckModelPart neck) {
+    protected void animHeadAndNeck(DragonHeadModel.Part head, DragonNeckModelPart neck) {
         this.headCache = head;
         neck.setPos(0, 14, -8);
         applyRotateAngle(neck, 0, 0, 0);

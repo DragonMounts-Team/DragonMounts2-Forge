@@ -55,7 +55,7 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
 
     @Nonnull
     @Override
-    public ActionResultType interactLivingEntity(@Nonnull ItemStack stack, @Nonnull PlayerEntity player, @Nonnull LivingEntity target, @Nonnull Hand hand) {
+    public ActionResultType interactLivingEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
         if (target instanceof TameableDragonEntity) {
             if (player.level.isClientSide) return ActionResultType.SUCCESS;
             TameableDragonEntity dragon = (TameableDragonEntity) target;
@@ -94,8 +94,8 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
             PlayerEntity player = context.getPlayer();
             BlockPos clickedPos = context.getClickedPos();
             Direction direction = context.getClickedFace();
-            BlockState blockstate = level.getBlockState(clickedPos);
-            BlockPos spawnPos = blockstate.getCollisionShape(level, clickedPos).isEmpty() ? clickedPos : clickedPos.relative(direction);
+            BlockState state = level.getBlockState(clickedPos);
+            BlockPos spawnPos = state.getCollisionShape(level, clickedPos).isEmpty() ? clickedPos : clickedPos.relative(direction);
             level.addFreshEntity(this.spwanEntity(
                     (ServerWorld) level,
                     player,
@@ -113,7 +113,7 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
 
     @Nonnull
     @Override
-    public ActionResult<ItemStack> use(@Nonnull World level, @Nonnull PlayerEntity player, @Nonnull Hand hand) {
+    public ActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
         BlockRayTraceResult result = getPlayerPOVHitResult(level, player, RayTraceContext.FluidMode.SOURCE_ONLY);
         ItemStack stack = player.getItemInHand(hand);
         if (result.getType() != RayTraceResult.Type.BLOCK) {
@@ -144,20 +144,20 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, @Nonnull List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltips, ITooltipFlag flag) {
         CompoundNBT compound = stack.getTag();
-        components.add(new TranslationTextComponent("tooltip.dragonmounts.type", this.type.getName()).withStyle(TextFormatting.GRAY));
+        tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.type", this.type.getName()).withStyle(TextFormatting.GRAY));
         if (compound != null) {
             try {
                 String string = compound.getString("CustomName");
                 if (!string.isEmpty()) {
-                    components.add(new TranslationTextComponent("tooltip.dragonmounts.custom_name", ITextComponent.Serializer.fromJson(string)).withStyle(TextFormatting.GRAY));
+                    tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.custom_name", ITextComponent.Serializer.fromJson(string)).withStyle(TextFormatting.GRAY));
                 }
-                components.add(new TranslationTextComponent("tooltip.dragonmounts.health", new StringTextComponent(Float.toString(compound.getFloat("Health"))).withStyle(TextFormatting.GREEN)).withStyle(TextFormatting.GRAY));
+                tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.health", new StringTextComponent(Float.toString(compound.getFloat("Health"))).withStyle(TextFormatting.GREEN)).withStyle(TextFormatting.GRAY));
                 if (compound.hasUUID("Owner")) {
                     string = compound.getString("OwnerName");
                     if (!string.isEmpty()) {
-                        components.add(new TranslationTextComponent("tooltip.dragonmounts.owner_name", ITextComponent.Serializer.fromJson(string)).withStyle(TextFormatting.GRAY));
+                        tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.owner_name", ITextComponent.Serializer.fromJson(string)).withStyle(TextFormatting.GRAY));
                     }
                     return;
                 }
@@ -165,7 +165,7 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
                 LOGGER.warn(exception);
             }
         }
-        components.add(new TranslationTextComponent("tooltip.dragonmounts.missing").withStyle(TextFormatting.RED));
+        tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.missing").withStyle(TextFormatting.RED));
     }
 
     @Override

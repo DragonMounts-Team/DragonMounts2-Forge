@@ -9,18 +9,20 @@ import net.dragonmounts.api.IDragonScaleArmorEffect;
 import net.dragonmounts.block.HatchableDragonEggBlock;
 import net.dragonmounts.item.*;
 import net.dragonmounts.registry.DragonType;
+import net.minecraft.dispenser.IBlockSource;
+import net.minecraft.dispenser.IDispenseItemBehavior;
+import net.minecraft.dispenser.OptionalDispenseBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.Item;
+import net.minecraft.item.*;
 import net.minecraft.item.Item.Properties;
-import net.minecraft.item.ItemTier;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nonnull;
 import java.util.function.Function;
 
 import static net.dragonmounts.api.DragonScaleArmorSuit.DRAGONMOUNTS_TOOL_TAB;
@@ -29,6 +31,13 @@ import static net.dragonmounts.init.DMItemGroups.*;
 @MethodsReturnNonnullByDefault
 public class DMItems {
     public static final DeferredRegister<Item> ITEMS = DragonMounts.create(ForgeRegistries.ITEMS);
+    public static final IDispenseItemBehavior EQUIPMENT_BEHAVIOR = new OptionalDispenseBehavior() {
+        @Nonnull
+        protected ItemStack execute(@Nonnull IBlockSource source, @Nonnull ItemStack stack) {
+            this.setSuccess(ArmorItem.dispenseArmor(source, stack));
+            return stack;
+        }
+    };
     //Scales Start
     public static final DragonScalesItem FOREST_DRAGON_SCALES = createDragonScalesItem("forest_dragon_scales", DragonTypes.FOREST, item());
     public static final DragonScalesItem FIRE_DRAGON_SCALES = createDragonScalesItem("fire_dragon_scales", DragonTypes.FIRE, item());
@@ -291,7 +300,7 @@ public class DMItems {
             "sculk_dragon_scale_boots",
             DragonScaleMaterial.SCULK,
             null,
-            slot -> new Properties().tab(TOOL_TAB).fireResistant()
+            $ -> new Properties().tab(TOOL_TAB).fireResistant()
     );
     //Dragon Spawn Eggs
     public static final DragonSpawnEggItem AETHER_DRAGON_SPAWN_EGG = createDragonSpawnEgg("aether_dragon_spawn_egg", DragonTypes.AETHER, 0x05C3D2, 0x281EE8, item());

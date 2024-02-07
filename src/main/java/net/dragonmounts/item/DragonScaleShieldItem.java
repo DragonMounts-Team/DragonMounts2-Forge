@@ -45,7 +45,7 @@ public class DragonScaleShieldItem extends ShieldItem implements IDragonTypified
     }
 
     @Override
-    public boolean isValidRepairItem(@Nonnull ItemStack toRepair, @Nonnull ItemStack repair) {
+    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
         return this.material.getRepairIngredient().test(repair);
     }
 
@@ -56,8 +56,8 @@ public class DragonScaleShieldItem extends ShieldItem implements IDragonTypified
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
-        components.add(this.type.getName());
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltips, ITooltipFlag flag) {
+        tooltips.add(this.type.getName());
     }
 
     @Nonnull

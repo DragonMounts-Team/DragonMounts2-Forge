@@ -38,7 +38,7 @@ public class CarriageItem extends Item {
 
     @Nonnull
     @Override
-    public ActionResult<ItemStack> use(@Nonnull World level, PlayerEntity player, @Nonnull Hand hand) {
+    public ActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
         RayTraceResult rayTraceResult = getPlayerPOVHitResult(level, player, RayTraceContext.FluidMode.NONE);
         if (rayTraceResult.getType() == RayTraceResult.Type.MISS) {

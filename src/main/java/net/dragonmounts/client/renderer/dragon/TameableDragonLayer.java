@@ -35,41 +35,41 @@ public class TameableDragonLayer extends LayerRenderer<TameableDragonEntity, Dra
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, @Nonnull IRenderTypeBuffer buffer, int packedLight, TameableDragonEntity dragon, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(@Nonnull MatrixStack matrices, @Nonnull IRenderTypeBuffer buffer, int light, TameableDragonEntity dragon, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         DragonModel model = this.getParentModel();
         VariantAppearance appearance = dragon.getVariant().getAppearance(VariantAppearances.ENDER_FEMALE);
         if (dragon.deathTime > 0) {
-            model.renderToBuffer(matrixStack, buffer.getBuffer(appearance.getDissolve(dragon)), packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-            model.renderToBuffer(matrixStack, buffer.getBuffer(appearance.getDecal(dragon)), packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-            model.renderToBuffer(matrixStack, buffer.getBuffer(appearance.getGlowDecal(dragon)), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            model.renderToBuffer(matrices, buffer.getBuffer(appearance.getDissolve(dragon)), light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            model.renderToBuffer(matrices, buffer.getBuffer(appearance.getDecal(dragon)), light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            model.renderToBuffer(matrices, buffer.getBuffer(appearance.getGlowDecal(dragon)), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
             return;
         }
         //saddle
         if (dragon.isSaddled()) {
-            renderColoredCutoutModel(model, appearance.getSaddle(dragon), matrixStack, buffer, packedLight, dragon, 1.0F, 1.0F, 1.0F);
+            renderColoredCutoutModel(model, appearance.getSaddle(dragon), matrices, buffer, light, dragon, 1.0F, 1.0F, 1.0F);
         }
         //chest
         if (dragon.hasChest()) {
-            renderColoredCutoutModel(model, appearance.getChest(dragon), matrixStack, buffer, packedLight, dragon, 1.0F, 1.0F, 1.0F);
+            renderColoredCutoutModel(model, appearance.getChest(dragon), matrices, buffer, light, dragon, 1.0F, 1.0F, 1.0F);
         }
         //armor
         ItemStack stack = dragon.getArmor();
         Item item = stack.getItem();
         if (item instanceof DragonArmorItem) {
             IVertexBuilder builder = ItemRenderer.getArmorFoilBuffer(buffer, RenderType.armorCutoutNoCull(((DragonArmorItem) item).getDragonArmorTexture(stack, dragon)), false, stack.hasFoil());
-            model.renderToBuffer(matrixStack, builder, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            model.renderToBuffer(matrices, builder, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         }
         //glow
-        model.renderToBuffer(matrixStack, buffer.getBuffer(appearance.getGlow(dragon)), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        model.renderToBuffer(matrices, buffer.getBuffer(appearance.getGlow(dragon)), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     public static class Player {
         private static final DragonModel MODEL = new DragonModel();
         private static final Predicate<EntityType<?>> FILTER = type -> type == DMEntities.TAMEABLE_DRAGON.get();
 
-        public static void render(PlayerEntity player, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLight, boolean left) {
+        public static void render(PlayerEntity player, MatrixStack matrices, IRenderTypeBuffer buffer, int light, boolean left) {
             CompoundNBT tag = left ? player.getShoulderEntityLeft() : player.getShoulderEntityRight();
-            EntityType.byString(tag.getString("id")).filter(FILTER).ifPresent(type -> {
+            EntityType.byString(tag.getString("id")).filter(FILTER).ifPresent($ -> {
                 DragonVariant variant = DragonVariant.byName(tag.getString(DragonVariant.DATA_PARAMETER_KEY));
                 DragonLifeStage stage = DragonLifeStage.byName(tag.getString(DragonLifeStage.DATA_PARAMETER_KEY));
                 DragonLegConfig config = variant.type.isSkeleton ? DragonLegConfig.SKELETON : DragonLegConfig.DEFAULT;
@@ -77,16 +77,16 @@ public class TameableDragonLayer extends LayerRenderer<TameableDragonEntity, Dra
                 MODEL.hindRightLeg.load(config);
                 MODEL.foreLeftLeg.load(config);
                 MODEL.hindLeftLeg.load(config);
-                matrixStack.pushPose();
-                matrixStack.translate(left ? 0.4D : -0.4D, player.isCrouching() ? -1.3D : -1.5D, 0.0D);
+                matrices.pushPose();
+                matrices.translate(left ? 0.4D : -0.4D, player.isCrouching() ? -1.3D : -1.5D, 0.0D);
                 MODEL.renderOnShoulder(
                         variant.getAppearance(VariantAppearances.ENDER_FEMALE),
-                        matrixStack,
+                        matrices,
                         buffer,
-                        packedLight,
+                        light,
                         DragonLifeStage.getSize(stage, tag.getInt("Age"))
                 );
-                matrixStack.popPose();
+                matrices.popPose();
             });
         }
     }

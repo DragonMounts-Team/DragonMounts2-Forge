@@ -26,20 +26,19 @@ public class DragonCoreScreen extends ContainerScreen<DragonCoreContainer> {
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrixStack);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.renderTooltip(matrixStack, mouseX, mouseY);
+    public void render(@Nonnull MatrixStack matrices, int x, int y, float ticks) {
+        this.renderBackground(matrices);
+        super.render(matrices, x, y, ticks);
+        this.renderTooltip(matrices, x, y);
     }
 
     @Override
-    protected void renderBg(@Nonnull MatrixStack matrixStack, float partialTicks, int x, int y) {
-        if (this.minecraft != null) {
-            this.minecraft.getTextureManager().bind(TEXTURE_LOCATION);
-            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            int i = (this.width - this.imageWidth) / 2;
-            int j = (this.height - this.imageHeight) / 2;
-            this.blit(matrixStack, i, j, 0, 0, this.imageWidth, this.imageHeight);
-        }
+    protected void renderBg(@Nonnull MatrixStack matrices, float ticks, int x, int y) {
+        //noinspection DataFlowIssue
+        this.minecraft.getTextureManager().bind(TEXTURE_LOCATION);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        int i = (this.width - this.imageWidth) / 2;
+        int j = (this.height - this.imageHeight) / 2;
+        this.blit(matrices, i, j, 0, 0, this.imageWidth, this.imageHeight);
     }
 }

@@ -38,7 +38,7 @@ public class TieredShearsItem extends ShearsItem {
 
     @Nonnull
     @Override
-    public ActionResultType interactLivingEntity(@Nonnull ItemStack stack, @Nonnull PlayerEntity player, @Nonnull LivingEntity entity, @Nonnull Hand hand) {
+    public ActionResultType interactLivingEntity(ItemStack stack, PlayerEntity player, LivingEntity entity, Hand hand) {
         if (player.level.isClientSide) return super.interactLivingEntity(stack, player, entity, hand);
         if (entity instanceof TameableDragonEntity) {
             TameableDragonEntity dragon = (TameableDragonEntity) entity;
@@ -73,12 +73,12 @@ public class TieredShearsItem extends ShearsItem {
     }
 
     @Override
-    public boolean isValidRepairItem(@Nonnull ItemStack toRepair, @Nonnull ItemStack repair) {
+    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
         return this.tier.getRepairIngredient().test(repair) || super.isValidRepairItem(toRepair, repair);
     }
 
     @Override
-    public float getDestroySpeed(@Nonnull ItemStack stack, @Nonnull BlockState state) {
+    public float getDestroySpeed(ItemStack stack, BlockState state) {
         float speed = super.getDestroySpeed(stack, state);
         return speed > 1.0F ? speed * this.speedFactor : speed;
     }

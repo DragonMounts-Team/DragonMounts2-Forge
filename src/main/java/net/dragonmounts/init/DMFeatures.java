@@ -175,7 +175,8 @@ public class DMFeatures {
         //ImmutableList.Builder<Structure<?>> listBuilder = ImmutableList.builder();
         ImmutableMap.Builder<Structure<?>, StructureSeparationSettings> mapBuilder = ImmutableMap.builder();
         for (StructureRegistry.Holder<?> holder : DRAGON_NEST) {
-            ResourceLocation name = Objects.requireNonNull(holder.structure.getRegistryName());
+            ResourceLocation name = holder.structure.getRegistryName();
+            //noinspection DataFlowIssue
             Structure.STRUCTURES_REGISTRY.put(name.toString(), holder.structure);
             //listBuilder.add(holder.structure);
             mapBuilder.put(holder.structure, holder.settings);

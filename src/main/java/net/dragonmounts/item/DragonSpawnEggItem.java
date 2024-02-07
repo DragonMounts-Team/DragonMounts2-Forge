@@ -52,85 +52,62 @@ public final class DragonSpawnEggItem extends ForgeSpawnEggItem implements IDrag
     @Override
     public ActionResultType useOn(ItemUseContext context) {
         World world = context.getLevel();
-        if (!(world instanceof ServerWorld)) {
-            return ActionResultType.SUCCESS;
-        } else {
-            ItemStack itemstack = context.getItemInHand();
-            BlockPos pos1 = context.getClickedPos();
-            Direction direction = context.getClickedFace();
-            BlockState blockstate = world.getBlockState(pos1);
-            EntityType<?> entityType = this.getType(itemstack.getTag());
-            if (blockstate.is(Blocks.SPAWNER)) {
-                TileEntity tileentity = world.getBlockEntity(pos1);
-                if (tileentity instanceof MobSpawnerTileEntity) {
-                    AbstractSpawner spawner = ((MobSpawnerTileEntity) tileentity).getSpawner();
-                    if (entityType == DMEntities.TAMEABLE_DRAGON.get()) {
+        if (world.isClientSide) return ActionResultType.SUCCESS;
+        ItemStack stack = context.getItemInHand();
+        BlockPos pos = context.getClickedPos();
+        Direction direction = context.getClickedFace();
+        BlockState state = world.getBlockState(pos);
+        EntityType<?> _type = this.getType(stack.getTag());
+        if (state.is(Blocks.SPAWNER)) {
+            TileEntity entity = world.getBlockEntity(pos);
+            if (entity instanceof MobSpawnerTileEntity) {
+                AbstractSpawner spawner = ((MobSpawnerTileEntity) entity).getSpawner();
+                if (_type == DMEntities.TAMEABLE_DRAGON.get()) {
                         CompoundNBT tag = new CompoundNBT();
                         tag.putString("id", DMEntities.TAMEABLE_DRAGON.getId().toString());
-                        tag.putString(DragonVariant.DATA_PARAMETER_KEY, this.type.variants.draw(random, null).getSerializedName().toString());
+                    tag.putString(DragonVariant.DATA_PARAMETER_KEY, this.type.variants.draw(random, null).getSerializedName().toString());
                         WeightedSpawnerEntity spawnerEntity = new WeightedSpawnerEntity(1, tag);
                         spawner.setNextSpawnData(spawnerEntity);
-                    } else {
-                        spawner.setEntityId(entityType);
-                    }
-                    tileentity.setChanged();
-                    world.sendBlockUpdated(pos1, blockstate, blockstate, 3);
-                    itemstack.shrink(1);
-                    return ActionResultType.CONSUME;
-                }
+                } else spawner.setEntityId(_type);
+                entity.setChanged();
+                world.sendBlockUpdated(pos, state, state, 3);
+                stack.shrink(1);
+                return ActionResultType.CONSUME;
             }
-            BlockPos pos2;
-            if (blockstate.getCollisionShape(world, pos1).isEmpty()) {
-                pos2 = pos1;
-            } else {
-                pos2 = pos1.relative(direction);
-            }
-            Entity entity = entityType.spawn((ServerWorld) world, itemstack, context.getPlayer(), pos1, SpawnReason.SPAWN_EGG, true, !Objects.equals(pos1, pos2) && direction == Direction.UP);
-            if (entity instanceof TameableDragonEntity) {
-                ((TameableDragonEntity) entity).setDragonType(this.type, true);
-            }
-            itemstack.shrink(1);
-            return ActionResultType.CONSUME;
         }
+        BlockPos spawnPos = state.getCollisionShape(world, pos).isEmpty() ? pos : pos.relative(direction);
+        Entity entity = _type.spawn((ServerWorld) world, stack, context.getPlayer(), spawnPos, SpawnReason.SPAWN_EGG, true, !Objects.equals(pos, spawnPos) && direction == Direction.UP);
+        if (entity instanceof TameableDragonEntity) ((TameableDragonEntity) entity).setDragonType(this.type, true);
+        stack.shrink(1);
+        return ActionResultType.CONSUME;
     }
 
     @Nonnull
     @Override
-    public ActionResult<ItemStack> use(@Nonnull World level, PlayerEntity player, @Nonnull Hand hand) {
-        ItemStack itemstack = player.getItemInHand(hand);
+    public ActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        ItemStack stack = player.getItemInHand(hand);
         BlockRayTraceResult result = getPlayerPOVHitResult(level, player, RayTraceContext.FluidMode.SOURCE_ONLY);
-        if (result.getType() != RayTraceResult.Type.BLOCK) {
-            return ActionResult.pass(itemstack);
-        } else if (level instanceof ServerWorld) {
-            BlockPos blockpos = result.getBlockPos();
-            if (!(level.getBlockState(blockpos).getBlock() instanceof FlowingFluidBlock)) {
-                return ActionResult.pass(itemstack);
-            } else if (level.mayInteract(player, blockpos) && player.mayUseItemAt(blockpos, result.getDirection(), itemstack)) {
-                EntityType<?> entityType = this.getType(itemstack.getTag());
-                Entity entity = entityType.spawn((ServerWorld) level, itemstack, player, blockpos, SpawnReason.SPAWN_EGG, false, false);
-                if (entity == null) {
-                    return ActionResult.pass(itemstack);
-                } else {
-                    if (entity instanceof TameableDragonEntity) {
-                        ((TameableDragonEntity) entity).setDragonType(this.type, true);
-                    }
-                    if (!player.abilities.instabuild) {
-                        itemstack.shrink(1);
-                    }
-                    player.awardStat(Stats.ITEM_USED.get(this));
-                    return ActionResult.consume(itemstack);
-                }
-            } else {
-                return ActionResult.fail(itemstack);
-            }
+        if (result.getType() != RayTraceResult.Type.BLOCK) return ActionResult.pass(stack);
+        if (!level.isClientSide) {
+            BlockPos pos = result.getBlockPos();
+            if (!(level.getBlockState(pos).getBlock() instanceof FlowingFluidBlock)) return ActionResult.pass(stack);
+            else if (level.mayInteract(player, pos) && player.mayUseItemAt(pos, result.getDirection(), stack)) {
+                Entity entity = this.getType(stack.getTag()).spawn((ServerWorld) level, stack, player, pos, SpawnReason.SPAWN_EGG, false, false);
+                if (entity == null) return ActionResult.pass(stack);
+                if (entity instanceof TameableDragonEntity)
+                    ((TameableDragonEntity) entity).setDragonType(this.type, true);
+                if (!player.abilities.instabuild) stack.shrink(1);
+                player.awardStat(Stats.ITEM_USED.get(this));
+                return ActionResult.consume(stack);
+            } else return ActionResult.fail(stack);
         }
-        return ActionResult.success(itemstack);
+        return ActionResult.success(stack);
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
-        components.add(this.type.getName());
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltips, ITooltipFlag flag) {
+        tooltips.add(this.type.getName());
     }
 
     @Nonnull

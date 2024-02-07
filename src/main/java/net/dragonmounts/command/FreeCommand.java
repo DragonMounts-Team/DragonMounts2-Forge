@@ -16,13 +16,12 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.UUID;
 
-import static net.dragonmounts.command.DMCommand.createClassCastException;
-import static net.dragonmounts.command.DMCommand.getSingleProfileOrException;
+import static net.dragonmounts.command.DMCommand.*;
 
 public class FreeCommand {
     public static LiteralArgumentBuilder<CommandSource> register() {
         return Commands.literal("free")
-                .requires(source -> source.hasPermission(3))
+                .requires(HAS_PERMISSION_LEVEL_3)
                 .then(Commands.argument("targets", EntityArgument.entities())
                         .executes(context -> free(context, EntityArgument.getEntities(context, "targets")))
                         .then(Commands.argument("owner", GameProfileArgument.gameProfile())

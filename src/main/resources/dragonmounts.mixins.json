@@ -5,7 +5,8 @@
   "package": "net.dragonmounts.mixin",
   "mixins": [
   ],
-  "refmap": "mixins.dm3.refmap.json",
+  "refmap": "dragonmounts.mixins.refmap.json",
   "client": [
+    "HeadLayerMixin"
   ]
 }

@@ -50,8 +50,9 @@ public abstract class LimitedSlot extends Slot {
 
         @Override
         public void setChanged() {
-            if (this.container instanceof DragonInventory)
+            if (this.container instanceof DragonInventory) {
                 ((DragonInventory) this.container).dragon.setSaddle(this.getItem(), false);
+            }
             else this.container.setChanged();
         }
     }
@@ -77,8 +78,9 @@ public abstract class LimitedSlot extends Slot {
 
         @Override
         public void setChanged() {
-            if (this.container instanceof DragonInventory)
+            if (this.container instanceof DragonInventory) {
                 ((DragonInventory) this.container).dragon.setArmor(this.getItem(), false);
+            }
             else this.container.setChanged();
         }
     }
@@ -104,8 +106,9 @@ public abstract class LimitedSlot extends Slot {
 
         @Override
         public void setChanged() {
-            if (this.container instanceof DragonInventory)
+            if (this.container instanceof DragonInventory) {
                 ((DragonInventory) this.container).dragon.setChest(this.getItem(), false);
+            }
             else this.container.setChanged();
         }
     }

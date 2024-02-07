@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.dragonmounts.client.DMClientEvents;
 import net.dragonmounts.client.gui.DMConfigScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandSource;
@@ -14,10 +15,13 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.function.BiFunction;
 
 import static net.dragonmounts.DragonMountsConfig.SERVER;
+import static net.dragonmounts.command.DMCommand.HAS_PERMISSION_LEVEL_3;
 
 
 public class ConfigCommand {
@@ -44,7 +48,7 @@ public class ConfigCommand {
 
     public static LiteralArgumentBuilder<CommandSource> register(Commands.EnvironmentType environment) {
         LiteralArgumentBuilder<CommandSource> builder = Commands.literal("config").then(Commands.literal("server")
-                .requires(source -> source.hasPermission(3))
+                .requires(HAS_PERMISSION_LEVEL_3)
                 .then(create(SERVER.debug, BoolArgumentType.bool(), BoolArgumentType::getBool))
                 .then(create(SERVER.base_armor, DoubleArgumentType.doubleArg(0, 30), DoubleArgumentType::getDouble))
                 .then(create(SERVER.base_health, DoubleArgumentType.doubleArg(1, 1024), DoubleArgumentType::getDouble))
@@ -55,11 +59,17 @@ public class ConfigCommand {
     }
 
     public static class Client {
+        private static final Logger LOGGER = LogManager.getLogger();
         private static final String OPEN_CONFIG_SCREEN = "/dragonmounts config client";
+        private static final String DEBUG = "/dmdbg";
         private static boolean OPEN_CONFIG_SCREEN_FLAG = false;
 
         public static void onClientSendMessage(ClientChatEvent event) {
-            if (OPEN_CONFIG_SCREEN.equals(event.getOriginalMessage())) {
+            if (DEBUG.equals(event.getOriginalMessage())) {
+                event.setCanceled(true);
+                LOGGER.warn(DMClientEvents.FLAG);
+                Minecraft.getInstance().gui.getChat().addRecentChat(DEBUG);
+            } else if (OPEN_CONFIG_SCREEN.equals(event.getOriginalMessage())) {
                 event.setCanceled(true);
                 OPEN_CONFIG_SCREEN_FLAG = true;
             }

@@ -22,7 +22,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.fill;
@@ -30,7 +29,6 @@ import static net.dragonmounts.init.DMCapabilities.ARMOR_EFFECT_MANAGER;
 import static net.dragonmounts.network.DMPacketHandler.CHANNEL;
 import static net.minecraftforge.fml.network.PacketDistributor.PLAYER;
 
-@ParametersAreNonnullByDefault
 public final class ArmorEffectManager implements IArmorEffectManager {
     private static ArmorEffectManager LOCAL_MANAGER = null;
     public static final int INITIAL_COOLDOWN_SIZE = 8;
@@ -102,10 +100,14 @@ public final class ArmorEffectManager implements IArmorEffectManager {
             LOCAL_MANAGER.cdRef = new int[size];
             fill(LOCAL_MANAGER.cdKey = new int[size], -1);
             LOCAL_MANAGER.cdDat = new int[size];
-        } else fill(LOCAL_MANAGER.cdKey, -1);
-        for (int i = 0, j = 0, k; i < packet.size; ++i)
-            if ((k = packet.data[i++]) >= 0)
+        } else {
+            fill(LOCAL_MANAGER.cdKey, -1);
+        }
+        for (int i = 0, j = 0, k; i < packet.size; ++i) {
+            if ((k = packet.data[i++]) >= 0) {
                 j = LOCAL_MANAGER.setCDImpl(k, packet.data[i], j);
+            }
+        }
     }
 
     @Override
@@ -117,7 +119,7 @@ public final class ArmorEffectManager implements IArmorEffectManager {
     }
 
     private void reassign(final int pos, final int arg) {
-        for (int i = this.cdN - 1, j, k; i > arg; --i)
+        for (int i = this.cdN - 1, j, k; i > arg; --i) {
             if (((k = this.cdKey[j = this.cdRef[i]]) & this.cdMask) == pos) {
                 this.cdRef[i] = pos;
                 this.cdKey[pos] = k;
@@ -125,6 +127,7 @@ public final class ArmorEffectManager implements IArmorEffectManager {
                 this.reassign(j, i);
                 return;
             }
+        }
         this.cdKey[pos] = -1;//it is unnecessary to reset `this.cdDat[pos]`
     }
 
@@ -170,20 +173,26 @@ public final class ArmorEffectManager implements IArmorEffectManager {
             this.cdRef = new int[temp];
             fill(this.cdKey = new int[temp], -1);
             this.cdDat = new int[temp];
-            for (int i = temp = 0, j; i < n; ++i)//temp: cursor
+            for (int i = temp = 0, j; i < n; ++i) {//temp: cursor
                 temp = this.setCDImpl(key[j = ref[i]], dat[j], temp);
+            }
             this.setCDImpl(id, cooldown, temp);
-        } else this.setCDImpl(id, cooldown, 0);
-        if (!this.player.level.isClientSide)
+        } else {
+            this.setCDImpl(id, cooldown, 0);
+        }
+        if (!this.player.level.isClientSide) {
             CHANNEL.send(PLAYER.with(() -> (ServerPlayerEntity) player), new SSyncCooldownPacket(id, cooldown));
+        }
     }
 
     @Override
     public CompoundNBT saveNBT() {
         CompoundNBT compound = new CompoundNBT();
-        for (int i = 0, j, v; i < cdN; ++i)
-            if ((v = this.cdDat[j = cdRef[i]]) > 0)
+        for (int i = 0, j, v; i < cdN; ++i) {
+            if ((v = this.cdDat[j = cdRef[i]]) > 0) {
                 compound.putInt(CooldownCategory.REGISTRY.getValue(this.cdKey[j]).getSerializedName().toString(), v);
+            }
+        }
         return compound;
     }
 
@@ -202,10 +211,11 @@ public final class ArmorEffectManager implements IArmorEffectManager {
                     this.cdRef = new int[temp];
                     fill(this.cdKey = new int[temp], -1);
                     this.cdDat = new int[temp];
-                    for (int i = temp = 0, j; i < n; ++i)//temp: cursor
+                    for (int i = temp = 0, j; i < n; ++i) {//temp: cursor
                         temp = this.setCDImpl(key[j = ref[i]], dat[j], temp);
+                    }
                     this.setCDImpl(category.getId(), nbt.getInt(name), temp);
-                } else this.setCDImpl(category.getId(), nbt.getInt(name), 0);
+                } else {this.setCDImpl(category.getId(), nbt.getInt(name), 0);}
             }
         }
     }
@@ -213,7 +223,9 @@ public final class ArmorEffectManager implements IArmorEffectManager {
     @Override
     public void sendInitPacket() {
         SInitCooldownPacket packet = new SInitCooldownPacket(this.cdN, this.cdRef, this.cdKey, this.cdDat);
-        if (packet.size > 0) CHANNEL.send(PLAYER.with(() -> (ServerPlayerEntity) this.player), packet);
+        if (packet.size > 0) {
+            CHANNEL.send(PLAYER.with(() -> (ServerPlayerEntity) this.player), packet);
+        }
     }
 
     @Override
@@ -226,8 +238,11 @@ public final class ArmorEffectManager implements IArmorEffectManager {
         if (key == id) return this.cdDat[pos];
         for (int i = 0; i < this.cdN; ++i) {
             if (this.cdRef[i] == pos) {
-                while (++i < this.cdN)
-                    if (this.cdKey[pos = this.cdRef[i]] == id) return this.cdDat[pos];
+                while (++i < this.cdN) {
+                    if (this.cdKey[pos = this.cdRef[i]] == id) {
+                        return this.cdDat[pos];
+                    }
+                }
                 return 0;
             }
         }
@@ -248,8 +263,11 @@ public final class ArmorEffectManager implements IArmorEffectManager {
 
     @Override
     public int setLevel(final IArmorEffect effect, final int level) {
-        for (int i = 0; i < this.lvlN; ++i)
-            if (this.lvlKey[i] == effect) return this.lvlDat[i] = level;
+        for (int i = 0; i < this.lvlN; ++i) {
+            if (this.lvlKey[i] == effect) {
+                return this.lvlDat[i] = level;
+            }
+        }
         this.validateLvlSize();
         this.lvlKey[this.lvlN] = effect;
         return this.lvlDat[this.lvlN++] = level;
@@ -257,8 +275,11 @@ public final class ArmorEffectManager implements IArmorEffectManager {
 
     @Override
     public int stackLevel(final IArmorEffect effect) {
-        for (int i = 0; i < this.lvlN; ++i)
-            if (this.lvlKey[i] == effect) return ++this.lvlDat[i];
+        for (int i = 0; i < this.lvlN; ++i) {
+            if (this.lvlKey[i] == effect) {
+                return ++this.lvlDat[i];
+            }
+        }
         this.validateLvlSize();
         this.lvlKey[this.lvlN] = effect;
         return this.lvlDat[this.lvlN++] = 1;
@@ -266,8 +287,11 @@ public final class ArmorEffectManager implements IArmorEffectManager {
 
     @Override
     public boolean isActive(final IArmorEffect effect) {
-        for (int i = 0; i < this.activeN; ++i)
-            if (this.lvlKey[this.lvlRef[i]] == effect) return true;
+        for (int i = 0; i < this.activeN; ++i) {
+            if (this.lvlKey[this.lvlRef[i]] == effect) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -275,11 +299,17 @@ public final class ArmorEffectManager implements IArmorEffectManager {
     @Override
     public int getLevel(final IArmorEffect effect, final boolean filtered) {
         if (filtered) {
-            for (int i = 0, j; i < this.activeN; ++i)
-                if (this.lvlKey[j = this.lvlRef[i]] == effect) return this.lvlDat[j];
+            for (int i = 0, j; i < this.activeN; ++i) {
+                if (this.lvlKey[j = this.lvlRef[i]] == effect) {
+                    return this.lvlDat[j];
+                }
+            }
         } else {
-            for (int i = 0; i < this.lvlN; ++i)
-                if (this.lvlKey[i] == effect) return this.lvlDat[i];
+            for (int i = 0; i < this.lvlN; ++i) {
+                if (this.lvlKey[i] == effect) {
+                    return this.lvlDat[i];
+                }
+            }
         }
         return 0;
     }
@@ -287,8 +317,9 @@ public final class ArmorEffectManager implements IArmorEffectManager {
     private void checkSlot(final EquipmentSlotType slot) {
         final ItemStack stack = this.player.getItemBySlot(slot);
         final Item item = stack.getItem();
-        if (item instanceof IArmorEffectSource)
+        if (item instanceof IArmorEffectSource) {
             ((IArmorEffectSource) item).affect(this, this.player, stack);
+        }
     }
 
     @Override

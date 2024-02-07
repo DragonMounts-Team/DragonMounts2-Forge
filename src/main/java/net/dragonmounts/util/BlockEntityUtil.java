@@ -7,12 +7,10 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 
 public class BlockEntityUtil {
-    public static IInventory getInventory(PlayerEntity player, PacketBuffer extraData, int size) {
-        if (extraData != null) {
-            TileEntity blockEntity = player.level.getBlockEntity(extraData.readBlockPos());
-            if (blockEntity instanceof IInventory) {
-                return (IInventory) blockEntity;
-            }
+    public static IInventory getInventory(PlayerEntity player, PacketBuffer buffer, int size) {
+        if (buffer != null) {
+            TileEntity entity = player.level.getBlockEntity(buffer.readBlockPos());
+            if (entity instanceof IInventory) return (IInventory) entity;
         }
         return new Inventory(size);
     }

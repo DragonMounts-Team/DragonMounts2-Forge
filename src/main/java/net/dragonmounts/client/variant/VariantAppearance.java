@@ -19,31 +19,35 @@ public abstract class VariantAppearance {
         this.positionScale = modelScale / 16.0F;
     }
 
-    public abstract boolean hasTailHorns(@SuppressWarnings("unused") TameableDragonEntity dragon);
+    public abstract boolean hasTailHorns(TameableDragonEntity dragon);
 
-    public abstract boolean hasSideTailScale(@SuppressWarnings("unused") TameableDragonEntity dragon);
+    public abstract boolean hasSideTailScale(TameableDragonEntity dragon);
 
     public abstract boolean hasTailHornsOnShoulder();
 
     public abstract boolean hasSideTailScaleOnShoulder();
 
-    public abstract ResourceLocation getBody(@SuppressWarnings("unused") TameableDragonEntity dragon);
+    public abstract ResourceLocation getBody(TameableDragonEntity dragon);
 
-    public abstract RenderType getGlow(@SuppressWarnings("unused") TameableDragonEntity dragon);
+    public abstract RenderType getGlow(TameableDragonEntity dragon);
 
-    public abstract RenderType getDecal(@SuppressWarnings("unused") TameableDragonEntity dragon);
+    public abstract RenderType getDecal(TameableDragonEntity dragon);
 
-    public abstract RenderType getGlowDecal(@SuppressWarnings("unused") TameableDragonEntity dragon);
+    public abstract RenderType getGlowDecal(TameableDragonEntity dragon);
 
-    public abstract RenderType getBodyOnShoulder();
+    public abstract RenderType getBodyForShoulder();
 
-    public abstract RenderType getGlowOnShoulder();
+    public abstract RenderType getGlowForShoulder();
 
-    public ResourceLocation getChest(@SuppressWarnings("unused") TameableDragonEntity dragon) {
+    public abstract RenderType getBodyForBlock();
+
+    public abstract RenderType getGlowForBlock();
+
+    public ResourceLocation getChest(TameableDragonEntity dragon) {
         return DEFAULT_CHEST;
     }
 
-    public ResourceLocation getSaddle(@SuppressWarnings("unused") TameableDragonEntity dragon) {
+    public ResourceLocation getSaddle(TameableDragonEntity dragon) {
         return DEFAULT_SADDLE;
     }
 

@@ -111,6 +111,7 @@ public class DeferredRegistry<V extends IForgeRegistryEntry<V>> implements IForg
         return this.registry.getSlaveMap(slaveMapName, type);
     }
 
+    @Nonnull
     @Override
     public Iterator<V> iterator() {
         return this.registry.iterator();

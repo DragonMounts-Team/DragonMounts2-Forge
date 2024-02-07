@@ -5,9 +5,6 @@ import net.dragonmounts.registry.CooldownCategory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
-@ParametersAreNonnullByDefault
 public interface IArmorEffectManager {
     void bind(PlayerEntity player);
 
@@ -21,7 +18,6 @@ public interface IArmorEffectManager {
 
     boolean isActive(IArmorEffect effect);
 
-    @SuppressWarnings("UnusedReturnValue")
     void setCooldown(CooldownCategory category, int cooldown);
 
     int getCooldown(CooldownCategory category);

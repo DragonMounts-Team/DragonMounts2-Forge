@@ -12,7 +12,7 @@ import java.util.function.Function;
 import static net.dragonmounts.init.DMItemGroups.TOOL_TAB;
 
 public class DragonScaleArmorSuit extends ArmorSuit<DragonScaleArmorItem, DragonScaleMaterial> implements IDragonTypified {
-    public static final Function<EquipmentSlotType, Item.Properties> DRAGONMOUNTS_TOOL_TAB = slot -> new Item.Properties().tab(TOOL_TAB);
+    public static final Function<EquipmentSlotType, Item.Properties> DRAGONMOUNTS_TOOL_TAB = $ -> new Item.Properties().tab(TOOL_TAB);
     public final IDragonScaleArmorEffect effect;
 
     public DragonScaleArmorSuit(@Nonnull DragonScaleMaterial material, @Nullable IDragonScaleArmorEffect effect, Function<EquipmentSlotType, Item.Properties> properties) {

@@ -49,7 +49,7 @@ public interface IDragonFood {
         ItemStack stack = new ItemStack(item);
         Random random = dragon.getRandom();
         for (int i = 0; i < 8; ++i) {
-            Vector3d speed = new Vector3d((random.nextFloat() - 0.5D) * 0.1D, random.nextFloat() * 0.1D + 0.1D, 0.0D).xRot(-dragon.xRot * MathUtil.PI / 180F).yRot(-dragon.yRot * MathUtil.PI / 180F);
+            Vector3d speed = new Vector3d((random.nextFloat() - 0.5D) * 0.1D, random.nextFloat() * 0.1D + 0.1D, 0.0D).xRot(-dragon.xRot * MathUtil.TO_RAD_FACTOR).yRot(-dragon.yRot * MathUtil.TO_RAD_FACTOR);
             level.addParticle(new ItemParticleData(ParticleTypes.ITEM, stack), pos.x, pos.y, pos.z, speed.x, speed.y + 0.05D, speed.z);
         }
     }

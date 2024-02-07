@@ -15,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.LockableLootTileEntity;
-import net.minecraft.tileentity.ShulkerBoxTileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -27,16 +26,21 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
+
+import static net.minecraft.tileentity.ShulkerBoxTileEntity.AnimationStatus;
+
 
 /**
  * @see net.minecraft.tileentity.ShulkerBoxTileEntity
  */
+@ParametersAreNonnullByDefault
 public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITickableTileEntity {
     private static final String TRANSLATION_KEY = "container.dragonmounts.dragon_core";
     private NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
     private int openCount;
-    private ShulkerBoxTileEntity.AnimationStatus animationStatus = ShulkerBoxTileEntity.AnimationStatus.CLOSED;
+    private AnimationStatus status = AnimationStatus.CLOSED;
     private float progress;
     private float progressOld;
 
@@ -47,14 +51,14 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
     @Override
     public void tick() {
         this.updateAnimation();
-        if (this.animationStatus == ShulkerBoxTileEntity.AnimationStatus.OPENING || this.animationStatus == ShulkerBoxTileEntity.AnimationStatus.CLOSING) {
+        if (this.status == AnimationStatus.OPENING || this.status == AnimationStatus.CLOSING) {
             this.moveCollidedEntities();
         }
     }
 
     protected void updateAnimation() {
         this.progressOld = this.progress;
-        switch (this.animationStatus) {
+        switch (this.status) {
             case CLOSED:
                 this.progress = 0.0F;
                 break;
@@ -62,7 +66,7 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
                 this.progress += 0.1F;
                 if (this.progress >= 1.0F) {
                     this.moveCollidedEntities();
-                    this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.OPENED;
+                    this.status = AnimationStatus.OPENED;
                     this.progress = 1.0F;
                     this.doNeighborUpdates();
                 }
@@ -75,7 +79,7 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
                         this.level.levelEvent(2003, this.worldPosition.above(), 0);
                         this.level.destroyBlock(this.worldPosition, true);
                     }
-                    this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.CLOSED;
+                    this.status = AnimationStatus.CLOSED;
                 }
                 break;
             case OPENED:
@@ -84,8 +88,8 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
 
     }
 
-    public ShulkerBoxTileEntity.AnimationStatus getAnimationStatus() {
-        return this.animationStatus;
+    public AnimationStatus getStatus() {
+        return this.status;
     }
 
     public AxisAlignedBB getBoundingBox() {
@@ -93,17 +97,15 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
     }
 
     private void moveCollidedEntities() {
-        if (this.level != null) {
-            BlockState blockstate = this.level.getBlockState(this.worldPosition);
-            if (blockstate.getBlock() instanceof DragonCoreBlock) {
-                AxisAlignedBB axisalignedbb = this.getBoundingBox().move(this.worldPosition);
-                List<Entity> list = this.level.getEntities(null, axisalignedbb);
-                if (!list.isEmpty()) {
-                    for (Entity entity : list) {
-                        if (entity.getPistonPushReaction() != PushReaction.IGNORE) {
-                            entity.move(MoverType.SHULKER_BOX, new Vector3d(0, axisalignedbb.maxY + 0.01 - entity.getBoundingBox().minY, 0));
-                        }
-                    }
+        //noinspection DataFlowIssue
+        BlockState state = this.level.getBlockState(this.worldPosition);
+        if (state.getBlock() instanceof DragonCoreBlock) {
+            AxisAlignedBB box = this.getBoundingBox().move(this.worldPosition);
+            List<Entity> list = this.level.getEntities(null, box);
+            if (list.isEmpty()) return;
+            for (Entity entity : list) {
+                if (entity.getPistonPushReaction() != PushReaction.IGNORE) {
+                    entity.move(MoverType.SHULKER_BOX, new Vector3d(0, box.maxY + 0.01 - entity.getBoundingBox().minY, 0));
                 }
             }
         }
@@ -115,35 +117,35 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
     }
 
     @Override
-    public boolean triggerEvent(int id, int type) {
+    public boolean triggerEvent(int id, int data) {
         if (id == 1) {
-            this.openCount = type;
-            if (type == 0) {
-                this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.CLOSING;
+            this.openCount = data;
+            if (data == 0) {
+                this.status = AnimationStatus.CLOSING;
                 this.doNeighborUpdates();
-            } else if (type == 1) {
-                this.animationStatus = ShulkerBoxTileEntity.AnimationStatus.OPENING;
+            } else if (data == 1) {
+                this.status = AnimationStatus.OPENING;
                 this.doNeighborUpdates();
             }
             return true;
         } else {
-            return super.triggerEvent(id, type);
+            return super.triggerEvent(id, data);
         }
     }
 
     private void doNeighborUpdates() {
-        if (this.level != null) {
-            this.getBlockState().updateNeighbourShapes(this.level, this.worldPosition, 3);
-        }
+        //noinspection DataFlowIssue
+        this.getBlockState().updateNeighbourShapes(this.level, this.worldPosition, 3);
     }
 
     @Override
     public void startOpen(PlayerEntity player) {
         if (!player.isSpectator()) {
             if (this.openCount < 0) {
-                this.openCount = 0;
+                this.openCount = 1;
+            } else {
+                ++this.openCount;
             }
-            ++this.openCount;
             if (this.level != null) {
                 this.level.blockEvent(this.worldPosition, this.getBlockState().getBlock(), 1, this.openCount);
                 if (this.openCount == 1) {
@@ -159,9 +161,8 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
     public void stopOpen(PlayerEntity player) {
         if (!player.isSpectator()) {
             --this.openCount;
-            if (this.level != null) {
-                this.level.blockEvent(this.worldPosition, this.getBlockState().getBlock(), 1, this.openCount);
-            }
+            //noinspection DataFlowIssue
+            this.level.blockEvent(this.worldPosition, this.getBlockState().getBlock(), 1, this.openCount);
         }
     }
 
@@ -172,7 +173,7 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
     }
 
     @Override
-    public void load(@Nonnull BlockState state, @Nonnull CompoundNBT compound) {
+    public void load(BlockState state, CompoundNBT compound) {
         super.load(state, compound);
         this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         if (!this.tryLoadLootTable(compound)) {
@@ -182,7 +183,7 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
 
     @Nonnull
     @Override
-    public CompoundNBT save(@Nonnull CompoundNBT compound) {
+    public CompoundNBT save(CompoundNBT compound) {
         super.save(compound);
         if (!this.trySaveLootTable(compound)) {
             ItemStackHelper.saveAllItems(compound, this.items);
@@ -197,7 +198,7 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
     }
 
     @Override
-    protected void setItems(@Nonnull NonNullList<ItemStack> items) {
+    protected void setItems(NonNullList<ItemStack> items) {
         this.items = items;
     }
 
@@ -207,11 +208,11 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
 
     @Nonnull
     @Override
-    protected Container createMenu(int id, @Nonnull PlayerInventory player) {
+    protected Container createMenu(int id, PlayerInventory player) {
         return new DragonCoreContainer(id, player, this);
     }
 
     public boolean isClosed() {
-        return this.animationStatus == ShulkerBoxTileEntity.AnimationStatus.CLOSED;
+        return this.status == AnimationStatus.CLOSED;
     }
 }

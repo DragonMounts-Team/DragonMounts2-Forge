@@ -8,13 +8,11 @@ import net.minecraftforge.registries.DeferredRegister;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@ParametersAreNonnullByDefault
 public class StructureRegistry<K> implements Iterable<StructureRegistry.Holder<? extends IFeatureConfig>> {
     public static class Holder<C extends IFeatureConfig> {
         public final Structure<C> structure;
@@ -38,9 +36,7 @@ public class StructureRegistry<K> implements Iterable<StructureRegistry.Holder<?
             final T config,
             final StructureSeparationSettings settings
     ) {
-        if (this.map.containsKey(key)) {
-            throw new IllegalArgumentException();
-        }
+        if (this.map.containsKey(key)) throw new IllegalArgumentException();
         register.register(name, () -> structure);
         Holder<T> holder = new Holder<>(structure, config, settings);
         this.map.put(key, holder);

@@ -23,9 +23,9 @@ public class DragonLegConfig {
         this.width = width;
         this.footHeight = footHeight;
         this.shankWidth = width - 2;
-        this.defaultOffset = -width / 2F;
-        this.shankOffset = -this.shankWidth / 2F;
-        this.footOffset = -this.footHeight / 2F;
+        this.defaultOffset = width / -2F;
+        this.shankOffset = this.shankWidth / -2F;
+        this.footOffset = this.footHeight / -2F;
     }
 
     public int getThighLength(boolean hind) {

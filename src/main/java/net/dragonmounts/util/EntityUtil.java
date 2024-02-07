@@ -22,7 +22,6 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public class EntityUtil extends EntityType<Entity> {//to access protected methods
-
     private EntityUtil(IFactory<Entity> a, EntityClassification b, boolean c, boolean d, boolean e, boolean f, ImmutableSet<Block> g, EntitySize h, int i, int j) {
         super(a, b, c, d, e, f, g, h, i, j);
     }

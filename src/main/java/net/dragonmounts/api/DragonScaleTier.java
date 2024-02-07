@@ -61,7 +61,9 @@ public class DragonScaleTier implements IItemTier, IDragonTypified {
         this.speed = builder.speed;
         this.damage = builder.damage;
         this.enchantmentValue = builder.enchantmentValue;
-        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(() -> Ingredient.of(type.getInstance(DragonScalesItem.class, DMItems.ENDER_DRAGON_SCALES))) : builder.repairIngredient;
+        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(
+                () -> Ingredient.of(type.getInstance(DragonScalesItem.class, DMItems.ENDER_DRAGON_SCALES))
+        ) : builder.repairIngredient;
     }
 
     @Override

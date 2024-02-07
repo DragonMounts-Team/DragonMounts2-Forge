@@ -34,6 +34,8 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static net.dragonmounts.DragonMounts.MOD_ID;
 import static net.dragonmounts.init.DMEntities.*;
@@ -41,10 +43,12 @@ import static net.dragonmounts.init.DMItems.DRAGON_WHISTLE;
 
 @OnlyIn(Dist.CLIENT)
 public class DMClientEvents {
+    private static final Logger LOGGER = LogManager.getLogger();
+    public static boolean FLAG = false;
     @Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class ModBusEvents {
-        private static final IItemPropertyGetter DURATION = (stack, world, entity) -> entity == null ? 0.0F : entity.getUseItem() != stack ? 0.0F : (stack.getUseDuration() - entity.getUseItemRemainingTicks()) / 20.0F;
-        private static final IItemPropertyGetter IS_USING_ITEM = (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F;
+        private static final IItemPropertyGetter DURATION = (stack, $, entity) -> entity == null ? 0.0F : entity.getUseItem() != stack ? 0.0F : (stack.getUseDuration() - entity.getUseItemRemainingTicks()) / 20.0F;
+        private static final IItemPropertyGetter IS_USING_ITEM = (stack, $, entity) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F;
 
         private static void onFMLClientSetupEnqueueWork() {
             DMContainers.registerScreens();
@@ -75,8 +79,9 @@ public class DMClientEvents {
                     ItemModelsProperties.register(bow, new ResourceLocation("pulling"), IS_USING_ITEM);
                 }
                 DragonScaleShieldItem shield = type.getInstance(DragonScaleShieldItem.class, null);
-                if (shield != null)
+                if (shield != null) {
                     ItemModelsProperties.register(shield, new ResourceLocation("blocking"), IS_USING_ITEM);
+                }
             }
         }
     }
@@ -109,12 +114,12 @@ public class DMClientEvents {
         public static void render(RenderPlayerEvent.Post event) {
             PlayerEntity player = event.getPlayer();
             if (!DragonMountsConfig.CLIENT.debug.get() || player.isSpectator()) return;
-            MatrixStack matrixStack = event.getMatrixStack();
+            MatrixStack matrices = event.getMatrixStack();
             IRenderTypeBuffer buffer = event.getBuffers();
-            int packedLight = event.getLight();
+            int light = event.getLight();
             //float partialTicks = event.getPartialRenderTick();
-            TameableDragonLayer.Player.render(player, matrixStack, buffer, packedLight, true);
-            TameableDragonLayer.Player.render(player, matrixStack, buffer, packedLight, false);
+            TameableDragonLayer.Player.render(player, matrices, buffer, light, true);
+            TameableDragonLayer.Player.render(player, matrices, buffer, light, false);
         }
     }
 }

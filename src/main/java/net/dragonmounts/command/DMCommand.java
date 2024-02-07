@@ -16,10 +16,12 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.event.HoverEvent;
 
 import java.util.Collection;
+import java.util.function.Predicate;
 
 import static net.minecraft.util.text.event.HoverEvent.Action.SHOW_ENTITY;
 
 public class DMCommand {
+    public static final Predicate<CommandSource> HAS_PERMISSION_LEVEL_3 = source -> source.hasPermission(3);
     public static void register(CommandDispatcher<CommandSource> dispatcher, Commands.EnvironmentType environment) {
         LiteralArgumentBuilder<CommandSource> builder = Commands.literal("dragonmounts")
                 .then(ConfigCommand.register(environment))

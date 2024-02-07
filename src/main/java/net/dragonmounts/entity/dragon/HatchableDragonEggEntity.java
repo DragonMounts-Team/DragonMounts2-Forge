@@ -47,7 +47,6 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 import static net.dragonmounts.entity.dragon.TameableDragonEntity.AGE_DATA_PARAMETER_KEY;
@@ -74,7 +73,8 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
 
     public HatchableDragonEggEntity(EntityType<? extends HatchableDragonEggEntity> type, World world) {
         super(type, world);
-        Objects.requireNonNull(this.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(DragonMountsConfig.SERVER.base_health.get());
+        //noinspection DataFlowIssue
+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(DragonMountsConfig.SERVER.base_health.get());
     }
 
     public HatchableDragonEggEntity(World world) {

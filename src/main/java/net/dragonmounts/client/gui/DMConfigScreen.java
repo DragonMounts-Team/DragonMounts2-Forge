@@ -51,7 +51,7 @@ public class DMConfigScreen extends Screen {
         this.list.addSmall(this.convergePitch, this.convergeYaw);
         this.list.addSmall(this.debug, this.hoverAnimation);
         this.children.add(this.list);
-        this.addButton(new Button(this.width / 2 - 100, this.height - 27, 200, 20, DialogTexts.GUI_DONE, v -> this.onClose()));
+        this.addButton(new Button(this.width / 2 - 100, this.height - 27, 200, 20, DialogTexts.GUI_DONE, $ -> this.onClose()));
     }
 
     @Override
@@ -72,15 +72,15 @@ public class DMConfigScreen extends Screen {
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrixStack, 0);
-        this.list.render(matrixStack, mouseX, mouseY, partialTicks);
-        drawCenteredString(matrixStack, this.font, this.title.copy(), this.width >> 1, 20, 0xFFFFFF);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(@Nonnull MatrixStack matrices, int x, int y, float ticks) {
+        this.renderBackground(matrices, 0);
+        this.list.render(matrices, x, y, ticks);
+        drawCenteredString(matrices, this.font, this.title.copy(), this.width >> 1, 20, 0xFFFFFF);
+        super.render(matrices, x, y, ticks);
         if (this.isDragging()) return;
-        List<IReorderingProcessor> list = tooltipAt(this.list, mouseX, mouseY);
+        List<IReorderingProcessor> list = tooltipAt(this.list, x, y);
         if (list != null) {
-            this.renderTooltip(matrixStack, list, mouseX, mouseY);
+            this.renderTooltip(matrices, list, x, y);
         }
     }
 }

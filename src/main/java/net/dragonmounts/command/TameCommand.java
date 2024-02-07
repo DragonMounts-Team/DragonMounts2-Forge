@@ -18,13 +18,12 @@ import net.minecraft.world.server.ServerWorld;
 import java.util.Collection;
 import java.util.UUID;
 
-import static net.dragonmounts.command.DMCommand.createClassCastException;
-import static net.dragonmounts.command.DMCommand.getSingleProfileOrException;
+import static net.dragonmounts.command.DMCommand.*;
 
 public class TameCommand {
     public static LiteralArgumentBuilder<CommandSource> register() {
         return Commands.literal("tame")
-                .requires(source -> source.hasPermission(3))
+                .requires(HAS_PERMISSION_LEVEL_3)
                 .then(Commands.argument("targets", EntityArgument.entities())
                         .executes(context -> tame(context, EntityArgument.getEntities(context, "targets")))
                         .then(Commands.argument("owner", GameProfileArgument.gameProfile())
@@ -86,7 +85,7 @@ public class TameCommand {
             if (targets.size() == 1) {
                 source.sendFailure(createClassCastException(targets.iterator().next(), TameableEntity.class));
             } else {
-                source.sendFailure(new TranslationTextComponent("commands.dragonmounts.tame.multiple", count));
+                source.sendFailure(new TranslationTextComponent("commands.dragonmounts.tame.multiple", count, owner.getName()));
             }
         } else if (count == 1) {
             source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.tame.single", cache.getDisplayName(), owner.getName()), true);

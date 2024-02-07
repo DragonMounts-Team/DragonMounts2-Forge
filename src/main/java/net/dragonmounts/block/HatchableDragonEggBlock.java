@@ -52,7 +52,7 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
     }
 
     private static final String TRANSLATION_KEY = BLOCK_TRANSLATION_KEY_PREFIX + "dragon_egg";
-    protected DragonType type;
+    public final DragonType type;
 
     public HatchableDragonEggBlock(DragonType type, Properties properties) {
         super(properties);
@@ -60,30 +60,32 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
     }
 
     @Override
-    public void attack(@Nonnull BlockState state, World level, @Nonnull BlockPos pos, @Nonnull PlayerEntity player) {
+    public void attack(BlockState state, World level, BlockPos pos, PlayerEntity player) {
         if (level.dimension().equals(World.END)) super.attack(state, level, pos, player);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public float getDestroyProgress(@Nonnull BlockState state, @Nonnull PlayerEntity player, @Nonnull IBlockReader level, @Nonnull BlockPos pos) {
+    public float getDestroyProgress(BlockState state, PlayerEntity player, IBlockReader level, BlockPos pos) {
         if (player.level.dimension().equals(World.END)) return 0.0F;
         return super.getDestroyProgress(state, player, level, pos);
     }
 
     @Nonnull
     @Override
-    public ActionResultType use(@Nonnull BlockState state, World level, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult hit) {
+    public ActionResultType use(BlockState state, World level, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (level.isClientSide) return ActionResultType.SUCCESS;
-        else if (level.dimension().equals(World.END)) return super.use(state, level, pos, player, hand, hit);
+        else if (level.dimension().equals(World.END)) {
+            return super.use(state, level, pos, player, hand, hit);
+        }
         spawn(level, pos, this.type);
         return ActionResultType.CONSUME;
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable IBlockReader world, List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
-        components.add(this.type.getName());
+    public void appendHoverText(ItemStack stack, @Nullable IBlockReader world, List<ITextComponent> tooltips, ITooltipFlag flag) {
+        tooltips.add(this.type.getName());
     }
 
     @Nonnull

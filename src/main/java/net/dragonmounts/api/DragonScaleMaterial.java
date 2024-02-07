@@ -84,7 +84,9 @@ public class DragonScaleMaterial implements IArmorMaterial, IDragonTypified {
         this.enchantmentValue = builder.enchantmentValue;
         this.toughness = builder.toughness;
         this.knockbackResistance = builder.knockbackResistance;
-        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(() -> Ingredient.of(type.getInstance(DragonScalesItem.class, DMItems.ENDER_DRAGON_SCALES))) : builder.repairIngredient;
+        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(
+                () -> Ingredient.of(type.getInstance(DragonScalesItem.class, DMItems.ENDER_DRAGON_SCALES))
+        ) : builder.repairIngredient;
     }
 
     public int getDurabilityForShield() {

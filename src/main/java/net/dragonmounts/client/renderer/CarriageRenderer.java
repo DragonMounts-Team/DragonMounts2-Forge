@@ -23,34 +23,27 @@ public class CarriageRenderer extends EntityRenderer<CarriageEntity> {
     }
 
     @Override
-    public void render(@Nonnull CarriageEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLight) {
-        matrixStack.pushPose();
-        matrixStack.scale(-1.0F, -1.0F, 1.0F);
-        //this.setupRotation(entity, matrixStack, entityYaw, partialTicks);
+    public void render(@Nonnull CarriageEntity entity, float entityYaw, float partialTicks, MatrixStack matrices, IRenderTypeBuffer buffer, int light) {
+        matrices.pushPose();
+        matrices.scale(-1.0F, -1.0F, 1.0F);
+        //this.setupRotation(entity, matrices, entityYaw, partialTicks);
 
         //BoatRenderer
         IVertexBuilder ivertexbuilder = buffer.getBuffer(this.model.renderType(this.getTextureLocation(entity)));
-        this.model.renderToBuffer(matrixStack, ivertexbuilder, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-
-        matrixStack.popPose();
-        super.render(entity, entityYaw, partialTicks, matrixStack, buffer, packedLight);
+        this.model.renderToBuffer(matrices, ivertexbuilder, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        matrices.popPose();
+        super.render(entity, entityYaw, partialTicks, matrices, buffer, light);
     }
 
     @SuppressWarnings("deprecation")
-    private void setupRotation(CarriageEntity entity, MatrixStack matrixStack, float entityYaw, float partialTicks) {
+    private void setupRotation(CarriageEntity entity, MatrixStack matrices, float entityYaw, float partialTicks) {
         RenderSystem.rotatef(90.0F - entityYaw, 0.0F, 1.0F, 0.0F);
         float f = (float) entity.getTimeSinceHit() - partialTicks;
-        float f1 = entity.getDamage() - partialTicks;
-
-        if (f1 < 0.0F) {
-            f1 = 0.0F;
-        }
-
+        float f1 = Math.max(entity.getDamage() - partialTicks, 0F);
         if (f > 0.0F) {
             RenderSystem.rotatef(MathHelper.sin(f) * f * f1 / 10.0F * (float) entity.getForwardDirection(), 1.0F, 0.0F, 0.0F);
         }
-
-        matrixStack.scale(-0.8F, -0.8F, 0.8F);
+        matrices.scale(-0.8F, -0.8F, 0.8F);
     }
 
     @Nonnull

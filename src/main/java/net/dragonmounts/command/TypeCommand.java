@@ -25,6 +25,7 @@ import net.minecraft.world.server.ServerWorld;
 
 import java.util.Map;
 
+import static net.dragonmounts.command.DMCommand.HAS_PERMISSION_LEVEL_3;
 import static net.dragonmounts.command.DMCommand.createClassCastException;
 
 public class TypeCommand {
@@ -163,7 +164,7 @@ public class TypeCommand {
     }
 
     public static LiteralArgumentBuilder<CommandSource> register() {
-        return Commands.literal("type").requires(source -> source.hasPermission(3))
+        return Commands.literal("type").requires(HAS_PERMISSION_LEVEL_3)
                 .then(Commands.literal("block").then(BLOCK_HANDLER.load(Commands.argument("pos", BlockPosArgument.blockPos()))))
                 .then(Commands.literal("entity").then(ENTITY_HANDLER.load(Commands.argument("target", EntityArgument.entity()))));
     }

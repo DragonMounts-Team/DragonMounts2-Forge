@@ -2,7 +2,9 @@ package net.dragonmounts.data.loot;
 
 import net.dragonmounts.block.HatchableDragonEggBlock;
 import net.dragonmounts.init.DMBlocks;
+import net.dragonmounts.init.DragonVariants;
 import net.dragonmounts.registry.DragonType;
+import net.dragonmounts.registry.DragonVariant;
 import net.minecraft.block.Block;
 import net.minecraft.data.loot.BlockLootTables;
 import net.minecraft.loot.*;
@@ -21,7 +23,8 @@ public class DMBlockLoot extends BlockLootTables {
     protected void addTables() {
         this.add(DMBlocks.DRAGON_CORE, lootTable());
         this.dropSelf(DMBlocks.DRAGON_NEST);
-        for (DragonType type : DragonType.REGISTRY) {//Do NOT load other mods at the same time!
+        DragonVariants.VALUES.forEach(this::dropDragonHead);
+        for (DragonType type : DragonType.REGISTRY) {
             HatchableDragonEggBlock block = type.getInstance(HatchableDragonEggBlock.class, null);
             if (block != null) this.dropDragonEgg(block);
         }
@@ -47,5 +50,9 @@ public class DMBlockLoot extends BlockLootTables {
 
     protected void dropDragonEgg(Block block) {
         this.add(block, lootTable().withPool(LootPool.lootPool().setRolls(ConstantRange.exactly(1)).add(ItemLootEntry.lootTableItem(block))));
+    }
+
+    protected void dropDragonHead(DragonVariant variant) {
+        this.add(variant.headBlock, lootTable().withPool(LootPool.lootPool().setRolls(ConstantRange.exactly(1)).add(ItemLootEntry.lootTableItem(variant.headItem))));
     }
 }

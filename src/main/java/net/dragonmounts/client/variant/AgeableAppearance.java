@@ -10,6 +10,8 @@ import static net.dragonmounts.util.RenderStateAccessor.createGlowRenderType;
 public class AgeableAppearance extends VariantAppearance {
     public final ResourceLocation body;
     public final ResourceLocation babyBody;
+    public final RenderType bodyForShoulder;
+    public final RenderType bodyForBlock;
     public final RenderType decal;
     public final RenderType babyDecal;
     public final RenderType glow;
@@ -29,6 +31,8 @@ public class AgeableAppearance extends VariantAppearance {
     ) {
         super(1.6F);
         this.body = body;
+        this.bodyForShoulder = RenderType.entityCutoutNoCull(babyBody);
+        this.bodyForBlock = RenderType.entityCutoutNoCullZOffset(body);
         this.decal = RenderType.entityDecal(body);
         this.babyBody = babyBody;
         this.babyDecal = RenderType.entityDecal(babyBody);
@@ -81,12 +85,22 @@ public class AgeableAppearance extends VariantAppearance {
     }
 
     @Override
-    public RenderType getBodyOnShoulder() {
+    public RenderType getBodyForShoulder() {
+        return this.bodyForShoulder;
+    }
+
+    @Override
+    public RenderType getGlowForShoulder() {
         return this.babyGlow;
     }
 
     @Override
-    public RenderType getGlowOnShoulder() {
-        return this.babyDecal;
+    public RenderType getBodyForBlock() {
+        return this.bodyForBlock;
+    }
+
+    @Override
+    public RenderType getGlowForBlock() {
+        return this.glow;
     }
 }

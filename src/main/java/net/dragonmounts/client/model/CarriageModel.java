@@ -51,12 +51,12 @@ public class CarriageModel extends EntityModel<CarriageEntity> {
     }
 
     @Override
-    public void renderToBuffer(@Nonnull MatrixStack matrixStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        this.field_78154_a1.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.field_78154_a4.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.field_78154_a2.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.field_78154_a3.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.field_78154_a6.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        this.field_78154_a5.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+    public void renderToBuffer(@Nonnull MatrixStack matrices, @Nonnull IVertexBuilder buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+        this.field_78154_a1.render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        this.field_78154_a4.render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        this.field_78154_a2.render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        this.field_78154_a3.render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        this.field_78154_a6.render(matrices, buffer, light, overlay, red, green, blue, alpha);
+        this.field_78154_a5.render(matrices, buffer, light, overlay, red, green, blue, alpha);
     }
 }

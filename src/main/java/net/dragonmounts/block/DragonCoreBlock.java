@@ -43,7 +43,9 @@ public class DragonCoreBlock extends ContainerBlock {
 
     private static boolean testPositionPredicate(BlockState state, IBlockReader world, BlockPos pos) {
         TileEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof DragonCoreBlockEntity) return ((DragonCoreBlockEntity) blockEntity).isClosed();
+        if (blockEntity instanceof DragonCoreBlockEntity) {
+            return ((DragonCoreBlockEntity) blockEntity).isClosed();
+        }
         return true;
     }
 
@@ -66,27 +68,27 @@ public class DragonCoreBlock extends ContainerBlock {
 
     @Nonnull
     @Override
-    public DragonCoreBlockEntity newBlockEntity(@Nonnull IBlockReader world) {
+    public DragonCoreBlockEntity newBlockEntity(IBlockReader world) {
         return new DragonCoreBlockEntity();
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public BlockRenderType getRenderShape(@Nonnull BlockState state) {
+    public BlockRenderType getRenderShape(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public ActionResultType use(@Nonnull BlockState state, @Nonnull World level, @Nonnull BlockPos pos, @Nonnull PlayerEntity player, @Nonnull Hand hand, @Nonnull BlockRayTraceResult hit) {
+    public ActionResultType use(BlockState state, World level, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (level.isClientSide) return ActionResultType.SUCCESS;
         if (player.isSpectator()) return ActionResultType.CONSUME;
         TileEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof DragonCoreBlockEntity) {
             DragonCoreBlockEntity dragonCoreBlockEntity = (DragonCoreBlockEntity) blockEntity;
-            ShulkerBoxTileEntity.AnimationStatus status = dragonCoreBlockEntity.getAnimationStatus();
+            ShulkerBoxTileEntity.AnimationStatus status = dragonCoreBlockEntity.getStatus();
             if (status != ShulkerBoxTileEntity.AnimationStatus.CLOSING && (status != ShulkerBoxTileEntity.AnimationStatus.CLOSED || level.noCollision(ShulkerAABBHelper.openBoundingBox(pos, Direction.UP)))) {
                 player.openMenu(dragonCoreBlockEntity);
                 player.awardStat(Stats.OPEN_SHULKER_BOX);
@@ -96,11 +98,12 @@ public class DragonCoreBlock extends ContainerBlock {
     }
 
     @Override
-    public void setPlacedBy(@Nonnull World level, @Nonnull BlockPos pos, @Nonnull BlockState state, LivingEntity placer, ItemStack stack) {
+    public void setPlacedBy(World level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         if (stack.hasCustomHoverName()) {
             TileEntity tileEntity = level.getBlockEntity(pos);
-            if (tileEntity instanceof DragonCoreBlockEntity)
+            if (tileEntity instanceof DragonCoreBlockEntity) {
                 ((DragonCoreBlockEntity) tileEntity).setCustomName(stack.getHoverName());
+            }
         }
     }
 
@@ -111,7 +114,7 @@ public class DragonCoreBlock extends ContainerBlock {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onRemove(BlockState state, @Nonnull World level, @Nonnull BlockPos pos, BlockState newState, boolean pIsMoving) {
+    public void onRemove(BlockState state, World level, BlockPos pos, BlockState newState, boolean pIsMoving) {
         if (!state.is(newState.getBlock())) {
             level.playSound(null, pos, SoundEvents.ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 0.3F, level.random.nextFloat() * 0.1F + 0.3F);
             level.playSound(null, pos, SoundEvents.ENDER_EYE_DEATH, SoundCategory.NEUTRAL, 2.0F, level.random.nextFloat() * 0.1F + 0.3F);
@@ -127,26 +130,26 @@ public class DragonCoreBlock extends ContainerBlock {
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getShape(@Nonnull BlockState state, IBlockReader pLevel, @Nonnull BlockPos pos, @Nonnull ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, IBlockReader pLevel, BlockPos pos, ISelectionContext context) {
         TileEntity blockEntity = pLevel.getBlockEntity(pos);
         return blockEntity instanceof DragonCoreBlockEntity ? VoxelShapes.create(((DragonCoreBlockEntity) blockEntity).getBoundingBox()) : VoxelShapes.block();
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean hasAnalogOutputSignal(@Nonnull BlockState state) {
+    public boolean hasAnalogOutputSignal(BlockState state) {
         return true;
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public int getAnalogOutputSignal(@Nonnull BlockState blockState, World level, @Nonnull BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState blockState, World level, BlockPos pos) {
         return Container.getRedstoneSignalFromContainer((IInventory) level.getBlockEntity(pos));
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void animateTick(@Nonnull BlockState state, @Nonnull World level, @Nonnull BlockPos pos, @Nonnull Random rand) {
+    public void animateTick(BlockState state, World level, BlockPos pos, Random rand) {
         for (int i = 0; i < 3; ++i) {
             int j = rand.nextInt(2) * 2 - 1;
             int k = rand.nextInt(2) * 2 - 1;

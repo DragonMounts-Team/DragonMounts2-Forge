@@ -13,6 +13,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Collection;
 
+import static net.dragonmounts.command.DMCommand.HAS_PERMISSION_LEVEL_3;
 import static net.dragonmounts.init.DMCapabilities.ARMOR_EFFECT_MANAGER;
 
 public class CooldownCommand {
@@ -27,7 +28,7 @@ public class CooldownCommand {
                     .then(Commands.argument("value", IntegerArgumentType.integer(0)).executes(context -> set(context.getSource(), EntityArgument.getPlayers(context, "players"), category, IntegerArgumentType.getInteger(context, "value"))))
             );
         }
-        return Commands.literal("cooldown").requires(source -> source.hasPermission(3)).then(single).then(multiple);
+        return Commands.literal("cooldown").requires(HAS_PERMISSION_LEVEL_3).then(single).then(multiple);
     }
 
     public static int get(CommandSource source, ServerPlayerEntity player, CooldownCategory category) {

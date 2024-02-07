@@ -19,16 +19,14 @@ public class VariantSwitcherItem extends Item {
 
     @Nonnull
     @Override
-    public ActionResultType interactLivingEntity(@Nonnull ItemStack stack, @Nonnull PlayerEntity player, @Nonnull LivingEntity entity, @Nonnull Hand hand) {
+    public ActionResultType interactLivingEntity(ItemStack stack, PlayerEntity player, LivingEntity entity, Hand hand) {
         if (entity instanceof TameableDragonEntity) {
             if (player.level.isClientSide) return ActionResultType.SUCCESS;
             TameableDragonEntity dragon = (TameableDragonEntity) entity;
             if (dragon.isOwnedBy(player)) {
                 DragonVariant previous = dragon.getVariant();
                 dragon.setVariant(previous.type.variants.draw(random, previous));
-                if (!player.abilities.instabuild) {
-                    stack.shrink(1);
-                }
+                if (!player.abilities.instabuild) stack.shrink(1);
                 return ActionResultType.CONSUME;
             } else {
                 player.displayClientMessage(new TranslationTextComponent("message.dragonmounts.not_owner"), true);

@@ -29,7 +29,7 @@ public abstract class RenderStateAccessor extends RenderState {
         );
     }
 
-    private RenderStateAccessor(String name, Runnable setupState, Runnable clearState) {
-        super(name, setupState, clearState);
+    private RenderStateAccessor(String a, Runnable b, Runnable c) {
+        super(a, b, c);
     }
 }

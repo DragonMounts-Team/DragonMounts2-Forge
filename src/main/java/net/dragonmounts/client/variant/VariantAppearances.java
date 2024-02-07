@@ -71,7 +71,8 @@ public class VariantAppearances {
     public static final VariantAppearance ZOMBIE_MALE;
     public static final VariantAppearance SCULK = new VariantAppearance(1.6F) {
         public final ResourceLocation body = new ResourceLocation(MOD_ID, TEXTURES_ROOT + "sculk/body.png");
-        public final RenderType bodyOnShoulder = RenderType.entityCutoutNoCull(body);
+        public final RenderType bodyForShoulder = RenderType.entityCutoutNoCull(this.body);
+        public final RenderType bodyForBlock = RenderType.entityCutoutNoCullZOffset(this.body);
         public final RenderType decal = RenderType.entityDecal(this.body);
 
         @Override
@@ -101,7 +102,7 @@ public class VariantAppearances {
 
         @Override
         public RenderType getGlow(TameableDragonEntity dragon) {
-            return VariantAppearances.ENDER_FEMALE.getGlow(dragon);
+            return ENDER_FEMALE.getGlow(dragon);
         }
 
         @Override
@@ -111,17 +112,27 @@ public class VariantAppearances {
 
         @Override
         public RenderType getGlowDecal(TameableDragonEntity dragon) {
-            return VariantAppearances.ENDER_FEMALE.getGlowDecal(dragon);
+            return ENDER_FEMALE.getGlowDecal(dragon);
         }
 
         @Override
-        public RenderType getBodyOnShoulder() {
-            return this.bodyOnShoulder;
+        public RenderType getBodyForShoulder() {
+            return this.bodyForShoulder;
         }
 
         @Override
-        public RenderType getGlowOnShoulder() {
-            return VariantAppearances.ENDER_FEMALE.getGlowOnShoulder();
+        public RenderType getGlowForShoulder() {
+            return ENDER_FEMALE.getGlowForShoulder();
+        }
+
+        @Override
+        public RenderType getBodyForBlock() {
+            return this.bodyForBlock;
+        }
+
+        @Override
+        public RenderType getGlowForBlock() {
+            return ENDER_FEMALE.getGlowForBlock();
         }
     };
 

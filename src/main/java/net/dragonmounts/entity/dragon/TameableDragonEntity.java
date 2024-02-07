@@ -65,7 +65,10 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static net.dragonmounts.network.DMPacketHandler.CHANNEL;
 import static net.minecraftforge.fml.network.PacketDistributor.PLAYER;
@@ -184,9 +187,12 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
 
     public void resetAttributes() {
         AttributeModifierManager manager = this.getAttributes();
-        Objects.requireNonNull(manager.getInstance(Attributes.MAX_HEALTH)).setBaseValue(DragonMountsConfig.SERVER.base_health.get());
-        Objects.requireNonNull(manager.getInstance(Attributes.ATTACK_DAMAGE)).setBaseValue(DragonMountsConfig.SERVER.base_damage.get());
-        Objects.requireNonNull(manager.getInstance(Attributes.ARMOR)).setBaseValue(DragonMountsConfig.SERVER.base_armor.get());
+        //noinspection DataFlowIssue
+        manager.getInstance(Attributes.MAX_HEALTH).setBaseValue(DragonMountsConfig.SERVER.base_health.get());
+        //noinspection DataFlowIssue
+        manager.getInstance(Attributes.ATTACK_DAMAGE).setBaseValue(DragonMountsConfig.SERVER.base_damage.get());
+        //noinspection DataFlowIssue
+        manager.getInstance(Attributes.ARMOR).setBaseValue(DragonMountsConfig.SERVER.base_armor.get());
     }
 
     public void setSaddle(@Nonnull ItemStack stack, boolean sync) {
@@ -582,13 +588,11 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
         super.thunderHit(level, lightning);
         this.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 700));//35s
         DragonType current = this.getDragonType();
-        if (current == DragonTypes.SKELETON) {
+        if (current == DragonTypes.SKELETON)
             this.setDragonType(DragonTypes.WITHER, false);
-        } else if (current == DragonTypes.WATER) {
+        else if (current == DragonTypes.WATER)
             this.setDragonType(DragonTypes.STORM, false);
-        } else {
-            return;
-        }
+        else return;
         this.playSound(SoundEvents.END_PORTAL_SPAWN, 2, 1);
         this.playSound(SoundEvents.PORTAL_TRIGGER, 2, 1);
     }
@@ -919,13 +923,11 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
         AttributeModifierManager manager = this.getAttributes();
         DragonVariant previous = this.getVariant();
         manager.removeAttributeModifiers(previous.type.attributes);
-        if (previous.type != type || reset) {
+        if (previous.type != type || reset)
             this.setVariant(type.variants.draw(this.random, previous));
-        }
         manager.addTransientAttributeModifiers(type.attributes);
-        if (reset) {
-            this.setHealth((float) Objects.requireNonNull(manager.getInstance(Attributes.MAX_HEALTH)).getValue());
-        }
+        if (reset)//noinspection DataFlowIssue
+            this.setHealth((float) manager.getInstance(Attributes.MAX_HEALTH).getValue());
     }
 
     @Override
@@ -969,13 +971,12 @@ public class TameableDragonEntity extends TameableEntity implements IForgeSheara
 
     @Override
     public ILivingEntityData finalizeSpawn(IServerWorld level, DifficultyInstance difficulty, SpawnReason reason, @Nullable ILivingEntityData spawnData, @Nullable CompoundNBT compound) {
-        Objects.requireNonNull(this.getAttribute(Attributes.FOLLOW_RANGE)).addPermanentModifier(new AttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05D, AttributeModifier.Operation.MULTIPLY_BASE));
+        //noinspection DataFlowIssue
+        this.getAttribute(Attributes.FOLLOW_RANGE).addPermanentModifier(new AttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05D, AttributeModifier.Operation.MULTIPLY_BASE));
         this.setLeftHanded(this.random.nextFloat() < 0.05F);
-        if (compound != null && compound.contains(DragonLifeStage.DATA_PARAMETER_KEY)) {
+        if (compound != null && compound.contains(DragonLifeStage.DATA_PARAMETER_KEY))
             this.setLifeStage(DragonLifeStage.byName(compound.getString(DragonLifeStage.DATA_PARAMETER_KEY)), true, false);
-        } else {
-            this.setLifeStage(DragonLifeStage.ADULT, true, false);
-        }
+        else this.setLifeStage(DragonLifeStage.ADULT, true, false);
         return spawnData;
     }
 }

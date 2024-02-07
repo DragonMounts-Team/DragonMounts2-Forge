@@ -56,69 +56,58 @@ public class DragonEssenceItem extends Item implements IDragonTypified, IEntityC
     public ActionResultType useOn(ItemUseContext context) {
         ItemStack stack = context.getItemInHand();
         World level = context.getLevel();
-        if (level.isClientSide) {
-            return ActionResultType.SUCCESS;
-        } else {
-            PlayerEntity player = context.getPlayer();
-            BlockPos clickedPos = context.getClickedPos();
-            Direction direction = context.getClickedFace();
-            BlockState blockstate = level.getBlockState(clickedPos);
-            BlockPos spawnPos = blockstate.getCollisionShape(level, clickedPos).isEmpty() ? clickedPos : clickedPos.relative(direction);
-            level.addFreshEntity(this.spwanEntity(
-                    (ServerWorld) level,
-                    player,
-                    stack.getTag(),
-                    spawnPos,
-                    SpawnReason.EVENT,
-                    null,
-                    true,
-                    !Objects.equals(clickedPos, spawnPos) && direction == Direction.UP
-            ));
-            if (player == null || !player.abilities.instabuild) {
-                stack.shrink(1);
-            }
-            return ActionResultType.CONSUME;
-        }
+        if (level.isClientSide) return ActionResultType.SUCCESS;
+        PlayerEntity player = context.getPlayer();
+        BlockPos clickedPos = context.getClickedPos();
+        Direction direction = context.getClickedFace();
+        BlockState state = level.getBlockState(clickedPos);
+        BlockPos spawnPos = state.getCollisionShape(level, clickedPos).isEmpty() ? clickedPos : clickedPos.relative(direction);
+        level.addFreshEntity(this.spwanEntity(
+                (ServerWorld) level,
+                player,
+                stack.getTag(),
+                spawnPos,
+                SpawnReason.EVENT,
+                null,
+                true,
+                !Objects.equals(clickedPos, spawnPos) && direction == Direction.UP
+        ));
+        if (player == null || !player.abilities.instabuild) stack.shrink(1);
+        return ActionResultType.CONSUME;
     }
 
     @Nonnull
     @Override
-    public ActionResult<ItemStack> use(@Nonnull World level, @Nonnull PlayerEntity player, @Nonnull Hand hand) {
+    public ActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
         BlockRayTraceResult result = getPlayerPOVHitResult(level, player, RayTraceContext.FluidMode.SOURCE_ONLY);
         ItemStack stack = player.getItemInHand(hand);
-        if (result.getType() != RayTraceResult.Type.BLOCK) {
-            return ActionResult.pass(stack);
-        } else if (level.isClientSide) {
+        if (result.getType() != RayTraceResult.Type.BLOCK) return ActionResult.pass(stack);
+        else if (level.isClientSide) return ActionResult.success(stack);
+        BlockPos pos = result.getBlockPos();
+        if (!(level.getBlockState(pos).getBlock() instanceof FlowingFluidBlock)) return ActionResult.pass(stack);
+        else if (level.mayInteract(player, pos) && player.mayUseItemAt(pos, result.getDirection(), stack)) {
+            level.addFreshEntity(this.spwanEntity(
+                    (ServerWorld) level,
+                    player,
+                    stack.getTag(),
+                    pos,
+                    SpawnReason.EVENT,
+                    null,
+                    false,
+                    false
+            ));
+            if (!player.abilities.instabuild)
+                stack.shrink(1);
+            player.awardStat(Stats.ITEM_USED.get(this));
             return ActionResult.success(stack);
-        } else {
-            BlockPos pos = result.getBlockPos();
-            if (!(level.getBlockState(pos).getBlock() instanceof FlowingFluidBlock)) {
-                return ActionResult.pass(stack);
-            } else if (level.mayInteract(player, pos) && player.mayUseItemAt(pos, result.getDirection(), stack)) {
-                level.addFreshEntity(this.spwanEntity(
-                        (ServerWorld) level,
-                        player,
-                        stack.getTag(),
-                        pos,
-                        SpawnReason.EVENT,
-                        null,
-                        false,
-                        false
-                ));
-                if (!player.abilities.instabuild) {
-                    stack.shrink(1);
-                }
-                player.awardStat(Stats.ITEM_USED.get(this));
-                return ActionResult.success(stack);
-            }
-            return ActionResult.fail(stack);
         }
+        return ActionResult.fail(stack);
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> components, @Nonnull ITooltipFlag flag) {
-        components.add(this.type.getName());
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltips, ITooltipFlag flag) {
+        tooltips.add(this.type.getName());
     }
 
     @Nonnull
@@ -155,9 +144,7 @@ public class DragonEssenceItem extends Item implements IDragonTypified, IEntityC
         compound.remove("ShearCooldown");
         compound.remove("Sitting");
         LivingEntity owner = entity.getOwner();
-        if (owner != null) {
-            compound.putString("OwnerName", ITextComponent.Serializer.toJson(owner.getName()));
-        }
+        if (owner != null) compound.putString("OwnerName", ITextComponent.Serializer.toJson(owner.getName()));
         stack.setTag(compound);
         return stack;
     }

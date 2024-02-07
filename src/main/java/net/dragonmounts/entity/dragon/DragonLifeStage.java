@@ -28,7 +28,7 @@ public enum DragonLifeStage implements IStringSerializable {
     public static final String DATA_PARAMETER_KEY = "LifeStage";
     public static final String EGG_TRANSLATION_KEY = "dragon.life_stage.egg";
     private static final DragonLifeStage[] VALUES = values();
-    private static final Map<String, DragonLifeStage> BY_NAME = Arrays.stream(VALUES).collect(Collectors.toMap(DragonLifeStage::getSerializedName, (value) -> value));
+    private static final Map<String, DragonLifeStage> BY_NAME = Arrays.stream(VALUES).collect(Collectors.toMap(DragonLifeStage::getSerializedName, value -> value));
     public final int duration;
     private final float startSize;
     private final float endSize;

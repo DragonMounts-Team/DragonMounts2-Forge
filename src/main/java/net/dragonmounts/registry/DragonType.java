@@ -159,7 +159,7 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
         return clazz.cast(this.map.put(clazz, instance));
     }
 
-    public <T> T getInstance(Class<T> clazz, T defaultValue) {
+    public <T> T getInstance(Class<T> clazz, @Nullable T defaultValue) {
         return clazz.cast(this.map.getOrDefault(clazz, defaultValue));
     }
 

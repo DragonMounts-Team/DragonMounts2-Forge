@@ -50,8 +50,8 @@ public class LazyBooleanConfigOption extends AbstractLazyConfigOption<Boolean> {
 
     @Nonnull
     @Override
-    public Widget createButton(@Nullable GameSettings options, int pX, int pY, int pWidth) {
-        return new OptionButton(pX, pY, pWidth, 20, this, this.stringify.apply(this), button -> {
+    public Widget createButton(@Nullable GameSettings options, int x, int y, int width) {
+        return new OptionButton(x, y, width, 20, this, this.stringify.apply(this), button -> {
             this.toggle();
             button.setMessage(this.stringify.apply(this));
         });

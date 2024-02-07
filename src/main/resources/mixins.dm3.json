@@ -1,0 +1,11 @@
+{
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "required": true,
+  "package": "net.dragonmounts.mixin",
+  "mixins": [
+  ],
+  "refmap": "mixins.dm3.refmap.json",
+  "client": [
+  ]
+}

@@ -1,6 +1,5 @@
-package net.dragonmounts.client.model.dragon;
+package net.dragonmounts.util;
 
-import net.dragonmounts.util.Segment;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

@@ -2,6 +2,8 @@ package net.dragonmounts.client.model.dragon;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.dragonmounts.util.ModelSegment;
+import net.dragonmounts.util.ScaledModelPart;
 import net.minecraft.client.renderer.model.Model;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraftforge.api.distmarker.Dist;

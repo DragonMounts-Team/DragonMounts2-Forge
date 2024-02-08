@@ -2,6 +2,7 @@ package net.dragonmounts.client.model.dragon;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.dragonmounts.util.ScaledModelPart;
 import net.dragonmounts.util.math.MathUtil;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.Model;

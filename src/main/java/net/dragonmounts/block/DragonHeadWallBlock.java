@@ -40,12 +40,6 @@ public class DragonHeadWallBlock extends AbstractDragonHeadBlock {
 
     @Nonnull
     @Override
-    public String getDescriptionId() {
-        return this.asItem().getDescriptionId();
-    }
-
-    @Nonnull
-    @Override
     @SuppressWarnings("deprecation")
     public VoxelShape getShape(BlockState state, IBlockReader level, BlockPos pos, ISelectionContext context) {
         return AABBS.get(state.getValue(HORIZONTAL_FACING));
@@ -56,8 +50,7 @@ public class DragonHeadWallBlock extends AbstractDragonHeadBlock {
         BlockState state = this.defaultBlockState();
         BlockPos pos = context.getClickedPos();
         IBlockReader level = context.getLevel();
-        Direction[] directions = context.getNearestLookingDirections();
-        for (Direction direction : directions) {
+        for (Direction direction : context.getNearestLookingDirections()) {
             if (direction.getAxis().isHorizontal() && !level.getBlockState(pos.relative(direction)).canBeReplaced(context)) {
                 return state.setValue(HORIZONTAL_FACING, direction.getOpposite());
             }

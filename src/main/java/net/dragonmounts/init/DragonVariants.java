@@ -1,6 +1,5 @@
 package net.dragonmounts.init;
 
-import net.dragonmounts.client.renderer.DMItemStackTileEntityRenderer;
 import net.dragonmounts.registry.DragonType;
 import net.dragonmounts.registry.DragonVariant;
 import net.dragonmounts.util.ImmutableArray;
@@ -10,6 +9,7 @@ import net.minecraft.item.Rarity;
 import net.minecraftforge.event.RegistryEvent;
 
 import static net.dragonmounts.DragonMounts.MOD_ID;
+import static net.dragonmounts.init.DMBlocks.GET_DMISTER;
 
 public class DragonVariants {
     public static final DragonVariant AETHER_FEMALE = create(DragonTypes.AETHER, MOD_ID + ":aether_female");
@@ -92,7 +92,7 @@ public class DragonVariants {
         return new DragonVariant(
                 type,
                 AbstractBlock.Properties.of(Material.DECORATION).strength(1F),
-                DMItemGroups.block().rarity(Rarity.UNCOMMON).setISTER(DMItemStackTileEntityRenderer.GET_GET_INSTANCE)
+                DMItemGroups.block().rarity(Rarity.UNCOMMON).setISTER(GET_DMISTER)
         ).setRegistryName(name).registerHead(DMItems.ITEMS, DMBlocks.BLOCKS);
     }
 

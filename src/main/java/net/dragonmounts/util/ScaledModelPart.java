@@ -1,4 +1,4 @@
-package net.dragonmounts.client.model.dragon;
+package net.dragonmounts.util;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.model.Model;

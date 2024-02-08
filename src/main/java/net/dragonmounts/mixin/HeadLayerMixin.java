@@ -10,10 +10,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -21,15 +18,12 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(HeadLayer.class)
 public abstract class HeadLayerMixin {
-    @Unique
-    private static final Logger dragonmounts$LOGGER = LogManager.getLogger();
-
     @Inject(
             method = "render(Lcom/mojang/blaze3d/matrix/MatrixStack;Lnet/minecraft/client/renderer/IRenderTypeBuffer;ILnet/minecraft/entity/LivingEntity;FFFFFF)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/renderer/model/ModelRenderer;translateAndRotate(Lcom/mojang/blaze3d/matrix/MatrixStack;)V",
-                    shift = At.Shift.AFTER//BeforeInvoke for void
+                    shift = At.Shift.AFTER
             ),
             locals = LocalCapture.CAPTURE_FAILHARD,
             cancellable = true

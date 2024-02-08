@@ -4,7 +4,6 @@ import net.dragonmounts.api.IDragonTypified;
 import net.dragonmounts.block.entity.DragonHeadBlockEntity;
 import net.dragonmounts.registry.DragonType;
 import net.dragonmounts.registry.DragonVariant;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ContainerBlock;
 import net.minecraft.client.util.ITooltipFlag;
@@ -35,12 +34,6 @@ public abstract class AbstractDragonHeadBlock extends ContainerBlock implements 
     }
 
     public abstract float getYRotation(BlockState state);
-
-    @Nonnull
-    @SuppressWarnings("deprecation")
-    public BlockRenderType getRenderShape(BlockState state) {
-        return BlockRenderType.INVISIBLE;
-    }
 
     @SuppressWarnings("deprecation")
     public boolean isPathfindable(BlockState state, IBlockReader level, BlockPos pos, PathType type) {

@@ -1,4 +1,4 @@
-package net.dragonmounts.client.model.dragon;
+package net.dragonmounts.util;
 
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.client.renderer.model.Model;

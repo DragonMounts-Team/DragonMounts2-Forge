@@ -11,12 +11,15 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Rarity;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
 import static net.dragonmounts.init.DMItemGroups.block;
@@ -25,9 +28,10 @@ import static net.dragonmounts.init.DMItems.ITEMS;
 
 public class DMBlocks {
     private static final ToIntFunction<BlockState> DRAGON_EGG_LUMINANCE = $ -> 1;
+    public static final Supplier<Callable<ItemStackTileEntityRenderer>> GET_DMISTER = () -> DMItemStackTileEntityRenderer::getInstance;
     public static final DeferredRegister<Block> BLOCKS = DragonMounts.create(ForgeRegistries.BLOCKS);
     public static final DragonNestBlock DRAGON_NEST = register("dragon_nest", new DragonNestBlock(), block());
-    public static final DragonCoreBlock DRAGON_CORE = register("dragon_core", new DragonCoreBlock(), none().rarity(Rarity.RARE).setISTER(DMItemStackTileEntityRenderer.GET_GET_INSTANCE));
+    public static final DragonCoreBlock DRAGON_CORE = register("dragon_core", new DragonCoreBlock(), none().rarity(Rarity.RARE).setISTER(GET_DMISTER));
     public static final HatchableDragonEggBlock AETHER_DRAGON_EGG = registerDragonEgg("aether_dragon_egg", DragonTypes.AETHER, MaterialColor.COLOR_LIGHT_BLUE, block().rarity(Rarity.UNCOMMON));
     public static final HatchableDragonEggBlock ENCHANT_DRAGON_EGG = registerDragonEgg("enchant_dragon_egg", DragonTypes.ENCHANT, MaterialColor.COLOR_PURPLE, block().rarity(Rarity.UNCOMMON));
     public static final HatchableDragonEggBlock ENDER_DRAGON_EGG = registerDragonEgg("ender_dragon_egg", DragonTypes.ENDER, MaterialColor.COLOR_BLACK, block().rarity(Rarity.EPIC));

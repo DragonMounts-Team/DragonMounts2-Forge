@@ -7,6 +7,7 @@
   ],
   "refmap": "dragonmounts.mixins.refmap.json",
   "client": [
-    "HeadLayerMixin"
+    "HeadLayerMixin",
+    "ItemRendererMixin"
   ]
 }

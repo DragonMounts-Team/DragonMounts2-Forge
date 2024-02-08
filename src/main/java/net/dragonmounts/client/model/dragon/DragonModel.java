@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.dragonmounts.client.variant.VariantAppearance;
 import net.dragonmounts.client.variant.VariantAppearances;
 import net.dragonmounts.entity.dragon.TameableDragonEntity;
+import net.dragonmounts.util.ModelHolder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;

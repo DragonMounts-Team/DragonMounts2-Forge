@@ -100,9 +100,9 @@ public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements 
         final ResourceLocation key = this.getRegistryName();
         if (key == null) return this;
         final String prefix = key.getPath();
-        final String ground = prefix + "_dragon_head";
-        items.register(ground, this::getHeadItem);
-        blocks.register(ground, this::getHeadBlock);
+        final String standing = prefix + "_dragon_head";
+        items.register(standing, this::getHeadItem);
+        blocks.register(standing, this::getHeadBlock);
         blocks.register(prefix + "_dragon_head_wall", this::getHeadWallBlock);
         registerBehavior(this.headItem, EQUIPMENT_BEHAVIOR);
         return this;

@@ -1,7 +1,7 @@
 package net.dragonmounts.network;
 
 import net.dragonmounts.DragonMountsConfig;
-import net.dragonmounts.entity.dragon.TameableDragonEntity;
+import net.dragonmounts.entity.dragon.ServerDragonEntity;
 import net.dragonmounts.init.DMKeyBindings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -12,51 +12,39 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class CRideDragonPacket {
+public final class CRideDragonPacket {
+    public static byte getFlag(boolean a, boolean b, boolean c, boolean d) {
+        return (byte) ((a ? 0b0001 : 0) | (b ? 0b0010 : 0) | (c ? 0b0100 : 0) | (d ? 0b1000 : 0));
+    }
     public final int id;
-    public boolean climbing;
-    public boolean descending;
-    public boolean convergePitch;
-    public boolean convergeYaw;
+    public final byte flag;
+    public final boolean climbing;
+    public final boolean descending;
+    public final boolean convergePitch;
+    public final boolean convergeYaw;
 
     public CRideDragonPacket(int id) {
         this.id = id;
+        this.flag = getFlag(
+                this.climbing = Minecraft.getInstance().options.keyJump.isDown(),
+                this.descending = DMKeyBindings.DESCENT.isDown(),
+                this.convergePitch = DragonMountsConfig.CLIENT.converge_pitch_angle.get(),
+                this.convergeYaw = DragonMountsConfig.CLIENT.converge_yaw_angle.get()
+        );
     }
 
     public CRideDragonPacket(PacketBuffer buffer) {
         this.id = buffer.readVarInt();
-        byte flag = buffer.readByte();
-        this.climbing = (flag & 0b0001) == 0b0001;
-        this.descending = (flag & 0b0010) == 0b0010;
-        this.convergePitch = (flag & 0b0100) == 0b0100;
-        this.convergeYaw = (flag & 0b1000) == 0b1000;
-    }
-
-    public static CRideDragonPacket create(int id) {
-        CRideDragonPacket packet = new CRideDragonPacket(id);
-        packet.climbing = Minecraft.getInstance().options.keyJump.isDown();
-        packet.descending = DMKeyBindings.DESCENT.isDown();
-        packet.convergePitch = DragonMountsConfig.CLIENT.converge_pitch_angle.get();
-        packet.convergeYaw = DragonMountsConfig.CLIENT.converge_yaw_angle.get();
-        return packet;
+        this.flag = buffer.readByte();
+        this.climbing = (this.flag & 0b0001) == 0b0001;
+        this.descending = (this.flag & 0b0010) == 0b0010;
+        this.convergePitch = (this.flag & 0b0100) == 0b0100;
+        this.convergeYaw = (this.flag & 0b1000) == 0b1000;
     }
 
     public void encode(PacketBuffer buffer) {
         buffer.writeVarInt(this.id);
-        byte flag = 0;
-        if (this.climbing) {
-            flag |= 0b0001;
-        }
-        if (this.descending) {
-            flag |= 0b0010;
-        }
-        if (this.convergePitch) {
-            flag |= 0b0100;
-        }
-        if (this.convergeYaw) {
-            flag |= 0b1000;
-        }
-        buffer.writeByte(flag);
+        buffer.writeByte(this.flag);
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
@@ -65,8 +53,8 @@ public class CRideDragonPacket {
             INetHandler handler = context.getNetworkManager().getPacketListener();
             if (handler instanceof ServerPlayNetHandler) {
                 Entity entity = ((ServerPlayNetHandler) handler).player.level.getEntity(this.id);
-                if (entity instanceof TameableDragonEntity) {
-                    ((TameableDragonEntity) entity).playerControlledGoal.applyPacket(this);
+                if (entity instanceof ServerDragonEntity) {
+                    ((ServerDragonEntity) entity).playerControlledGoal.handlePacket(this);
                 }
             }
         });

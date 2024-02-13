@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 
 public class CarriageItem extends Item {
     private static final Predicate<Entity> ENTITY_PREDICATE = EntityPredicates.NO_SPECTATORS.and(Entity::isPickable);
-    protected CarriageType type;
+    public final CarriageType type;
 
     public CarriageItem(CarriageType type, Properties properties) {
         super(properties);

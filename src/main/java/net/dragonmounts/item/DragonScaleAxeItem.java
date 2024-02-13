@@ -20,7 +20,7 @@ import static net.dragonmounts.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
 public class DragonScaleAxeItem extends AxeItem implements IDragonTypified {
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_scale_axe";
 
-    protected DragonType type;
+    public final DragonType type;
 
     public DragonScaleAxeItem(
             DragonScaleTier tier,

@@ -6,8 +6,8 @@ import net.minecraft.network.PacketBuffer;
 
 public class SSyncDragonAgePacket {
     public final int id;
-    public int age;
-    public DragonLifeStage stage;
+    public final int age;
+    public final DragonLifeStage stage;
 
     public SSyncDragonAgePacket(TameableDragonEntity dragon) {
         this.id = dragon.getId();

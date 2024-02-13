@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.dragonmounts.client.DMClientEvents;
 import net.dragonmounts.client.gui.DMConfigScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandSource;
@@ -15,8 +14,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.function.BiFunction;
 
@@ -59,17 +56,11 @@ public class ConfigCommand {
     }
 
     public static class Client {
-        private static final Logger LOGGER = LogManager.getLogger();
         private static final String OPEN_CONFIG_SCREEN = "/dragonmounts config client";
-        private static final String DEBUG = "/dmdbg";
         private static boolean OPEN_CONFIG_SCREEN_FLAG = false;
 
         public static void onClientSendMessage(ClientChatEvent event) {
-            if (DEBUG.equals(event.getOriginalMessage())) {
-                event.setCanceled(true);
-                LOGGER.warn(DMClientEvents.FLAG);
-                Minecraft.getInstance().gui.getChat().addRecentChat(DEBUG);
-            } else if (OPEN_CONFIG_SCREEN.equals(event.getOriginalMessage())) {
+            if (OPEN_CONFIG_SCREEN.equals(event.getOriginalMessage())) {
                 event.setCanceled(true);
                 OPEN_CONFIG_SCREEN_FLAG = true;
             }

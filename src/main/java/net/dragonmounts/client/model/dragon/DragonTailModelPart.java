@@ -12,15 +12,17 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 
 import static net.dragonmounts.util.ModelUtil.applyRotateAngle;
+import static net.dragonmounts.util.math.MathUtil.TO_RAD_FACTOR;
 
 @OnlyIn(Dist.CLIENT)
 public class DragonTailModelPart extends ScaledModelPart {
     public static final int TAIL_SIZE = 10;
-    public static final int TAIL_SEGMENT_COUNT = 12;
+    public static final int TAIL_SEGMENT_COUNT_INT = 12;
+    public static final float TAIL_SEGMENT_COUNT_FLOAT = 12F;
     public static final int HORN_THICK = 3;
     public static final int HORN_LENGTH = 32;
     public static final float HORN_OFS = -HORN_THICK / 2F;
-    protected final Segment[] segments = new Segment[TAIL_SEGMENT_COUNT];
+    protected final Segment[] segments = new Segment[TAIL_SEGMENT_COUNT_INT];
     public final ModelRenderer middleScale;
     public final ModelRenderer leftScale;
     public final ModelRenderer rightScale;
@@ -29,21 +31,23 @@ public class DragonTailModelPart extends ScaledModelPart {
 
     public DragonTailModelPart(Model model) {
         super(model);
-        buildTail();
-        float rot = (float) Math.toRadians(45);
-        this.leftScale = createScale(model);
-        this.addChild(applyRotateAngle(this.leftScale, 0, 0, rot));
-        this.middleScale = createScale(model);
-        this.addChild(this.middleScale);
-        this.rightScale = createScale(model);
-        this.addChild(applyRotateAngle(this.rightScale, 0, 0, -rot));
-        this.leftHorn = createHorn(model, true);
-        this.addChild(this.leftHorn);
-        this.rightHorn = createHorn(model, false);
-        this.addChild(this.rightHorn);
+        this.buildTail();
+        final float rot = 45F * TO_RAD_FACTOR;
+        this.addChild(applyRotateAngle(this.leftScale = createScale(model), 0, 0, rot));
+        this.addChild(applyRotateAngle(this.rightScale = createScale(model), 0, 0, -rot));
+        this.addChild(this.middleScale = createScale(model));
+        this.addChild(this.leftHorn = createHorn(model, true));
+        this.addChild(this.rightHorn = createHorn(model, false));
         for (int i = 0; i < this.segments.length; ++i) {
-            this.segments[i] = new Segment().save(this);
+            this.segments[i] = new Segment();
         }
+    }
+
+    public void save(int index) {
+        if (index < 0 || index >= this.segments.length) {
+            throw new IndexOutOfBoundsException();
+        }
+        this.segments[index].save(this);
     }
 
     protected void buildTail() {
@@ -61,13 +65,6 @@ public class DragonTailModelPart extends ScaledModelPart {
         renderer.setPos(0, HORN_OFS, TAIL_SIZE / 2F);
         renderer.mirror = mirror;
         return applyRotateAngle(renderer, Math.toRadians(-15), Math.toRadians(mirror ? 145 : -145), 0);
-    }
-
-    public void save(int index) {
-        if (index < 0 || index >= this.segments.length) {
-            throw new IndexOutOfBoundsException();
-        }
-        this.segments[index].save(this);
     }
 
     @Override

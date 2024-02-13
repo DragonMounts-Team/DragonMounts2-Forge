@@ -4,9 +4,9 @@ import net.minecraft.network.PacketBuffer;
 
 public class SShakeDragonEggPacket {
     public final int id;
-    public float axis;
-    public int amplitude;
-    public boolean particle;
+    public final float axis;
+    public final int amplitude;
+    public final boolean particle;
 
     public SShakeDragonEggPacket(int id, float axis, int amplitude, boolean particle) {
         this.id = id;

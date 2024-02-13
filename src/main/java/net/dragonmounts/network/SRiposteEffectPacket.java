@@ -5,10 +5,11 @@ import net.minecraft.network.PacketBuffer;
 
 public class SRiposteEffectPacket {
     public final int id;
-    public int flag = 0;
+    public final int flag;
 
-    public SRiposteEffectPacket(int id) {
+    public SRiposteEffectPacket(int id, int flag) {
         this.id = id;
+        this.flag = flag;
     }
 
     public SRiposteEffectPacket(PacketBuffer buffer) {

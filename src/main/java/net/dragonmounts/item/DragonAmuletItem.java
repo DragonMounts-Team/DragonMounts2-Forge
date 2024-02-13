@@ -1,6 +1,7 @@
 package net.dragonmounts.item;
 
 import net.dragonmounts.api.IDragonTypified;
+import net.dragonmounts.entity.dragon.ServerDragonEntity;
 import net.dragonmounts.entity.dragon.TameableDragonEntity;
 import net.dragonmounts.init.DMItems;
 import net.dragonmounts.registry.DragonType;
@@ -46,7 +47,7 @@ import static net.dragonmounts.util.EntityUtil.*;
 
 public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implements IDragonTypified {
     private static final Logger LOGGER = LogManager.getLogger();
-    protected DragonType type;
+    public final DragonType type;
 
     public DragonAmuletItem(DragonType type, Properties properties) {
         super(properties);
@@ -185,7 +186,7 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
 
     @Nonnull
     @Override
-    public TameableDragonEntity spwanEntity(
+    public ServerDragonEntity spwanEntity(
             ServerWorld level,
             @Nullable PlayerEntity player,
             @Nullable CompoundNBT tag,
@@ -195,7 +196,7 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
             boolean yOffset,
             boolean extraOffset
     ) {
-        TameableDragonEntity dragon = new TameableDragonEntity(level);
+        ServerDragonEntity dragon = new ServerDragonEntity(level);
         if (tag != null) {
             tag.remove("Passengers");
             finalizeSpawn(level, dragon, pos, SpawnReason.EVENT, null, tag, false, false);

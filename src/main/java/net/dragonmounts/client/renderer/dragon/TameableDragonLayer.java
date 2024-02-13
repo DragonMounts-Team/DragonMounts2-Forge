@@ -2,12 +2,12 @@ package net.dragonmounts.client.renderer.dragon;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.dragonmounts.client.ClientDragonEntity;
 import net.dragonmounts.client.model.dragon.DragonLegConfig;
 import net.dragonmounts.client.model.dragon.DragonModel;
 import net.dragonmounts.client.variant.VariantAppearance;
 import net.dragonmounts.client.variant.VariantAppearances;
 import net.dragonmounts.entity.dragon.DragonLifeStage;
-import net.dragonmounts.entity.dragon.TameableDragonEntity;
 import net.dragonmounts.init.DMEntities;
 import net.dragonmounts.item.DragonArmorItem;
 import net.dragonmounts.registry.DragonVariant;
@@ -29,13 +29,13 @@ import javax.annotation.Nonnull;
 import java.util.function.Predicate;
 
 @OnlyIn(Dist.CLIENT)
-public class TameableDragonLayer extends LayerRenderer<TameableDragonEntity, DragonModel> {
-    public TameableDragonLayer(IEntityRenderer<TameableDragonEntity, DragonModel> renderer) {
+public class TameableDragonLayer extends LayerRenderer<ClientDragonEntity, DragonModel> {
+    public TameableDragonLayer(IEntityRenderer<ClientDragonEntity, DragonModel> renderer) {
         super(renderer);
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrices, @Nonnull IRenderTypeBuffer buffer, int light, TameableDragonEntity dragon, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(@Nonnull MatrixStack matrices, @Nonnull IRenderTypeBuffer buffer, int light, ClientDragonEntity dragon, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         DragonModel model = this.getParentModel();
         VariantAppearance appearance = dragon.getVariant().getAppearance(VariantAppearances.ENDER_FEMALE);
         if (dragon.deathTime > 0) {

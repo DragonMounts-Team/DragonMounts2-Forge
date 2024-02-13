@@ -2,13 +2,13 @@ package net.dragonmounts.network;
 
 import net.dragonmounts.api.IDragonFood;
 import net.dragonmounts.capability.ArmorEffectManager;
+import net.dragonmounts.capability.IArmorEffectManager;
+import net.dragonmounts.client.ClientDragonEntity;
 import net.dragonmounts.entity.dragon.HatchableDragonEggEntity;
-import net.dragonmounts.entity.dragon.TameableDragonEntity;
 import net.dragonmounts.registry.CooldownCategory;
 import net.dragonmounts.util.DragonFood;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -16,8 +16,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
-
-import static net.dragonmounts.init.DMCapabilities.ARMOR_EFFECT_MANAGER;
 
 public class ClientHandler {
     private static final IDragonFood DEFAULT_DRAGON_FOOD_IMPL = (dragon, player, stack, hand) -> {};
@@ -27,9 +25,9 @@ public class ClientHandler {
             World level = Minecraft.getInstance().level;
             if (level == null) return;
             Entity entity = level.getEntity(packet.id);
-            if (entity instanceof TameableDragonEntity) {
-                TameableDragonEntity dragon = (TameableDragonEntity) entity;
-                dragon.applyPacket(packet);
+            if (entity instanceof ClientDragonEntity) {
+                ClientDragonEntity dragon = (ClientDragonEntity) entity;
+                dragon.handleAgeSync(packet);
                 DragonFood.get(packet.item, DEFAULT_DRAGON_FOOD_IMPL).act(dragon, packet.item);
             }
         });
@@ -83,12 +81,9 @@ public class ClientHandler {
 
     public static void handle(SSyncCooldownPacket packet, Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-            PlayerEntity player = Minecraft.getInstance().player;
-            if (player != null) {
-                player.getCapability(ARMOR_EFFECT_MANAGER).ifPresent(manager -> manager.setCooldown(CooldownCategory.REGISTRY.getValue(packet.id), packet.cd));
-            }
-        });
+        context.enqueueWork(() -> ((IArmorEffectManager.Provider) Minecraft.getInstance().player)
+                .dragonmounts$getManager().setCooldown(CooldownCategory.REGISTRY.getValue(packet.id), packet.cd)
+        );
         context.setPacketHandled(true);
     }
 
@@ -98,8 +93,8 @@ public class ClientHandler {
             World level = Minecraft.getInstance().level;
             if (level == null) return;
             Entity entity = level.getEntity(packet.id);
-            if (entity instanceof TameableDragonEntity) {
-                ((TameableDragonEntity) entity).applyPacket(packet);
+            if (entity instanceof ClientDragonEntity) {
+                ((ClientDragonEntity) entity).handleAgeSync(packet);
             }
         });
         context.setPacketHandled(true);

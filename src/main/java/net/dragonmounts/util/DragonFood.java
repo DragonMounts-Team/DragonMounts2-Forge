@@ -32,7 +32,6 @@ public class DragonFood implements IDragonFood {
         } else if (dragon.getRandom().nextFloat() < 0.25) {
             dragon.tame(player);
         }
-
     };
 
     public static final IDragonFood POISONOUS_POTATO = new IDragonFood() {

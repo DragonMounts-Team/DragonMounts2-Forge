@@ -29,6 +29,7 @@ public interface IEntityContainer<T extends Entity> {
         tag.remove("PortalCooldown");
         tag.remove("Pos");
         tag.remove("Rotation");
+        tag.remove("Sitting");
         tag.remove("SleepingX");
         tag.remove("SleepingY");
         tag.remove("SleepingZ");

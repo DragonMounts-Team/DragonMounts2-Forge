@@ -4,10 +4,14 @@
   "required": true,
   "package": "net.dragonmounts.mixin",
   "mixins": [
+    "PlayerEntityMixin",
+    "RenderingRegistryMixin",
+    "ServerPlayNetHandlerMixin"
   ],
   "refmap": "dragonmounts.mixins.refmap.json",
   "client": [
     "HeadLayerMixin",
-    "ItemRendererMixin"
+    "ItemRendererMixin",
+    "PlayerControllerMixin"
   ]
 }

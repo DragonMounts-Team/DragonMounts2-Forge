@@ -30,7 +30,7 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified, 
             ITEM_TRANSLATION_KEY_PREFIX + "dragon_scale_helmet"
     };
 
-    protected DragonType type;
+    public final DragonType type;
     public final IDragonScaleArmorEffect effect;
 
     public DragonScaleArmorItem(DragonScaleMaterial material, EquipmentSlotType slot, @Nullable IDragonScaleArmorEffect effect, Properties properties) {

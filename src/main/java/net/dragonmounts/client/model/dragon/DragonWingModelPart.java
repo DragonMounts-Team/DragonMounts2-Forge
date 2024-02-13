@@ -13,12 +13,10 @@ public class DragonWingModelPart extends ModelRenderer {
 
     public DragonWingModelPart(Model model) {
         super(model);
-        buildWing();
-        this.forearm = this.createForearm(model);
-        this.addChild(this.forearm);
-        for (int i = 0; i < this.fingers.length; ++i) {
-            this.fingers[i] = createFinger(model, i + 1 == this.fingers.length);
-            this.forearm.addChild(this.fingers[i]);
+        this.buildWing();
+        this.addChild(this.forearm = this.createForearm(model));
+        for (int i = 0; i < FINGER_COUNT; ++i) {
+            this.forearm.addChild(this.fingers[i] = createFinger(model, i + 1 == FINGER_COUNT));
         }
     }
 
@@ -47,7 +45,7 @@ public class DragonWingModelPart extends ModelRenderer {
     }
 
     public ModelRenderer getFinger(int index) {
-        if (index >= 0 && index < 4) {
+        if (index >= 0 && index < this.fingers.length) {
             return this.fingers[index];
         }
         throw new IndexOutOfBoundsException();

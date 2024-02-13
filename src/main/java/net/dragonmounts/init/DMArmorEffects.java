@@ -1,6 +1,7 @@
 package net.dragonmounts.init;
 
 import net.dragonmounts.api.IDragonScaleArmorEffect;
+import net.dragonmounts.capability.ArmorEffectManager;
 import net.dragonmounts.capability.IArmorEffectManager;
 import net.dragonmounts.network.SRiposteEffectPacket;
 import net.dragonmounts.registry.CooldownCategory;
@@ -36,7 +37,6 @@ import java.util.List;
 import java.util.Random;
 
 import static net.dragonmounts.DragonMounts.MOD_ID;
-import static net.dragonmounts.init.DMCapabilities.ARMOR_EFFECT_MANAGER;
 import static net.dragonmounts.network.DMPacketHandler.CHANNEL;
 import static net.dragonmounts.util.EntityUtil.addOrMergeEffect;
 import static net.dragonmounts.util.EntityUtil.addOrResetEffect;
@@ -106,8 +106,11 @@ public class DMArmorEffects {
                 );
                 return level > 3;
             }
-            //Trying to add these two effects in any case requires using `|` instead of `||`
-            if (level > 3 && manager.getCooldown(this) <= 0 && player.getHealth() < 10 && (addOrMergeEffect(player, Effects.DAMAGE_RESISTANCE, 600, 2, true, true, true) | addOrMergeEffect(player, Effects.DAMAGE_BOOST, 300, 1, true, true, true))) {
+            // use `|` instead of `||` to avoid short-circuit evaluation when trying to add both of these two effects
+            if (level > 3 && manager.getCooldown(this) <= 0 && player.getHealth() < 10 && (
+                    addOrMergeEffect(player, Effects.DAMAGE_RESISTANCE, 600, 2, true, true, true)
+                            | addOrMergeEffect(player, Effects.DAMAGE_BOOST, 300, 1, true, true, true)
+            )) {
                 player.level.levelEvent(2003, player.blockPosition(), 0);
                 player.level.playSound(null, player, SoundEvents.END_PORTAL_SPAWN, SoundCategory.HOSTILE, 0.05F, 1.0F);
                 manager.setCooldown(this, this.cooldown);
@@ -245,61 +248,57 @@ public class DMArmorEffects {
 
     public static void xpBonus(LivingExperienceDropEvent event) {
         PlayerEntity player = event.getAttackingPlayer();
-        if (player != null && !player.level.isClientSide) {
-            player.getCapability(ARMOR_EFFECT_MANAGER).ifPresent(manager -> {
-                if (manager.isActive(ENCHANT)) {
-                    int original = event.getOriginalExperience();
-                    event.setDroppedExperience(original + (original + 1) >> 1);//Math.ceil(original * 1.5)
-                }
-            });
+        if (player != null && ((IArmorEffectManager.Provider) player).dragonmounts$getManager().isActive(ENCHANT)) {
+            event.setDroppedExperience((int) (event.getOriginalExperience() * 1.5F + 0.5F));//Math.ceil(original * 1.5)
         }
     }
 
     public static void meleeChanneling(AttackEntityEvent event) {
         PlayerEntity player = event.getPlayer();
         if (player.level.isClientSide || player.getRandom().nextBoolean()) return;
-        Entity entity = event.getTarget();
-        player.getCapability(ARMOR_EFFECT_MANAGER).ifPresent(manager -> {
-            if (manager.isActive(STORM) && manager.getCooldown(STORM) <= 0) {
-                BlockPos pos = entity.blockPosition();
-                if (entity.level.canSeeSky(pos)) {
-                    LightningBoltEntity bolt = EntityType.LIGHTNING_BOLT.create(entity.level);
-                    if (bolt == null) return;
-                    bolt.moveTo(Vector3d.atBottomCenterOf(pos));
-                    bolt.setCause((ServerPlayerEntity) player);
-                    entity.level.addFreshEntity(bolt);
-                }
-                manager.setCooldown(STORM, STORM.cooldown);
+        ArmorEffectManager manager = ((IArmorEffectManager.Provider) player).dragonmounts$getManager();
+        if (manager.isActive(STORM) && manager.getCooldown(STORM) <= 0) {
+            Entity entity = event.getTarget();
+            BlockPos pos = entity.blockPosition();
+            if (entity.level.canSeeSky(pos)) {
+                LightningBoltEntity bolt = EntityType.LIGHTNING_BOLT.create(entity.level);
+                if (bolt == null) return;
+                bolt.moveTo(Vector3d.atBottomCenterOf(pos));
+                bolt.setCause((ServerPlayerEntity) player);
+                entity.level.addFreshEntity(bolt);
             }
-        });
+            manager.setCooldown(STORM, STORM.cooldown);
+        }
     }
 
     public static void riposte(LivingHurtEvent event) {
         final Entity self = event.getEntity();
-        //In fact, entity.level.isClientSide -> false
+        //In fact, self.world.isClientSide -> false
         if (self.level.isClientSide || !(self instanceof PlayerEntity)) return;
-        final PlayerEntity player = (PlayerEntity) self;
-        final List<Entity> entities = player.level.getEntities(player, player.getBoundingBox().inflate(5.0D), EntityPredicates.NO_CREATIVE_OR_SPECTATOR);
+        ArmorEffectManager manager = ((IArmorEffectManager.Provider) self).dragonmounts$getManager();
+        final boolean ice = manager.isActive(DMArmorEffects.ICE) && manager.getCooldown(DMArmorEffects.ICE) <= 0;
+        final boolean nether = manager.isActive(DMArmorEffects.NETHER) && manager.getCooldown(DMArmorEffects.NETHER) <= 0;
+        if (!ice && !nether) return;
+        final List<Entity> entities = self.level.getEntities(self, self.getBoundingBox().inflate(5.0D), EntityPredicates.NO_CREATIVE_OR_SPECTATOR);
         if (entities.isEmpty()) return;
-        final SRiposteEffectPacket packet = new SRiposteEffectPacket(player.getId());
-        player.getCapability(ARMOR_EFFECT_MANAGER).ifPresent(manager -> {
-            final boolean ice = manager.isActive(ICE) && manager.getCooldown(ICE) <= 0;
-            final boolean nether = manager.isActive(NETHER) && manager.getCooldown(NETHER) <= 0;
-            for (Entity entity : entities) {
-                if (entity instanceof LivingEntity) {
-                    LivingEntity target = (LivingEntity) entity;
-                    target.knockback(0.4F, 1, 1);
-                    if (ice) {
-                        addOrMergeEffect(target, Effects.MOVEMENT_SLOWDOWN, 200, 1, false, true, true);
-                        entity.hurt(DamageSource.GENERIC, 1F);
-                    }
-                } else if (ice) entity.hurt(DamageSource.GENERIC, 1F);
-                if (nether) entity.setSecondsOnFire(10);
+        for (Entity entity : entities) {
+            if (entity instanceof LivingEntity) {
+                LivingEntity target = (LivingEntity) entity;
+                target.knockback(0.4F, 1, 1);
+                if (ice) {
+                    addOrMergeEffect(target, Effects.MOVEMENT_SLOWDOWN, 200, 1, false, true, true);
+                    entity.hurt(DamageSource.GENERIC, 1F);
+                }
+            } else if (ice) {
+                entity.hurt(DamageSource.GENERIC, 1F);
             }
-            if (ice) manager.setCooldown(NETHER, NETHER.cooldown);
-            if (nether) manager.setCooldown(NETHER, NETHER.cooldown);
-        });
-        if (packet.flag != 0) CHANNEL.send(TRACKING_ENTITY_AND_SELF.with(() -> player), packet);
+            if (nether) {
+                entity.setSecondsOnFire(10);
+            }
+        }
+        if (ice) manager.setCooldown(DMArmorEffects.ICE, DMArmorEffects.ICE.cooldown);
+        if (nether) manager.setCooldown(DMArmorEffects.NETHER, DMArmorEffects.NETHER.cooldown);
+        CHANNEL.send(TRACKING_ENTITY_AND_SELF.with(() -> self), new SRiposteEffectPacket(self.getId(), (ice ? 0b01 : 0b00) | (nether ? 0b10 : 0b00)));
     }
 
     public static void register(RegistryEvent.Register<CooldownCategory> event) {

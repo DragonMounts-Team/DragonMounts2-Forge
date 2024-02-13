@@ -44,7 +44,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
@@ -54,7 +53,6 @@ import static net.dragonmounts.network.DMPacketHandler.CHANNEL;
 import static net.dragonmounts.util.math.MathUtil.getColor;
 import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
 
-@ParametersAreNonnullByDefault
 public class HatchableDragonEggEntity extends LivingEntity implements IDragonTypified.Mutable {
     protected static final DataParameter<DragonType> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DragonType.SERIALIZER);
     public static final int MIN_HATCHING_TIME = 36000;
@@ -158,7 +156,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
                 this.playSound(DMSounds.DRAGON_HATCHED.get(), 1.0F, 1.0F);
                 ServerWorld world = (ServerWorld) level;
                 Scoreboard scoreboard = world.getScoreboard();
-                TameableDragonEntity dragon = new TameableDragonEntity(this, DragonLifeStage.NEWBORN);
+                TameableDragonEntity dragon = new ServerDragonEntity(this, DragonLifeStage.NEWBORN);
                 String scoreboardName = dragon.getScoreboardName();
                 if (this.team != null) {
                     scoreboard.addPlayerToTeam(scoreboardName, this.team);

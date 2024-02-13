@@ -20,13 +20,13 @@ public class DMCapabilities {
     public static Capability<IArmorEffectManager> ARMOR_EFFECT_MANAGER = null;
 
     public static void register() {
-        CapabilityManager.INSTANCE.register(IArmorEffectManager.class, new ArmorEffectManager.Storage(), ArmorEffectManager::new);
+        CapabilityManager.INSTANCE.register(IArmorEffectManager.class, new ArmorEffectManager.Storage(), () -> null);
     }
 
     public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
         Entity entity = event.getObject();
         if (entity instanceof PlayerEntity) {
-            event.addCapability(ARMOR_EFFECT_MANAGER_ID, new ArmorEffectManager.Provider((PlayerEntity) entity));
+            event.addCapability(ARMOR_EFFECT_MANAGER_ID, new ArmorEffectManager.LazyProvider((PlayerEntity) entity));
         }
     }
 }

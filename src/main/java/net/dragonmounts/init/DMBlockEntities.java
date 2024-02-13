@@ -28,6 +28,7 @@ public class DMBlockEntities {
             blocks[i++] = variant.headBlock;
             blocks[i++] = variant.headWallBlock;
         }
+        //noinspection DataFlowIssue
         DRAGON_HEAD = BLOCK_ENTITY.register("dragon_head", () -> TileEntityType.Builder.of(DragonHeadBlockEntity::new, blocks).build(null));
     }
 

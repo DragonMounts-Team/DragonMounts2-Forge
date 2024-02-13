@@ -20,10 +20,7 @@ import static net.dragonmounts.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
 
 public class DragonScaleBowItem extends BowItem implements IDragonTypified {
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_scale_bow";
-
-    protected DragonType type;
-
-    protected final DragonScaleTier tier;
+    public final DragonScaleTier tier;
 
     public DragonScaleBowItem(
             DragonScaleTier tier,
@@ -31,7 +28,6 @@ public class DragonScaleBowItem extends BowItem implements IDragonTypified {
     ) {
         super(properties.defaultDurability((int) (tier.getUses() * 0.25)));
         this.tier = tier;
-        this.type = tier.getDragonType();
     }
 
     public DragonScaleTier getTier() {
@@ -51,7 +47,7 @@ public class DragonScaleBowItem extends BowItem implements IDragonTypified {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltips, ITooltipFlag flag) {
-        tooltips.add(this.type.getName());
+        tooltips.add(this.tier.type.getName());
     }
 
     @Nonnull
@@ -62,6 +58,6 @@ public class DragonScaleBowItem extends BowItem implements IDragonTypified {
 
     @Override
     public DragonType getDragonType() {
-        return this.type;
+        return this.tier.type;
     }
 }

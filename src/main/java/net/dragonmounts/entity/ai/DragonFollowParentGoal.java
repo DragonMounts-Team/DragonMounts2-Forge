@@ -1,19 +1,20 @@
 package net.dragonmounts.entity.ai;
 
+import net.dragonmounts.entity.dragon.ServerDragonEntity;
 import net.dragonmounts.entity.dragon.TameableDragonEntity;
 import net.minecraft.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 import java.util.List;
 
-public class DragonFollowParentGoal extends DragonBaseGoal {
+public class DragonFollowParentGoal extends AbstractDragonGoal {
 
     // assume any adult dragon nearby is a parent even if its not
     TameableDragonEntity adultDragon;
     double moveSpeed;
     private int delayCounter;
 
-    public DragonFollowParentGoal(TameableDragonEntity dragon, double speed) {
+    public DragonFollowParentGoal(ServerDragonEntity dragon, double speed) {
         super(dragon);
         this.moveSpeed = speed;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE));

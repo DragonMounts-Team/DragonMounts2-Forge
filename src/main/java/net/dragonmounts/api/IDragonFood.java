@@ -1,5 +1,6 @@
 package net.dragonmounts.api;
 
+import net.dragonmounts.client.ClientDragonEntity;
 import net.dragonmounts.entity.dragon.DragonLifeStage;
 import net.dragonmounts.entity.dragon.TameableDragonEntity;
 import net.dragonmounts.util.math.MathUtil;
@@ -25,14 +26,13 @@ public interface IDragonFood {
         return true;
     }
 
-    default void act(TameableDragonEntity dragon, Item item) {
+    default void act(ClientDragonEntity dragon, Item item) {
         if (item == Items.AIR) return;
         World level = dragon.level;
         if (dragon.getLifeStage() != DragonLifeStage.ADULT) {
             dragon.refreshForcedAgeTimer();
         }
-        //noinspection DataFlowIssue
-        Vector3d pos = dragon.animator.getThroatPosition(0, 0, -4);
+        Vector3d pos = dragon.context.getThroatPosition(0, 0, -4);
         if (pos == null) return;
         level.playLocalSound(pos.x, pos.y, pos.z, item.getEatingSound(), SoundCategory.NEUTRAL, 1F, 0.75F, false);
         if (item == Items.HONEY_BOTTLE) return;

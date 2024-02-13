@@ -1,6 +1,7 @@
 package net.dragonmounts.item;
 
 import net.dragonmounts.api.IDragonTypified;
+import net.dragonmounts.entity.dragon.ServerDragonEntity;
 import net.dragonmounts.entity.dragon.TameableDragonEntity;
 import net.dragonmounts.inventory.DragonInventory;
 import net.dragonmounts.registry.DragonType;
@@ -44,7 +45,7 @@ import static net.dragonmounts.util.EntityUtil.finalizeSpawn;
 public class DragonEssenceItem extends Item implements IDragonTypified, IEntityContainer<TameableDragonEntity> {
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_essence";
 
-    protected DragonType type;
+    public final DragonType type;
 
     public DragonEssenceItem(DragonType type, Properties properties) {
         super(properties.stacksTo(1));
@@ -151,7 +152,7 @@ public class DragonEssenceItem extends Item implements IDragonTypified, IEntityC
 
     @Nonnull
     @Override
-    public TameableDragonEntity spwanEntity(
+    public ServerDragonEntity spwanEntity(
             ServerWorld level,
             @Nullable PlayerEntity player,
             @Nullable CompoundNBT tag,
@@ -161,7 +162,7 @@ public class DragonEssenceItem extends Item implements IDragonTypified, IEntityC
             boolean yOffset,
             boolean extraOffset
     ) {
-        TameableDragonEntity dragon = new TameableDragonEntity(level);
+        ServerDragonEntity dragon = new ServerDragonEntity(level);
         if (tag != null) {
             tag.remove("Passengers");
             finalizeSpawn(level, dragon, pos, SpawnReason.EVENT, null, tag, false, false);

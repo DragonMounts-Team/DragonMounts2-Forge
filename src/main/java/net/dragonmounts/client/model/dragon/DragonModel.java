@@ -2,24 +2,22 @@ package net.dragonmounts.client.model.dragon;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.dragonmounts.client.ClientDragonEntity;
 import net.dragonmounts.client.variant.VariantAppearance;
-import net.dragonmounts.client.variant.VariantAppearances;
-import net.dragonmounts.entity.dragon.TameableDragonEntity;
 import net.dragonmounts.util.ModelHolder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix3f;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
-public class DragonModel extends EntityModel<TameableDragonEntity> {
+public class DragonModel extends EntityModel<ClientDragonEntity> {
     private static final Matrix4f INVERSE_SCALE = Matrix4f.createScaleMatrix(-1, 1, 1);
     private static final Matrix3f INVERSE_NORMS = new Matrix3f(INVERSE_SCALE);
     public final DragonHeadModel.Part head;
@@ -40,28 +38,21 @@ public class DragonModel extends EntityModel<TameableDragonEntity> {
         this.body = new DragonBodyModelPart(this);
         this.tail = new DragonTailModelPart(this);
         this.wing = new DragonWingModelPart(this);
-        List<DragonLegConfig> configs = Arrays.asList(DragonLegConfig.DEFAULT, DragonLegConfig.SKELETON);
-        this.foreLeftLeg = new ModelHolder<>(this, DragonLegModelPart.Fore::new, configs);
-        this.foreRightLeg = new ModelHolder<>(this, DragonLegModelPart.Fore::new, configs);
-        this.hindLeftLeg = new ModelHolder<>(this, DragonLegModelPart.Hind::new, configs);
-        this.hindRightLeg = new ModelHolder<>(this, DragonLegModelPart.Hind::new, configs);
+        DragonLegConfig[] configs = new DragonLegConfig[]{DragonLegConfig.DEFAULT, DragonLegConfig.SKELETON};
+        this.foreLeftLeg = new ModelHolder<>(type -> new DragonLegModelPart.Fore(this, true, type), configs);
+        this.foreRightLeg = new ModelHolder<>(type -> new DragonLegModelPart.Fore(this, false, type), configs);
+        this.hindLeftLeg = new ModelHolder<>(type -> new DragonLegModelPart.Hind(this, true, type), configs);
+        this.hindRightLeg = new ModelHolder<>(type -> new DragonLegModelPart.Hind(this, false, type), configs);
     }
 
     @Override
-    public void prepareMobModel(@Nonnull TameableDragonEntity dragon, float limbSwing, float limbSwingAmount, float partialTick) {
-        boolean hasSideTailScale = dragon.getVariant().getAppearance(VariantAppearances.ENDER_FEMALE).hasSideTailScale(dragon);
-        this.tail.leftScale.visible = this.tail.rightScale.visible = hasSideTailScale;
-        this.tail.middleScale.visible = !hasSideTailScale;
-        this.head.scaleX = this.head.scaleY = this.head.scaleZ = 0.92F;
-        dragon.animator.setPartialTicks(partialTick);
-
+    public void prepareMobModel(@Nonnull ClientDragonEntity dragon, float limbSwing, float limbSwingAmount, float partialTick) {
+        dragon.context.partialTicks = partialTick;
     }
 
     @Override
-    public void setupAnim(@Nonnull TameableDragonEntity dragon, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        dragon.animator.setLook(netHeadYaw, headPitch);
-        dragon.animator.setMovement(limbSwing, limbSwingAmount * dragon.getScale());
-        dragon.animator.animate(this);
+    public void setupAnim(@Nonnull ClientDragonEntity dragon, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        dragon.context.animate(this, MathHelper.clamp(netHeadYaw, -120, 120), MathHelper.clamp(headPitch, -90, 90), limbSwing, limbSwingAmount * dragon.getScale());
     }
 
     @Override

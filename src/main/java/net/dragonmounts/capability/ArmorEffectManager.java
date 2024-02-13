@@ -16,9 +16,7 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,31 +32,21 @@ public final class ArmorEffectManager implements IArmorEffectManager {
     public static final int INITIAL_COOLDOWN_SIZE = 8;
     public static final int INITIAL_LEVEL_SIZE = 5;
 
-    @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) return;
-        event.player.getCapability(ARMOR_EFFECT_MANAGER).ifPresent(IArmorEffectManager::tick);
-    }
-
-    @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        PlayerEntity player = event.getPlayer();
-        if (player instanceof ServerPlayerEntity) {
-            player.getCapability(ARMOR_EFFECT_MANAGER).ifPresent(IArmorEffectManager::sendInitPacket);
-        }
+        ((IArmorEffectManager.Provider) event.getPlayer()).dragonmounts$getManager().sendInitPacket();
     }
 
-    @SubscribeEvent
-    public static void onPlayerClone(PlayerEvent.Clone event) {
-        if (event.isWasDeath()) {
-            event.getOriginal().getCapability(ARMOR_EFFECT_MANAGER).ifPresent(manager -> {
-                Capability.IStorage<IArmorEffectManager> storage = ARMOR_EFFECT_MANAGER.getStorage();
-                storage.readNBT(ARMOR_EFFECT_MANAGER, manager, null, storage.writeNBT(ARMOR_EFFECT_MANAGER, manager, null));
-            });
-        }
+    public static void onPlayerClone(PlayerEntity player, PlayerEntity priorPlayer) {
+        ArmorEffectManager manager = ((IArmorEffectManager.Provider) player).dragonmounts$getManager();
+        ArmorEffectManager priorManager = ((IArmorEffectManager.Provider) priorPlayer).dragonmounts$getManager();
+        manager.cdRef = priorManager.cdRef;
+        manager.cdKey = priorManager.cdKey;
+        manager.cdDat = priorManager.cdDat;
+        manager.cdMask = priorManager.cdMask;
+        manager.cdN = priorManager.cdN;
     }
 
-    private PlayerEntity player = null;
+    public final PlayerEntity player;
     private int[] cdRef;
     private int[] cdKey;
     private int[] cdDat;
@@ -71,7 +59,11 @@ public final class ArmorEffectManager implements IArmorEffectManager {
     private int lvlN;
     private int activeN;
 
-    public ArmorEffectManager() {
+    public ArmorEffectManager(PlayerEntity player) {
+        this.player = player;
+        if (player.isLocalPlayer()) {
+            LOCAL_MANAGER = this;
+        }
         this.cdMask = INITIAL_COOLDOWN_SIZE - 1;
         this.cdRef = new int[INITIAL_COOLDOWN_SIZE];
         fill(this.cdKey = new int[INITIAL_COOLDOWN_SIZE], -1);
@@ -107,14 +99,6 @@ public final class ArmorEffectManager implements IArmorEffectManager {
             if ((k = packet.data[i++]) >= 0) {
                 j = LOCAL_MANAGER.setCDImpl(k, packet.data[i], j);
             }
-        }
-    }
-
-    @Override
-    public void bind(final PlayerEntity player) {
-        this.player = player;
-        if (player.isLocalPlayer()) {
-            LOCAL_MANAGER = this;
         }
     }
 
@@ -361,30 +345,32 @@ public final class ArmorEffectManager implements IArmorEffectManager {
         }
     }
 
-    public static class Provider implements ICapabilitySerializable<CompoundNBT> {
-        private final IArmorEffectManager manager;
+    public static class LazyProvider implements ICapabilitySerializable<CompoundNBT>, IArmorEffectManager.Provider {
+        public final IArmorEffectManager.Provider host;
 
-        public Provider(PlayerEntity player) {
-            this.manager = ARMOR_EFFECT_MANAGER.getDefaultInstance();
-            if (this.manager != null) {
-                this.manager.bind(player);
-            }
+        public LazyProvider(PlayerEntity player) {
+            this.host = ((IArmorEffectManager.Provider) player);
         }
 
         @Override
         public CompoundNBT serializeNBT() {
-            return (CompoundNBT) ARMOR_EFFECT_MANAGER.getStorage().writeNBT(ARMOR_EFFECT_MANAGER, manager, null);
+            return (CompoundNBT) ARMOR_EFFECT_MANAGER.getStorage().writeNBT(ARMOR_EFFECT_MANAGER, this.host.dragonmounts$getManager(), null);
         }
 
         @Override
         public void deserializeNBT(CompoundNBT nbt) {
-            ARMOR_EFFECT_MANAGER.getStorage().readNBT(ARMOR_EFFECT_MANAGER, this.manager, null, nbt);
+            ARMOR_EFFECT_MANAGER.getStorage().readNBT(ARMOR_EFFECT_MANAGER, this.host.dragonmounts$getManager(), null, nbt);
         }
 
         @Nonnull
         @Override
         public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction side) {
-            return ARMOR_EFFECT_MANAGER.orEmpty(capability, LazyOptional.of(() -> this.manager));
+            return ARMOR_EFFECT_MANAGER.orEmpty(capability, LazyOptional.of(this.host::dragonmounts$getManager));
+        }
+
+        @Override
+        public final ArmorEffectManager dragonmounts$getManager() {
+            return this.host.dragonmounts$getManager();
         }
     }
 }

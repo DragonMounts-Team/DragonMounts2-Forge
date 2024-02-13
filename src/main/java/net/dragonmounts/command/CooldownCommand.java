@@ -3,6 +3,7 @@ package net.dragonmounts.command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import net.dragonmounts.capability.IArmorEffectManager.Provider;
 import net.dragonmounts.registry.CooldownCategory;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
@@ -14,7 +15,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 import java.util.Collection;
 
 import static net.dragonmounts.command.DMCommand.HAS_PERMISSION_LEVEL_3;
-import static net.dragonmounts.init.DMCapabilities.ARMOR_EFFECT_MANAGER;
 
 public class CooldownCommand {
     public static LiteralArgumentBuilder<CommandSource> register() {
@@ -32,60 +32,38 @@ public class CooldownCommand {
     }
 
     public static int get(CommandSource source, ServerPlayerEntity player, CooldownCategory category) {
-        int[] result = new int[]{0};
-        player.getCapability(ARMOR_EFFECT_MANAGER).ifPresent(manager -> {
-            source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.cooldown.get.success", player.getDisplayName(), category.getSerializedName(), manager.getCooldown(category)), true);
-            result[0] = 1;
-        });
-        if (result[0] == 0) {
-            source.sendFailure(new TranslationTextComponent("commands.dragonmounts.cooldown.get.failure"));
-            return 0;
-        }
+        source.sendSuccess(new TranslationTextComponent(
+                "commands.dragonmounts.cooldown.get.success",
+                player.getDisplayName(),
+                category.getSerializedName(),
+                ((Provider) player).dragonmounts$getManager().getCooldown(category)
+        ), true);
         return 1;
     }
 
     public static int get(CommandSource source, Collection<ServerPlayerEntity> players, CooldownCategory category) {
-        int[] result = new int[]{0};
         for (ServerPlayerEntity player : players) {
-            player.getCapability(ARMOR_EFFECT_MANAGER).ifPresent(manager -> {
-                source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.cooldown.get.success", player.getDisplayName(), category.getSerializedName(), manager.getCooldown(category)), true);
-                ++result[0];
-            });
+            source.sendSuccess(new TranslationTextComponent(
+                    "commands.dragonmounts.cooldown.get.success",
+                    player.getDisplayName(),
+                    category.getSerializedName(),
+                    ((Provider) player).dragonmounts$getManager().getCooldown(category)
+            ), true);
         }
-        if (result[0] == 0) {
-            source.sendFailure(new TranslationTextComponent("commands.dragonmounts.cooldown.get.failure"));
-            return 0;
-        }
-        return result[0];
+        return players.size();
     }
 
     public static int set(CommandSource source, ServerPlayerEntity player, CooldownCategory category, int value) {
-        int[] result = new int[]{0};
-        player.getCapability(ARMOR_EFFECT_MANAGER).ifPresent(manager -> {
-            manager.setCooldown(category, value);
-            result[0] = 1;
-        });
-        if (result[0] == 0) {
-            source.sendFailure(new TranslationTextComponent("commands.dragonmounts.cooldown.set.failure"));
-            return 0;
-        }
+        ((Provider) player).dragonmounts$getManager().setCooldown(category, value);
         source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.cooldown.set.single", player.getDisplayName(), category.getSerializedName(), value), true);
         return 1;
     }
 
     public static int set(CommandSource source, Collection<ServerPlayerEntity> players, CooldownCategory category, int value) {
-        int[] result = new int[]{0};
         for (ServerPlayerEntity player : players) {
-            player.getCapability(ARMOR_EFFECT_MANAGER).ifPresent(manager -> {
-                manager.setCooldown(category, value);
-                ++result[0];
-            });
+            ((Provider) player).dragonmounts$getManager().setCooldown(category, value);
         }
-        if (result[0] == 0) {
-            source.sendFailure(new TranslationTextComponent("commands.dragonmounts.cooldown.set.failure"));
-            return 0;
-        }
-        source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.cooldown.set.multiple", result[0], category.getSerializedName(), value), true);
-        return result[0];
+        source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.cooldown.set.multiple", players.size(), category.getSerializedName(), value), true);
+        return players.size();
     }
 }

@@ -22,9 +22,7 @@ import static net.dragonmounts.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
 public class DragonScaleShieldItem extends ShieldItem implements IDragonTypified {
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_scale_shield";
 
-    protected DragonType type;
-
-    protected final DragonScaleMaterial material;
+    public final DragonScaleMaterial material;
 
     public DragonScaleShieldItem(
             DragonScaleMaterial material,
@@ -32,7 +30,6 @@ public class DragonScaleShieldItem extends ShieldItem implements IDragonTypified
     ) {
         super(properties.defaultDurability(material.getDurabilityForShield()));
         this.material = material;
-        this.type = material.getDragonType();
     }
 
     public DragonScaleMaterial getMaterial() {
@@ -57,7 +54,7 @@ public class DragonScaleShieldItem extends ShieldItem implements IDragonTypified
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltips, ITooltipFlag flag) {
-        tooltips.add(this.type.getName());
+        tooltips.add(this.material.type.getName());
     }
 
     @Nonnull
@@ -68,6 +65,6 @@ public class DragonScaleShieldItem extends ShieldItem implements IDragonTypified
 
     @Override
     public DragonType getDragonType() {
-        return this.type;
+        return this.material.type;
     }
 }

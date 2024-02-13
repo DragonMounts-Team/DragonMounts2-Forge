@@ -1,17 +1,17 @@
 package net.dragonmounts.entity.ai;
 
-import net.dragonmounts.entity.dragon.TameableDragonEntity;
+import net.dragonmounts.entity.dragon.ServerDragonEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
-public class DragonCatchOwnerGoal extends DragonBaseGoal {
+public class DragonCatchOwnerGoal extends AbstractDragonGoal {
 
     protected PlayerEntity owner = (PlayerEntity) this.dragon.getOwner();
 
-    public DragonCatchOwnerGoal(TameableDragonEntity dragon) {
+    public DragonCatchOwnerGoal(ServerDragonEntity dragon) {
         super(dragon);
     }
 

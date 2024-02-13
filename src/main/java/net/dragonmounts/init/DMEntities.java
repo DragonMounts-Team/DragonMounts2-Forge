@@ -14,21 +14,15 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import static net.minecraft.entity.EntityType.Builder.of;
+
 @Mod.EventBusSubscriber(modid = DragonMounts.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class DMEntities {
 
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DragonMounts.create(ForgeRegistries.ENTITIES);
-    public static final RegistryObject<EntityType<CarriageEntity>> CARRIAGE = register("carriage", common(CarriageEntity::new, EntityClassification.MISC), 0.8F, 0.8F);
-    public static final RegistryObject<EntityType<HatchableDragonEggEntity>> HATCHABLE_DRAGON_EGG = register("dragon_egg", fireImmune(HatchableDragonEggEntity::new, EntityClassification.MISC), 0.875F, 1.0F);
-    public static final RegistryObject<EntityType<TameableDragonEntity>> TAMEABLE_DRAGON = register("dragon", fireImmune(TameableDragonEntity::new, EntityClassification.CREATURE), 4.8F, 4.2F);
-
-    private static <T extends Entity> EntityType.Builder<T> common(EntityType.IFactory<T> factory, EntityClassification category) {
-        return EntityType.Builder.of(factory, category);
-    }
-
-    private static <T extends Entity> EntityType.Builder<T> fireImmune(EntityType.IFactory<T> factory, EntityClassification category) {
-        return common(factory, category).fireImmune();
-    }
+    public static final RegistryObject<EntityType<CarriageEntity>> CARRIAGE = register("carriage", of(CarriageEntity::new, EntityClassification.MISC), 0.8F, 0.8F);
+    public static final RegistryObject<EntityType<HatchableDragonEggEntity>> HATCHABLE_DRAGON_EGG = register("dragon_egg", of(HatchableDragonEggEntity::new, EntityClassification.MISC), 0.875F, 1.0F);
+    public static final RegistryObject<EntityType<TameableDragonEntity>> TAMEABLE_DRAGON = register("dragon", of(TameableDragonEntity::construct, EntityClassification.CREATURE), 4.8F, 4.2F);
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String name, EntityType.Builder<T> builder, float width, float height) {
         return ENTITY_TYPES.register(name, () -> builder.sized(width, height).build(name));

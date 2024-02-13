@@ -13,13 +13,10 @@ public class DragonBodyModelPart extends ModelRenderer {
 
     public DragonBodyModelPart(Model model) {
         super(model);
-        buildBody();
-        this.back = this.createBack(model);
-        this.addChild(this.back);
-        this.chest = this.createChest(model);
-        this.addChild(this.chest);
-        this.saddle = this.createSaddle(model);
-        this.addChild(this.saddle);
+        this.buildBody();
+        this.addChild(this.back = this.createBack(model));
+        this.addChild(this.chest = this.createChest(model));
+        this.addChild(this.saddle = this.createSaddle(model));
     }
 
     protected void buildBody() {

@@ -20,6 +20,7 @@ public class DragonMountsConfig {
         public final ForgeConfigSpec.ConfigValue<Boolean> converge_yaw_angle;
         public final ForgeConfigSpec.ConfigValue<Boolean> hover_animation;
         public final ForgeConfigSpec.ConfigValue<Boolean> toggle_descent;
+        public final ForgeConfigSpec.ConfigValue<Boolean> redirect_inventory;
 
         private Client(ForgeConfigSpec.Builder builder) {
             this.debug = builder
@@ -43,6 +44,9 @@ public class DragonMountsConfig {
             this.toggle_descent = builder
                     .comment("Enables the dragon to keep descending")
                     .define("toggle_descent", false);
+            this.redirect_inventory = builder
+                    .comment("Open your mount's inventory instead of your")
+                    .define("redirect_inventory", true);
         }
     }
 

@@ -2,11 +2,9 @@ package net.dragonmounts.capability;
 
 import net.dragonmounts.api.IArmorEffect;
 import net.dragonmounts.registry.CooldownCategory;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
 public interface IArmorEffectManager {
-    void bind(PlayerEntity player);
 
     @SuppressWarnings("UnusedReturnValue")
     int stackLevel(IArmorEffect effect);
@@ -29,4 +27,10 @@ public interface IArmorEffectManager {
     void readNBT(CompoundNBT nbt);
 
     void sendInitPacket();
+
+    interface Provider {
+        default ArmorEffectManager dragonmounts$getManager() {
+            throw new NullPointerException();
+        }
+    }
 }

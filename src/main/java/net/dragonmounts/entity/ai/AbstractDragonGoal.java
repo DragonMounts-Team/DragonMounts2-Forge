@@ -1,6 +1,6 @@
 package net.dragonmounts.entity.ai;
 
-import net.dragonmounts.entity.dragon.TameableDragonEntity;
+import net.dragonmounts.entity.dragon.ServerDragonEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,14 +9,14 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-public abstract class DragonBaseGoal extends Goal {
+public abstract class AbstractDragonGoal extends Goal {
 
-    protected TameableDragonEntity dragon;
+    protected ServerDragonEntity dragon;
     protected World world;
     protected Random random;
     protected PlayerEntity rider;
 
-    public DragonBaseGoal(TameableDragonEntity dragon) {
+    public AbstractDragonGoal(ServerDragonEntity dragon) {
         this.dragon = dragon;
         this.world = dragon.level;
         this.random = dragon.getRandom();

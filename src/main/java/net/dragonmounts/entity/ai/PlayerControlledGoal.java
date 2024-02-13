@@ -1,33 +1,40 @@
 package net.dragonmounts.entity.ai;
 
-import net.dragonmounts.entity.dragon.TameableDragonEntity;
+import net.dragonmounts.entity.dragon.ServerDragonEntity;
 import net.dragonmounts.init.DragonTypes;
 import net.dragonmounts.network.CRideDragonPacket;
 import net.dragonmounts.util.EntityUtil;
 import net.dragonmounts.util.math.MathUtil;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.math.vector.Vector3d;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public class PlayerControlledGoal extends Goal {
-    public final TameableDragonEntity dragon;
+public class PlayerControlledGoal extends AbstractDragonGoal {
+    private static final Logger LOGGER = LogManager.getLogger();
     protected PlayerEntity controller;
     protected boolean climbing;
     protected boolean descending;
     protected boolean convergePitch;
     protected boolean convergeYaw;
 
-    public PlayerControlledGoal(TameableDragonEntity dragon) {
-        this.dragon = dragon;
+    public PlayerControlledGoal(ServerDragonEntity dragon) {
+        super(dragon);
     }
 
-    public void applyPacket(CRideDragonPacket packet) {
+    public final void handlePacket(CRideDragonPacket packet) {
+        LOGGER.info(packet.flag);
         this.climbing = packet.climbing;
         this.descending = packet.descending;
         this.convergePitch = packet.convergePitch;
         this.convergeYaw = packet.convergeYaw;
+    }
+
+    @Override
+    public boolean isInterruptable() {
+        return false;
     }
 
     @Override
@@ -43,6 +50,7 @@ public class PlayerControlledGoal extends Goal {
 
     @Override
     public void start() {
+        this.dragon.setOrderedToSit(false);
         this.dragon.getNavigation().stop();
     }
 
@@ -51,7 +59,6 @@ public class PlayerControlledGoal extends Goal {
         if (this.dragon.getDragonType() == DragonTypes.WATER && this.controller.isInWaterOrBubble()) {
             EntityUtil.addOrResetEffect(this.controller, Effects.WATER_BREATHING, 200, 0, true, true, true, 21);
         }
-
         Vector3d view = this.controller.getViewVector(1.0F);
         double x = dragon.getX();
         double y = dragon.getY();

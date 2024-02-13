@@ -3,6 +3,7 @@ package net.dragonmounts.command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.dragonmounts.entity.dragon.DragonLifeStage;
 import net.dragonmounts.entity.dragon.HatchableDragonEggEntity;
+import net.dragonmounts.entity.dragon.ServerDragonEntity;
 import net.dragonmounts.entity.dragon.TameableDragonEntity;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
@@ -65,7 +66,7 @@ public class StageCommand {
             dragon.setLifeStage(stage, true, true);
         } else if (target instanceof HatchableDragonEggEntity) {
             ServerWorld level = source.getLevel();
-            TameableDragonEntity dragon = new TameableDragonEntity((HatchableDragonEggEntity) target, stage);
+            ServerDragonEntity dragon = new ServerDragonEntity((HatchableDragonEggEntity) target, stage);
             level.removeEntity(target, false);
             level.addFreshEntity(dragon);
         } else {

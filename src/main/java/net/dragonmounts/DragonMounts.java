@@ -16,6 +16,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -58,9 +59,9 @@ public class DragonMounts {
         DMContainers.CONTAINERS.register(this.eventBus);
         DMFeatures.STRUCTURE_FEATURE.register(this.eventBus);
         MinecraftForge.EVENT_BUS.addGenericListener(Entity.class, DMCapabilities::attachCapabilities);
-        MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
-        MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(ArmorEffectManager.class);
+        MinecraftForge.EVENT_BUS.addListener(ArmorEffectManager::onPlayerLoggedIn);
+        MinecraftForge.EVENT_BUS.addListener(DragonMounts::onPlayerClone);
+        MinecraftForge.EVENT_BUS.addListener(DragonMounts::registerCommands);
         DMItems.subscribeEvents();
         if (FMLLoader.getDist().isClient()) {
             //noinspection ConstantValue
@@ -79,7 +80,7 @@ public class DragonMounts {
         registry.register(new DataSerializerEntry(DragonVariant.SERIALIZER).setRegistryName(MOD_ID, "dragon_variant"));
     }
 
-    public void registerCommands(RegisterCommandsEvent event) {
+    public static void registerCommands(RegisterCommandsEvent event) {
         DMCommand.register(event.getDispatcher(), event.getEnvironment());
     }
 
@@ -99,5 +100,9 @@ public class DragonMounts {
         }
         DMCapabilities.register();
         DMFeatures.setup();
+    }
+
+    public static void onPlayerClone(PlayerEvent.Clone event) {
+        ArmorEffectManager.onPlayerClone(event.getPlayer(), event.getOriginal());
     }
 }

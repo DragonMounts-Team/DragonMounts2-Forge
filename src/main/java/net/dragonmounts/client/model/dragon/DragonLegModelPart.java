@@ -7,19 +7,20 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class DragonLegModelPart extends ModelRenderer {
+    public final int index;
+    public final boolean left;
     public final ModelRenderer shank;
     public final ModelRenderer foot;
     public final ModelRenderer toe;
 
-    public DragonLegModelPart(Model model, DragonLegConfig config) {
+    public DragonLegModelPart(Model model, boolean hind, boolean left, DragonLegConfig config) {
         super(model);
-        buildThigh(config);
-        this.shank = this.createShank(model, config);
-        this.addChild(this.shank);
-        this.foot = this.createFoot(model, config);
-        this.shank.addChild(this.foot);
-        this.toe = this.createToe(model, config);
-        this.foot.addChild(this.toe);
+        this.index = hind ? 1 : 0;
+        this.left = left;
+        this.buildThigh(config);
+        this.addChild(this.shank = this.createShank(model, config));
+        this.shank.addChild(this.foot = this.createFoot(model, config));
+        this.foot.addChild(this.toe = this.createToe(model, config));
     }
 
     abstract protected void buildThigh(DragonLegConfig config);
@@ -31,18 +32,16 @@ public abstract class DragonLegModelPart extends ModelRenderer {
     abstract protected ModelRenderer createToe(Model model, DragonLegConfig config);
 
     public static class Fore extends DragonLegModelPart {
-        public Fore(Model model, DragonLegConfig config) {
-            super(model, config);
+        public Fore(Model model, boolean left, DragonLegConfig config) {
+            super(model, false, left, config);
         }
 
         @Override
         protected void buildThigh(DragonLegConfig config) {
-            final int length = config.getThighLength(false);
             final int width = config.width;
             this.setPos(-11, 18, 4);
             this.texOffs(112, 0);
-            this.addBox(config.defaultOffset, config.defaultOffset, config.defaultOffset, width, length, width);
-
+            this.addBox(config.defaultOffset, config.defaultOffset, config.defaultOffset, width, config.getThighLength(false), width);
         }
 
         @Override
@@ -74,17 +73,16 @@ public abstract class DragonLegModelPart extends ModelRenderer {
     }
 
     public static class Hind extends DragonLegModelPart {
-        public Hind(Model model, DragonLegConfig config) {
-            super(model, config);
+        public Hind(Model model, boolean left, DragonLegConfig config) {
+            super(model, true, left, config);
         }
 
         @Override
         protected void buildThigh(DragonLegConfig config) {
-            final int length = config.getThighLength(true);
             final int width = config.width + 1;
             this.setPos(-11, 13, 4);
             this.texOffs(112, 29);
-            this.addBox(config.defaultOffset, config.defaultOffset, config.defaultOffset, width, length, width);
+            this.addBox(config.defaultOffset, config.defaultOffset, config.defaultOffset, width, config.getThighLength(true), width);
         }
 
         @Override

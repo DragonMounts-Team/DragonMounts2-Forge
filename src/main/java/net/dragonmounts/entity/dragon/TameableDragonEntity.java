@@ -14,7 +14,6 @@ import net.dragonmounts.item.DragonArmorItem;
 import net.dragonmounts.item.DragonScalesItem;
 import net.dragonmounts.item.DragonSpawnEggItem;
 import net.dragonmounts.item.TieredShearsItem;
-import net.dragonmounts.network.SSyncDragonAgePacket;
 import net.dragonmounts.registry.DragonType;
 import net.dragonmounts.registry.DragonVariant;
 import net.dragonmounts.util.DragonFood;
@@ -29,7 +28,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SaddleItem;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -62,9 +60,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static net.dragonmounts.network.DMPacketHandler.CHANNEL;
 import static net.dragonmounts.util.BlockUtil.isSolid;
-import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
 
 /**
  * @see net.minecraft.entity.passive.horse.MuleEntity
@@ -317,49 +313,6 @@ public abstract class TameableDragonEntity extends TameableEntity implements IFo
         this.entityData.define(DATA_ARMOR_ITEM, ItemStack.EMPTY);
         this.entityData.define(DATA_CHEST_ITEM, ItemStack.EMPTY);
         this.entityData.define(DATA_DRAGON_VARIANT, DragonVariants.ENDER_FEMALE);
-    }
-
-    @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString(DragonVariant.DATA_PARAMETER_KEY, this.getVariant().getSerializedName().toString());
-        compound.putString(DragonLifeStage.DATA_PARAMETER_KEY, this.stage.getSerializedName());
-        compound.putBoolean(AGE_LOCKED_DATA_PARAMETER_KEY, this.isAgeLocked());
-        compound.putInt(SHEARED_DATA_PARAMETER_KEY, this.isSheared() ? this.shearCooldown : 0);
-        ListNBT items = this.inventory.createTag();
-        if (!items.isEmpty()) {
-            compound.put(DragonInventory.DATA_PARAMETER_KEY, items);
-        }
-    }
-
-    @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
-        int age = this.age;
-        DragonLifeStage stage = this.stage;
-        if (compound.contains(DragonLifeStage.DATA_PARAMETER_KEY)) {
-            this.setLifeStage(DragonLifeStage.byName(compound.getString(DragonLifeStage.DATA_PARAMETER_KEY)), false, false);
-        }
-        super.readAdditionalSaveData(compound);
-        if (!this.firstTick && (this.age != age || stage != this.stage)) {
-            CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SSyncDragonAgePacket(this));
-        }
-        if (compound.contains(DragonVariant.DATA_PARAMETER_KEY)) {
-            this.setVariant(DragonVariant.byName(compound.getString(DragonVariant.DATA_PARAMETER_KEY)));
-        } else if (compound.contains(DragonType.DATA_PARAMETER_KEY)) {
-            this.setVariant(DragonType.byName(compound.getString(DragonType.DATA_PARAMETER_KEY)).variants.draw(this.random, null));
-        }
-        if (compound.contains(SADDLE_DATA_PARAMETER_KEY)) {
-            this.setSaddle(ItemStack.of(compound.getCompound(SADDLE_DATA_PARAMETER_KEY)), true);
-        }
-        if (compound.contains(SHEARED_DATA_PARAMETER_KEY)) {
-            this.setSheared(compound.getInt(SHEARED_DATA_PARAMETER_KEY));
-        }
-        if (compound.contains(AGE_LOCKED_DATA_PARAMETER_KEY)) {
-            this.setAgeLocked(compound.getBoolean(AGE_LOCKED_DATA_PARAMETER_KEY));
-        }
-        if (compound.contains(DragonInventory.DATA_PARAMETER_KEY)) {
-            this.inventory.fromTag(compound.getList(DragonInventory.DATA_PARAMETER_KEY, 10));
-        }
     }
 
     @Override
@@ -648,8 +601,8 @@ public abstract class TameableDragonEntity extends TameableEntity implements IFo
             this.setVariant(type.variants.draw(this.random, previous));
         }
         manager.addTransientAttributeModifiers(type.attributes);
-        if (reset) {//noinspection DataFlowIssue
-            this.setHealth((float) manager.getInstance(Attributes.MAX_HEALTH).getValue());
+        if (reset) {
+            this.setHealth((float) manager.getValue(Attributes.MAX_HEALTH));
         }
     }
 
@@ -703,7 +656,7 @@ public abstract class TameableDragonEntity extends TameableEntity implements IFo
         return spawnData;
     }
 
-    public final void writeId(PacketBuffer buffer) {
-        buffer.writeVarInt(this.getId());
+    public final PacketBuffer writeId(PacketBuffer buffer) {
+        return buffer.writeVarInt(this.getId());
     }
 }

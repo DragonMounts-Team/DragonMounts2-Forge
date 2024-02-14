@@ -31,8 +31,7 @@ public class DragonModel extends EntityModel<ClientDragonEntity> {
     public final ModelHolder<DragonLegConfig, DragonLegModelPart> hindRightLeg;
 
     public DragonModel() {
-        this.texWidth = 256;
-        this.texHeight = 256;
+        this.texWidth = this.texHeight = 256;
         this.head = new DragonHeadModel.Part(this);
         this.neck = new DragonNeckModelPart(this);
         this.body = new DragonBodyModelPart(this);
@@ -57,8 +56,8 @@ public class DragonModel extends EntityModel<ClientDragonEntity> {
 
     @Override
     public void renderToBuffer(@Nonnull MatrixStack matrices, @Nonnull IVertexBuilder buffer, int light, int overlay, float red, float green, float blue, float alpha) {
+        this.head.render(matrices, buffer, light, overlay, red, green, blue, alpha);
         this.body.render(matrices, buffer, light, overlay, red, green, blue, alpha);
-        renderHead(matrices, buffer, light, overlay, red, green, blue, alpha);
         this.neck.render(matrices, buffer, light, overlay, red, green, blue, alpha);
         this.tail.render(matrices, buffer, light, overlay, red, green, blue, alpha);
         renderWings(matrices, buffer, light, overlay, red, green, blue, alpha);
@@ -76,10 +75,6 @@ public class DragonModel extends EntityModel<ClientDragonEntity> {
         this.renderToBuffer(matrices, buffer.getBuffer(appearance.getBodyForShoulder()), light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         this.renderToBuffer(matrices, buffer.getBuffer(appearance.getGlowForShoulder()), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         matrices.popPose();
-    }
-
-    protected void renderHead(MatrixStack matrices, IVertexBuilder buffer, int light, int overlay, float red, float green, float blue, float alpha) {
-        this.head.render(matrices, buffer, light, overlay, red, green, blue, alpha);
     }
 
     public void renderWings(MatrixStack matrices, IVertexBuilder buffer, int light, int overlay, float red, float green, float blue, float alpha) {

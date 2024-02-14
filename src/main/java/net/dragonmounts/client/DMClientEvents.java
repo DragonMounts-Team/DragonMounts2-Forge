@@ -97,7 +97,6 @@ public class DMClientEvents {
             PlayerEntity player = minecraft.player;
             if (player == null) return;
             Entity entity = player.getVehicle();
-            if (entity == null) return;
             if (entity instanceof TameableDragonEntity) {
                 if (!minecraft.options.getCameraType().isFirstPerson()) {
                     ActiveRenderInfo info = event.getInfo();

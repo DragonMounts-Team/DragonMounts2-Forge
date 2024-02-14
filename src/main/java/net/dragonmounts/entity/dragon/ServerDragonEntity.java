@@ -10,14 +10,15 @@ import net.dragonmounts.init.DMBlocks;
 import net.dragonmounts.init.DMEntities;
 import net.dragonmounts.init.DMItems;
 import net.dragonmounts.init.DragonTypes;
+import net.dragonmounts.inventory.DragonInventory;
 import net.dragonmounts.inventory.LimitedSlot;
 import net.dragonmounts.item.DragonEssenceItem;
 import net.dragonmounts.network.SFeedDragonPacket;
 import net.dragonmounts.network.SSyncDragonAgePacket;
 import net.dragonmounts.registry.DragonType;
+import net.dragonmounts.registry.DragonVariant;
 import net.dragonmounts.util.DragonFood;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.HorizontalBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -32,6 +33,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.potion.Effects;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
@@ -49,6 +51,7 @@ import javax.annotation.Nonnull;
 import static net.dragonmounts.network.DMPacketHandler.CHANNEL;
 import static net.dragonmounts.util.EntityUtil.addOrMergeEffect;
 import static net.dragonmounts.util.EntityUtil.addOrResetEffect;
+import static net.minecraft.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 import static net.minecraftforge.fml.network.PacketDistributor.PLAYER;
 import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
 
@@ -88,6 +91,49 @@ public class ServerDragonEntity extends TameableDragonEntity {
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, false, false, entity -> entity instanceof IMob));
     }
 
+    @Override
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putString(DragonVariant.DATA_PARAMETER_KEY, this.getVariant().getSerializedName().toString());
+        compound.putString(DragonLifeStage.DATA_PARAMETER_KEY, this.stage.getSerializedName());
+        compound.putBoolean(AGE_LOCKED_DATA_PARAMETER_KEY, this.isAgeLocked());
+        compound.putInt(SHEARED_DATA_PARAMETER_KEY, this.isSheared() ? this.shearCooldown : 0);
+        ListNBT items = this.inventory.createTag();
+        if (!items.isEmpty()) {
+            compound.put(DragonInventory.DATA_PARAMETER_KEY, items);
+        }
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        int age = this.age;
+        DragonLifeStage stage = this.stage;
+        if (compound.contains(DragonLifeStage.DATA_PARAMETER_KEY)) {
+            this.setLifeStage(DragonLifeStage.byName(compound.getString(DragonLifeStage.DATA_PARAMETER_KEY)), false, false);
+        }
+        super.readAdditionalSaveData(compound);
+        if (!this.firstTick && (this.age != age || stage != this.stage)) {
+            CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SSyncDragonAgePacket(this));
+        }
+        if (compound.contains(DragonVariant.DATA_PARAMETER_KEY)) {
+            this.setVariant(DragonVariant.byName(compound.getString(DragonVariant.DATA_PARAMETER_KEY)));
+        } else if (compound.contains(DragonType.DATA_PARAMETER_KEY)) {
+            this.setVariant(DragonType.byName(compound.getString(DragonType.DATA_PARAMETER_KEY)).variants.draw(this.random, null));
+        }
+        if (compound.contains(SADDLE_DATA_PARAMETER_KEY)) {
+            this.setSaddle(ItemStack.of(compound.getCompound(SADDLE_DATA_PARAMETER_KEY)), true);
+        }
+        if (compound.contains(SHEARED_DATA_PARAMETER_KEY)) {
+            this.setSheared(compound.getInt(SHEARED_DATA_PARAMETER_KEY));
+        }
+        if (compound.contains(AGE_LOCKED_DATA_PARAMETER_KEY)) {
+            this.setAgeLocked(compound.getBoolean(AGE_LOCKED_DATA_PARAMETER_KEY));
+        }
+        if (compound.contains(DragonInventory.DATA_PARAMETER_KEY)) {
+            this.inventory.fromTag(compound.getList(DragonInventory.DATA_PARAMETER_KEY, 10));
+        }
+    }
+
     /**
      * Causes this entity to lift off if it can fly.
      */
@@ -104,7 +150,7 @@ public class ServerDragonEntity extends TameableDragonEntity {
     public void spawnEssence(ItemStack stack) {
         BlockPos pos = this.blockPosition();
         if (this.level.isEmptyBlock(pos)) {
-            BlockState state = DMBlocks.DRAGON_CORE.defaultBlockState().setValue(HorizontalBlock.FACING, this.getDirection());
+            BlockState state = DMBlocks.DRAGON_CORE.defaultBlockState().setValue(HORIZONTAL_FACING, this.getDirection());
             if (this.level.setBlock(pos, state, 3)) {
                 TileEntity entity = this.level.getBlockEntity(pos);
                 if (entity instanceof DragonCoreBlockEntity) {

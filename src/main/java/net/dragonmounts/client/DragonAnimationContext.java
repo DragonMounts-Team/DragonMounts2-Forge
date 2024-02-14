@@ -420,7 +420,7 @@ public class DragonAnimationContext {
         float rotYStand = 0;
         float rotXAir = 0;
         float rotYAir = 0;
-        for (int i = 0; i < TAIL_SEGMENT_COUNT_INT; i++) {
+        for (int i = 0; i < TAIL_SEGMENT_COUNT_INT; ++i) {
             float vertMulti = (i + 1) / TAIL_SEGMENT_COUNT_FLOAT;
             float angleLimit = 160F * vertMulti;
             // idle

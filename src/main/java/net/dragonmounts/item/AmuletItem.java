@@ -107,7 +107,9 @@ public class AmuletItem<T extends Entity> extends Item implements IEntityContain
                     );
                     if (entity != null) player.level.addFreshEntity(entity);
                 }
+                dragon.inventory.dropContents(true, 0);
                 consume(player, hand, stack, amulet.saveEntity(dragon));
+                player.awardStat(Stats.ITEM_USED.get(this));
                 dragon.remove(false);
                 return ActionResultType.CONSUME;
             } else {
@@ -143,7 +145,10 @@ public class AmuletItem<T extends Entity> extends Item implements IEntityContain
         );
         if (entity != null) {
             world.addFreshEntity(entity);
-            consume(player, context.getHand(), stack, new ItemStack(this));
+            if (player != null) {
+                consume(player, context.getHand(), stack, new ItemStack(this));
+                player.awardStat(Stats.ITEM_USED.get(this));
+            }
         }
         return ActionResultType.CONSUME;
     }

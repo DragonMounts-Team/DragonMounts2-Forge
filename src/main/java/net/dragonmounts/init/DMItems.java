@@ -7,8 +7,10 @@ import net.dragonmounts.api.DragonScaleMaterial;
 import net.dragonmounts.api.DragonScaleTier;
 import net.dragonmounts.api.IDragonScaleArmorEffect;
 import net.dragonmounts.block.HatchableDragonEggBlock;
+import net.dragonmounts.client.renderer.DMItemStackTileEntityRenderer;
 import net.dragonmounts.item.*;
 import net.dragonmounts.registry.DragonType;
+import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.dispenser.IDispenseItemBehavior;
 import net.minecraft.dispenser.OptionalDispenseBehavior;
@@ -23,7 +25,9 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
+import java.util.concurrent.Callable;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static net.dragonmounts.api.DragonScaleArmorSuit.DRAGONMOUNTS_TOOL_TAB;
 import static net.dragonmounts.init.DMItemGroups.*;
@@ -38,6 +42,7 @@ public class DMItems {
             return stack;
         }
     };
+    public static final Supplier<Callable<ItemStackTileEntityRenderer>> GET_DMISTER = () -> DMItemStackTileEntityRenderer::getInstance;
     //Scales Start
     public static final DragonScalesItem FOREST_DRAGON_SCALES = createDragonScalesItem("forest_dragon_scales", DragonTypes.FOREST, item());
     public static final DragonScalesItem FIRE_DRAGON_SCALES = createDragonScalesItem("fire_dragon_scales", DragonTypes.FIRE, item());
@@ -367,6 +372,14 @@ public class DMItems {
     public static final DragonEssenceItem SKELETON_DRAGON_ESSENCE = createDragonEssenceItem("skeleton_dragon_essence", DragonTypes.SKELETON, none());
     public static final DragonEssenceItem WITHER_DRAGON_ESSENCE = createDragonEssenceItem("wither_dragon_essence", DragonTypes.WITHER, none());
     public static final DragonWhistleItem DRAGON_WHISTLE = createItem("dragon_whistle", new DragonWhistleItem(item()));
+    //Blocks
+    public static final BlockItem DRAGON_CORE = createItem("dragon_core", new BlockItem(DMBlocks.DRAGON_CORE, none().rarity(Rarity.RARE).setISTER(GET_DMISTER)));
+    public static final DragonNestItem DRAGON_NEST;
+
+    static {
+        DRAGON_NEST = new DragonNestItem(DMBlocks.DRAGON_NEST, block());
+        ITEMS.register("dragon_nest", () -> DRAGON_NEST);
+    }
 
     private static <T extends Item> T createItem(String name, T item) {
         ITEMS.register(name, () -> item);

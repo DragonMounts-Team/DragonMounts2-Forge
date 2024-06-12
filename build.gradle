@@ -20,7 +20,6 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'org.spongepowered.mixin'
 
 version = String.format(this.version_pattern, Calendar.instance.get(Calendar.YEAR) % 100, Calendar.instance.get(Calendar.WEEK_OF_YEAR))
-group = 'com.TheRPGAdventurer.ROTD'
 archivesBaseName = 'DragonMounts3-1.16.5'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)

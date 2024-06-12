@@ -1,6 +1,5 @@
 package net.dragonmounts.entity.dragon;
 
-import net.dragonmounts.DragonMountsConfig;
 import net.dragonmounts.api.IDragonTypified;
 import net.dragonmounts.client.ClientDragonEntity;
 import net.dragonmounts.entity.ai.DragonBodyController;
@@ -45,6 +44,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static net.dragonmounts.init.DMGameRules.*;
 import static net.dragonmounts.util.BlockUtil.isSolid;
 
 /**
@@ -73,14 +74,14 @@ public abstract class TameableDragonEntity extends TameableEntity implements IFo
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
         return LivingEntity.createLivingAttributes()
-                .add(Attributes.MAX_HEALTH, DragonMountsConfig.SERVER.base_health.get())
+                .add(Attributes.MAX_HEALTH, DEFAULT_DRAGON_BASE_HEALTH)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
                 .add(Attributes.FLYING_SPEED, BASE_AIR_SPEED)
                 .add(Attributes.MOVEMENT_SPEED, BASE_GROUND_SPEED)
-                .add(Attributes.ATTACK_DAMAGE, DragonMountsConfig.SERVER.base_damage.get())
+                .add(Attributes.ATTACK_DAMAGE, DEFAULT_DRAGON_BASE_DAMAGE)
                 .add(Attributes.ATTACK_KNOCKBACK)
                 .add(Attributes.FOLLOW_RANGE, BASE_FOLLOW_RANGE)
-                .add(Attributes.ARMOR, DragonMountsConfig.SERVER.base_armor.get())
+                .add(Attributes.ARMOR, DEFAULT_DRAGON_BASE_ARMOR)
                 .add(Attributes.ARMOR_TOUGHNESS, BASE_TOUGHNESS);
     }
     public static final UUID AGE_MODIFIER_UUID = UUID.fromString("2d147cda-121b-540e-bb24-435680aa374a");
@@ -150,13 +151,14 @@ public abstract class TameableDragonEntity extends TameableEntity implements IFo
     }
 
     public void resetAttributes() {
+        GameRules rules = this.level.getGameRules();
         AttributeModifierManager manager = this.getAttributes();
         //noinspection DataFlowIssue
-        manager.getInstance(Attributes.MAX_HEALTH).setBaseValue(DragonMountsConfig.SERVER.base_health.get());
+        manager.getInstance(Attributes.MAX_HEALTH).setBaseValue(rules.getRule(DRAGON_BASE_HEALTH).get());
         //noinspection DataFlowIssue
-        manager.getInstance(Attributes.ATTACK_DAMAGE).setBaseValue(DragonMountsConfig.SERVER.base_damage.get());
+        manager.getInstance(Attributes.ATTACK_DAMAGE).setBaseValue(rules.getRule(DRAGON_BASE_DAMAGE).get());
         //noinspection DataFlowIssue
-        manager.getInstance(Attributes.ARMOR).setBaseValue(DragonMountsConfig.SERVER.base_armor.get());
+        manager.getInstance(Attributes.ARMOR).setBaseValue(rules.getRule(DRAGON_BASE_ARMOR).get());
     }
 
     public void setSaddle(@Nonnull ItemStack stack, boolean sync) {

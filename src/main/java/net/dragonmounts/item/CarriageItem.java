@@ -33,7 +33,7 @@ public class CarriageItem extends Item {
 
     @Override
     public int getBurnTime(ItemStack itemStack, @Nullable IRecipeType<?> recipeType) {
-        return 800;
+        return 1000;
     }
 
     @Nonnull

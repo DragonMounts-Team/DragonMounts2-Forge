@@ -300,7 +300,7 @@ public class DragonAnimationContext {
         // TODO: where's yOffset?
         //yTrail.update(entity.posY - entity.yOffset);
         yTrail.update((float) dragon.getY());
-        yawTrail.update((float) yawAbs);
+        yawTrail.update((float) -yawAbs);
         pitchTrail.update(this.getModelPitch(this.partialTicks));
     }
 

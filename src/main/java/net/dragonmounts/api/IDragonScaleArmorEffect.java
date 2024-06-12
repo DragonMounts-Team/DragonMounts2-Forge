@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static net.dragonmounts.util.TimeUtil.formatAsFloat;
+import static net.dragonmounts.util.TimeUtil.stringifyTick;
 
 public interface IDragonScaleArmorEffect extends IArmorEffect {
     default void appendTriggerInfo(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> tooltips) {
@@ -47,9 +47,9 @@ public interface IDragonScaleArmorEffect extends IArmorEffect {
             tooltips.add(new TranslationTextComponent(this.getDescription()));
             int value = ArmorEffectManager.getLocalCooldown(this);
             if (value > 0) {
-                tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_remaining_cooldown", formatAsFloat(value)));
-            } else if (this.cooldown > 0) {
-                tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_cooldown", formatAsFloat(this.cooldown)));
+                tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_remaining_cooldown", stringifyTick(value)));
+            } else if ((value = this.cooldown) > 0) {
+                tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_cooldown", stringifyTick(value)));
             }
         }
 

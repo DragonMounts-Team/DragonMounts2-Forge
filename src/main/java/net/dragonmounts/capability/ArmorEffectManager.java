@@ -97,42 +97,44 @@ public final class ArmorEffectManager implements IArmorEffectManager {
         }
         for (int i = 0, j = 0, k; i < packet.size; ++i) {
             if ((k = packet.data[i++]) >= 0) {
-                j = LOCAL_MANAGER.setCDImpl(k, packet.data[i], j);
+                j = LOCAL_MANAGER.setCdImpl(k, packet.data[i], j);
             }
         }
     }
 
     private void reassign(final int pos, final int arg) {
-        for (int i = this.cdN - 1, j, k; i > arg; --i) {
-            if (((k = this.cdKey[j = this.cdRef[i]]) & this.cdMask) == pos) {
-                this.cdRef[i] = pos;
-                this.cdKey[pos] = k;
-                this.cdDat[pos] = this.cdDat[j];
+        final int[] cdRef = this.cdRef, cdKey = this.cdKey, cdDat = this.cdDat;
+        for (int i = this.cdN - 1, j, k, mask = this.cdMask; i > arg; --i) {
+            if (((k = cdKey[j = cdRef[i]]) & mask) == pos) {
+                cdRef[i] = pos;
+                cdKey[pos] = k;
+                cdDat[pos] = cdDat[j];
                 this.reassign(j, i);
                 return;
             }
         }
-        this.cdKey[pos] = -1;//it is unnecessary to reset `this.cdDat[pos]`
+        cdKey[pos] = -1;//it is unnecessary to reset `cdDat[pos]`
     }
 
-    private int setCDImpl(final int category, final int cooldown, int cursor) {
-        int pos = category & this.cdMask;
+    private int setCdImpl(final int category, final int cooldown, int cursor) {
+        final int[] cdRef = this.cdRef, cdKey = this.cdKey, cdDat = this.cdDat;
+        int mask = this.cdMask, pos = category & mask;
         do {
-            int key = this.cdKey[pos];
+            int key = cdKey[pos];
             if (key == -1) {
                 if (cooldown > 0) {
-                    this.cdRef[this.cdN++] = pos;
-                    this.cdKey[pos] = category;
-                    this.cdDat[pos] = cooldown;
+                    cdRef[this.cdN++] = pos;
+                    cdKey[pos] = category;
+                    cdDat[pos] = cooldown;
                 }
                 return cursor == pos ? pos + 1 : cursor;
             } else if (key == category) {
                 if (cooldown > 0) {
-                    this.cdDat[pos] = cooldown;
+                    cdDat[pos] = cooldown;
                 } else {
                     for (int i = 0; i < this.cdN; ++i) {
-                        if (this.cdRef[i] == pos) {
-                            arraycopy(this.cdRef, i + 1, this.cdRef, i, --this.cdN - i);
+                        if (cdRef[i] == pos) {
+                            arraycopy(cdRef, i + 1, cdRef, i, --this.cdN - i);
                             this.reassign(pos, i - 1);
                             return cursor == pos ? pos + 1 : cursor;
                         }
@@ -140,7 +142,7 @@ public final class ArmorEffectManager implements IArmorEffectManager {
                 }
                 return cursor == pos ? pos + 1 : cursor;
             }
-        } while ((pos = cursor++) <= this.cdMask);
+        } while ((pos = cursor++) <= mask);
         throw new IndexOutOfBoundsException();
     }
 
@@ -158,11 +160,11 @@ public final class ArmorEffectManager implements IArmorEffectManager {
             fill(this.cdKey = new int[temp], -1);
             this.cdDat = new int[temp];
             for (int i = temp = 0, j; i < n; ++i) {//temp: cursor
-                temp = this.setCDImpl(key[j = ref[i]], dat[j], temp);
+                temp = this.setCdImpl(key[j = ref[i]], dat[j], temp);
             }
-            this.setCDImpl(id, cooldown, temp);
+            this.setCdImpl(id, cooldown, temp);
         } else {
-            this.setCDImpl(id, cooldown, 0);
+            this.setCdImpl(id, cooldown, 0);
         }
         if (!this.player.level.isClientSide) {
             CHANNEL.send(PLAYER.with(() -> (ServerPlayerEntity) player), new SSyncCooldownPacket(id, cooldown));
@@ -171,10 +173,11 @@ public final class ArmorEffectManager implements IArmorEffectManager {
 
     @Override
     public CompoundNBT saveNBT() {
+        final int[] cdRef = this.cdRef, cdKey = this.cdKey, cdDat = this.cdDat;
         CompoundNBT compound = new CompoundNBT();
-        for (int i = 0, j, v; i < cdN; ++i) {
-            if ((v = this.cdDat[j = cdRef[i]]) > 0) {
-                compound.putInt(CooldownCategory.REGISTRY.getValue(this.cdKey[j]).getSerializedName().toString(), v);
+        for (int i = 0, j, v, n = this.cdN; i < n; ++i) {
+            if ((v = cdDat[j = cdRef[i]]) > 0) {
+                compound.putInt(CooldownCategory.REGISTRY.getValue(cdKey[j]).getSerializedName().toString(), v);
             }
         }
         return compound;
@@ -196,10 +199,12 @@ public final class ArmorEffectManager implements IArmorEffectManager {
                     fill(this.cdKey = new int[temp], -1);
                     this.cdDat = new int[temp];
                     for (int i = temp = 0, j; i < n; ++i) {//temp: cursor
-                        temp = this.setCDImpl(key[j = ref[i]], dat[j], temp);
+                        temp = this.setCdImpl(key[j = ref[i]], dat[j], temp);
                     }
-                    this.setCDImpl(category.getId(), nbt.getInt(name), temp);
-                } else {this.setCDImpl(category.getId(), nbt.getInt(name), 0);}
+                    this.setCdImpl(category.getId(), nbt.getInt(name), temp);
+                } else {
+                    this.setCdImpl(category.getId(), nbt.getInt(name), 0);
+                }
             }
         }
     }
@@ -216,21 +221,42 @@ public final class ArmorEffectManager implements IArmorEffectManager {
     public int getCooldown(final CooldownCategory category) {
         final int id = category.getId();
         if (id < 0) return 0;
-        int pos = id & this.cdMask;
-        int key = this.cdKey[pos];
+        int pos = id & this.cdMask, key = this.cdKey[pos];
         if (key == -1) return 0;
         if (key == id) return this.cdDat[pos];
-        for (int i = 0; i < this.cdN; ++i) {
-            if (this.cdRef[i] == pos) {
-                while (++i < this.cdN) {
-                    if (this.cdKey[pos = this.cdRef[i]] == id) {
-                        return this.cdDat[pos];
+        final int[] cdRef = this.cdRef, cdKey = this.cdKey, cdDat = this.cdDat;
+        for (int i = 0, n = this.cdN; i < n; ++i) {
+            if (cdRef[i] == pos) {
+                while (++i < n) {
+                    if (cdKey[pos = cdRef[i]] == id) {
+                        return cdDat[pos];
                     }
                 }
                 return 0;
             }
         }
         return 0;
+    }
+
+    @Override
+    public boolean isAvailable(final CooldownCategory category) {
+        final int id = category.getId();
+        if (id < 0) return true;
+        int pos = id & this.cdMask, key = this.cdKey[pos];
+        if (key == -1) return true;
+        if (key == id) return this.cdDat[pos] <= 0;
+        final int[] cdRef = this.cdRef, cdKey = this.cdKey, cdDat = this.cdDat;
+        for (int i = 0, n = this.cdN; i < n; ++i) {
+            if (cdRef[i] == pos) {
+                while (++i < n) {
+                    if (cdKey[pos = cdRef[i]] == id) {
+                        return cdDat[pos] <= 0;
+                    }
+                }
+                return true;
+            }
+        }
+        return true;
     }
 
     private void validateLvlSize() {
@@ -247,32 +273,36 @@ public final class ArmorEffectManager implements IArmorEffectManager {
 
     @Override
     public int setLevel(final IArmorEffect effect, final int level) {
-        for (int i = 0; i < this.lvlN; ++i) {
-            if (this.lvlKey[i] == effect) {
+        final IArmorEffect[] lvlKey = this.lvlKey;
+        for (int i = 0, n = this.lvlN; i < n; ++i) {
+            if (lvlKey[i] == effect) {
                 return this.lvlDat[i] = level;
             }
         }
-        this.validateLvlSize();
+        this.validateLvlSize();//may assign new array to this.lvlKey
         this.lvlKey[this.lvlN] = effect;
         return this.lvlDat[this.lvlN++] = level;
     }
 
     @Override
     public int stackLevel(final IArmorEffect effect) {
-        for (int i = 0; i < this.lvlN; ++i) {
-            if (this.lvlKey[i] == effect) {
+        final IArmorEffect[] lvlKey = this.lvlKey;
+        for (int i = 0, n = this.lvlN; i < n; ++i) {
+            if (lvlKey[i] == effect) {
                 return ++this.lvlDat[i];
             }
         }
-        this.validateLvlSize();
+        this.validateLvlSize();//may assign new array to this.lvlKey
         this.lvlKey[this.lvlN] = effect;
         return this.lvlDat[this.lvlN++] = 1;
     }
 
     @Override
     public boolean isActive(final IArmorEffect effect) {
-        for (int i = 0; i < this.activeN; ++i) {
-            if (this.lvlKey[this.lvlRef[i]] == effect) {
+        final IArmorEffect[] lvlKey = this.lvlKey;
+        final int[] lvlRef = this.lvlRef;
+        for (int i = 0, n = this.activeN; i < n; ++i) {
+            if (lvlKey[lvlRef[i]] == effect) {
                 return true;
             }
         }
@@ -282,15 +312,17 @@ public final class ArmorEffectManager implements IArmorEffectManager {
 
     @Override
     public int getLevel(final IArmorEffect effect, final boolean filtered) {
+        final IArmorEffect[] lvlKey = this.lvlKey;
         if (filtered) {
-            for (int i = 0, j; i < this.activeN; ++i) {
-                if (this.lvlKey[j = this.lvlRef[i]] == effect) {
+            final int[] lvlRef = this.lvlRef;
+            for (int i = 0, j, n = this.activeN; i < n; ++i) {
+                if (lvlKey[j = lvlRef[i]] == effect) {
                     return this.lvlDat[j];
                 }
             }
         } else {
-            for (int i = 0; i < this.lvlN; ++i) {
-                if (this.lvlKey[i] == effect) {
+            for (int i = 0, n = this.lvlN; i < n; ++i) {
+                if (lvlKey[i] == effect) {
                     return this.lvlDat[i];
                 }
             }
@@ -308,9 +340,10 @@ public final class ArmorEffectManager implements IArmorEffectManager {
 
     @Override
     public void tick() {
+        final int[] cdRef = this.cdRef, cdDat = this.cdDat;
         for (int i = 0, j; i < this.cdN; ++i) {
-            if (--this.cdDat[j = this.cdRef[i]] < 1) {
-                arraycopy(this.cdRef, i + 1, this.cdRef, i, --this.cdN - i);
+            if (--cdDat[j = cdRef[i]] < 1) {
+                arraycopy(cdRef, i + 1, cdRef, i, --this.cdN - i);
                 this.reassign(j, --i);
             }
         }
@@ -319,15 +352,17 @@ public final class ArmorEffectManager implements IArmorEffectManager {
         this.checkSlot(EquipmentSlotType.CHEST);
         this.checkSlot(EquipmentSlotType.LEGS);
         this.checkSlot(EquipmentSlotType.FEET);
-        for (int i = 0; i < this.lvlN; ++i) {
-            final IArmorEffect effect = this.lvlKey[i];
-            if (effect.activate(this, this.player, this.lvlDat[i])) {
-                if (this.activeN == this.lvlRef.length) {
-                    final int[] array = new int[this.activeN + 4];
-                    arraycopy(this.lvlRef, 0, array, 0, this.activeN);
-                    this.lvlRef = array;
+        final IArmorEffect[] lvlKey = this.lvlKey;
+        final int[] lvlDat = this.lvlDat;
+        int[] lvlRef = this.lvlRef;
+        for (int i = 0, n = this.lvlN; i < n; ++i) {
+            final IArmorEffect effect = lvlKey[i];
+            if (effect.activate(this, this.player, lvlDat[i])) {
+                if (this.activeN == lvlRef.length) {
+                    arraycopy(this.lvlRef, 0, lvlRef = new int[this.activeN + 4], 0, this.activeN);
+                    this.lvlRef = lvlRef;
                 }
-                this.lvlRef[this.activeN++] = i;
+                lvlRef[this.activeN++] = i;
             }
         }
     }

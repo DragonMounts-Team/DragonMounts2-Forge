@@ -20,6 +20,8 @@ public interface IArmorEffectManager {
 
     int getCooldown(CooldownCategory category);
 
+    boolean isAvailable(CooldownCategory category);
+
     void tick();
 
     CompoundNBT saveNBT();

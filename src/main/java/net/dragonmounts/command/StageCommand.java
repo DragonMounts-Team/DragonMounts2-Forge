@@ -39,7 +39,7 @@ public class StageCommand {
             level.removeEntity(dragon, false);
             level.addFreshEntity(egg);
         } else if (target instanceof HatchableDragonEggEntity) {
-            ((HatchableDragonEggEntity) target).setAge(0);
+            ((HatchableDragonEggEntity) target).setAge(0, false);
         } else {
             source.sendFailure(createClassCastException(target, TameableDragonEntity.class));
             return 0;

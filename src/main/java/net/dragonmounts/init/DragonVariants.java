@@ -9,7 +9,7 @@ import net.minecraft.item.Rarity;
 import net.minecraftforge.event.RegistryEvent;
 
 import static net.dragonmounts.DragonMounts.MOD_ID;
-import static net.dragonmounts.init.DMBlocks.GET_DMISTER;
+import static net.dragonmounts.init.DMItems.GET_DMISTER;
 
 public class DragonVariants {
     public static final DragonVariant AETHER_FEMALE = create(DragonTypes.AETHER, MOD_ID + ":aether_female");

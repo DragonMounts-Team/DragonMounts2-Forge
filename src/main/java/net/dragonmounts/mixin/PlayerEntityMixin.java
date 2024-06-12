@@ -16,11 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerEntityMixin extends LivingEntity implements Provider {
     @Unique
     protected final ArmorEffectManager dragonmounts$manager = new ArmorEffectManager((PlayerEntity) (Object) this);
-
-    private PlayerEntityMixin(EntityType<? extends LivingEntity> type, World world) {
-        super(type, world);
-    }
-
     @Inject(method = "tick", at = @At("HEAD"))
     public void tickManager(CallbackInfo info) {
         this.dragonmounts$manager.tick();
@@ -29,5 +24,9 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Provider
     @Override
     public ArmorEffectManager dragonmounts$getManager() {
         return this.dragonmounts$manager;
+    }
+
+    private PlayerEntityMixin(EntityType<? extends LivingEntity> type, World world) {
+        super(type, world);
     }
 }

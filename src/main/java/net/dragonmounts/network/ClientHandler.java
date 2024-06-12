@@ -99,4 +99,17 @@ public class ClientHandler {
         });
         context.setPacketHandled(true);
     }
+
+    public static void handle(SSyncEggAgePacket packet, Supplier<NetworkEvent.Context> supplier) {
+        NetworkEvent.Context context = supplier.get();
+        context.enqueueWork(() -> {
+            World level = Minecraft.getInstance().level;
+            if (level == null) return;
+            Entity entity = level.getEntity(packet.id);
+            if (entity instanceof HatchableDragonEggEntity) {
+                ((HatchableDragonEggEntity) entity).setAge(packet.age, false);
+            }
+        });
+        context.setPacketHandled(true);
+    }
 }

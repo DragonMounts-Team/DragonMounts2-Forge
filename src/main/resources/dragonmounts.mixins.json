@@ -4,6 +4,7 @@
   "required": true,
   "package": "net.dragonmounts.mixin",
   "mixins": [
+    "AbstractArrowEntityMixin",
     "PlayerEntityMixin",
     "RenderingRegistryMixin",
     "ServerPlayNetHandlerMixin"
@@ -12,6 +13,7 @@
   "client": [
     "HeadLayerMixin",
     "ItemRendererMixin",
-    "PlayerControllerMixin"
+    "PlayerControllerMixin",
+    "RuleEntryVisitorMixin"
   ]
 }

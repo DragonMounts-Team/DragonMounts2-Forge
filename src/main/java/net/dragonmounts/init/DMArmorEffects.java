@@ -44,12 +44,13 @@ import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY_A
 
 public class DMArmorEffects {
     public static final String FISHING_LUCK = "tooltip.dragonmounts.armor_effect_fishing_luck";
+    public static final String CHANNELING = "dragonmounts:channeling";
 
     public static final IDragonScaleArmorEffect.Advanced AETHER = new IDragonScaleArmorEffect.Advanced(300) {
         @Override
         public boolean activate(IArmorEffectManager manager, PlayerEntity player, int level) {
             boolean flag = level > 3;
-            if (flag && !player.level.isClientSide && manager.getCooldown(this) <= 0 && player.isSprinting() && addOrMergeEffect(player, Effects.MOVEMENT_SPEED, 100, 1, true, true, true)) {
+            if (flag && !player.level.isClientSide && manager.isAvailable(this) && player.isSprinting() && addOrMergeEffect(player, Effects.MOVEMENT_SPEED, 100, 1, true, true, true)) {
                 player.level.playSound(null, player, SoundEvents.GUARDIAN_HURT, SoundCategory.NEUTRAL, 1.0F, 1.0F);
                 manager.setCooldown(this, this.cooldown);
             }
@@ -107,7 +108,7 @@ public class DMArmorEffects {
                 return level > 3;
             }
             // use `|` instead of `||` to avoid short-circuit evaluation when trying to add both of these two effects
-            if (level > 3 && manager.getCooldown(this) <= 0 && player.getHealth() < 10 && (
+            if (level > 3 && manager.isAvailable(this) && player.getHealth() < 10 && (
                     addOrMergeEffect(player, Effects.DAMAGE_RESISTANCE, 600, 2, true, true, true)
                             | addOrMergeEffect(player, Effects.DAMAGE_BOOST, 300, 1, true, true, true)
             )) {
@@ -124,7 +125,7 @@ public class DMArmorEffects {
         @Override
         public boolean activate(IArmorEffectManager manager, PlayerEntity player, int level) {
             boolean flag = level > 3;
-            if (flag && !player.level.isClientSide && manager.getCooldown(this) <= 0 && player.isOnFire()) {
+            if (flag && !player.level.isClientSide && manager.isAvailable(this) && player.isOnFire()) {
                 if (addOrMergeEffect(player, Effects.FIRE_RESISTANCE, 600, 0, true, true, true)) {
                     manager.setCooldown(this, this.cooldown);
                 }
@@ -142,7 +143,7 @@ public class DMArmorEffects {
                 if (player.fishing != null) {
                     addOrResetEffect(player, Effects.LUCK, 200, 0, true, true, true, 21);
                 }
-                if (player.getHealth() < 10 && manager.getCooldown(this) <= 0) {
+                if (player.getHealth() < 10 && manager.isAvailable(this)) {
                     if (addOrMergeEffect(player, Effects.REGENERATION, 200, 1, true, true, true)) {
                         manager.setCooldown(this, this.cooldown);
                     }
@@ -190,7 +191,7 @@ public class DMArmorEffects {
                 if (player.fishing != null) {
                     addOrResetEffect(player, Effects.LUCK, 200, 0, true, true, true, 21);
                 }
-                if (manager.getCooldown(this) <= 0 && player.getFoodData().getFoodLevel() < 6 && addOrMergeEffect(player, Effects.SATURATION, 200, 0, true, true, true)) {
+                if (manager.isAvailable(this) && player.getFoodData().getFoodLevel() < 6 && addOrMergeEffect(player, Effects.SATURATION, 200, 0, true, true, true)) {
                     manager.setCooldown(this, this.cooldown);
                 }
             }
@@ -240,7 +241,7 @@ public class DMArmorEffects {
         @Override
         public boolean activate(IArmorEffectManager manager, PlayerEntity player, int level) {
             boolean flag = level > 3;
-            if (flag && !player.level.isClientSide && !player.level.isDay() && manager.getCooldown(this) <= 0 && addOrMergeEffect(player, Effects.DAMAGE_BOOST, 300, 0, true, true, true))
+            if (flag && !player.level.isClientSide && !player.level.isDay() && manager.isAvailable(this) && addOrMergeEffect(player, Effects.DAMAGE_BOOST, 300, 0, true, true, true))
                 manager.setCooldown(this, this.cooldown);
             return flag;
         }
@@ -257,7 +258,7 @@ public class DMArmorEffects {
         PlayerEntity player = event.getPlayer();
         if (player.level.isClientSide || player.getRandom().nextBoolean()) return;
         ArmorEffectManager manager = ((IArmorEffectManager.Provider) player).dragonmounts$getManager();
-        if (manager.isActive(STORM) && manager.getCooldown(STORM) <= 0) {
+        if (manager.isActive(STORM) && manager.isAvailable(STORM)) {
             Entity entity = event.getTarget();
             BlockPos pos = entity.blockPosition();
             if (entity.level.canSeeSky(pos)) {
@@ -276,8 +277,8 @@ public class DMArmorEffects {
         //In fact, self.world.isClientSide -> false
         if (self.level.isClientSide || !(self instanceof PlayerEntity)) return;
         ArmorEffectManager manager = ((IArmorEffectManager.Provider) self).dragonmounts$getManager();
-        final boolean ice = manager.isActive(DMArmorEffects.ICE) && manager.getCooldown(DMArmorEffects.ICE) <= 0;
-        final boolean nether = manager.isActive(DMArmorEffects.NETHER) && manager.getCooldown(DMArmorEffects.NETHER) <= 0;
+        final boolean ice = manager.isActive(DMArmorEffects.ICE) && manager.isAvailable(DMArmorEffects.ICE);
+        final boolean nether = manager.isActive(DMArmorEffects.NETHER) && manager.isAvailable(DMArmorEffects.NETHER);
         if (!ice && !nether) return;
         final List<Entity> entities = self.level.getEntities(self, self.getBoundingBox().inflate(5.0D), EntityPredicates.NO_CREATIVE_OR_SPECTATOR);
         if (entities.isEmpty()) return;

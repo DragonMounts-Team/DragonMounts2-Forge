@@ -52,11 +52,7 @@ public class DragonMountsConfig {
 
     public static class Server {
         public final ForgeConfigSpec.ConfigValue<Boolean> debug;
-        public final ForgeConfigSpec.ConfigValue<Double> base_health;
-        public final ForgeConfigSpec.ConfigValue<Double> base_damage;
-        public final ForgeConfigSpec.ConfigValue<Double> base_armor;
         // config properties
-        public final ForgeConfigSpec.ConfigValue<Boolean> block_override;
         public final ForgeConfigSpec.ConfigValue<Boolean> shouldChangeBreedViaHabitatOrBlock;
         public final ForgeConfigSpec.ConfigValue<Boolean> canDragonDespawn;
         public final ForgeConfigSpec.ConfigValue<Boolean> canIceBreathBePermanent;
@@ -94,13 +90,7 @@ public class DragonMountsConfig {
             this.debug = builder
                     .comment("Debug mode. You need to restart Minecraft for the change to take effect. Unless you're a developer or are told to activate it, you don't want to set this to true.")
                     .define("debug", false);
-            builder.push("dragon_data");
-            this.base_health = builder.comment("Dragon Base Health").defineInRange("base_health", 90.0D, 1.0D, 1024.0D);
-            this.base_damage = builder.comment("Damage for dragon attack").define("base_damage", 12.0D);
-            this.base_armor = builder.comment("Makes Dragons Tougher or Not").define("base_armor", 8.0D);
-            builder.pop();
             builder.push("gameplay");
-            block_override = builder.comment("Enables right-click override on the vanilla dragon egg block. May help to fix issues with other mods.").define("block_override", true);
             shouldChangeBreedViaHabitatOrBlock = builder.comment("Enables changing of egg breeds via block or environment").define("can eggs change breeds", true);
             canDragonDespawn = builder.comment("Enables or Disables dragons ability to despawn, works only for adult non tamed dragons").define("can dragons despawn", true);
             canIceBreathBePermanent = builder.comment("refers to the ice breath for the dragon in water, set true if you want the ice block to be permanent. false otherwise.").define("can ice breath be permanent", false);

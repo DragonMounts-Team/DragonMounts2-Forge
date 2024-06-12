@@ -1,9 +1,12 @@
 package net.dragonmounts.item;
 
 import net.dragonmounts.api.DragonScaleTier;
+import net.dragonmounts.api.IDMArrow;
 import net.dragonmounts.api.IDragonTypified;
+import net.dragonmounts.init.DragonTypes;
 import net.dragonmounts.registry.DragonType;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,7 +29,7 @@ public class DragonScaleBowItem extends BowItem implements IDragonTypified {
             DragonScaleTier tier,
             Item.Properties properties
     ) {
-        super(properties.defaultDurability((int) (tier.getUses() * 0.25)));
+        super(properties.defaultDurability(tier.getUses() >> 1));
         this.tier = tier;
     }
 
@@ -59,5 +62,11 @@ public class DragonScaleBowItem extends BowItem implements IDragonTypified {
     @Override
     public DragonType getDragonType() {
         return this.tier.type;
+    }
+
+    @Nonnull
+    public AbstractArrowEntity customArrow(AbstractArrowEntity arrow) {
+        ((IDMArrow) arrow).dragonmounts$setChanneling(this.tier.type == DragonTypes.STORM);
+        return arrow;
     }
 }

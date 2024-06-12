@@ -1,8 +1,8 @@
 package net.dragonmounts.block;
 
-import net.dragonmounts.DragonMountsConfig;
 import net.dragonmounts.api.IDragonTypified;
 import net.dragonmounts.entity.dragon.HatchableDragonEggEntity;
+import net.dragonmounts.init.DMGameRules;
 import net.dragonmounts.init.DragonTypes;
 import net.dragonmounts.registry.DragonType;
 import net.minecraft.block.Block;
@@ -31,6 +31,7 @@ import java.util.List;
 import static net.dragonmounts.DragonMounts.BLOCK_TRANSLATION_KEY_PREFIX;
 
 public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTypified {
+    //public static final IntegerProperty AGE = IntegerProperty.create("age", 0, 10);
     protected static void spawn(World level, BlockPos pos, DragonType type) {
         level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         HatchableDragonEggEntity entity = new HatchableDragonEggEntity(level);
@@ -41,7 +42,7 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
 
     public static void interact(PlayerInteractEvent.RightClickBlock event) {
         World level = event.getWorld();
-        if (!level.isClientSide && DragonMountsConfig.SERVER.block_override.get()) {
+        if (!level.isClientSide && level.getGameRules().getBoolean(DMGameRules.IS_EGG_OVERRIDDEN)) {
             BlockPos pos = event.getPos();
             Block block = level.getBlockState(pos).getBlock();
             if (block == Blocks.DRAGON_EGG && !level.dimension().equals(World.END)) {
@@ -57,6 +58,7 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
     public HatchableDragonEggBlock(DragonType type, Properties properties) {
         super(properties);
         this.type = type;
+        //this.registerDefaultState(this.stateDefinition.any().setValue(AGE, 0));
     }
 
     @Override

@@ -38,6 +38,7 @@ public class DragonMounts {
     public IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
     public DragonMounts() {
+        DMGameRules.load();
         DragonMountsConfig.init();
         CarriageType.REGISTRY.register(this.eventBus);
         CooldownCategory.REGISTRY.register(this.eventBus);

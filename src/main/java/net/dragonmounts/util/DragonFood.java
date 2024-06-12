@@ -6,6 +6,7 @@ import net.dragonmounts.entity.dragon.DragonLifeStage;
 import net.dragonmounts.entity.dragon.TameableDragonEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.Hand;
 
 import static net.dragonmounts.util.EntityUtil.consume;
@@ -25,11 +26,12 @@ public class DragonFood implements IDragonFood {
         if (!player.abilities.instabuild) {
             consume(player, hand, stack, new ItemStack(Items.GLASS_BOTTLE));
         }
+        player.awardStat(Stats.ITEM_USED.get(Items.HONEY_BOTTLE));
         if (dragon.isOwnedBy(player)) {
             if (dragon.getLifeStage() == DragonLifeStage.ADULT && dragon.canFallInLove()) {
                 dragon.setInLove(player);
             }
-        } else if (dragon.getRandom().nextFloat() < 0.25) {
+        } else if (!dragon.isTame() && dragon.getRandom().nextFloat() < 0.25) {
             dragon.tame(player);
         }
     };
@@ -48,6 +50,7 @@ public class DragonFood implements IDragonFood {
             if (!player.abilities.instabuild) {
                 stack.shrink(1);
             }
+            player.awardStat(Stats.ITEM_USED.get(Items.POISONOUS_POTATO));
         }
     };
 
@@ -112,11 +115,12 @@ public class DragonFood implements IDragonFood {
             }
             consume(player, hand, stack, result == null ? null : new ItemStack(result));
         }
+        player.awardStat(Stats.ITEM_USED.get(item));
         if (dragon.isOwnedBy(player)) {
             if (dragon.getLifeStage() == DragonLifeStage.ADULT && dragon.canFallInLove()) {
                 dragon.setInLove(player);
             }
-        } else if (dragon.getRandom().nextFloat() < 0.25) {
+        } else if (!dragon.isTame() && dragon.getRandom().nextFloat() < 0.25) {
             dragon.tame(player);
         }
     }

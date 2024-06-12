@@ -1,18 +1,18 @@
 package net.dragonmounts.client.renderer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.MatrixApplyingVertexBuilder;
 import net.dragonmounts.block.HatchableDragonEggBlock;
 import net.dragonmounts.entity.dragon.HatchableDragonEggEntity;
 import net.dragonmounts.init.DMBlocks;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ModelBakery;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.ResourceLocation;
@@ -23,6 +23,10 @@ import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
 
 import javax.annotation.Nonnull;
+import java.util.Random;
+
+import static net.dragonmounts.entity.dragon.HatchableDragonEggEntity.EGG_CRACK_THRESHOLD;
+import static net.dragonmounts.entity.dragon.HatchableDragonEggEntity.MIN_HATCHING_TIME;
 
 /**
  * @see net.minecraft.client.renderer.entity.FallingBlockRenderer
@@ -51,11 +55,31 @@ public class DragonEggRenderer extends EntityRenderer<HatchableDragonEggEntity> 
                 */
             }
             matrices.translate(-0.5D, 0.0D, -0.5D);
-            BlockRendererDispatcher dispatcher = Minecraft.getInstance().getBlockRenderer();
-            for (RenderType type : RenderType.chunkBufferLayers()) {
-                if (RenderTypeLookup.canRenderInLayer(state, type)) {
-                    ForgeHooksClient.setRenderLayer(type);
-                    dispatcher.getModelRenderer().renderModel(world, dispatcher.getBlockModel(state), state, pos, matrices, buffer.getBuffer(type), false, world.random, state.getSeed(pos), OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
+            final long seed = state.getSeed(pos);
+            Minecraft minecraft = Minecraft.getInstance();
+            BlockRendererDispatcher dispatcher = minecraft.getBlockRenderer();
+            IBakedModel model = dispatcher.getBlockModel(state);
+            BlockModelRenderer renderer = dispatcher.getModelRenderer();
+            Random random = world.random;
+            int stage = entity.getAge();
+            if (stage >= EGG_CRACK_THRESHOLD) {
+                stage = Math.min((stage - EGG_CRACK_THRESHOLD) * 90 / MIN_HATCHING_TIME, 9);
+                for (RenderType type : RenderType.chunkBufferLayers()) {
+                    if (RenderTypeLookup.canRenderInLayer(state, type)) {
+                        ForgeHooksClient.setRenderLayer(type);
+                        renderer.renderModel(world, model, state, pos, matrices, buffer.getBuffer(type), false, random, seed, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
+                        MatrixStack.Entry last = matrices.last();
+                        renderer.renderModel(world, model, state, pos, matrices, new MatrixApplyingVertexBuilder(
+                                minecraft.renderBuffers().crumblingBufferSource().getBuffer(ModelBakery.DESTROY_TYPES.get(stage)), last.pose(), last.normal()
+                        ), true, random, seed, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
+                    }
+                }
+            } else {
+                for (RenderType type : RenderType.chunkBufferLayers()) {
+                    if (RenderTypeLookup.canRenderInLayer(state, type)) {
+                        ForgeHooksClient.setRenderLayer(type);
+                        renderer.renderModel(world, model, state, pos, matrices, buffer.getBuffer(type), false, random, seed, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
+                    }
                 }
             }
             ForgeHooksClient.setRenderLayer(null);

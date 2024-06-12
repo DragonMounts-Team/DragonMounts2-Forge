@@ -1,14 +1,11 @@
 package net.dragonmounts.entity.dragon;
 
-import net.dragonmounts.DragonMountsConfig;
 import net.dragonmounts.api.IDragonTypified;
 import net.dragonmounts.block.HatchableDragonEggBlock;
-import net.dragonmounts.init.DMBlocks;
-import net.dragonmounts.init.DMEntities;
-import net.dragonmounts.init.DMSounds;
-import net.dragonmounts.init.DragonTypes;
+import net.dragonmounts.init.*;
 import net.dragonmounts.item.DragonScalesItem;
 import net.dragonmounts.network.SShakeDragonEggPacket;
+import net.dragonmounts.network.SSyncEggAgePacket;
 import net.dragonmounts.registry.DragonType;
 import net.dragonmounts.registry.DragonVariant;
 import net.minecraft.block.Block;
@@ -21,6 +18,7 @@ import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -51,14 +49,16 @@ import java.util.UUID;
 import static net.dragonmounts.entity.dragon.TameableDragonEntity.AGE_DATA_PARAMETER_KEY;
 import static net.dragonmounts.network.DMPacketHandler.CHANNEL;
 import static net.dragonmounts.util.math.MathUtil.getColor;
+import static net.minecraftforge.fml.network.PacketDistributor.PLAYER;
 import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
 
 public class HatchableDragonEggEntity extends LivingEntity implements IDragonTypified.Mutable {
     protected static final DataParameter<DragonType> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DragonType.SERIALIZER);
     public static final int MIN_HATCHING_TIME = 36000;
     private static final float EGG_CRACK_PROCESS_THRESHOLD = 0.9F;
+    public static final int EGG_CRACK_THRESHOLD = (int) (EGG_CRACK_PROCESS_THRESHOLD * MIN_HATCHING_TIME);
     private static final float EGG_SHAKE_PROCESS_THRESHOLD = 0.75F;
-    private static final int EGG_SHAKE_THRESHOLD = (int) (EGG_SHAKE_PROCESS_THRESHOLD * MIN_HATCHING_TIME);
+    public static final int EGG_SHAKE_THRESHOLD = (int) (EGG_SHAKE_PROCESS_THRESHOLD * MIN_HATCHING_TIME);
     private static final float EGG_SHAKE_BASE_CHANCE = 20F;
     protected String variant;
     protected UUID owner;
@@ -72,7 +72,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
     public HatchableDragonEggEntity(EntityType<? extends HatchableDragonEggEntity> type, World world) {
         super(type, world);
         //noinspection DataFlowIssue
-        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(DragonMountsConfig.SERVER.base_health.get());
+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(world.getGameRules().getRule(DMGameRules.DRAGON_BASE_HEALTH).get());
     }
 
     public HatchableDragonEggEntity(World world) {
@@ -81,7 +81,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
 
     public static AttributeModifierMap.MutableAttribute registerAttributes() {
         return LivingEntity.createLivingAttributes()
-                .add(Attributes.MAX_HEALTH, DragonMountsConfig.SERVER.base_health.get())
+                .add(Attributes.MAX_HEALTH, DMGameRules.DEFAULT_DRAGON_BASE_HEALTH)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0);
     }
 
@@ -115,7 +115,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
             this.variant = compound.getString(DragonVariant.DATA_PARAMETER_KEY);
         }
         if (compound.contains(AGE_DATA_PARAMETER_KEY)) {
-            this.age = compound.getInt(AGE_DATA_PARAMETER_KEY);
+            this.setAge(compound.getInt(AGE_DATA_PARAMETER_KEY), true);
         }
         if (compound.hasUUID("Owner")) {
             this.owner = compound.getUUID("Owner");
@@ -220,6 +220,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
             ++this.amplitude;
         }
         if (this.level.isClientSide) {
+            ++this.age;
             // spawn generic particles
             DragonType type = this.getDragonType();
             double px = getX() + (this.random.nextDouble() - 0.5);
@@ -282,14 +283,21 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
 
     @Override
     public boolean canBeCollidedWith() {
-        return true;
+        return !this.level.getGameRules().getBoolean(DMGameRules.IS_EGG_PUSHABLE);
+    }
+
+    @Override
+    public boolean isPushable() {
+        return this.level.getGameRules().getBoolean(DMGameRules.IS_EGG_PUSHABLE) && super.isPushable();
+    }
+
+    @Override
+    protected boolean isImmobile() {
+        return false;
     }
 
     @Override
     public void push(Entity entity) {}
-
-    @Override
-    public void push(double x, double y, double z) {}
 
     @Override
     public boolean isPushedByFluid() {
@@ -301,7 +309,15 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
         return true;
     }
 
-    public void setAge(int age) {
+    @Override
+    public void startSeenByPlayer(ServerPlayerEntity player) {
+        CHANNEL.send(PLAYER.with(() -> player), new SSyncEggAgePacket(this.getId(), this.age));
+    }
+
+    public void setAge(int age, boolean lazySync) {
+        if (lazySync && this.age != age) {
+            CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SSyncEggAgePacket(this.getId(), age));
+        }
         this.age = age;
     }
 

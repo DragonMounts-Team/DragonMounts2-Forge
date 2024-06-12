@@ -3,7 +3,6 @@ package net.dragonmounts.command;
 import com.google.common.base.Joiner;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.dragonmounts.client.gui.DMConfigScreen;
@@ -47,10 +46,6 @@ public class ConfigCommand {
         LiteralArgumentBuilder<CommandSource> builder = Commands.literal("config").then(Commands.literal("server")
                 .requires(HAS_PERMISSION_LEVEL_3)
                 .then(create(SERVER.debug, BoolArgumentType.bool(), BoolArgumentType::getBool))
-                .then(create(SERVER.base_armor, DoubleArgumentType.doubleArg(0, 30), DoubleArgumentType::getDouble))
-                .then(create(SERVER.base_health, DoubleArgumentType.doubleArg(1, 1024), DoubleArgumentType::getDouble))
-                .then(create(SERVER.base_damage, DoubleArgumentType.doubleArg(0, 2048), DoubleArgumentType::getDouble))
-                .then(create(SERVER.block_override, BoolArgumentType.bool(), BoolArgumentType::getBool))
         );
         return environment == Commands.EnvironmentType.INTEGRATED ? builder.then(Commands.literal("client")) : builder;
     }

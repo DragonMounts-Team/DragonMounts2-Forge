@@ -5,7 +5,6 @@ import net.dragonmounts.api.IDragonTypified;
 import net.dragonmounts.registry.DragonType;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShieldItem;
 import net.minecraft.util.text.ITextComponent;
@@ -24,11 +23,8 @@ public class DragonScaleShieldItem extends ShieldItem implements IDragonTypified
 
     public final DragonScaleMaterial material;
 
-    public DragonScaleShieldItem(
-            DragonScaleMaterial material,
-            Item.Properties properties
-    ) {
-        super(properties.defaultDurability(material.getDurabilityForShield()));
+    public DragonScaleShieldItem(DragonScaleMaterial material, Properties props) {
+        super(props.defaultDurability(material.getDurabilityForShield()));
         this.material = material;
     }
 

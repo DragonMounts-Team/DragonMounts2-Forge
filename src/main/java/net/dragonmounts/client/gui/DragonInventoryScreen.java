@@ -2,24 +2,23 @@ package net.dragonmounts.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.dragonmounts.entity.dragon.TameableDragonEntity;
+import net.dragonmounts.client.ClientDragonEntity;
 import net.dragonmounts.inventory.DragonInventoryContainer;
 import net.minecraft.client.gui.DisplayEffectsScreen;
-import net.minecraft.client.gui.screen.inventory.InventoryScreen;
-import net.minecraft.entity.item.EnderCrystalEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
 
-import static net.dragonmounts.DragonMounts.prefix;
+import static net.dragonmounts.DragonMounts.makeId;
+import static net.minecraft.client.gui.screen.inventory.InventoryScreen.renderEntityInInventory;
 
 /**
  * @see net.minecraft.client.gui.screen.inventory.HorseInventoryScreen
  */
 public class DragonInventoryScreen extends DisplayEffectsScreen<DragonInventoryContainer> {
-    private static final ResourceLocation TEXTURE_LOCATION = prefix("textures/gui/dragon.png");
+    private static final ResourceLocation TEXTURE_LOCATION = makeId("textures/gui/dragon.png");
 
     public DragonInventoryScreen(DragonInventoryContainer menu, PlayerInventory playerInventory, ITextComponent title) {
         super(menu, playerInventory, title);
@@ -39,17 +38,17 @@ public class DragonInventoryScreen extends DisplayEffectsScreen<DragonInventoryC
     protected void renderBg(@Nonnull MatrixStack matrices, float ticks, int x, int y) {
         //noinspection DataFlowIssue
         this.minecraft.getTextureManager().bind(TEXTURE_LOCATION);
+        //noinspection deprecation
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        int i = (this.width - this.imageWidth) >> 1;
-        int j = (this.height - this.imageHeight) >> 1;
-        this.blit(matrices, i, j, 0, 0, this.imageWidth, this.imageHeight);
-        final TameableDragonEntity dragon = this.menu.dragon;
-        final EnderCrystalEntity crystal = dragon.nearestCrystal;
+        int left = this.leftPos;
+        int top = this.topPos;
+        this.blit(matrices, left, top, 0, 0, this.imageWidth, this.imageHeight);
+        final ClientDragonEntity dragon = (ClientDragonEntity) this.menu.dragon;
         if (dragon.hasChest()) {
-            this.blit(matrices, (this.width - 162) >> 1, (this.height - 74) >> 1, 7, 141, 162, 54);
+            this.blit(matrices, left + 7, top + 75, 7, 141, 162, 54);
         }
-        dragon.nearestCrystal = null;// to disable crystal beam
-        InventoryScreen.renderEntityInInventory(i + 60, j + 62, 5, i - x + 60F, j - y + 13F, dragon);
-        dragon.nearestCrystal = crystal;
+        dragon.renderCrystalBeams = false;// to disable crystal beam
+        renderEntityInInventory(left + 60, top + 62, 5, left - x + 60F, top - y + 13F, dragon);
+        dragon.renderCrystalBeams = true;
     }
 }

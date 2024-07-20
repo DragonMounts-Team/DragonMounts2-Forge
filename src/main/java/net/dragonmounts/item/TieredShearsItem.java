@@ -26,8 +26,8 @@ public class TieredShearsItem extends ShearsItem {
     protected final IItemTier tier;
     private final float speedFactor;
 
-    public TieredShearsItem(IItemTier tier, Properties properties) {
-        super(properties.defaultDurability((int) (tier.getUses() * 0.952F)));
+    public TieredShearsItem(IItemTier tier, Properties props) {
+        super(props.defaultDurability((int) (tier.getUses() * 0.952F)));
         this.tier = tier;
         this.speedFactor = tier.getSpeed() / ItemTier.IRON.getSpeed();
     }

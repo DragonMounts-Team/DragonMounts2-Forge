@@ -1,6 +1,6 @@
 package net.dragonmounts.init;
 
-import net.dragonmounts.DragonMountsConfig;
+import net.dragonmounts.config.ClientConfig;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.settings.ToggleableKeyBinding;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -11,7 +11,7 @@ public class DMKeyBindings {
             "key.dragonmounts.descent",
             GLFW.GLFW_KEY_Z,
             "key.categories.movement",
-            DragonMountsConfig.CLIENT.toggle_descent::get
+            ClientConfig.INSTANCE.toggle_descent::get
     );
 
     public static void register() {

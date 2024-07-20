@@ -10,10 +10,10 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 
-import static net.dragonmounts.DragonMounts.prefix;
+import static net.dragonmounts.DragonMounts.makeId;
 
 public class DMCapabilities {
-    public static final ResourceLocation ARMOR_EFFECT_MANAGER_ID = prefix("armor_effect_manager");
+    public static final ResourceLocation ARMOR_EFFECT_MANAGER_ID = makeId("armor_effect_manager");
 
     @SuppressWarnings("CanBeFinal")
     @CapabilityInject(IArmorEffectManager.class)

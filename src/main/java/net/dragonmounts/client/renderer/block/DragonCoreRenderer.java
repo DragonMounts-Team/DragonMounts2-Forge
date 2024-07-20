@@ -16,15 +16,15 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
-import static net.dragonmounts.DragonMounts.prefix;
-import static net.minecraft.block.HorizontalBlock.FACING;
+import static net.dragonmounts.DragonMounts.makeId;
+import static net.minecraft.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
 /**
  * @see net.minecraft.client.renderer.tileentity.ShulkerBoxTileEntityRenderer
  */
 @OnlyIn(Dist.CLIENT)
 public class DragonCoreRenderer extends TileEntityRenderer<DragonCoreBlockEntity> {
-    private static final ResourceLocation TEXTURE_LOCATION = prefix("textures/blocks/dragon_core.png");
+    private static final ResourceLocation TEXTURE_LOCATION = makeId("textures/blocks/dragon_core.png");
     private final ShulkerModel<?> model = new ShulkerModel<>();
 
     public DragonCoreRenderer(TileEntityRendererDispatcher dispatcher) {
@@ -33,7 +33,7 @@ public class DragonCoreRenderer extends TileEntityRenderer<DragonCoreBlockEntity
 
     @Override
     public void render(@Nonnull DragonCoreBlockEntity blockEntity, float partialTicks, @Nonnull MatrixStack matrices, @Nonnull IRenderTypeBuffer buffer, int light, int overlay) {
-        render(blockEntity.getBlockState().getValue(FACING), this.model, blockEntity.getProgress(partialTicks), matrices, buffer, light, overlay);
+        render(blockEntity.getBlockState().getValue(HORIZONTAL_FACING), this.model, blockEntity.getProgress(partialTicks), matrices, buffer, light, overlay);
     }
 
     public static void render(Direction direction, ShulkerModel<?> model, float progress, @Nonnull MatrixStack matrices, @Nonnull IRenderTypeBuffer buffer, int light, int overlay) {

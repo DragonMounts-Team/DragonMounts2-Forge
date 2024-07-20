@@ -28,8 +28,8 @@ public class DragonHeadWallBlock extends AbstractDragonHeadBlock {
         AABBS.put(Direction.WEST, Block.box(8.0D, 4.0D, 4.0D, 16.0D, 12.0D, 12.0D));
     }
 
-    public DragonHeadWallBlock(DragonVariant variant, Properties properties) {
-        super(variant, properties, true);
+    public DragonHeadWallBlock(DragonVariant variant, Properties props) {
+        super(variant, props, true);
         this.registerDefaultState(this.stateDefinition.any().setValue(HORIZONTAL_FACING, Direction.NORTH));
     }
 
@@ -47,12 +47,11 @@ public class DragonHeadWallBlock extends AbstractDragonHeadBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        BlockState state = this.defaultBlockState();
         BlockPos pos = context.getClickedPos();
         IBlockReader level = context.getLevel();
         for (Direction direction : context.getNearestLookingDirections()) {
             if (direction.getAxis().isHorizontal() && !level.getBlockState(pos.relative(direction)).canBeReplaced(context)) {
-                return state.setValue(HORIZONTAL_FACING, direction.getOpposite());
+                return this.defaultBlockState().setValue(HORIZONTAL_FACING, direction.getOpposite());
             }
         }
         return null;

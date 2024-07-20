@@ -5,23 +5,20 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.dragonmounts.client.gui.DMConfigScreen;
-import net.minecraft.client.Minecraft;
+import net.dragonmounts.config.ServerConfig;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.client.event.ClientChatEvent;
-import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.function.BiFunction;
 
-import static net.dragonmounts.DragonMountsConfig.SERVER;
 import static net.dragonmounts.command.DMCommand.HAS_PERMISSION_LEVEL_3;
 
 
 public class ConfigCommand {
     private static final Joiner DOT_JOINER = Joiner.on(".");
+    public static final String OPEN_CONFIG_SCREEN = "/dragonmounts config client";
 
     public static <T> LiteralArgumentBuilder<CommandSource> create(
             ForgeConfigSpec.ConfigValue<T> config,
@@ -45,29 +42,8 @@ public class ConfigCommand {
     public static LiteralArgumentBuilder<CommandSource> register(Commands.EnvironmentType environment) {
         LiteralArgumentBuilder<CommandSource> builder = Commands.literal("config").then(Commands.literal("server")
                 .requires(HAS_PERMISSION_LEVEL_3)
-                .then(create(SERVER.debug, BoolArgumentType.bool(), BoolArgumentType::getBool))
+                .then(create(ServerConfig.INSTANCE.debug, BoolArgumentType.bool(), BoolArgumentType::getBool))
         );
         return environment == Commands.EnvironmentType.INTEGRATED ? builder.then(Commands.literal("client")) : builder;
-    }
-
-    public static class Client {
-        private static final String OPEN_CONFIG_SCREEN = "/dragonmounts config client";
-        private static boolean OPEN_CONFIG_SCREEN_FLAG = false;
-
-        public static void onClientSendMessage(ClientChatEvent event) {
-            if (OPEN_CONFIG_SCREEN.equals(event.getOriginalMessage())) {
-                event.setCanceled(true);
-                OPEN_CONFIG_SCREEN_FLAG = true;
-            }
-        }
-
-        public static void onGuiOpen(GuiOpenEvent event) {
-            if (OPEN_CONFIG_SCREEN_FLAG && event.getGui() == null) {
-                OPEN_CONFIG_SCREEN_FLAG = false;
-                Minecraft minecraft = Minecraft.getInstance();
-                minecraft.gui.getChat().addRecentChat(OPEN_CONFIG_SCREEN);
-                event.setGui(new DMConfigScreen(minecraft, minecraft.screen));
-            }
-        }
     }
 }

@@ -18,7 +18,6 @@ public class SRiposteEffectPacket {
     }
 
     public void encode(PacketBuffer buffer) {
-        buffer.writeVarInt(this.id);
-        buffer.writeVarInt(this.flag);
+        buffer.writeVarInt(this.id).writeVarInt(this.flag);
     }
 }

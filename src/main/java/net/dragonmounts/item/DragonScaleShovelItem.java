@@ -26,9 +26,9 @@ public class DragonScaleShovelItem extends ShovelItem implements IDragonTypified
             DragonScaleTier tier,
             float attackDamageModifier,
             float attackSpeedModifier,
-            Properties properties
+            Properties props
     ) {
-        super(tier, attackDamageModifier, attackSpeedModifier, properties);
+        super(tier, attackDamageModifier, attackSpeedModifier, props);
         this.type = tier.getDragonType();
     }
 

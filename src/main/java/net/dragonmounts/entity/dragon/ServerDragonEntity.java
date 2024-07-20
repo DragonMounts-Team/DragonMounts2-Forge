@@ -1,8 +1,8 @@
 package net.dragonmounts.entity.dragon;
 
-import net.dragonmounts.DragonMountsConfig;
 import net.dragonmounts.api.IDragonFood;
 import net.dragonmounts.block.entity.DragonCoreBlockEntity;
+import net.dragonmounts.config.ServerConfig;
 import net.dragonmounts.data.tag.DMItemTags;
 import net.dragonmounts.entity.ai.DragonFollowOwnerGoal;
 import net.dragonmounts.entity.ai.PlayerControlledGoal;
@@ -47,6 +47,7 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
+import java.util.function.Supplier;
 
 import static net.dragonmounts.network.DMPacketHandler.CHANNEL;
 import static net.dragonmounts.util.EntityUtil.addOrMergeEffect;
@@ -113,7 +114,7 @@ public class ServerDragonEntity extends TameableDragonEntity {
         }
         super.readAdditionalSaveData(compound);
         if (!this.firstTick && (this.age != age || stage != this.stage)) {
-            CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SSyncDragonAgePacket(this));
+            CHANNEL.send(TRACKING_ENTITY.with(this::getEntity), new SSyncDragonAgePacket(this));
         }
         if (compound.contains(DragonVariant.DATA_PARAMETER_KEY)) {
             this.setVariant(DragonVariant.byName(compound.getString(DragonVariant.DATA_PARAMETER_KEY)));
@@ -212,11 +213,11 @@ public class ServerDragonEntity extends TameableDragonEntity {
     public ActionResultType mobInteract(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getItemInHand(hand);
         Item item = stack.getItem();
-        IDragonFood food = DragonFood.get(item, null);
-        if (food != null) {
+        IDragonFood food = DragonFood.get(item);
+        if (food != IDragonFood.UNKNOWN) {
             if (!food.isEatable(this, player, stack, hand)) return ActionResultType.FAIL;
             food.eat(this, player, stack, hand);
-            CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SFeedDragonPacket(this, item));
+            CHANNEL.send(TRACKING_ENTITY.with(this::getEntity), new SFeedDragonPacket(this, item));
         } else if (!this.isOwnedBy(player)) {
             return ActionResultType.PASS;
         } else if (DMItemTags.BATONS.contains(item)) {
@@ -230,7 +231,7 @@ public class ServerDragonEntity extends TameableDragonEntity {
         } else {
             ActionResultType result = item.interactLivingEntity(stack, player, this, hand);
             if (result.consumesAction()) return result;
-            if (!DragonMountsConfig.SERVER.debug.get() || player.isSecondaryUseActive()) {
+            if (!ServerConfig.INSTANCE.debug.get() || player.isSecondaryUseActive()) {
                 this.openInventory((ServerPlayerEntity) player);
             } else if (this.isBaby()) {
                 this.setTarget(null);
@@ -273,9 +274,10 @@ public class ServerDragonEntity extends TameableDragonEntity {
         }
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void startSeenByPlayer(ServerPlayerEntity player) {
-        CHANNEL.send(PLAYER.with(() -> player), new SSyncDragonAgePacket(this));
+        CHANNEL.send(PLAYER.with((Supplier) player::getEntity), new SSyncDragonAgePacket(this));
     }
 
     @Override
@@ -301,7 +303,7 @@ public class ServerDragonEntity extends TameableDragonEntity {
         this.reapplyPosition();
         this.refreshDimensions();
         if (sync) {
-            CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SSyncDragonAgePacket(this));
+            CHANNEL.send(TRACKING_ENTITY.with(this::getEntity), new SSyncDragonAgePacket(this));
         }
     }
 
@@ -322,7 +324,7 @@ public class ServerDragonEntity extends TameableDragonEntity {
         } else {
             this.age = age;
         }
-        CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SSyncDragonAgePacket(this));
+        CHANNEL.send(TRACKING_ENTITY.with(this::getEntity), new SSyncDragonAgePacket(this));
     }
 
     public final void openInventory(ServerPlayerEntity player) {

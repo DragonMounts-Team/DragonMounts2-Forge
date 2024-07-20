@@ -20,6 +20,7 @@ import java.util.Random;
 
 @FunctionalInterface
 public interface IDragonFood {
+    IDragonFood UNKNOWN = (dragon, player, stack, hand) -> {};
     void eat(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand);
 
     default boolean isEatable(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand) {
@@ -28,12 +29,12 @@ public interface IDragonFood {
 
     default void act(ClientDragonEntity dragon, Item item) {
         if (item == Items.AIR) return;
-        World level = dragon.level;
         if (dragon.getLifeStage() != DragonLifeStage.ADULT) {
             dragon.refreshForcedAgeTimer();
         }
         Vector3d pos = dragon.context.getThroatPosition(0, 0, -4);
         if (pos == null) return;
+        World level = dragon.level;
         level.playLocalSound(pos.x, pos.y, pos.z, item.getEatingSound(), SoundCategory.NEUTRAL, 1F, 0.75F, false);
         if (item == Items.HONEY_BOTTLE) return;
         if (item instanceof BucketItem) {

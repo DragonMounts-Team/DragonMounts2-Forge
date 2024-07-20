@@ -25,17 +25,11 @@ public class DMBlocks {
     private static final ToIntFunction<BlockState> DRAGON_EGG_LUMINANCE = $ -> 1;
     public static final DeferredRegister<Block> BLOCKS = DragonMounts.create(ForgeRegistries.BLOCKS);
     public static final DragonNestBlock DRAGON_NEST;
-
-    static {
-        DRAGON_NEST = new DragonNestBlock();
-        BLOCKS.register("dragon_nest", () -> DRAGON_NEST);
-    }
-
     public static final DragonCoreBlock DRAGON_CORE;
 
     static {
-        DRAGON_CORE = new DragonCoreBlock();
-        BLOCKS.register("dragon_core", () -> DRAGON_CORE);
+        BLOCKS.register("dragon_nest", (DRAGON_NEST = new DragonNestBlock())::getBlock);
+        BLOCKS.register("dragon_core", (DRAGON_CORE = new DragonCoreBlock())::getBlock);
     }
 
     public static final HatchableDragonEggBlock AETHER_DRAGON_EGG = registerDragonEgg("aether_dragon_egg", DragonTypes.AETHER, MaterialColor.COLOR_LIGHT_BLUE, block().rarity(Rarity.UNCOMMON));
@@ -55,12 +49,11 @@ public class DMBlocks {
     public static final HatchableDragonEggBlock WITHER_DRAGON_EGG = registerDragonEgg("wither_dragon_egg", DragonTypes.WITHER, MaterialColor.COLOR_GRAY, block().rarity(Rarity.UNCOMMON));
     public static final HatchableDragonEggBlock ZOMBIE_DRAGON_EGG = registerDragonEgg("zombie_dragon_egg", DragonTypes.ZOMBIE, MaterialColor.TERRACOTTA_GREEN, block().rarity(Rarity.UNCOMMON));
 
-    public static HatchableDragonEggBlock registerDragonEgg(String name, DragonType type, MaterialColor color, Item.Properties properties) {
+    public static HatchableDragonEggBlock registerDragonEgg(String name, DragonType type, MaterialColor color, Item.Properties props) {
         HatchableDragonEggBlock block = new HatchableDragonEggBlock(type, AbstractBlock.Properties.of(Material.EGG, color).strength(0.0F, 9.0F).lightLevel(DRAGON_EGG_LUMINANCE).noOcclusion());
-        BlockItem item = new BlockItem(block, properties);
         type.bindInstance(HatchableDragonEggBlock.class, block);
-        ITEMS.register(name, () -> item);
-        BLOCKS.register(name, () -> block);
+        ITEMS.register(name, new BlockItem(block, props)::getItem);
+        BLOCKS.register(name, block::getBlock);
         return block;
     }
 }

@@ -22,8 +22,8 @@ import java.util.List;
 public class DragonHeadItem extends WallOrFloorItem implements IArmorVanishable, IDragonTypified {
     public final DragonVariant variant;
 
-    public DragonHeadItem(DragonVariant variant, Block head, Block headWall, Properties properties) {
-        super(head, headWall, properties);
+    public DragonHeadItem(DragonVariant variant, Block head, Block headWall, Properties props) {
+        super(head, headWall, props);
         this.variant = variant;
     }
 

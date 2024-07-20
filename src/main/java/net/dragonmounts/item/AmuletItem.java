@@ -35,8 +35,8 @@ import static net.dragonmounts.util.EntityUtil.finalizeSpawn;
 public class AmuletItem<T extends Entity> extends Item implements IEntityContainer<T> {
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_amulet";
 
-    public AmuletItem(Properties properties) {
-        super(properties.stacksTo(1));
+    public AmuletItem(Properties props) {
+        super(props.stacksTo(1));
     }
 
     @Nullable

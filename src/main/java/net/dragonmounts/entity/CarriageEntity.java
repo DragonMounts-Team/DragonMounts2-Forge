@@ -20,7 +20,7 @@ public class CarriageEntity extends Entity {
     private static final DataParameter<Float> DAMAGE = EntityDataManager.defineId(CarriageEntity.class, DataSerializers.FLOAT);
     private static final DataParameter<Integer> FORWARD_DIRECTION = EntityDataManager.defineId(CarriageEntity.class, DataSerializers.INT);
     private static final DataParameter<Integer> TIME_SINCE_HIT = EntityDataManager.defineId(CarriageEntity.class, DataSerializers.INT);
-    private static final DataParameter<CarriageType> DATA_TYPE = EntityDataManager.defineId(CarriageEntity.class, CarriageType.SERIALIZER);
+    private static final DataParameter<CarriageType> DATA_TYPE = EntityDataManager.defineId(CarriageEntity.class, CarriageType.REGISTRY);
     public static float defaultMaxSpeedAirLateral = 0.4F;
     public static float defaultMaxSpeedAirVertical = -1F;
     public static double defaultDragAir = 0.94999998807907104D;

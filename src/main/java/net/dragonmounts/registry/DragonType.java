@@ -7,8 +7,6 @@ import net.dragonmounts.init.DragonTypes;
 import net.minecraft.block.Block;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.IDataSerializer;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
@@ -23,7 +21,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import net.minecraftforge.registries.RegistryBuilder;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -35,24 +32,6 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
     public static final String DATA_PARAMETER_KEY = "DragonType";
     public static final ResourceLocation DEFAULT_KEY = new ResourceLocation(MOD_ID, "ender");
     public static final DeferredRegistry<DragonType> REGISTRY = new DeferredRegistry<>(MOD_ID, "dragon_type", DragonType.class, new RegistryBuilder<DragonType>().setDefaultKey(DEFAULT_KEY));
-    public static final IDataSerializer<DragonType> SERIALIZER = new IDataSerializer<DragonType>() {
-        @Override
-        public void write(PacketBuffer buffer, @Nonnull DragonType value) {
-            buffer.writeVarInt(REGISTRY.getID(value));
-        }
-
-        @Nonnull
-        @Override
-        public DragonType read(@Nonnull PacketBuffer buffer) {
-            return REGISTRY.getValue(buffer.readVarInt());
-        }
-
-        @Nonnull
-        @Override
-        public DragonType copy(@Nonnull DragonType value) {
-            return value;
-        }
-    };
     public static final Predicate<HatchableDragonEggEntity> DEFAULT_ENVIRONMENT_PREDICATE = egg -> false;
     public static final BiFunction<Integer, Boolean, Vector3d> DEFAULT_PASSENGER_OFFSET = (index, sitting) -> {
         double yOffset = sitting ? 3.4 : 4.4;
@@ -98,20 +77,20 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
     @Nullable
     private ResourceLocation lootTable;
 
-    public DragonType(Properties properties) {
-        this.color = properties.color;
-        this.convertible = properties.convertible;
-        this.isSkeleton = properties.isSkeleton;
+    public DragonType(Properties props) {
+        this.color = props.color;
+        this.convertible = props.convertible;
+        this.isSkeleton = props.isSkeleton;
         this.style = Style.EMPTY.withColor(Color.fromRgb(this.color));
-        this.attributes = properties.attributes.build();
-        this.immunities = new HashSet<>(properties.immunities);
-        this.blocks = new HashSet<>(properties.blocks);
+        this.attributes = props.attributes.build();
+        this.immunities = new HashSet<>(props.immunities);
+        this.blocks = new HashSet<>(props.blocks);
         this.biomes = new ArrayList<>();
-        this.biomes.addAll(properties.biomes);
-        this.sneezeParticle = properties.sneezeParticle;
-        this.eggParticle = properties.eggParticle;
-        this.passengerOffset = properties.passengerOffset;
-        this.isHabitatEnvironment = properties.isHabitatEnvironment;
+        this.biomes.addAll(props.biomes);
+        this.sneezeParticle = props.sneezeParticle;
+        this.eggParticle = props.eggParticle;
+        this.passengerOffset = props.passengerOffset;
+        this.isHabitatEnvironment = props.isHabitatEnvironment;
     }
 
     public String getTranslationKey() {

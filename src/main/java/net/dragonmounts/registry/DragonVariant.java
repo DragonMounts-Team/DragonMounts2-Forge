@@ -8,8 +8,6 @@ import net.dragonmounts.item.DragonHeadItem;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.IDataSerializer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.*;
 
@@ -21,29 +19,14 @@ import java.util.function.Consumer;
 
 import static it.unimi.dsi.fastutil.Arrays.MAX_ARRAY_SIZE;
 import static net.dragonmounts.DragonMounts.MOD_ID;
-import static net.dragonmounts.DragonMounts.prefix;
+import static net.dragonmounts.DragonMounts.makeId;
 import static net.dragonmounts.init.DMItems.EQUIPMENT_BEHAVIOR;
 import static net.minecraft.block.DispenserBlock.registerBehavior;
 
 public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements IDragonTypified {
     public static final String DATA_PARAMETER_KEY = "Variant";
-    public static final ResourceLocation DEFAULT_KEY = prefix("ender_female");
+    public static final ResourceLocation DEFAULT_KEY = makeId("ender_female");
     public static final Registry REGISTRY = new Registry(MOD_ID, "dragon_variant", new RegistryBuilder<DragonVariant>().setDefaultKey(DEFAULT_KEY));
-    public static final IDataSerializer<DragonVariant> SERIALIZER = new IDataSerializer<DragonVariant>() {
-        public void write(PacketBuffer buffer, @Nonnull DragonVariant value) {
-            buffer.writeVarInt(REGISTRY.getID(value));
-        }
-
-        @Nonnull
-        public DragonVariant read(@Nonnull PacketBuffer buffer) {
-            return REGISTRY.getValue(buffer.readVarInt());
-        }
-
-        @Nonnull
-        public DragonVariant copy(@Nonnull DragonVariant value) {
-            return value;
-        }
-    };
 
     public static DragonVariant byName(String name) {
         return REGISTRY.getValue(new ResourceLocation(name));
@@ -84,26 +67,14 @@ public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements 
         return old;
     }
 
-    public DragonHeadItem getHeadItem() {
-        return this.headItem;
-    }
-
-    public DragonHeadBlock getHeadBlock() {
-        return this.headBlock;
-    }
-
-    public DragonHeadWallBlock getHeadWallBlock() {
-        return this.headWallBlock;
-    }
-
     public DragonVariant registerHead(final DeferredRegister<Item> items, final DeferredRegister<Block> blocks) {
         final ResourceLocation key = this.getRegistryName();
         if (key == null) return this;
         final String prefix = key.getPath();
         final String standing = prefix + "_dragon_head";
-        items.register(standing, this::getHeadItem);
-        blocks.register(standing, this::getHeadBlock);
-        blocks.register(prefix + "_dragon_head_wall", this::getHeadWallBlock);
+        items.register(standing, this.headItem::getItem);
+        blocks.register(standing, this.headBlock::getBlock);
+        blocks.register(prefix + "_dragon_head_wall", this.headWallBlock::getBlock);
         registerBehavior(this.headItem, EQUIPMENT_BEHAVIOR);
         return this;
     }
@@ -115,9 +86,9 @@ public class DragonVariant extends ForgeRegistryEntry<DragonVariant> implements 
             String block,
             String wallBlock
     ) {
-        items.register(item, this::getHeadItem);
-        blocks.register(block, this::getHeadBlock);
-        blocks.register(wallBlock, this::getHeadWallBlock);
+        items.register(item, this.headItem::getItem);
+        blocks.register(block, this.headBlock::getBlock);
+        blocks.register(wallBlock, this.headWallBlock::getBlock);
         registerBehavior(this.headItem, EQUIPMENT_BEHAVIOR);
         return this;
     }

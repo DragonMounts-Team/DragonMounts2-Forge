@@ -29,8 +29,8 @@ public class VariantSwitcherItem extends Item {
         return variant.type.variants.draw(random, variant);
     }
 
-    public VariantSwitcherItem(Properties properties) {
-        super(properties);
+    public VariantSwitcherItem(Properties props) {
+        super(props);
     }
 
     @Nonnull

@@ -26,7 +26,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Provider
         return this.dragonmounts$manager;
     }
 
-    private PlayerEntityMixin(EntityType<? extends LivingEntity> type, World world) {
-        super(type, world);
+    private PlayerEntityMixin(EntityType<? extends LivingEntity> a, World b) {
+        super(a, b);
     }
 }

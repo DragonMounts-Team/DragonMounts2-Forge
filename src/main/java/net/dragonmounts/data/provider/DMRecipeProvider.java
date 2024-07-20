@@ -22,7 +22,7 @@ import net.minecraftforge.common.Tags;
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
-import static net.dragonmounts.DragonMounts.prefix;
+import static net.dragonmounts.DragonMounts.makeId;
 import static net.minecraft.data.CookingRecipeBuilder.blasting;
 import static net.minecraft.data.CookingRecipeBuilder.smelting;
 import static net.minecraft.data.ShapedRecipeBuilder.shaped;
@@ -36,17 +36,17 @@ public class DMRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildShapelessRecipes(@Nonnull Consumer<IFinishedRecipe> consumer) {
-        smelting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR), Items.IRON_INGOT, 0.1F, 200).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR)).save(consumer, prefix("iron_ingot_form_smelting"));
-        smelting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR), Items.GOLD_INGOT, 0.1F, 200).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR)).save(consumer, prefix("gold_ingot_form_smelting"));
-        blasting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR), Items.IRON_INGOT, 0.1F, 100).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR)).save(consumer, prefix("iron_ingot_form_blasting"));
-        blasting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR), Items.GOLD_INGOT, 0.1F, 100).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR)).save(consumer, prefix("gold_ingot_form_blasting"));
+        smelting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR), Items.IRON_INGOT, 0.1F, 200).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR)).save(consumer, makeId("iron_ingot_form_smelting"));
+        smelting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR), Items.GOLD_INGOT, 0.1F, 200).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR)).save(consumer, makeId("gold_ingot_form_smelting"));
+        blasting(Ingredient.of(DMItems.IRON_DRAGON_ARMOR), Items.IRON_INGOT, 0.1F, 100).unlockedBy("has_armor", has(DMItems.IRON_DRAGON_ARMOR)).save(consumer, makeId("iron_ingot_form_blasting"));
+        blasting(Ingredient.of(DMItems.GOLDEN_DRAGON_ARMOR), Items.GOLD_INGOT, 0.1F, 100).unlockedBy("has_armor", has(DMItems.GOLDEN_DRAGON_ARMOR)).save(consumer, makeId("gold_ingot_form_blasting"));
         dragonArmor(consumer, Tags.Items.INGOTS_IRON, Tags.Items.STORAGE_BLOCKS_IRON, DMItems.IRON_DRAGON_ARMOR);
         dragonArmor(consumer, Tags.Items.INGOTS_GOLD, Tags.Items.STORAGE_BLOCKS_GOLD, DMItems.GOLDEN_DRAGON_ARMOR);
         dragonArmor(consumer, Tags.Items.GEMS_EMERALD, Tags.Items.STORAGE_BLOCKS_EMERALD, DMItems.EMERALD_DRAGON_ARMOR);
         dragonArmor(consumer, Tags.Items.GEMS_DIAMOND, Tags.Items.STORAGE_BLOCKS_DIAMOND, DMItems.DIAMOND_DRAGON_ARMOR);
-        netheriteBlockSmithingBuilder(DMItems.DIAMOND_DRAGON_ARMOR, DMItems.NETHERITE_DRAGON_ARMOR).save(consumer, prefix("netherite_dragon_armor_from_diamond"));
-        netheriteBlockSmithingBuilder(DMItems.EMERALD_DRAGON_ARMOR, DMItems.NETHERITE_DRAGON_ARMOR).save(consumer, prefix("netherite_dragon_armor_from_emerald"));
-        netheriteIngotSmithingBuilder(DMItems.DIAMOND_SHEARS, DMItems.NETHERITE_SHEARS).save(consumer, prefix("netherite_shears"));
+        netheriteBlockSmithingBuilder(DMItems.DIAMOND_DRAGON_ARMOR, DMItems.NETHERITE_DRAGON_ARMOR).save(consumer, makeId("netherite_dragon_armor_from_diamond"));
+        netheriteBlockSmithingBuilder(DMItems.EMERALD_DRAGON_ARMOR, DMItems.NETHERITE_DRAGON_ARMOR).save(consumer, makeId("netherite_dragon_armor_from_emerald"));
+        netheriteIngotSmithingBuilder(DMItems.DIAMOND_SHEARS, DMItems.NETHERITE_SHEARS).save(consumer, makeId("netherite_shears"));
         carriage(consumer, DMItems.OAK_CARRIAGE, Blocks.OAK_PLANKS);
         carriage(consumer, DMItems.SPRUCE_CARRIAGE, Blocks.SPRUCE_PLANKS);
         carriage(consumer, DMItems.BIRCH_CARRIAGE, Blocks.BIRCH_PLANKS);
@@ -71,7 +71,7 @@ public class DMRecipeProvider extends RecipeProvider {
                 .pattern("#X#")
                 .pattern("#R#")
                 .unlockedBy("has_bow", has(DMItemTags.DRAGON_SCALE_BOWS))
-                .save(consumer, prefix(Blocks.DISPENSER.getRegistryName().getPath()));
+                .save(consumer, makeId(Blocks.DISPENSER.getRegistryName().getPath()));
         shaped(DMItems.AMULET)
                 .define('#', Tags.Items.STRING)
                 .define('Y', Tags.Items.COBBLESTONE)
@@ -102,7 +102,7 @@ public class DMRecipeProvider extends RecipeProvider {
                 .pattern("XXX")
                 .pattern("X#X")
                 .unlockedBy("easter_egg", has(Items.SADDLE))
-                .save(consumer, prefix("easter_egg"));
+                .save(consumer, makeId("easter_egg"));
     }
 
     private static void carriage(Consumer<IFinishedRecipe> consumer, IItemProvider carriage, IItemProvider planks) {
@@ -196,6 +196,6 @@ public class DMRecipeProvider extends RecipeProvider {
     private static SmithingRecipeBuilder netheriteBlockSmithingBuilder(Item base, Item result) {
         return smithing(Ingredient.of(base), Ingredient.of(Tags.Items.STORAGE_BLOCKS_NETHERITE), result)
                 .unlocks("has_ingredient", has(base))
-                .unlocks("has_block_of_netherite", has(Items.NETHERITE_INGOT));
+                .unlocks("has_block_of_netherite", has(Blocks.NETHERITE_BLOCK));
     }
 }

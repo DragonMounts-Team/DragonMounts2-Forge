@@ -33,8 +33,8 @@ public class DragonScaleArmorItem extends ArmorItem implements IDragonTypified, 
     public final DragonType type;
     public final IDragonScaleArmorEffect effect;
 
-    public DragonScaleArmorItem(DragonScaleMaterial material, EquipmentSlotType slot, @Nullable IDragonScaleArmorEffect effect, Properties properties) {
-        super(material, slot, properties);
+    public DragonScaleArmorItem(DragonScaleMaterial material, EquipmentSlotType slot, @Nullable IDragonScaleArmorEffect effect, Properties props) {
+        super(material, slot, props);
         this.type = material.getDragonType();
         this.effect = effect;
     }

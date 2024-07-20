@@ -83,10 +83,9 @@ public class DragonFood implements IDragonFood {
         REGISTRY.put(item, food);
     }
 
-    public static IDragonFood get(Item item, IDragonFood defaultValue) {
+    public static IDragonFood get(Item item) {
         if (item instanceof IDragonFood) return (IDragonFood) item;
-        if (REGISTRY.containsKey(item)) return REGISTRY.get(item);
-        return defaultValue;
+        return REGISTRY.getOrDefault(item, UNKNOWN);
     }
 
     public static boolean test(Item item) {

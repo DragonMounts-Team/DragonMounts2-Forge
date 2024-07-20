@@ -20,7 +20,6 @@ import net.minecraft.item.*;
 import net.minecraft.item.Item.Properties;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -325,7 +324,7 @@ public class DMItems {
     public static final DragonSpawnEggItem WITHER_DRAGON_SPAWN_EGG = createDragonSpawnEgg("wither_dragon_spawn_egg", DragonTypes.WITHER, 0x8A9999, 0x474F51, item());
     public static final DragonSpawnEggItem ZOMBIE_DRAGON_SPAWN_EGG = createDragonSpawnEgg("zombie_dragon_spawn_egg", DragonTypes.ZOMBIE, 0x66664B, 0xB6D035, item());
     //?
-    public static final RegistryObject<VariantSwitcherItem> VARIANT_SWITCHER = ITEMS.register("variant_switcher", () -> new VariantSwitcherItem(item()));
+    public static final VariantSwitcherItem VARIANT_SWITCHER = createItem("variant_switcher", new VariantSwitcherItem(item()));
     //Shears
     public static final TieredShearsItem DIAMOND_SHEARS = createTieredShearsItem("diamond_shears", ItemTier.DIAMOND, item());
     public static final TieredShearsItem NETHERITE_SHEARS = createTieredShearsItem("netherite_shears", ItemTier.NETHERITE, item().fireResistant());
@@ -374,68 +373,63 @@ public class DMItems {
     public static final DragonWhistleItem DRAGON_WHISTLE = createItem("dragon_whistle", new DragonWhistleItem(item()));
     //Blocks
     public static final BlockItem DRAGON_CORE = createItem("dragon_core", new BlockItem(DMBlocks.DRAGON_CORE, none().rarity(Rarity.RARE).setISTER(GET_DMISTER)));
-    public static final DragonNestItem DRAGON_NEST;
-
-    static {
-        DRAGON_NEST = new DragonNestItem(DMBlocks.DRAGON_NEST, block());
-        ITEMS.register("dragon_nest", () -> DRAGON_NEST);
-    }
+    public static final DragonNestItem DRAGON_NEST = createItem("dragon_nest", new DragonNestItem(DMBlocks.DRAGON_NEST, block()));
 
     private static <T extends Item> T createItem(String name, T item) {
-        ITEMS.register(name, () -> item);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 
-    private static DragonAmuletItem createDragonAmuletItem(String name, DragonType type, Properties properties) {
-        DragonAmuletItem item = new DragonAmuletItem(type, properties);
+    private static DragonAmuletItem createDragonAmuletItem(String name, DragonType type, Properties props) {
+        DragonAmuletItem item = new DragonAmuletItem(type, props);
         type.bindInstance(DragonAmuletItem.class, item);
-        ITEMS.register(name, () -> item);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 
 
-    private static DragonArmorItem createDragonArmorItem(String name, String texture, int protection, Properties properties) {
-        DragonArmorItem item = new DragonArmorItem(new ResourceLocation(DragonMounts.MOD_ID, texture), protection, properties);
-        ITEMS.register(name, () -> item);
+    private static DragonArmorItem createDragonArmorItem(String name, String texture, int protection, Properties props) {
+        DragonArmorItem item = new DragonArmorItem(new ResourceLocation(DragonMounts.MOD_ID, texture), protection, props);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 
-    private static DragonScaleAxeItem createDragonScaleAxeItem(String name, DragonScaleTier tier, float attackDamageModifier, float attackSpeedModifier, Properties properties) {
-        DragonScaleAxeItem item = new DragonScaleAxeItem(tier, attackDamageModifier, attackSpeedModifier, properties);
+    private static DragonScaleAxeItem createDragonScaleAxeItem(String name, DragonScaleTier tier, float attackDamageModifier, float attackSpeedModifier, Properties props) {
+        DragonScaleAxeItem item = new DragonScaleAxeItem(tier, attackDamageModifier, attackSpeedModifier, props);
         tier.type.bindInstance(DragonScaleAxeItem.class, item);
-        ITEMS.register(name, () -> item);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 
-    private static DragonScaleAxeItem createDragonScaleAxeItem(String name, DragonScaleTier tier, Properties properties) {
-        return createDragonScaleAxeItem(name, tier, 5.0F, -2.8F, properties);
+    private static DragonScaleAxeItem createDragonScaleAxeItem(String name, DragonScaleTier tier, Properties props) {
+        return createDragonScaleAxeItem(name, tier, 5.0F, -2.8F, props);
     }
 
-    private static DragonScaleBowItem createDragonScaleBowItem(String name, DragonScaleTier tier, Properties properties) {
-        DragonScaleBowItem item = new DragonScaleBowItem(tier, properties);
+    private static DragonScaleBowItem createDragonScaleBowItem(String name, DragonScaleTier tier, Properties props) {
+        DragonScaleBowItem item = new DragonScaleBowItem(tier, props);
         tier.type.bindInstance(DragonScaleBowItem.class, item);
-        ITEMS.register(name, () -> item);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 
-    private static DragonEssenceItem createDragonEssenceItem(String name, DragonType type, Properties properties) {
-        DragonEssenceItem item = new DragonEssenceItem(type, properties);
+    private static DragonEssenceItem createDragonEssenceItem(String name, DragonType type, Properties props) {
+        DragonEssenceItem item = new DragonEssenceItem(type, props);
         type.bindInstance(DragonEssenceItem.class, item);
-        ITEMS.register(name, () -> item);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 
-    private static DragonScaleHoeItem createDragonScaleHoeItem(String name, DragonScaleTier tier, Properties properties) {
-        DragonScaleHoeItem item = new DragonScaleHoeItem(tier, (int) -tier.getAttackDamageBonus(), tier.getAttackDamageBonus() - 3.0F, properties);
+    private static DragonScaleHoeItem createDragonScaleHoeItem(String name, DragonScaleTier tier, Properties props) {
+        DragonScaleHoeItem item = new DragonScaleHoeItem(tier, (int) -tier.getAttackDamageBonus(), tier.getAttackDamageBonus() - 3.0F, props);
         tier.type.bindInstance(DragonScaleHoeItem.class, item);
-        ITEMS.register(name, () -> item);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 
-    private static DragonScalePickaxeItem createDragonScalePickaxeItem(String name, DragonScaleTier tier, Properties properties) {
-        DragonScalePickaxeItem item = new DragonScalePickaxeItem(tier, 1, -2.8F, properties);
+    private static DragonScalePickaxeItem createDragonScalePickaxeItem(String name, DragonScaleTier tier, Properties props) {
+        DragonScalePickaxeItem item = new DragonScalePickaxeItem(tier, 1, -2.8F, props);
         tier.type.bindInstance(DragonScalePickaxeItem.class, item);
-        ITEMS.register(name, () -> item);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 
@@ -446,55 +440,55 @@ public class DMItems {
             String boots,
             DragonScaleMaterial material,
             IDragonScaleArmorEffect effect,
-            Function<EquipmentSlotType, Properties> properties
+            Function<EquipmentSlotType, Properties> props
     ) {
-        DragonScaleArmorSuit suit = new DragonScaleArmorSuit(material, effect, properties);
+        DragonScaleArmorSuit suit = new DragonScaleArmorSuit(material, effect, props);
         material.type.bindInstance(DragonScaleArmorSuit.class, suit);
-        ITEMS.register(helmet, suit::getHelmet);
-        ITEMS.register(chestplate, suit::getChestplate);
-        ITEMS.register(leggings, suit::getLeggings);
-        ITEMS.register(boots, suit::getBoots);
+        ITEMS.register(helmet, suit.helmet::getItem);
+        ITEMS.register(chestplate, suit.chestplate::getItem);
+        ITEMS.register(leggings, suit.leggings::getItem);
+        ITEMS.register(boots, suit.boots::getItem);
         return suit;
     }
 
-    private static DragonScalesItem createDragonScalesItem(String name, DragonType type, Properties properties) {
-        DragonScalesItem item = new DragonScalesItem(type, properties);
+    private static DragonScalesItem createDragonScalesItem(String name, DragonType type, Properties props) {
+        DragonScalesItem item = new DragonScalesItem(type, props);
         type.bindInstance(DragonScalesItem.class, item);
-        ITEMS.register(name, () -> item);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 
-    private static DragonScaleShieldItem createDragonScaleShieldItem(String name, DragonScaleMaterial material, Properties properties) {
-        DragonScaleShieldItem item = new DragonScaleShieldItem(material, properties);
+    private static DragonScaleShieldItem createDragonScaleShieldItem(String name, DragonScaleMaterial material, Properties props) {
+        DragonScaleShieldItem item = new DragonScaleShieldItem(material, props);
         material.getDragonType().bindInstance(DragonScaleShieldItem.class, item);
-        ITEMS.register(name, () -> item);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 
-    private static DragonScaleShovelItem createDragonScaleShovelItem(String name, DragonScaleTier tier, Properties properties) {
-        DragonScaleShovelItem item = new DragonScaleShovelItem(tier, 1.5F, -3.0F, properties);
+    private static DragonScaleShovelItem createDragonScaleShovelItem(String name, DragonScaleTier tier, Properties props) {
+        DragonScaleShovelItem item = new DragonScaleShovelItem(tier, 1.5F, -3.0F, props);
         tier.type.bindInstance(DragonScaleShovelItem.class, item);
-        ITEMS.register(name, () -> item);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 
-    private static DragonScaleSwordItem createDragonScaleSwordItem(String name, DragonScaleTier tier, Properties properties) {
-        DragonScaleSwordItem item = new DragonScaleSwordItem(tier, 3, -2.0F, properties);
+    private static DragonScaleSwordItem createDragonScaleSwordItem(String name, DragonScaleTier tier, Properties props) {
+        DragonScaleSwordItem item = new DragonScaleSwordItem(tier, 3, -2.0F, props);
         tier.type.bindInstance(DragonScaleSwordItem.class, item);
-        ITEMS.register(name, () -> item);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 
-    private static DragonSpawnEggItem createDragonSpawnEgg(String name, DragonType type, int backgroundColor, int highlightColor, Properties properties) {
-        DragonSpawnEggItem item = new DragonSpawnEggItem(type, backgroundColor, highlightColor, properties);
+    private static DragonSpawnEggItem createDragonSpawnEgg(String name, DragonType type, int background, int highlight, Properties props) {
+        DragonSpawnEggItem item = new DragonSpawnEggItem(type, background, highlight, props);
         type.bindInstance(DragonSpawnEggItem.class, item);
-        ITEMS.register(name, () -> item);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 
-    private static TieredShearsItem createTieredShearsItem(String name, IItemTier tier, Properties properties) {
-        TieredShearsItem item = new TieredShearsItem(tier, properties);
-        ITEMS.register(name, () -> item);
+    private static TieredShearsItem createTieredShearsItem(String name, IItemTier tier, Properties props) {
+        TieredShearsItem item = new TieredShearsItem(tier, props);
+        ITEMS.register(name, item::getItem);
         return item;
     }
 

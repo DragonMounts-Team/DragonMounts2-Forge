@@ -6,7 +6,7 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import static net.dragonmounts.DragonMounts.prefix;
+import static net.dragonmounts.DragonMounts.makeId;
 
 public class DMSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DragonMounts.create(ForgeRegistries.SOUND_EVENTS);
@@ -27,6 +27,6 @@ public class DMSounds {
     public static final RegistryObject<SoundEvent> HATCHLING_DRAGON_ROAR = createSoundEvent("mob.dragon.hatchlingroar");
 
     private static RegistryObject<SoundEvent> createSoundEvent(final String name) {
-        return SOUNDS.register(name, () -> new SoundEvent(prefix(name)));
+        return SOUNDS.register(name, () -> new SoundEvent(makeId(name)));
     }
 }

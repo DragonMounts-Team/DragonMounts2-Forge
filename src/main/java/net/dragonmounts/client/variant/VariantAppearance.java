@@ -4,13 +4,13 @@ import net.dragonmounts.entity.dragon.TameableDragonEntity;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.ResourceLocation;
 
-import static net.dragonmounts.DragonMounts.prefix;
+import static net.dragonmounts.DragonMounts.makeId;
 
 public abstract class VariantAppearance {
     public final static String TEXTURES_ROOT = "textures/entities/dragon/";
-    public final static ResourceLocation DEFAULT_CHEST = prefix(TEXTURES_ROOT + "chest.png");
-    public final static ResourceLocation DEFAULT_SADDLE = prefix(TEXTURES_ROOT + "saddle.png");
-    public final static ResourceLocation DEFAULT_DISSOLVE = prefix(TEXTURES_ROOT + "dissolve.png");
+    public final static ResourceLocation DEFAULT_CHEST = makeId(TEXTURES_ROOT + "chest.png");
+    public final static ResourceLocation DEFAULT_SADDLE = makeId(TEXTURES_ROOT + "saddle.png");
+    public final static ResourceLocation DEFAULT_DISSOLVE = makeId(TEXTURES_ROOT + "dissolve.png");
     public final float positionScale;
     public final float renderScale;
 

@@ -17,15 +17,12 @@ public class SShakeDragonEggPacket {
 
     public SShakeDragonEggPacket(PacketBuffer buffer) {
         this.id = buffer.readVarInt();
-        this.axis = buffer.readFloat();
         this.amplitude = buffer.readVarInt();
+        this.axis = buffer.readFloat();
         this.particle = buffer.readBoolean();
     }
 
     public void encode(PacketBuffer buffer) {
-        buffer.writeVarInt(this.id);
-        buffer.writeFloat(this.axis);
-        buffer.writeVarInt(this.amplitude);
-        buffer.writeBoolean(this.particle);
+        buffer.writeVarInt(this.id).writeVarInt(this.amplitude).writeFloat(this.axis).writeBoolean(this.particle);
     }
 }

@@ -1,15 +1,14 @@
 package net.dragonmounts.api;
 
-import net.dragonmounts.init.DMItems;
 import net.dragonmounts.init.DragonTypes;
 import net.dragonmounts.item.DragonScalesItem;
 import net.dragonmounts.registry.DragonType;
+import net.dragonmounts.util.DragonTypifiedItemSupplier;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.LazyValue;
 
 import javax.annotation.Nonnull;
-import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class DragonScaleTier implements IItemTier, IDragonTypified {
     public static final DragonScaleTier AETHER;
@@ -52,7 +51,7 @@ public class DragonScaleTier implements IItemTier, IDragonTypified {
     public final float speed;
     public final float damage;
     public final int enchantmentValue;
-    public final LazyValue<Ingredient> repairIngredient;
+    public final Ingredient repairIngredient;
 
     public DragonScaleTier(DragonType type, Builder builder) {
         this.type = type;
@@ -61,9 +60,9 @@ public class DragonScaleTier implements IItemTier, IDragonTypified {
         this.speed = builder.speed;
         this.damage = builder.damage;
         this.enchantmentValue = builder.enchantmentValue;
-        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(
-                () -> Ingredient.of(type.getInstance(DragonScalesItem.class, DMItems.ENDER_DRAGON_SCALES))
-        ) : builder.repairIngredient;
+        this.repairIngredient = builder.repairIngredient == null
+                ? Ingredient.fromValues(Stream.of(new DragonTypifiedItemSupplier<>(type, DragonScalesItem.class)))
+                : builder.repairIngredient;
     }
 
     @Override
@@ -94,7 +93,7 @@ public class DragonScaleTier implements IItemTier, IDragonTypified {
     @Nonnull
     @Override
     public final Ingredient getRepairIngredient() {
-        return this.repairIngredient.get();
+        return this.repairIngredient;
     }
 
     @Override
@@ -108,7 +107,7 @@ public class DragonScaleTier implements IItemTier, IDragonTypified {
         public final float speed;
         public final float damage;
         public int enchantmentValue = 1;
-        public LazyValue<Ingredient> repairIngredient = null;
+        public Ingredient repairIngredient = null;
 
         public Builder(int level, int uses, float speed, float damage) {
             this.level = level;
@@ -122,8 +121,8 @@ public class DragonScaleTier implements IItemTier, IDragonTypified {
             return this;
         }
 
-        public Builder setRepairIngredient(Supplier<Ingredient> supplier) {
-            this.repairIngredient = new LazyValue<>(supplier);
+        public Builder setRepairIngredient(Ingredient ingredient) {
+            this.repairIngredient = ingredient;
             return this;
         }
 

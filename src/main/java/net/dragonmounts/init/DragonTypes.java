@@ -1,6 +1,7 @@
 package net.dragonmounts.init;
 
 import net.dragonmounts.registry.DragonType;
+import net.dragonmounts.util.Values;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -166,21 +167,9 @@ public class DragonTypes {
 
     public static void register(RegistryEvent.Register<DragonType> event) {
         IForgeRegistry<DragonType> registry = event.getRegistry();
-        registry.register(AETHER);
-        registry.register(ENCHANT);
-        registry.register(ENDER);
-        registry.register(FIRE);
-        registry.register(FOREST);
-        registry.register(ICE);
-        registry.register(MOONLIGHT);
-        registry.register(NETHER);
-        registry.register(SCULK);
-        registry.register(SKELETON);
-        registry.register(STORM);
-        registry.register(SUNLIGHT);
-        registry.register(TERRA);
-        registry.register(WATER);
-        registry.register(WITHER);
-        registry.register(ZOMBIE);
+        Values.LazyIterator<DragonType> iterator = new Values.LazyIterator<>(DragonTypes.class, DragonType.class);
+        while (iterator.hasNext()) {
+            registry.register(iterator.next());
+        }
     }
 }

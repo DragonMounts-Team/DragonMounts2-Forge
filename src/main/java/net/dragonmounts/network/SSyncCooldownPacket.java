@@ -17,7 +17,6 @@ public class SSyncCooldownPacket {
     }
 
     public void encode(PacketBuffer buffer) {
-        buffer.writeVarInt(this.id);
-        buffer.writeVarInt(this.cd);
+        buffer.writeVarInt(this.id).writeVarInt(this.cd);
     }
 }

@@ -5,15 +5,22 @@
   "package": "net.dragonmounts.mixin",
   "mixins": [
     "AbstractArrowEntityMixin",
+    "ItemEntityMixin",
     "PlayerEntityMixin",
+    "PlayerListMixin",
     "RenderingRegistryMixin",
-    "ServerPlayNetHandlerMixin"
+    "ServerPlayNetHandlerMixin",
+    "ServerWorldMixin"
   ],
   "refmap": "dragonmounts.mixins.refmap.json",
   "client": [
+    "CameraMixin",
+    "ChatScreenMixin",
+    "ClientPlayNetHandlerMixin",
     "HeadLayerMixin",
     "ItemRendererMixin",
     "PlayerControllerMixin",
+    "PlayerRendererMixin",
     "RuleEntryVisitorMixin"
   ]
 }

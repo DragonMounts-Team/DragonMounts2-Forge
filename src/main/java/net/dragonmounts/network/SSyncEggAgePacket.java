@@ -17,7 +17,6 @@ public class SSyncEggAgePacket {
     }
 
     public void encode(PacketBuffer buffer) {
-        buffer.writeVarInt(this.id);
-        buffer.writeVarInt(this.age);
+        buffer.writeVarInt(this.id).writeVarInt(this.age);
     }
 }

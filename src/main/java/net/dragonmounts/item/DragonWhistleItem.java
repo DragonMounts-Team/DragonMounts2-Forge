@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -27,8 +28,18 @@ import java.util.List;
 public class DragonWhistleItem extends Item {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public DragonWhistleItem(Properties properties) {
-        super(properties.stacksTo(1));
+    public static int getColor(ItemStack stack, int layer) {
+        if (layer == 0) return 0xFFFFFF;
+        CompoundNBT tag = stack.getTag();
+        if (tag != null && tag.contains("Type")) {
+            DragonType type = DragonType.REGISTRY.getRaw(new ResourceLocation(tag.getString("Type")));
+            return type == null ? 0xFFFFFF : type.color;
+        }
+        return 0xFFFFFF;
+    }
+
+    public DragonWhistleItem(Properties props) {
+        super(props.stacksTo(1));
     }
 
     @Nonnull

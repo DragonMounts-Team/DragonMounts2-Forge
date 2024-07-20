@@ -1,5 +1,7 @@
 package net.dragonmounts.registry;
 
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.datasync.IDataSerializer;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
@@ -16,7 +18,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class DeferredRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRegistry<V> {
+public class DeferredRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRegistry<V>, IDataSerializer<V> {
     private final RegistryBuilder<V> builder;
     protected ForgeRegistry<V> registry;
 
@@ -135,5 +137,22 @@ public class DeferredRegistry<V extends IForgeRegistryEntry<V>> implements IForg
 
     public RegistryKey<V> getKey(int id) {
         return this.registry.getKey(id);
+    }
+
+    @Override
+    public void write(PacketBuffer buffer, V value) {
+        buffer.writeVarInt(this.registry.getID(value));
+    }
+
+    @Nonnull
+    @Override
+    public V read(PacketBuffer buffer) {
+        return this.registry.getValue(buffer.readVarInt());
+    }
+
+    @Nonnull
+    @Override
+    public V copy(@Nonnull V value) {
+        return value;
     }
 }

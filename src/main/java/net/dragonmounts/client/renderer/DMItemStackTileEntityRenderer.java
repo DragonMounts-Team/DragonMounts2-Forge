@@ -1,9 +1,9 @@
 package net.dragonmounts.client.renderer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.dragonmounts.block.AbstractDragonHeadBlock;
 import net.dragonmounts.block.DragonCoreBlock;
 import net.dragonmounts.client.renderer.block.DragonCoreRenderer;
+import net.dragonmounts.item.DragonHeadItem;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.model.ShulkerModel;
@@ -19,7 +19,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 
 import static net.dragonmounts.client.renderer.block.DragonHeadRenderer.renderHead;
-import static net.dragonmounts.client.variant.VariantAppearances.ENDER_FEMALE;
 
 @OnlyIn(Dist.CLIENT)
 public class DMItemStackTileEntityRenderer extends ItemStackTileEntityRenderer {
@@ -35,16 +34,16 @@ public class DMItemStackTileEntityRenderer extends ItemStackTileEntityRenderer {
     @Override
     public void renderByItem(@Nonnull ItemStack stack, @Nonnull TransformType type, @Nonnull MatrixStack matrices, @Nonnull IRenderTypeBuffer buffer, int light, int overlay) {
         Item item = stack.getItem();
-        if (item instanceof BlockItem) {
+        if (item instanceof DragonHeadItem) {
+            if (type == TransformType.HEAD) {
+                renderHead(((DragonHeadItem) item).variant, 0.5D, 0.4375D, 0.5D, 180F, 180F, 1.425F, true, matrices, buffer, light, overlay);
+            } else {
+                renderHead(((DragonHeadItem) item).variant, 0.5D, 0D, 0.5D, 180F, 0F, 0.75F, true, matrices, buffer, light, overlay);
+            }
+        } else if (item instanceof BlockItem) {
             Block block = ((BlockItem) item).getBlock();
             if (block instanceof DragonCoreBlock) {
                 DragonCoreRenderer.render(Direction.SOUTH, DRAGON_CORE_MODEL, 0.0F, matrices, buffer, light, overlay);
-            } else if (block instanceof AbstractDragonHeadBlock) {
-                if (type == TransformType.HEAD) {
-                    renderHead(((AbstractDragonHeadBlock) block).variant.getAppearance(ENDER_FEMALE), 0.5D, 0.4375D, 0.5D, 180F, 180F, 1.425F, true, matrices, buffer, light, overlay);
-                } else {
-                    renderHead(((AbstractDragonHeadBlock) block).variant.getAppearance(ENDER_FEMALE), 0.5D, 0D, 0.5D, 180F, 0F, 0.75F, true, matrices, buffer, light, overlay);
-                }
             }
         }
     }

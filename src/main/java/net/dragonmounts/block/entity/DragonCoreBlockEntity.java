@@ -98,8 +98,7 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
 
     private void moveCollidedEntities() {
         //noinspection DataFlowIssue
-        BlockState state = this.level.getBlockState(this.worldPosition);
-        if (state.getBlock() instanceof DragonCoreBlock) {
+        if (this.level.getBlockState(this.worldPosition).getBlock() instanceof DragonCoreBlock) {
             AxisAlignedBB box = this.getBoundingBox().move(this.worldPosition);
             List<Entity> list = this.level.getEntities(null, box);
             if (list.isEmpty()) return;
@@ -128,9 +127,8 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
                 this.doNeighborUpdates();
             }
             return true;
-        } else {
-            return super.triggerEvent(id, data);
         }
+        return super.triggerEvent(id, data);
     }
 
     private void doNeighborUpdates() {
@@ -160,9 +158,8 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
     @Override
     public void stopOpen(PlayerEntity player) {
         if (!player.isSpectator()) {
-            --this.openCount;
             //noinspection DataFlowIssue
-            this.level.blockEvent(this.worldPosition, this.getBlockState().getBlock(), 1, this.openCount);
+            this.level.blockEvent(this.worldPosition, this.getBlockState().getBlock(), 1, --this.openCount);
         }
     }
 
@@ -175,9 +172,8 @@ public class DragonCoreBlockEntity extends LockableLootTileEntity implements ITi
     @Override
     public void load(BlockState state, CompoundNBT compound) {
         super.load(state, compound);
-        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         if (!this.tryLoadLootTable(compound)) {
-            ItemStackHelper.loadAllItems(compound, this.items);
+            ItemStackHelper.loadAllItems(compound, this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY));
         }
     }
 

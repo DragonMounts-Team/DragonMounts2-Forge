@@ -21,8 +21,8 @@ public class DragonScalesItem extends Item implements IDragonTypified {
 
     public final DragonType type;
 
-    public DragonScalesItem(DragonType type, Properties properties) {
-        super(properties);
+    public DragonScalesItem(DragonType type, Properties props) {
+        super(props);
         this.type = type;
     }
 

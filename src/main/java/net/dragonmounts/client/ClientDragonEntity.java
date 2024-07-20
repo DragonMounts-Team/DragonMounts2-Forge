@@ -27,6 +27,7 @@ import static net.dragonmounts.network.DMPacketHandler.CHANNEL;
 @ParametersAreNonnullByDefault
 public class ClientDragonEntity extends TameableDragonEntity {
     public final DragonAnimationContext context = new DragonAnimationContext(this);
+    public boolean renderCrystalBeams = true;
     private byte rideFlag = -1;
 
     public ClientDragonEntity(EntityType<? extends TameableDragonEntity> type, World world) {

@@ -26,9 +26,9 @@ public class DragonScaleHoeItem extends HoeItem implements IDragonTypified {
             DragonScaleTier tier,
             int attackDamageModifier,
             float attackSpeedModifier,
-            Properties properties
+            Properties props
     ) {
-        super(tier, attackDamageModifier, attackSpeedModifier, properties);
+        super(tier, attackDamageModifier, attackSpeedModifier, props);
         this.type = tier.getDragonType();
     }
 

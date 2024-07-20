@@ -2,7 +2,6 @@ package net.dragonmounts.mixin;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.dragonmounts.client.renderer.block.DragonHeadRenderer;
-import net.dragonmounts.client.variant.VariantAppearances;
 import net.dragonmounts.item.DragonHeadItem;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.layers.HeadLayer;
@@ -46,7 +45,7 @@ public abstract class HeadLayerMixin {
     ) {
         if (item instanceof DragonHeadItem) {
             DragonHeadRenderer.renderHead(
-                    ((DragonHeadItem) item).variant.getAppearance(VariantAppearances.ENDER_FEMALE),
+                    ((DragonHeadItem) item).variant,
                     0D,
                     flag ? -0.0078125D : -0.0703125D,
                     0D,

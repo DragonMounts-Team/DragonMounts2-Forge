@@ -5,6 +5,7 @@ import net.dragonmounts.capability.ArmorEffectManager;
 import net.dragonmounts.capability.IArmorEffectManager;
 import net.dragonmounts.network.SRiposteEffectPacket;
 import net.dragonmounts.registry.CooldownCategory;
+import net.dragonmounts.util.Values;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -299,19 +300,14 @@ public class DMArmorEffects {
         }
         if (ice) manager.setCooldown(DMArmorEffects.ICE, DMArmorEffects.ICE.cooldown);
         if (nether) manager.setCooldown(DMArmorEffects.NETHER, DMArmorEffects.NETHER.cooldown);
-        CHANNEL.send(TRACKING_ENTITY_AND_SELF.with(() -> self), new SRiposteEffectPacket(self.getId(), (ice ? 0b01 : 0b00) | (nether ? 0b10 : 0b00)));
+        CHANNEL.send(TRACKING_ENTITY_AND_SELF.with(self::getEntity), new SRiposteEffectPacket(self.getId(), (ice ? 0b01 : 0b00) | (nether ? 0b10 : 0b00)));
     }
 
     public static void register(RegistryEvent.Register<CooldownCategory> event) {
         IForgeRegistry<CooldownCategory> registry = event.getRegistry();
-        registry.register(AETHER);
-        registry.register(ENDER);
-        registry.register(FIRE);
-        registry.register(FOREST);
-        registry.register(ICE);
-        registry.register(NETHER);
-        registry.register(STORM);
-        registry.register(SUNLIGHT);
-        registry.register(ZOMBIE);
+        Values.LazyIterator<CooldownCategory> iterator = new Values.LazyIterator<>(DMArmorEffects.class, CooldownCategory.class);
+        while (iterator.hasNext()) {
+            registry.register(iterator.next());
+        }
     }
 }

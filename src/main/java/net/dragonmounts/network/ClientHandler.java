@@ -1,6 +1,5 @@
 package net.dragonmounts.network;
 
-import net.dragonmounts.api.IDragonFood;
 import net.dragonmounts.capability.ArmorEffectManager;
 import net.dragonmounts.capability.IArmorEffectManager;
 import net.dragonmounts.client.ClientDragonEntity;
@@ -18,7 +17,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class ClientHandler {
-    private static final IDragonFood DEFAULT_DRAGON_FOOD_IMPL = (dragon, player, stack, hand) -> {};
     public static void handle(SFeedDragonPacket packet, Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
@@ -28,7 +26,7 @@ public class ClientHandler {
             if (entity instanceof ClientDragonEntity) {
                 ClientDragonEntity dragon = (ClientDragonEntity) entity;
                 dragon.handleAgeSync(packet);
-                DragonFood.get(packet.item, DEFAULT_DRAGON_FOOD_IMPL).act(dragon, packet.item);
+                DragonFood.get(packet.item).act(dragon, packet.item);
             }
         });
         context.setPacketHandled(true);
@@ -81,8 +79,12 @@ public class ClientHandler {
 
     public static void handle(SSyncCooldownPacket packet, Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> ((IArmorEffectManager.Provider) Minecraft.getInstance().player)
-                .dragonmounts$getManager().setCooldown(CooldownCategory.REGISTRY.getValue(packet.id), packet.cd)
+        context.enqueueWork(() -> {
+                    if (Minecraft.getInstance().player != null) {
+                        ((IArmorEffectManager.Provider) Minecraft.getInstance().player)
+                                .dragonmounts$getManager().setCooldown(CooldownCategory.REGISTRY.getValue(packet.id), packet.cd);
+                    }
+                }
         );
         context.setPacketHandled(true);
     }

@@ -17,7 +17,7 @@ public class DMBlockStateProvider extends BlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
         ModelFile skull = this.models().getExistingFile(new ResourceLocation("block/skull"));
-        for (DragonVariant variant : DragonVariants.VALUES) {
+        for (DragonVariant variant : DragonVariants.BUILTIN_VALUES) {
             this.simpleBlock(variant.headBlock, skull);
             this.simpleBlock(variant.headWallBlock, skull);
         }

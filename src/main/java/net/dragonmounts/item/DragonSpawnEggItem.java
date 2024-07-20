@@ -43,8 +43,8 @@ public final class DragonSpawnEggItem extends ForgeSpawnEggItem implements IDrag
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_spawn_egg";
     private final DragonType type;
 
-    public DragonSpawnEggItem(DragonType type, int backgroundColor, int highlightColor, Properties props) {
-        super(DMEntities.TAMEABLE_DRAGON, backgroundColor, highlightColor, props);
+    public DragonSpawnEggItem(DragonType type, int background, int highlight, Properties props) {
+        super(DMEntities.TAMEABLE_DRAGON, background, highlight, props);
         this.type = type;
     }
 

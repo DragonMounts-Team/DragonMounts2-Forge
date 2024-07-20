@@ -26,7 +26,6 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.ForgeSoundType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,12 +38,13 @@ import static net.minecraft.block.HorizontalBlock.FACING;
  * @see net.minecraft.block.ShulkerBoxBlock
  */
 public class DragonCoreBlock extends ContainerBlock {
-    private static final SoundType SOUND = new ForgeSoundType(1.0F, 1.0F, () -> SoundEvents.CHEST_LOCKED, () -> SoundEvents.STONE_STEP, () -> SoundEvents.BOOK_PUT, () -> SoundEvents.STONE_HIT, () -> SoundEvents.STONE_FALL);
+    @SuppressWarnings("deprecation")
+    private static final SoundType SOUND = new SoundType(1.0F, 1.0F, SoundEvents.CHEST_LOCKED, SoundEvents.STONE_STEP, SoundEvents.BOOK_PUT, SoundEvents.STONE_HIT, SoundEvents.STONE_FALL);
 
     private static boolean testPositionPredicate(BlockState state, IBlockReader world, BlockPos pos) {
-        TileEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof DragonCoreBlockEntity) {
-            return ((DragonCoreBlockEntity) blockEntity).isClosed();
+        TileEntity entity = world.getBlockEntity(pos);
+        if (entity instanceof DragonCoreBlockEntity) {
+            return ((DragonCoreBlockEntity) entity).isClosed();
         }
         return true;
     }
@@ -55,14 +55,14 @@ public class DragonCoreBlock extends ContainerBlock {
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state) {
+    public final boolean hasTileEntity(BlockState state) {
         return true;
     }
 
 
-    @Nullable
+    @Nonnull
     @Override
-    public DragonCoreBlockEntity createTileEntity(BlockState state, IBlockReader world) {
+    public final DragonCoreBlockEntity createTileEntity(BlockState state, IBlockReader world) {
         return this.newBlockEntity(world);
     }
 
@@ -74,7 +74,6 @@ public class DragonCoreBlock extends ContainerBlock {
 
     @Nonnull
     @Override
-    @SuppressWarnings("deprecation")
     public BlockRenderType getRenderShape(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
@@ -85,12 +84,12 @@ public class DragonCoreBlock extends ContainerBlock {
     public ActionResultType use(BlockState state, World level, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (level.isClientSide) return ActionResultType.SUCCESS;
         if (player.isSpectator()) return ActionResultType.CONSUME;
-        TileEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof DragonCoreBlockEntity) {
-            DragonCoreBlockEntity dragonCoreBlockEntity = (DragonCoreBlockEntity) blockEntity;
-            ShulkerBoxTileEntity.AnimationStatus status = dragonCoreBlockEntity.getStatus();
+        TileEntity entity = level.getBlockEntity(pos);
+        if (entity instanceof DragonCoreBlockEntity) {
+            DragonCoreBlockEntity $entity = (DragonCoreBlockEntity) entity;
+            ShulkerBoxTileEntity.AnimationStatus status = $entity.getStatus();
             if (status != ShulkerBoxTileEntity.AnimationStatus.CLOSING && (status != ShulkerBoxTileEntity.AnimationStatus.CLOSED || level.noCollision(ShulkerAABBHelper.openBoundingBox(pos, Direction.UP)))) {
-                player.openMenu(dragonCoreBlockEntity);
+                player.openMenu($entity);
                 player.awardStat(Stats.OPEN_SHULKER_BOX);
             }
             return ActionResultType.CONSUME;
@@ -100,9 +99,9 @@ public class DragonCoreBlock extends ContainerBlock {
     @Override
     public void setPlacedBy(World level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         if (stack.hasCustomHoverName()) {
-            TileEntity tileEntity = level.getBlockEntity(pos);
-            if (tileEntity instanceof DragonCoreBlockEntity) {
-                ((DragonCoreBlockEntity) tileEntity).setCustomName(stack.getHoverName());
+            TileEntity entity = level.getBlockEntity(pos);
+            if (entity instanceof DragonCoreBlockEntity) {
+                ((DragonCoreBlockEntity) entity).setCustomName(stack.getHoverName());
             }
         }
     }
@@ -118,9 +117,9 @@ public class DragonCoreBlock extends ContainerBlock {
         if (!state.is(newState.getBlock())) {
             level.playSound(null, pos, SoundEvents.ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 0.3F, level.random.nextFloat() * 0.1F + 0.3F);
             level.playSound(null, pos, SoundEvents.ENDER_EYE_DEATH, SoundCategory.NEUTRAL, 2.0F, level.random.nextFloat() * 0.1F + 0.3F);
-            TileEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof DragonCoreBlockEntity) {
-                InventoryHelper.dropContents(level, pos, (IInventory) blockEntity);
+            TileEntity entity = level.getBlockEntity(pos);
+            if (entity instanceof DragonCoreBlockEntity) {
+                InventoryHelper.dropContents(level, pos, (IInventory) entity);
                 level.updateNeighbourForOutputSignal(pos, state.getBlock());
             }
             super.onRemove(state, level, pos, newState, pIsMoving);
@@ -131,8 +130,8 @@ public class DragonCoreBlock extends ContainerBlock {
     @Override
     @SuppressWarnings("deprecation")
     public VoxelShape getShape(BlockState state, IBlockReader pLevel, BlockPos pos, ISelectionContext context) {
-        TileEntity blockEntity = pLevel.getBlockEntity(pos);
-        return blockEntity instanceof DragonCoreBlockEntity ? VoxelShapes.create(((DragonCoreBlockEntity) blockEntity).getBoundingBox()) : VoxelShapes.block();
+        TileEntity entity = pLevel.getBlockEntity(pos);
+        return entity instanceof DragonCoreBlockEntity ? VoxelShapes.create(((DragonCoreBlockEntity) entity).getBoundingBox()) : VoxelShapes.block();
     }
 
     @Override

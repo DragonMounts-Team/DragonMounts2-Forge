@@ -26,9 +26,9 @@ public class DragonScaleAxeItem extends AxeItem implements IDragonTypified {
             DragonScaleTier tier,
             float attackDamageModifier,
             float attackSpeedModifier/*Minecraft: -3.0F*/,
-            Properties properties
+            Properties props
     ) {
-        super(tier, attackDamageModifier, attackSpeedModifier, properties);
+        super(tier, attackDamageModifier, attackSpeedModifier, props);
         this.type = tier.getDragonType();
     }
 

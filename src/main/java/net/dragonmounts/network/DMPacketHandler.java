@@ -6,13 +6,13 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 import java.util.function.Supplier;
 
-import static net.dragonmounts.DragonMounts.prefix;
+import static net.dragonmounts.DragonMounts.makeId;
 
 public class DMPacketHandler {
-    private static final String PROTOCOL_VERSION = "Test";
+    private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            prefix("default"),
-            () -> PROTOCOL_VERSION,
+            makeId("default"),
+            PROTOCOL_VERSION::toString,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals
     );

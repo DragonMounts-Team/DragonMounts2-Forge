@@ -115,7 +115,7 @@ public abstract class TameableDragonEntity extends TameableEntity implements IFo
     protected static final DataParameter<ItemStack> DATA_SADDLE_ITEM = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.ITEM_STACK);
     protected static final DataParameter<ItemStack> DATA_ARMOR_ITEM = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.ITEM_STACK);
     protected static final DataParameter<ItemStack> DATA_CHEST_ITEM = EntityDataManager.defineId(TameableDragonEntity.class, DataSerializers.ITEM_STACK);
-    private static final DataParameter<DragonVariant> DATA_DRAGON_VARIANT = EntityDataManager.defineId(TameableDragonEntity.class, DragonVariant.SERIALIZER);
+    private static final DataParameter<DragonVariant> DATA_DRAGON_VARIANT = EntityDataManager.defineId(TameableDragonEntity.class, DragonVariant.REGISTRY);
     public static final String AGE_DATA_PARAMETER_KEY = "Age";
     public static final String AGE_LOCKED_DATA_PARAMETER_KEY = "AgeLocked";
     public static final String FLYING_DATA_PARAMETER_KEY = "Flying";

@@ -45,7 +45,7 @@ public class TameableDragonRenderer extends LivingRenderer<ClientDragonEntity, D
 
     @Override
     public void render(@Nonnull ClientDragonEntity dragon, float entityYaw, float partialTicks, @Nonnull MatrixStack matrices, @Nonnull IRenderTypeBuffer buffer, int light) {
-        if (dragon.nearestCrystal != null) {
+        if (dragon.renderCrystalBeams && dragon.nearestCrystal != null) {
             matrices.pushPose();
             float x = (float) (dragon.nearestCrystal.getX() - MathHelper.lerp(partialTicks, dragon.xo, dragon.getX()));
             float y = (float) (dragon.nearestCrystal.getY() - MathHelper.lerp(partialTicks, dragon.yo, dragon.getY()));

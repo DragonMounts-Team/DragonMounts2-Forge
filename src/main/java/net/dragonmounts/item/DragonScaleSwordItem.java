@@ -26,9 +26,9 @@ public class DragonScaleSwordItem extends SwordItem implements IDragonTypified {
             DragonScaleTier tier,
             int attackDamageModifier,
             float attackSpeedModifier/*Minecraft: -2.4F*/,
-            Properties properties
+            Properties props
     ) {
-        super(tier, attackDamageModifier, attackSpeedModifier, properties);
+        super(tier, attackDamageModifier, attackSpeedModifier, props);
         this.type = tier.getDragonType();
     }
 

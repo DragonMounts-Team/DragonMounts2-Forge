@@ -1,6 +1,6 @@
 package net.dragonmounts.network;
 
-import net.dragonmounts.DragonMountsConfig;
+import net.dragonmounts.config.ClientConfig;
 import net.dragonmounts.entity.dragon.ServerDragonEntity;
 import net.dragonmounts.init.DMKeyBindings;
 import net.minecraft.client.Minecraft;
@@ -28,8 +28,8 @@ public final class CRideDragonPacket {
         this.flag = getFlag(
                 this.climbing = Minecraft.getInstance().options.keyJump.isDown(),
                 this.descending = DMKeyBindings.DESCENT.isDown(),
-                this.convergePitch = DragonMountsConfig.CLIENT.converge_pitch_angle.get(),
-                this.convergeYaw = DragonMountsConfig.CLIENT.converge_yaw_angle.get()
+                this.convergePitch = ClientConfig.INSTANCE.converge_pitch_angle.get(),
+                this.convergeYaw = ClientConfig.INSTANCE.converge_yaw_angle.get()
         );
     }
 
@@ -43,8 +43,7 @@ public final class CRideDragonPacket {
     }
 
     public void encode(PacketBuffer buffer) {
-        buffer.writeVarInt(this.id);
-        buffer.writeByte(this.flag);
+        buffer.writeVarInt(this.id).writeByte(this.flag);
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {

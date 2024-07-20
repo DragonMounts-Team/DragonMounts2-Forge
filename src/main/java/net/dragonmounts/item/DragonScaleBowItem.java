@@ -27,9 +27,9 @@ public class DragonScaleBowItem extends BowItem implements IDragonTypified {
 
     public DragonScaleBowItem(
             DragonScaleTier tier,
-            Item.Properties properties
+            Item.Properties props
     ) {
-        super(properties.defaultDurability(tier.getUses() >> 1));
+        super(props.defaultDurability(tier.getUses() >> 1));
         this.tier = tier;
     }
 
@@ -44,7 +44,7 @@ public class DragonScaleBowItem extends BowItem implements IDragonTypified {
 
     @Override
     public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return this.tier.getRepairIngredient().test(repair);
+        return this.tier.repairIngredient.test(repair);
     }
 
     @Override

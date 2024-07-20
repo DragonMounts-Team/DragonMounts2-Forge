@@ -15,5 +15,5 @@ public class DMGameRules {
     public static final GameRules.RuleKey<GameRules.BooleanValue> IS_EGG_PUSHABLE = register("dragonmounts.isEggPushable", GameRules.Category.MISC, GameRules.BooleanValue.create(false));
     public static final GameRules.RuleKey<GameRules.BooleanValue> IS_EGG_OVERRIDDEN = register("dragonmounts.isEggOverridden", GameRules.Category.MISC, GameRules.BooleanValue.create(true));
 
-    public static void load() {}
+    public static void init() {}
 }

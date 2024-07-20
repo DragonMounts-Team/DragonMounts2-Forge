@@ -16,7 +16,7 @@ public abstract class RuleEntryVisitorMixin implements IDoubleEntryVisitor {
     private <T extends GameRules.RuleValue<T>> void addEntry(GameRules.RuleKey<T> key, EditGamerulesScreen.IRuleEntry<T> entry) {}
 
     @Override
-    public void dragonmounts$visitDouble(GameRules.RuleKey<DoubleRuleValue> key, GameRules.RuleType<DoubleRuleValue> type) {
+    public void dragonmounts$visitDouble(GameRules.RuleKey<DoubleRuleValue> key, GameRules.RuleType<DoubleRuleValue> $) {
         Screen screen = Minecraft.getInstance().screen;
         if (screen instanceof EditGamerulesScreen) {
             this.addEntry(key, (label, tooltip, description, rule) -> new DoubleRuleEntry((EditGamerulesScreen) screen, label, tooltip, description, rule));

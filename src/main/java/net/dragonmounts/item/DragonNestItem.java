@@ -8,8 +8,8 @@ import net.minecraft.item.crafting.IRecipeType;
 import javax.annotation.Nullable;
 
 public class DragonNestItem extends BlockItem {
-    public DragonNestItem(Block block, Properties properties) {
-        super(block, properties);
+    public DragonNestItem(Block block, Properties props) {
+        super(block, props);
     }
 
     @Override

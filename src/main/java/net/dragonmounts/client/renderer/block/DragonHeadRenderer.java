@@ -6,6 +6,7 @@ import net.dragonmounts.block.entity.DragonHeadBlockEntity;
 import net.dragonmounts.client.model.dragon.DragonHeadModel;
 import net.dragonmounts.client.variant.VariantAppearance;
 import net.dragonmounts.client.variant.VariantAppearances;
+import net.dragonmounts.registry.DragonVariant;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -34,7 +35,7 @@ public class DragonHeadRenderer extends TileEntityRenderer<DragonHeadBlockEntity
             if (head.isOnWall) {
                 final Direction direction = state.getValue(HORIZONTAL_FACING);
                 renderHead(
-                        head.variant.getAppearance(VariantAppearances.ENDER_FEMALE),
+                        head.variant,
                         0.5D - direction.getStepX() * 0.25D,
                         0.25D,
                         0.5D - direction.getStepZ() * 0.25D,
@@ -49,7 +50,7 @@ public class DragonHeadRenderer extends TileEntityRenderer<DragonHeadBlockEntity
                 );
             } else {
                 renderHead(
-                        head.variant.getAppearance(VariantAppearances.ENDER_FEMALE),
+                        head.variant,
                         0.5D,
                         0D,
                         0.5D,
@@ -66,7 +67,8 @@ public class DragonHeadRenderer extends TileEntityRenderer<DragonHeadBlockEntity
         }
     }
 
-    public static void renderHead(VariantAppearance appearance, double offsetX, double offsetY, double offsetZ, float ticks, float yaw, float scale, boolean flip, MatrixStack matrices, IRenderTypeBuffer buffer, int light, int overlay) {
+    public static void renderHead(DragonVariant variant, double offsetX, double offsetY, double offsetZ, float ticks, float yaw, float scale, boolean flip, MatrixStack matrices, IRenderTypeBuffer buffer, int light, int overlay) {
+        VariantAppearance appearance = variant.getAppearance(VariantAppearances.ENDER_FEMALE);
         matrices.pushPose();
         matrices.translate(offsetX, offsetY, offsetZ);
         if (flip) {

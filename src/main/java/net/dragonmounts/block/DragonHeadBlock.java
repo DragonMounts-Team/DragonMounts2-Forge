@@ -21,8 +21,8 @@ import static net.minecraft.state.properties.BlockStateProperties.ROTATION_16;
 public class DragonHeadBlock extends AbstractDragonHeadBlock {
     protected static final VoxelShape SHAPE = Block.box(4.0D, 0.0D, 4.0D, 12.0D, 8.0D, 12.0D);
 
-    public DragonHeadBlock(DragonVariant variant, Properties properties) {
-        super(variant, properties, false);
+    public DragonHeadBlock(DragonVariant variant, Properties props) {
+        super(variant, props, false);
         this.registerDefaultState(this.stateDefinition.any().setValue(ROTATION_16, 0));
     }
 

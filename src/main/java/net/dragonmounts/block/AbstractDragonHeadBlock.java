@@ -27,8 +27,8 @@ public abstract class AbstractDragonHeadBlock extends ContainerBlock implements 
     public final DragonVariant variant;
     public final boolean isOnWall;
 
-    public AbstractDragonHeadBlock(DragonVariant variant, Properties properties, boolean isOnWall) {
-        super(properties);
+    public AbstractDragonHeadBlock(DragonVariant variant, Properties props, boolean isOnWall) {
+        super(props);
         this.variant = variant;
         this.isOnWall = isOnWall;
     }
@@ -41,12 +41,12 @@ public abstract class AbstractDragonHeadBlock extends ContainerBlock implements 
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state) {
+    public final boolean hasTileEntity(BlockState state) {
         return true;
     }
 
     @Nullable
-    public DragonHeadBlockEntity createTileEntity(BlockState state, IBlockReader world) {
+    public final DragonHeadBlockEntity createTileEntity(BlockState state, IBlockReader world) {
         return this.newBlockEntity(world);
     }
 

@@ -21,22 +21,6 @@ public class ArmorSuit<T extends ArmorItem, M extends IArmorMaterial> {
         this.boots = boots;
     }
 
-    public final T getHelmet() {
-        return this.helmet;
-    }
-
-    public final T getChestplate() {
-        return this.chestplate;
-    }
-
-    public final T getLeggings() {
-        return this.leggings;
-    }
-
-    public final T getBoots() {
-        return this.boots;
-    }
-
     public final T bySlot(@Nonnull EquipmentSlotType slot) {
         switch (slot) {
             case HEAD: return this.helmet;

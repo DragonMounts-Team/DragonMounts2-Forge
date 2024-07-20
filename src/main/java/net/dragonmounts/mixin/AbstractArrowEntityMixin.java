@@ -68,7 +68,7 @@ public abstract class AbstractArrowEntityMixin extends Entity implements IDMArro
         }
     }
 
-    private AbstractArrowEntityMixin(EntityType<?> type, World level) {
-        super(type, level);
+    private AbstractArrowEntityMixin(EntityType<?> a, World b) {
+        super(a, b);
     }
 }

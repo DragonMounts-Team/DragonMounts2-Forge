@@ -47,8 +47,8 @@ public class DragonEssenceItem extends Item implements IDragonTypified, IEntityC
 
     public final DragonType type;
 
-    public DragonEssenceItem(DragonType type, Properties properties) {
-        super(properties.stacksTo(1));
+    public DragonEssenceItem(DragonType type, Properties props) {
+        super(props.stacksTo(1));
         this.type = type;
     }
 

@@ -23,7 +23,7 @@ public class DMBlockLoot extends BlockLootTables {
     protected void addTables() {
         this.add(DMBlocks.DRAGON_CORE, lootTable());
         this.dropSelf(DMBlocks.DRAGON_NEST);
-        DragonVariants.VALUES.forEach(this::dropDragonHead);
+        DragonVariants.BUILTIN_VALUES.forEach(this::dropDragonHead);
         for (DragonType type : DragonType.REGISTRY) {
             HatchableDragonEggBlock block = type.getInstance(HatchableDragonEggBlock.class, null);
             if (block != null) this.dropDragonEgg(block);

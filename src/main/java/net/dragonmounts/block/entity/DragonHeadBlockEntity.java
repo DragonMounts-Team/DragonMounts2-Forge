@@ -27,6 +27,6 @@ public class DragonHeadBlockEntity extends TileEntity implements ITickableTileEn
     }
 
     public float getAnimation(float partialTicks) {
-        return this.active ? (float) this.ticks + partialTicks : (float) this.ticks;
+        return this.active ? partialTicks + (float) this.ticks : (float) this.ticks;
     }
 }

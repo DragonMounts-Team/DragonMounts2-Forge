@@ -25,10 +25,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.scoreboard.Score;
-import net.minecraft.scoreboard.ScoreObjective;
-import net.minecraft.scoreboard.ScorePlayerTeam;
-import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.util.*;
@@ -36,24 +32,23 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
-import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static net.dragonmounts.entity.dragon.TameableDragonEntity.AGE_DATA_PARAMETER_KEY;
 import static net.dragonmounts.network.DMPacketHandler.CHANNEL;
-import static net.dragonmounts.util.math.MathUtil.getColor;
+import static net.dragonmounts.util.math.MathUtil.parseColor;
 import static net.minecraftforge.fml.network.PacketDistributor.PLAYER;
 import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
 
 public class HatchableDragonEggEntity extends LivingEntity implements IDragonTypified.Mutable {
-    protected static final DataParameter<DragonType> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DragonType.SERIALIZER);
+    protected static final DataParameter<DragonType> DATA_DRAGON_TYPE = EntityDataManager.defineId(HatchableDragonEggEntity.class, DragonType.REGISTRY);
     public static final int MIN_HATCHING_TIME = 36000;
     private static final float EGG_CRACK_PROCESS_THRESHOLD = 0.9F;
     public static final int EGG_CRACK_THRESHOLD = (int) (EGG_CRACK_PROCESS_THRESHOLD * MIN_HATCHING_TIME);
@@ -65,9 +60,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
     protected float rotationAxis = 0;
     protected int amplitude = 0;
     protected int age = 0;
-    protected boolean hatched = false;//to keep uuid
-    protected Map<ScoreObjective, Score> scores = null;//to keep score
-    protected ScorePlayerTeam team = null;//to keep team
+    protected boolean hatched = false;
 
     public HatchableDragonEggEntity(EntityType<? extends HatchableDragonEggEntity> type, World world) {
         super(type, world);
@@ -139,41 +132,13 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
     public void hatch() {
         if (!this.level.isClientSide) {
             this.spawnScales(this.random.nextInt(4) + 4);
-            String scoreboardName = this.getScoreboardName();
-            Scoreboard scoreboard = this.level.getScoreboard();
-            this.scores = scoreboard.getPlayerScores(scoreboardName);
-            this.team = scoreboard.getPlayersTeam(scoreboardName);
             this.hatched = true;
         }
         this.remove();
     }
 
-    @Override
-    public void onRemovedFromWorld() {
-        super.onRemovedFromWorld();
-        if (this.hatched) {
-            if (!this.level.isClientSide) {
-                this.playSound(DMSounds.DRAGON_HATCHED.get(), 1.0F, 1.0F);
-                ServerWorld world = (ServerWorld) level;
-                Scoreboard scoreboard = world.getScoreboard();
-                TameableDragonEntity dragon = new ServerDragonEntity(this, DragonLifeStage.NEWBORN);
-                String scoreboardName = dragon.getScoreboardName();
-                if (this.team != null) {
-                    scoreboard.addPlayerToTeam(scoreboardName, this.team);
-                }
-                if (this.scores != null) {
-                    Score target;
-                    Score cache;
-                    for (Map.Entry<ScoreObjective, Score> entry : this.scores.entrySet()) {
-                        cache = entry.getValue();
-                        target = scoreboard.getOrCreatePlayerScore(scoreboardName, entry.getKey());
-                        target.setScore(cache.getScore());
-                        target.setLocked(cache.isLocked());
-                    }
-                }
-                world.addFreshEntity(dragon);
-            }
-        }
+    public boolean isHatched() {
+        return this.hatched;
     }
 
     @Nonnull
@@ -232,7 +197,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
             this.level.addParticle(type.eggParticle, px, py, pz, ox, oy, oz);
             if ((this.tickCount & 1) == 0 && type != DragonTypes.ENDER) {
                 int color = type.color;
-                this.level.addParticle(new RedstoneParticleData(getColor(color, 2), getColor(color, 1), getColor(color, 0), 1.0F), px, py + 0.8, pz, ox, oy, oz);
+                this.level.addParticle(new RedstoneParticleData(parseColor(color, 2), parseColor(color, 1), parseColor(color, 0), 1.0F), px, py + 0.8, pz, ox, oy, oz);
             }
             return;
         }
@@ -253,7 +218,7 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
                     this.spawnScales(1);
                 }
                 CHANNEL.send(
-                        TRACKING_ENTITY.with(() -> this),
+                        TRACKING_ENTITY.with(this::getEntity),
                         new SShakeDragonEggPacket(this.getId(), this.rotationAxis, this.amplitude, flag)
                 );
             }
@@ -309,14 +274,15 @@ public class HatchableDragonEggEntity extends LivingEntity implements IDragonTyp
         return true;
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void startSeenByPlayer(ServerPlayerEntity player) {
-        CHANNEL.send(PLAYER.with(() -> player), new SSyncEggAgePacket(this.getId(), this.age));
+        CHANNEL.send(PLAYER.with((Supplier) player::getEntity), new SSyncEggAgePacket(this.getId(), this.age));
     }
 
     public void setAge(int age, boolean lazySync) {
         if (lazySync && this.age != age) {
-            CHANNEL.send(TRACKING_ENTITY.with(() -> this), new SSyncEggAgePacket(this.getId(), age));
+            CHANNEL.send(TRACKING_ENTITY.with(this::getEntity), new SSyncEggAgePacket(this.getId(), age));
         }
         this.age = age;
     }

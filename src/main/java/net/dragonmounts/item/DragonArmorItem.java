@@ -28,8 +28,8 @@ public class DragonArmorItem extends Item {
     private final ResourceLocation texture;
     private final int protection;
 
-    public DragonArmorItem(ResourceLocation texture, int protection, Properties properties) {
-        super(properties);
+    public DragonArmorItem(ResourceLocation texture, int protection, Properties props) {
+        super(props);
         this.protection = protection;
         this.texture = texture;
     }

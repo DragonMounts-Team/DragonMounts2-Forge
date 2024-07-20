@@ -6,7 +6,6 @@ import net.dragonmounts.network.SInitCooldownPacket;
 import net.dragonmounts.network.SSyncCooldownPacket;
 import net.dragonmounts.registry.CooldownCategory;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -16,10 +15,10 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.fill;
@@ -31,10 +30,6 @@ public final class ArmorEffectManager implements IArmorEffectManager {
     private static ArmorEffectManager LOCAL_MANAGER = null;
     public static final int INITIAL_COOLDOWN_SIZE = 8;
     public static final int INITIAL_LEVEL_SIZE = 5;
-
-    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        ((IArmorEffectManager.Provider) event.getPlayer()).dragonmounts$getManager().sendInitPacket();
-    }
 
     public static void onPlayerClone(PlayerEntity player, PlayerEntity priorPlayer) {
         ArmorEffectManager manager = ((IArmorEffectManager.Provider) player).dragonmounts$getManager();
@@ -146,6 +141,7 @@ public final class ArmorEffectManager implements IArmorEffectManager {
         throw new IndexOutOfBoundsException();
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void setCooldown(final CooldownCategory category, final int cooldown) {
         final int id = category.getId();
@@ -167,7 +163,7 @@ public final class ArmorEffectManager implements IArmorEffectManager {
             this.setCdImpl(id, cooldown, 0);
         }
         if (!this.player.level.isClientSide) {
-            CHANNEL.send(PLAYER.with(() -> (ServerPlayerEntity) player), new SSyncCooldownPacket(id, cooldown));
+            CHANNEL.send(PLAYER.with((Supplier) player::getEntity), new SSyncCooldownPacket(id, cooldown));
         }
     }
 
@@ -209,11 +205,12 @@ public final class ArmorEffectManager implements IArmorEffectManager {
         }
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public void sendInitPacket() {
         SInitCooldownPacket packet = new SInitCooldownPacket(this.cdN, this.cdRef, this.cdKey, this.cdDat);
         if (packet.size > 0) {
-            CHANNEL.send(PLAYER.with(() -> (ServerPlayerEntity) this.player), packet);
+            CHANNEL.send(PLAYER.with((Supplier) this.player::getEntity), packet);
         }
     }
 

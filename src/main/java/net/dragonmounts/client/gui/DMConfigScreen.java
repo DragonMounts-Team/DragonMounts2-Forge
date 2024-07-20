@@ -1,6 +1,7 @@
 package net.dragonmounts.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import net.dragonmounts.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DialogTexts;
 import net.minecraft.client.gui.screen.Screen;
@@ -12,7 +13,6 @@ import net.minecraft.util.text.TranslationTextComponent;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-import static net.dragonmounts.DragonMountsConfig.CLIENT;
 import static net.dragonmounts.client.gui.LazyBooleanConfigOption.DEFAULT_STRINGIFY;
 import static net.dragonmounts.client.gui.LazyBooleanConfigOption.TOGGLE_STRINGIFY;
 import static net.minecraft.client.gui.screen.SettingsScreen.tooltipAt;
@@ -37,15 +37,16 @@ public class DMConfigScreen extends Screen {
     }
 
     protected void init() {
-        this.debug = new LazyBooleanConfigOption("options.dragonmounts.debug", CLIENT.debug, DEFAULT_STRINGIFY, null);
+        ClientConfig config = ClientConfig.INSTANCE;
+        this.debug = new LazyBooleanConfigOption("options.dragonmounts.debug", config.debug, DEFAULT_STRINGIFY, null);
         TranslationTextComponent cameraNote = new TranslationTextComponent("options.dragonmounts.camera.note");
-        this.cameraDistance = new LazySliderConfigOption("options.dragonmounts.camera_distance", CLIENT.camera_distance, 0.0D, 64.0D, 0.25D, LazySliderConfigOption.STRINGIFY_X_2F, cameraNote);
-        this.cameraOffset = new LazySliderConfigOption("options.dragonmounts.camera_offset", CLIENT.camera_offset, -16.0D, 16.0D, 0.25D, LazySliderConfigOption.STRINGIFY_X_2F, cameraNote);
-        this.convergePitch = new LazyBooleanConfigOption("options.dragonmounts.converge_pitch_angle", CLIENT.converge_pitch_angle, DEFAULT_STRINGIFY, null);
-        this.convergeYaw = new LazyBooleanConfigOption("options.dragonmounts.converge_yaw_angle", CLIENT.converge_yaw_angle, DEFAULT_STRINGIFY, null);
-        this.hoverAnimation = new LazyBooleanConfigOption("options.dragonmounts.hover_animation", CLIENT.hover_animation, DEFAULT_STRINGIFY, null);
-        this.toggleDescent = new LazyBooleanConfigOption("key.dragonmounts.descent", CLIENT.toggle_descent, TOGGLE_STRINGIFY, null);
-        this.redirectInventory = new LazyBooleanConfigOption("options.dragonmounts.redirect_inventory", CLIENT.redirect_inventory, DEFAULT_STRINGIFY, new TranslationTextComponent("options.dragonmounts.redirect_inventory.note"));
+        this.cameraDistance = new LazySliderConfigOption("options.dragonmounts.camera_distance", config.camera_distance, 0.0D, 64.0D, 0.25D, LazySliderConfigOption.STRINGIFY_X_2F, cameraNote);
+        this.cameraOffset = new LazySliderConfigOption("options.dragonmounts.camera_offset", config.camera_offset, -16.0D, 16.0D, 0.25D, LazySliderConfigOption.STRINGIFY_X_2F, cameraNote);
+        this.convergePitch = new LazyBooleanConfigOption("options.dragonmounts.converge_pitch_angle", config.converge_pitch_angle, DEFAULT_STRINGIFY, null);
+        this.convergeYaw = new LazyBooleanConfigOption("options.dragonmounts.converge_yaw_angle", config.converge_yaw_angle, DEFAULT_STRINGIFY, null);
+        this.hoverAnimation = new LazyBooleanConfigOption("options.dragonmounts.hover_animation", config.hover_animation, DEFAULT_STRINGIFY, null);
+        this.toggleDescent = new LazyBooleanConfigOption("key.dragonmounts.descent", config.toggle_descent, TOGGLE_STRINGIFY, null);
+        this.redirectInventory = new LazyBooleanConfigOption("options.dragonmounts.redirect_inventory", config.redirect_inventory, DEFAULT_STRINGIFY, new TranslationTextComponent("options.dragonmounts.redirect_inventory.note"));
         //noinspection DataFlowIssue
         this.list = new OptionsRowList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
         this.list.addBig(this.cameraDistance);

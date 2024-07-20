@@ -49,8 +49,8 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
     private static final Logger LOGGER = LogManager.getLogger();
     public final DragonType type;
 
-    public DragonAmuletItem(DragonType type, Properties properties) {
-        super(properties);
+    public DragonAmuletItem(DragonType type, Properties props) {
+        super(props);
         this.type = type;
     }
 

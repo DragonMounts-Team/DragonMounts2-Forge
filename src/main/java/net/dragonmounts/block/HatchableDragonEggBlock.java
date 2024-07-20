@@ -5,7 +5,6 @@ import net.dragonmounts.entity.dragon.HatchableDragonEggEntity;
 import net.dragonmounts.init.DMGameRules;
 import net.dragonmounts.init.DragonTypes;
 import net.dragonmounts.registry.DragonType;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DragonEggBlock;
@@ -32,20 +31,20 @@ import static net.dragonmounts.DragonMounts.BLOCK_TRANSLATION_KEY_PREFIX;
 
 public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTypified {
     //public static final IntegerProperty AGE = IntegerProperty.create("age", 0, 10);
-    protected static void spawn(World level, BlockPos pos, DragonType type) {
+    protected static ActionResultType spawn(World level, BlockPos pos, DragonType type) {
         level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         HatchableDragonEggEntity entity = new HatchableDragonEggEntity(level);
         entity.setDragonType(type, true);
         entity.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
         level.addFreshEntity(entity);
+        return ActionResultType.CONSUME;
     }
 
     public static void interact(PlayerInteractEvent.RightClickBlock event) {
         World level = event.getWorld();
-        if (!level.isClientSide && level.getGameRules().getBoolean(DMGameRules.IS_EGG_OVERRIDDEN)) {
+        if (!level.isClientSide && !level.dimension().equals(World.END) && level.getGameRules().getBoolean(DMGameRules.IS_EGG_OVERRIDDEN)) {
             BlockPos pos = event.getPos();
-            Block block = level.getBlockState(pos).getBlock();
-            if (block == Blocks.DRAGON_EGG && !level.dimension().equals(World.END)) {
+            if (level.getBlockState(pos).getBlock() == Blocks.DRAGON_EGG) {
                 event.setUseBlock(Event.Result.DENY);
                 spawn(level, pos, DragonTypes.ENDER);
             }
@@ -55,8 +54,8 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
     private static final String TRANSLATION_KEY = BLOCK_TRANSLATION_KEY_PREFIX + "dragon_egg";
     public final DragonType type;
 
-    public HatchableDragonEggBlock(DragonType type, Properties properties) {
-        super(properties);
+    public HatchableDragonEggBlock(DragonType type, Properties props) {
+        super(props);
         this.type = type;
         //this.registerDefaultState(this.stateDefinition.any().setValue(AGE, 0));
     }
@@ -77,11 +76,8 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
     @Override
     public ActionResultType use(BlockState state, World level, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (level.isClientSide) return ActionResultType.SUCCESS;
-        else if (level.dimension().equals(World.END)) {
-            return super.use(state, level, pos, player, hand, hit);
-        }
-        spawn(level, pos, this.type);
-        return ActionResultType.CONSUME;
+        else if (level.dimension().equals(World.END)) return super.use(state, level, pos, player, hand, hit);
+        return spawn(level, pos, this.type);
     }
 
     @Override

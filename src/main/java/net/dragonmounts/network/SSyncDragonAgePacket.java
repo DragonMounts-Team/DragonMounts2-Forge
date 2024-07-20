@@ -22,8 +22,6 @@ public class SSyncDragonAgePacket {
     }
 
     public void encode(PacketBuffer buffer) {
-        buffer.writeVarInt(this.id);
-        buffer.writeVarInt(this.age);
-        buffer.writeVarInt(this.stage.ordinal());
+        buffer.writeVarInt(this.id).writeVarInt(this.age).writeVarInt(this.stage.ordinal());
     }
 }

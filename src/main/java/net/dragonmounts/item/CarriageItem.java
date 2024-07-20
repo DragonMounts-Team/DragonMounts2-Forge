@@ -26,8 +26,8 @@ public class CarriageItem extends Item {
     private static final Predicate<Entity> ENTITY_PREDICATE = EntityPredicates.NO_SPECTATORS.and(Entity::isPickable);
     public final CarriageType type;
 
-    public CarriageItem(CarriageType type, Properties properties) {
-        super(properties);
+    public CarriageItem(CarriageType type, Properties props) {
+        super(props);
         this.type = type;
     }
 

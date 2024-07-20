@@ -1,19 +1,18 @@
 package net.dragonmounts.api;
 
-import net.dragonmounts.init.DMItems;
 import net.dragonmounts.init.DragonTypes;
 import net.dragonmounts.item.DragonScalesItem;
 import net.dragonmounts.registry.DragonType;
+import net.dragonmounts.util.DragonTypifiedItemSupplier;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.LazyValue;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 
 import javax.annotation.Nonnull;
-import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static net.dragonmounts.DragonMounts.MOD_ID;
 
@@ -72,7 +71,7 @@ public class DragonScaleMaterial implements IArmorMaterial, IDragonTypified {
     public final DragonType type;
     public final String name;
     public final SoundEvent sound;
-    public final LazyValue<Ingredient> repairIngredient;
+    public final Ingredient repairIngredient;
 
     public DragonScaleMaterial(String namespace, DragonType type, Builder builder) {
         ResourceLocation key = type.getRegistryName();
@@ -84,9 +83,9 @@ public class DragonScaleMaterial implements IArmorMaterial, IDragonTypified {
         this.enchantmentValue = builder.enchantmentValue;
         this.toughness = builder.toughness;
         this.knockbackResistance = builder.knockbackResistance;
-        this.repairIngredient = builder.repairIngredient == null ? new LazyValue<>(
-                () -> Ingredient.of(type.getInstance(DragonScalesItem.class, DMItems.ENDER_DRAGON_SCALES))
-        ) : builder.repairIngredient;
+        this.repairIngredient = builder.repairIngredient == null
+                ? Ingredient.fromValues(Stream.of(new DragonTypifiedItemSupplier<>(type, DragonScalesItem.class)))
+                : builder.repairIngredient;
     }
 
     public int getDurabilityForShield() {
@@ -133,7 +132,7 @@ public class DragonScaleMaterial implements IArmorMaterial, IDragonTypified {
     @Nonnull
     @Override
     public final Ingredient getRepairIngredient() {
-        return this.repairIngredient.get();
+        return this.repairIngredient;
     }
 
     @Override
@@ -148,7 +147,7 @@ public class DragonScaleMaterial implements IArmorMaterial, IDragonTypified {
         public SoundEvent sound = SoundEvents.ARMOR_EQUIP_GOLD;
         public float toughness = 0;
         public float knockbackResistance = 0;
-        public LazyValue<Ingredient> repairIngredient = null;
+        public Ingredient repairIngredient = null;
 
         public Builder(int protection, int durabilityFactor) {
             this.protection = protection;
@@ -175,8 +174,8 @@ public class DragonScaleMaterial implements IArmorMaterial, IDragonTypified {
             return this;
         }
 
-        public Builder setRepairIngredient(Supplier<Ingredient> supplier) {
-            this.repairIngredient = new LazyValue<>(supplier);
+        public Builder setRepairIngredient(Ingredient ingredient) {
+            this.repairIngredient = ingredient;
             return this;
         }
 

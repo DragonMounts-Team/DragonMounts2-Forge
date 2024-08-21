@@ -49,12 +49,12 @@ public class DragonWhistleItem extends Item {
             if (player.level.isClientSide) return ActionResultType.SUCCESS;
             TameableDragonEntity dragon = (TameableDragonEntity) entity;
             if (dragon.isOwnedBy(player)) {
-                CompoundNBT compound = new CompoundNBT();
-                compound.putUUID("UUID", dragon.getUUID());
+                CompoundNBT tag = new CompoundNBT();
+                tag.putUUID("UUID", dragon.getUUID());
                 DragonType type = dragon.getDragonType();
-                compound.putString("Type", type.getSerializedName().toString());
-                compound.putString("OwnerName", ITextComponent.Serializer.toJson(player.getName()));
-                stack.setTag(compound);
+                tag.putString("Type", type.getSerializedName().toString());
+                tag.putString("OwnerName", ITextComponent.Serializer.toJson(player.getName()));
+                stack.setTag(tag);
                 player.setItemSlot(hand == Hand.MAIN_HAND ? EquipmentSlotType.MAINHAND : EquipmentSlotType.OFFHAND, stack);
                 return ActionResultType.CONSUME;
             } else {
@@ -68,12 +68,12 @@ public class DragonWhistleItem extends Item {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltips, ITooltipFlag flag) {
-        CompoundNBT compound = stack.getTag();
-        if (compound != null && compound.contains("UUID")) {
-            if (compound.contains("Type"))
-                DragonType.byName(compound.getString("Type")).getFormattedName("tooltip.dragonmounts.type").withStyle(TextFormatting.GRAY);
+        CompoundNBT tag = stack.getTag();
+        if (tag != null && tag.contains("UUID")) {
+            if (tag.contains("Type"))
+                DragonType.byName(tag.getString("Type")).getFormattedName("tooltip.dragonmounts.type").withStyle(TextFormatting.GRAY);
             try {
-                String string = compound.getString("OwnerName");
+                String string = tag.getString("OwnerName");
                 if (!string.isEmpty())
                     tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.owner_name", ITextComponent.Serializer.fromJson(string)).withStyle(TextFormatting.GRAY));
             } catch (Exception exception) {

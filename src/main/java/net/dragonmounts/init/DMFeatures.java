@@ -122,52 +122,46 @@ public class DMFeatures {
 
     public static void loadBiome(BiomeLoadingEvent event) {
         List<Supplier<StructureFeature<?, ?>>> list = event.getGeneration().getStructures();
+        if (event.getClimate().precipitation.equals(Biome.RainType.SNOW)) {
+            list.add(ICE_DRAGON_NEST::getFeature);
+        }
         switch (event.getCategory()) {
-            case NONE:
-            case RIVER:
-            case MUSHROOM:
-            case ICY:
-            case PLAINS:
-                break;
             case EXTREME_HILLS:
                 list.add(FIRE_DRAGON_NEST::getFeature);
-                break;
+                return;
             case BEACH:
             case MESA:
                 list.add(TERRA_DRAGON_NEST::getFeature);
-                break;
+                return;
             case SAVANNA:
                 if (event.getClimate().temperature < 1.2) {//isHighland
                     list.add(FIRE_DRAGON_NEST::getFeature);
+                    return;
                 }
-                break;
+                return;
             case THEEND:
                 list.add(ENCHANT_DRAGON_NEST::getFeature);
-                break;
+                return;
             case TAIGA:
             case JUNGLE:
             case FOREST:
                 list.add(FOREST_DRAGON_NEST::getFeature);
-                break;
+                return;
             case DESERT:
                 list.add(TERRA_DRAGON_NEST::getFeature);
                 list.add(SUNLIGHT_DRAGON_NEST::getFeature);
-                break;
+                return;
             case OCEAN:
                 list.add(WATER_DRAGON_NEST::getFeature);
-                break;
+                return;
             case SWAMP:
                 list.add(FOREST_DRAGON_NEST::getFeature);
                 list.add(WATER_DRAGON_NEST::getFeature);
-                break;
+                return;
             case NETHER:
                 list.add(NETHER_DRAGON_NEST::getFeature);
                 list.add(SKELETON_DRAGON_NEST::getFeature);
                 list.add(ZOMBIE_DRAGON_NEST::getFeature);
-                break;
-        }
-        if (event.getClimate().precipitation.equals(Biome.RainType.SNOW)) {
-            list.add(ICE_DRAGON_NEST::getFeature);
         }
     }
 

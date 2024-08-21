@@ -21,8 +21,8 @@ import static net.minecraft.client.renderer.ItemRenderer.getArmorFoilBuffer;
 import static net.minecraft.client.renderer.RenderType.armorCutoutNoCull;
 
 @OnlyIn(Dist.CLIENT)
-public class TameableDragonLayer extends LayerRenderer<ClientDragonEntity, DragonModel> {
-    public TameableDragonLayer(IEntityRenderer<ClientDragonEntity, DragonModel> renderer) {
+public class DragonLayer extends LayerRenderer<ClientDragonEntity, DragonModel> {
+    public DragonLayer(IEntityRenderer<ClientDragonEntity, DragonModel> renderer) {
         super(renderer);
     }
 
@@ -30,10 +30,11 @@ public class TameableDragonLayer extends LayerRenderer<ClientDragonEntity, Drago
     public void render(@Nonnull MatrixStack matrices, @Nonnull IRenderTypeBuffer buffer, int light, ClientDragonEntity dragon, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         DragonModel model = this.getParentModel();
         VariantAppearance appearance = dragon.getVariant().getAppearance(VariantAppearances.ENDER_FEMALE);
+        int noOverlay = OverlayTexture.NO_OVERLAY;
         if (dragon.deathTime > 0) {
-            model.renderToBuffer(matrices, buffer.getBuffer(appearance.getDissolve(dragon)), light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-            model.renderToBuffer(matrices, buffer.getBuffer(appearance.getDecal(dragon)), light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-            model.renderToBuffer(matrices, buffer.getBuffer(appearance.getGlowDecal(dragon)), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            model.renderToBuffer(matrices, buffer.getBuffer(appearance.getDissolve(dragon)), light, noOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+            model.renderToBuffer(matrices, buffer.getBuffer(appearance.getDecal(dragon)), light, noOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+            model.renderToBuffer(matrices, buffer.getBuffer(appearance.getGlowDecal(dragon)), 15728640, noOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
             return;
         }
         //saddle
@@ -52,7 +53,7 @@ public class TameableDragonLayer extends LayerRenderer<ClientDragonEntity, Drago
                     matrices,
                     getArmorFoilBuffer(buffer, armorCutoutNoCull(((DragonArmorItem) item).getDragonArmorTexture(stack, dragon)), false, stack.hasFoil()),
                     light,
-                    OverlayTexture.NO_OVERLAY,
+                    noOverlay,
                     1.0F,
                     1.0F,
                     1.0F,
@@ -60,6 +61,6 @@ public class TameableDragonLayer extends LayerRenderer<ClientDragonEntity, Drago
             );
         }
         //glow
-        model.renderToBuffer(matrices, buffer.getBuffer(appearance.getGlow(dragon)), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        model.renderToBuffer(matrices, buffer.getBuffer(appearance.getGlow(dragon)), 15728640, noOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

@@ -25,16 +25,9 @@ public class DragonScaleBowItem extends BowItem implements IDragonTypified {
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_scale_bow";
     public final DragonScaleTier tier;
 
-    public DragonScaleBowItem(
-            DragonScaleTier tier,
-            Item.Properties props
-    ) {
+    public DragonScaleBowItem(DragonScaleTier tier, Item.Properties props) {
         super(props.defaultDurability(tier.getUses() >> 1));
         this.tier = tier;
-    }
-
-    public DragonScaleTier getTier() {
-        return this.tier;
     }
 
     @Override

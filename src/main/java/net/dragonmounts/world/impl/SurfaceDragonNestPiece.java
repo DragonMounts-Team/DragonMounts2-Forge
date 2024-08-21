@@ -28,8 +28,8 @@ public class SurfaceDragonNestPiece extends DragonNestPiece {
         this.loadTemplate(template, pivot);
     }
 
-    public SurfaceDragonNestPiece(TemplateManager manager, CompoundNBT compound) {
-        super(DMFeatures.SURFACE_DRAGON_NEST_PIECE_TYPE, compound);
+    public SurfaceDragonNestPiece(TemplateManager manager, CompoundNBT tag) {
+        super(DMFeatures.SURFACE_DRAGON_NEST_PIECE_TYPE, tag);
         Template template = manager.getOrCreate(this.templateLocation);
         this.loadTemplate(template, new BlockPos(template.getSize().getX() >> 1, 0, template.getSize().getZ() >> 1));
     }

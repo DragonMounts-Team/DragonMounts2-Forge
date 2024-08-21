@@ -55,17 +55,20 @@ public class DMClientEvents {
 
     @SubscribeEvent
     public static void modelBake(ModelBakeEvent event) {
+        final ResourceLocation pull = new ResourceLocation("pull");
+        final ResourceLocation pulling = new ResourceLocation("pulling");
+        final ResourceLocation blocking = new ResourceLocation("blocking");
         final IItemPropertyGetter duration = (stack, $, entity) -> entity == null ? 0.0F : entity.getUseItem() != stack ? 0.0F : (stack.getUseDuration() - entity.getUseItemRemainingTicks()) / 20.0F;
         final IItemPropertyGetter isUsingItem = (stack, $, entity) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F;
         for (DragonType type : DragonType.REGISTRY) {
             DragonScaleBowItem bow = type.getInstance(DragonScaleBowItem.class, null);
             if (bow != null) {
-                ItemModelsProperties.register(bow, new ResourceLocation("pull"), duration);
-                ItemModelsProperties.register(bow, new ResourceLocation("pulling"), isUsingItem);
+                ItemModelsProperties.register(bow, pull, duration);
+                ItemModelsProperties.register(bow, pulling, isUsingItem);
             }
             DragonScaleShieldItem shield = type.getInstance(DragonScaleShieldItem.class, null);
             if (shield != null) {
-                ItemModelsProperties.register(shield, new ResourceLocation("blocking"), isUsingItem);
+                ItemModelsProperties.register(shield, blocking, isUsingItem);
             }
         }
     }

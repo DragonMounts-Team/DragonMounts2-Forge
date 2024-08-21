@@ -1,70 +1,72 @@
 package net.dragonmounts.entity.ai;
 
-import net.dragonmounts.entity.dragon.TameableDragonEntity;
-import net.minecraft.entity.EntityPredicate;
+import net.dragonmounts.entity.dragon.ServerDragonEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.HurtByTargetGoal;
 import net.minecraft.entity.ai.goal.TargetGoal;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.EnumSet;
 
+/**
+ * Simplified {@link HurtByTargetGoal}
+ */
 public class DragonHurtByTargetGoal extends TargetGoal {
+    public final ServerDragonEntity dragon;
+    protected int reinforcementCooldown;
+    protected int timestamp;
 
-    private final EntityPredicate copyOwnerTargeting = (new EntityPredicate()).allowUnseeable().ignoreInvisibilityTesting();
-    private final boolean entityCallsForHelp;
-    private final Class<?>[] excludedReinforcementTypes;
-    private int revengeTimerOld;
-    private final TameableDragonEntity dragon;
-
-    public DragonHurtByTargetGoal(TameableDragonEntity dragon, boolean entityCallsForHelp, Class<?>... excludedReinforcementTypes) {
+    public DragonHurtByTargetGoal(ServerDragonEntity dragon) {
         super(dragon, true, true);
         this.dragon = dragon;
-        this.entityCallsForHelp = entityCallsForHelp;
-        this.excludedReinforcementTypes = excludedReinforcementTypes;
-        this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+        this.setFlags(EnumSet.of(Goal.Flag.TARGET));
     }
 
     @Override
     public boolean canUse() {
-        LivingEntity owner = this.dragon.getOwner();
-        int i = this.dragon.getLastHurtByMobTimestamp();
-        LivingEntity livingEntity = this.dragon.getLastHurtByMob();
-        return i != this.revengeTimerOld && livingEntity != null && owner != null
-                && this.dragon.canAttack(livingEntity, this.copyOwnerTargeting)
-                && this.dragon.wantsToAttack(livingEntity, owner);
+        ServerDragonEntity dragon = this.dragon;
+        int timestamp = dragon.getLastHurtByMobTimestamp();
+        if (timestamp == this.timestamp) return false;
+        LivingEntity owner = dragon.getOwner();
+        if (owner == null) return false;
+        LivingEntity target = dragon.getLastHurtByMob();
+        return target != null && dragon.canAttack(target, HurtByTargetGoal.HURT_BY_TARGETING) && dragon.wantsToAttack(target, owner);
+    }
+
+    public boolean canContinueToUse() {
+        if (super.canContinueToUse()) {
+            if (this.reinforcementCooldown-- <= 0) {
+                alertOthers();
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void start() {
-        this.dragon.setTarget(this.dragon.getLastHurtByMob());
-        this.targetMob = this.dragon.getTarget();
-        this.revengeTimerOld = this.dragon.getLastHurtByMobTimestamp();
+        MobEntity dragon = this.mob;
+        dragon.setTarget(dragon.getLastHurtByMob());
+        this.targetMob = dragon.getTarget();
+        this.timestamp = dragon.getLastHurtByMobTimestamp();
         this.unseenMemoryTicks = 300;
-        if (this.entityCallsForHelp) {
-            this.alertOthers();
-        }
-
+        this.reinforcementCooldown = 0;
+        this.alertOthers();
         super.start();
     }
 
     protected void alertOthers() {
-        double d0 = this.getFollowDistance();
-        LivingEntity livingEntity = this.dragon.getLastHurtByMob();
-        for (TameableEntity mobEntity : this.dragon.level.getEntitiesOfClass(this.dragon.getClass(), (new AxisAlignedBB(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ(), this.dragon.getX() + 1.0D, this.dragon.getY() + 1.0D, this.dragon.getZ() + 1.0D)).inflate(d0, 10.0D, d0))) {
-            if (this.dragon != mobEntity && mobEntity.getTarget() == null && livingEntity != null && this.dragon.getOwner() == mobEntity.getOwner() && !mobEntity.isAlliedTo(livingEntity)) {
-                boolean flag = false;
-                for (Class<?> aClass : this.excludedReinforcementTypes) {
-                    if (mobEntity.getClass() == aClass) {
-                        flag = true;
-                        break;
-                    }
-                }
-
-                if (!flag) {
-                    mobEntity.setTarget(this.dragon.getLastHurtByMob());
-                }
+        LivingEntity target = this.targetMob;
+        if (target == null) return;
+        ServerDragonEntity self = this.dragon;
+        LivingEntity owner = self.getOwner();
+        if (owner == null) return;
+        this.reinforcementCooldown = self.getRandom().nextInt(256) + 128;
+        double distance = this.getFollowDistance();
+        for (ServerDragonEntity dragon : self.level.getEntitiesOfClass(ServerDragonEntity.class, self.getBoundingBox().inflate(distance, 10.0D, distance))) {
+            if (self != dragon && dragon.getTarget() == null && owner == dragon.getOwner() && !dragon.isAlliedTo(target)) {
+                dragon.setTarget(target);
             }
         }
     }

@@ -30,7 +30,6 @@ import java.util.List;
 import static net.dragonmounts.DragonMounts.BLOCK_TRANSLATION_KEY_PREFIX;
 
 public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTypified {
-    //public static final IntegerProperty AGE = IntegerProperty.create("age", 0, 10);
     protected static ActionResultType spawn(World level, BlockPos pos, DragonType type) {
         level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         HatchableDragonEggEntity entity = new HatchableDragonEggEntity(level);
@@ -57,12 +56,13 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
     public HatchableDragonEggBlock(DragonType type, Properties props) {
         super(props);
         this.type = type;
-        //this.registerDefaultState(this.stateDefinition.any().setValue(AGE, 0));
     }
 
     @Override
     public void attack(BlockState state, World level, BlockPos pos, PlayerEntity player) {
-        if (level.dimension().equals(World.END)) super.attack(state, level, pos, player);
+        if (level.dimension().equals(World.END)) {
+            super.attack(state, level, pos, player);
+        }
     }
 
     @Override
@@ -76,7 +76,7 @@ public class HatchableDragonEggBlock extends DragonEggBlock implements IDragonTy
     @Override
     public ActionResultType use(BlockState state, World level, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         if (level.isClientSide) return ActionResultType.SUCCESS;
-        else if (level.dimension().equals(World.END)) return super.use(state, level, pos, player, hand, hit);
+        if (level.dimension().equals(World.END)) return super.use(state, level, pos, player, hand, hit);
         return spawn(level, pos, this.type);
     }
 

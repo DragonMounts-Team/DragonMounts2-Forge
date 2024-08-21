@@ -5,7 +5,6 @@ import net.dragonmounts.registry.CooldownCategory;
 import net.minecraft.nbt.CompoundNBT;
 
 public interface IArmorEffectManager {
-
     @SuppressWarnings("UnusedReturnValue")
     int stackLevel(IArmorEffect effect);
 
@@ -26,7 +25,7 @@ public interface IArmorEffectManager {
 
     CompoundNBT saveNBT();
 
-    void readNBT(CompoundNBT nbt);
+    void readNBT(CompoundNBT tag);
 
     void sendInitPacket();
 

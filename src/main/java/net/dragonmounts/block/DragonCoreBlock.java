@@ -1,11 +1,12 @@
 package net.dragonmounts.block;
 
 import net.dragonmounts.block.entity.DragonCoreBlockEntity;
+import net.dragonmounts.util.BlockUtil;
 import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
+import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.Container;
@@ -13,8 +14,7 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.StateContainer;
-import net.minecraft.stats.Stats;
-import net.minecraft.tileentity.ShulkerBoxTileEntity;
+import net.minecraft.tileentity.ShulkerBoxTileEntity.AnimationStatus;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-import static net.minecraft.block.HorizontalBlock.FACING;
+import static net.minecraft.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
 /**
  * @see net.minecraft.block.ChestBlock
@@ -39,19 +39,25 @@ import static net.minecraft.block.HorizontalBlock.FACING;
  */
 public class DragonCoreBlock extends ContainerBlock {
     @SuppressWarnings("deprecation")
-    private static final SoundType SOUND = new SoundType(1.0F, 1.0F, SoundEvents.CHEST_LOCKED, SoundEvents.STONE_STEP, SoundEvents.BOOK_PUT, SoundEvents.STONE_HIT, SoundEvents.STONE_FALL);
+    public static final SoundType SOUND = new SoundType(1.0F, 1.0F, SoundEvents.CHEST_LOCKED, SoundEvents.STONE_STEP, SoundEvents.BOOK_PUT, SoundEvents.STONE_HIT, SoundEvents.STONE_FALL);
 
-    private static boolean testPositionPredicate(BlockState state, IBlockReader world, BlockPos pos) {
-        TileEntity entity = world.getBlockEntity(pos);
-        if (entity instanceof DragonCoreBlockEntity) {
-            return ((DragonCoreBlockEntity) entity).isClosed();
+    public static boolean tryPlaceAt(World level, BlockPos pos, BlockState core, ItemStack stack) {
+        BlockState state = level.getBlockState(pos);
+        if ((state.canBeReplaced(Fluids.EMPTY) || state.getPistonPushReaction() != PushReaction.BLOCK) && (BlockUtil.isAir(state) || level.destroyBlock(pos, true))) {
+            if (level.setBlock(pos, core, 2)) {
+                TileEntity entity = level.getBlockEntity(pos);
+                if (entity instanceof DragonCoreBlockEntity) {
+                    ((DragonCoreBlockEntity) entity).setItem(0, stack);
+                }
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
-    public DragonCoreBlock() {
-        super(Properties.of(Material.PORTAL, MaterialColor.COLOR_BLACK).strength(2000, 600).sound(SOUND).dynamicShape().noOcclusion().isSuffocating(DragonCoreBlock::testPositionPredicate).isViewBlocking(DragonCoreBlock::testPositionPredicate));
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+    public DragonCoreBlock(Properties props) {
+        super(props);
+        this.registerDefaultState(this.stateDefinition.any().setValue(HORIZONTAL_FACING, Direction.NORTH));
     }
 
     @Override
@@ -74,6 +80,7 @@ public class DragonCoreBlock extends ContainerBlock {
 
     @Nonnull
     @Override
+    @SuppressWarnings("deprecation")
     public BlockRenderType getRenderShape(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
@@ -86,14 +93,15 @@ public class DragonCoreBlock extends ContainerBlock {
         if (player.isSpectator()) return ActionResultType.CONSUME;
         TileEntity entity = level.getBlockEntity(pos);
         if (entity instanceof DragonCoreBlockEntity) {
-            DragonCoreBlockEntity $entity = (DragonCoreBlockEntity) entity;
-            ShulkerBoxTileEntity.AnimationStatus status = $entity.getStatus();
-            if (status != ShulkerBoxTileEntity.AnimationStatus.CLOSING && (status != ShulkerBoxTileEntity.AnimationStatus.CLOSED || level.noCollision(ShulkerAABBHelper.openBoundingBox(pos, Direction.UP)))) {
-                player.openMenu($entity);
-                player.awardStat(Stats.OPEN_SHULKER_BOX);
+            DragonCoreBlockEntity core = (DragonCoreBlockEntity) entity;
+            AnimationStatus status = core.getStatus();
+            if (status != AnimationStatus.CLOSING && (status != AnimationStatus.CLOSED || level.noCollision(ShulkerAABBHelper.openBoundingBox(pos, Direction.UP)))) {
+                player.openMenu(core);
+                level.updateNeighbourForOutputSignal(pos, state.getBlock());
             }
             return ActionResultType.CONSUME;
-        } else return ActionResultType.PASS;
+        }
+        return ActionResultType.PASS;
     }
 
     @Override
@@ -108,7 +116,7 @@ public class DragonCoreBlock extends ContainerBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return this.defaultBlockState().setValue(HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override
@@ -168,18 +176,18 @@ public class DragonCoreBlock extends ContainerBlock {
     @Override
     @SuppressWarnings("deprecation")
     public BlockState rotate(BlockState state, Rotation rotation) {
-        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+        return state.setValue(HORIZONTAL_FACING, rotation.rotate(state.getValue(HORIZONTAL_FACING)));
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("deprecation")
     public BlockState mirror(BlockState state, Mirror mirror) {
-        return state.rotate(mirror.getRotation(state.getValue(FACING)));
+        return state.rotate(mirror.getRotation(state.getValue(HORIZONTAL_FACING)));
     }
 
     @Override
     protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(HORIZONTAL_FACING);
     }
 }

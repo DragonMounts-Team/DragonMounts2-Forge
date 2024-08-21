@@ -69,14 +69,15 @@ public class DragonHeadRenderer extends TileEntityRenderer<DragonHeadBlockEntity
 
     public static void renderHead(DragonVariant variant, double offsetX, double offsetY, double offsetZ, float ticks, float yaw, float scale, boolean flip, MatrixStack matrices, IRenderTypeBuffer buffer, int light, int overlay) {
         VariantAppearance appearance = variant.getAppearance(VariantAppearances.ENDER_FEMALE);
+        DragonHeadModel model = DRAGON_HEAD_MODEL;
         matrices.pushPose();
         matrices.translate(offsetX, offsetY, offsetZ);
         if (flip) {
             matrices.scale(1.0F, -1.0F, -1.0F);
         }
-        DRAGON_HEAD_MODEL.setupAnim(ticks, yaw, 0F, scale);
-        DRAGON_HEAD_MODEL.renderToBuffer(matrices, buffer.getBuffer(appearance.getBodyForBlock()), light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
-        DRAGON_HEAD_MODEL.renderToBuffer(matrices, buffer.getBuffer(appearance.getGlowForBlock()), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        model.setupAnim(ticks, yaw, 0F, scale);
+        model.renderToBuffer(matrices, buffer.getBuffer(appearance.getBodyForBlock()), light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+        model.renderToBuffer(matrices, buffer.getBuffer(appearance.getGlowForBlock()), 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         matrices.popPose();
     }
 }

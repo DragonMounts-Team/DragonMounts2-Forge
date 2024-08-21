@@ -12,11 +12,12 @@
     "ServerPlayNetHandlerMixin",
     "ServerWorldMixin"
   ],
-  "refmap": "dragonmounts.mixins.refmap.json",
+  "refmap": "dragonmounts.refmap.json",
   "client": [
     "CameraMixin",
     "ChatScreenMixin",
     "ClientPlayNetHandlerMixin",
+    "DebugRendererMixin",
     "HeadLayerMixin",
     "ItemRendererMixin",
     "PlayerControllerMixin",

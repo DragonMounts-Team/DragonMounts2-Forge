@@ -113,5 +113,11 @@
       "dragonmounts:item/whistle",
       "dragonmounts:item/whistle1"
     ]
+  },
+  "item.variant_switcher": {
+    "subtitle": "subtitles.dragonmounts.variant_switcher",
+    "sounds": [
+      "dragonmounts:item/variant_switcher"
+    ]
   }
 }

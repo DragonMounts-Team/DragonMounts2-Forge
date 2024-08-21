@@ -36,9 +36,9 @@ public class DMItemStackTileEntityRenderer extends ItemStackTileEntityRenderer {
         Item item = stack.getItem();
         if (item instanceof DragonHeadItem) {
             if (type == TransformType.HEAD) {
-                renderHead(((DragonHeadItem) item).variant, 0.5D, 0.4375D, 0.5D, 180F, 180F, 1.425F, true, matrices, buffer, light, overlay);
+                renderHead(((DragonHeadItem) item).variant, 0.5D, 0.4375D, 0.5D, 0.0F, 180F, 1.425F, true, matrices, buffer, light, overlay);
             } else {
-                renderHead(((DragonHeadItem) item).variant, 0.5D, 0D, 0.5D, 180F, 0F, 0.75F, true, matrices, buffer, light, overlay);
+                renderHead(((DragonHeadItem) item).variant, 0.5D, 0D, 0.5D, 0.0F, 0F, 0.75F, true, matrices, buffer, light, overlay);
             }
         } else if (item instanceof BlockItem) {
             Block block = ((BlockItem) item).getBlock();

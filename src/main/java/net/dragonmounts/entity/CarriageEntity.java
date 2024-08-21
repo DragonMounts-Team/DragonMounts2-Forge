@@ -74,19 +74,19 @@ public class CarriageEntity extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound) {
-        this.entityData.set(DAMAGE, compound.getFloat("damage"));
-        this.entityData.set(FORWARD_DIRECTION, compound.getInt("forward"));
-        this.entityData.set(TIME_SINCE_HIT, compound.getInt("TimeSinceHit"));
-        this.entityData.set(DATA_TYPE, CarriageType.byName(compound.getString("Type")));
+    protected void readAdditionalSaveData(CompoundNBT tag) {
+        this.entityData.set(DAMAGE, tag.getFloat("damage"));
+        this.entityData.set(FORWARD_DIRECTION, tag.getInt("forward"));
+        this.entityData.set(TIME_SINCE_HIT, tag.getInt("TimeSinceHit"));
+        this.entityData.set(DATA_TYPE, CarriageType.byName(tag.getString("Type")));
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound) {
-        compound.putFloat("damage", this.getDamage());
-        compound.putInt("forward", this.getForwardDirection());
-        compound.putInt("TimeSinceHit", this.getTimeSinceHit());
-        compound.putString("Type", this.getCarriageType().getSerializedName().toString());
+    protected void addAdditionalSaveData(CompoundNBT tag) {
+        tag.putFloat("damage", this.getDamage());
+        tag.putInt("forward", this.getForwardDirection());
+        tag.putInt("TimeSinceHit", this.getTimeSinceHit());
+        tag.putString("Type", this.getCarriageType().getSerializedName().toString());
     }
 
     public void setCarriageType(CarriageType type) {

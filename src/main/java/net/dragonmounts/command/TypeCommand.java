@@ -27,8 +27,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.Map;
+import java.util.function.Predicate;
 
-import static net.dragonmounts.command.DMCommand.HAS_PERMISSION_LEVEL_3;
 import static net.dragonmounts.command.DMCommand.createClassCastException;
 import static net.minecraft.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 import static net.minecraft.state.properties.BlockStateProperties.ROTATION_16;
@@ -41,9 +41,9 @@ public class TypeCommand {
 
         protected abstract int getType(CommandContext<CommandSource> context, A argument);
 
-        public <T> RequiredArgumentBuilder<CommandSource, T> load(RequiredArgumentBuilder<CommandSource, T> builder) {
+        public <T> RequiredArgumentBuilder<CommandSource, T> load(RequiredArgumentBuilder<CommandSource, T> builder, Predicate<CommandSource> permission) {
             for (Map.Entry<RegistryKey<DragonType>, DragonType> entry : DragonType.REGISTRY.getEntries()) {
-                builder.then(Commands.literal(entry.getKey().location().toString()).executes(context -> this.setType(context, this.getArgument(context), entry.getValue())));
+                builder.then(Commands.literal(entry.getKey().location().toString()).requires(permission).executes(context -> this.setType(context, this.getArgument(context), entry.getValue())));
             }
             builder.executes(context -> this.getType(context, this.getArgument(context)));
             return builder;
@@ -61,10 +61,7 @@ public class TypeCommand {
             BlockState set(Block block, ServerWorld level, BlockPos pos, BlockState state, DragonType type);
         }
 
-        public static final Setter SETTER_DRAGON_EEG = (block, level, pos, state, type) -> {
-            final Block egg = type.getInstance(HatchableDragonEggBlock.class, null);
-            return egg == null ? state : egg.defaultBlockState();
-        };
+        public static final Setter SETTER_DRAGON_EEG = (block, level, pos, state, type) -> type.ifPresent(HatchableDragonEggBlock.class, HatchableDragonEggBlock::defaultBlockState, state);
         public static final Setter SETTER_DRAGON_HEAD = (block, level, pos, state, type) -> {
             final DragonVariant variant = type.variants.draw(level.random, block == Blocks.DRAGON_HEAD ?
                     DragonVariants.ENDER_FEMALE : block instanceof AbstractDragonHeadBlock ?
@@ -73,7 +70,7 @@ public class TypeCommand {
             return variant == null ? state : variant.headBlock.defaultBlockState().setValue(ROTATION_16, state.getValue(ROTATION_16));
         };
         public static final Setter SETTER_DRAGON_HEAD_WALL = (block, level, pos, state, type) -> {
-            final DragonVariant variant = type.variants.draw(level.random, block == Blocks.DRAGON_HEAD ?
+            final DragonVariant variant = type.variants.draw(level.random, block == Blocks.DRAGON_WALL_HEAD ?
                     DragonVariants.ENDER_FEMALE : block instanceof AbstractDragonHeadBlock ?
                     ((AbstractDragonHeadBlock) block).variant : null
             );
@@ -187,9 +184,9 @@ public class TypeCommand {
         BLOCK_HANDLER.bind(WallSkullBlock.class, BlockHandler.SETTER_DRAGON_HEAD_WALL);
     }
 
-    public static LiteralArgumentBuilder<CommandSource> register() {
-        return Commands.literal("type").requires(HAS_PERMISSION_LEVEL_3)
-                .then(Commands.literal("block").then(BLOCK_HANDLER.load(Commands.argument("pos", BlockPosArgument.blockPos()))))
-                .then(Commands.literal("entity").then(ENTITY_HANDLER.load(Commands.argument("target", EntityArgument.entity()))));
+    public static LiteralArgumentBuilder<CommandSource> register(Predicate<CommandSource> permission) {
+        return Commands.literal("type")
+                .then(Commands.literal("block").then(BLOCK_HANDLER.load(Commands.argument("pos", BlockPosArgument.blockPos()), permission)))
+                .then(Commands.literal("entity").then(ENTITY_HANDLER.load(Commands.argument("target", EntityArgument.entity()), permission)));
     }
 }

@@ -35,7 +35,7 @@ public class DragonHeadWallBlock extends AbstractDragonHeadBlock {
 
     @Override
     public float getYRotation(BlockState state) {
-        return state.getValue(HORIZONTAL_FACING).get2DDataValue() * 90F;
+        return state.getValue(HORIZONTAL_FACING).toYRot();
     }
 
     @Nonnull

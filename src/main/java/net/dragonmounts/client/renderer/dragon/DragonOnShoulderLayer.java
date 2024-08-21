@@ -18,10 +18,10 @@ import net.minecraft.nbt.CompoundNBT;
 
 import javax.annotation.Nonnull;
 
-public class TamableDragonOnShoulderLayer<T extends PlayerEntity> extends LayerRenderer<T, PlayerModel<T>> {
+public class DragonOnShoulderLayer<T extends PlayerEntity> extends LayerRenderer<T, PlayerModel<T>> {
     private final DragonModel model = new DragonModel();
 
-    public TamableDragonOnShoulderLayer(IEntityRenderer<T, PlayerModel<T>> renderer) {
+    public DragonOnShoulderLayer(IEntityRenderer<T, PlayerModel<T>> renderer) {
         super(renderer);
     }
 

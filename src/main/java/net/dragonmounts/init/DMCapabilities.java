@@ -15,9 +15,8 @@ import static net.dragonmounts.DragonMounts.makeId;
 public class DMCapabilities {
     public static final ResourceLocation ARMOR_EFFECT_MANAGER_ID = makeId("armor_effect_manager");
 
-    @SuppressWarnings("CanBeFinal")
     @CapabilityInject(IArmorEffectManager.class)
-    public static Capability<IArmorEffectManager> ARMOR_EFFECT_MANAGER = null;
+    public static Capability<IArmorEffectManager> ARMOR_EFFECT_MANAGER;
 
     public static void register() {
         CapabilityManager.INSTANCE.register(IArmorEffectManager.class, new ArmorEffectManager.Storage(), () -> null);

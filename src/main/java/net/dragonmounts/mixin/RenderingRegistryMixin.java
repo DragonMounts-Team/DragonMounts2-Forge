@@ -1,7 +1,7 @@
 package net.dragonmounts.mixin;
 
 import net.dragonmounts.client.ClientDragonEntity;
-import net.dragonmounts.client.renderer.dragon.TameableDragonRenderer;
+import net.dragonmounts.client.renderer.dragon.DragonRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
@@ -25,6 +25,6 @@ public class RenderingRegistryMixin {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void registerRenderer(CallbackInfo info) {
-        this.entityRenderers.put(TAMEABLE_DRAGON.get(), (IRenderFactory<ClientDragonEntity>) TameableDragonRenderer::new);
+        this.entityRenderers.put(TAMEABLE_DRAGON.get(), (IRenderFactory<ClientDragonEntity>) DragonRenderer::new);
     }
 }

@@ -1,11 +1,11 @@
 package net.dragonmounts.item;
 
 import net.dragonmounts.api.IDragonTypified;
+import net.dragonmounts.entity.dragon.DragonLifeStage;
 import net.dragonmounts.entity.dragon.ServerDragonEntity;
 import net.dragonmounts.entity.dragon.TameableDragonEntity;
 import net.dragonmounts.inventory.DragonInventory;
 import net.dragonmounts.registry.DragonType;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -55,25 +55,29 @@ public class DragonEssenceItem extends Item implements IDragonTypified, IEntityC
     @Nonnull
     @Override
     public ActionResultType useOn(ItemUseContext context) {
-        ItemStack stack = context.getItemInHand();
         World level = context.getLevel();
         if (level.isClientSide) return ActionResultType.SUCCESS;
+        ItemStack stack = context.getItemInHand();
         PlayerEntity player = context.getPlayer();
-        BlockPos clickedPos = context.getClickedPos();
+        BlockPos pos = context.getClickedPos();
         Direction direction = context.getClickedFace();
-        BlockState state = level.getBlockState(clickedPos);
-        BlockPos spawnPos = state.getCollisionShape(level, clickedPos).isEmpty() ? clickedPos : clickedPos.relative(direction);
-        level.addFreshEntity(this.spwanEntity(
+        BlockPos spawnPos = level.getBlockState(pos).getCollisionShape(level, pos).isEmpty() ? pos : pos.relative(direction);
+        level.addFreshEntity(this.loadEntity(
                 (ServerWorld) level,
                 player,
                 stack.getTag(),
                 spawnPos,
-                SpawnReason.EVENT,
+                SpawnReason.SPAWN_EGG,
                 null,
                 true,
-                !Objects.equals(clickedPos, spawnPos) && direction == Direction.UP
+                !Objects.equals(pos, spawnPos) && direction == Direction.UP
         ));
-        if (player == null || !player.abilities.instabuild) stack.shrink(1);
+        if (player != null) {
+            if (!player.abilities.instabuild) {
+                stack.shrink(1);
+            }
+            player.awardStat(Stats.ITEM_USED.get(this));
+        }
         return ActionResultType.CONSUME;
     }
 
@@ -83,22 +87,23 @@ public class DragonEssenceItem extends Item implements IDragonTypified, IEntityC
         BlockRayTraceResult result = getPlayerPOVHitResult(level, player, RayTraceContext.FluidMode.SOURCE_ONLY);
         ItemStack stack = player.getItemInHand(hand);
         if (result.getType() != RayTraceResult.Type.BLOCK) return ActionResult.pass(stack);
-        else if (level.isClientSide) return ActionResult.success(stack);
+        if (level.isClientSide) return ActionResult.success(stack);
         BlockPos pos = result.getBlockPos();
         if (!(level.getBlockState(pos).getBlock() instanceof FlowingFluidBlock)) return ActionResult.pass(stack);
-        else if (level.mayInteract(player, pos) && player.mayUseItemAt(pos, result.getDirection(), stack)) {
-            level.addFreshEntity(this.spwanEntity(
+        if (level.mayInteract(player, pos) && player.mayUseItemAt(pos, result.getDirection(), stack)) {
+            level.addFreshEntity(this.loadEntity(
                     (ServerWorld) level,
                     player,
                     stack.getTag(),
                     pos,
-                    SpawnReason.EVENT,
+                    SpawnReason.SPAWN_EGG,
                     null,
                     false,
                     false
             ));
-            if (!player.abilities.instabuild)
+            if (!player.abilities.instabuild) {
                 stack.shrink(1);
+            }
             player.awardStat(Stats.ITEM_USED.get(this));
             return ActionResult.success(stack);
         }
@@ -125,34 +130,38 @@ public class DragonEssenceItem extends Item implements IDragonTypified, IEntityC
     @Override
     public ItemStack saveEntity(TameableDragonEntity entity) {
         ItemStack stack = new ItemStack(this);
-        CompoundNBT compound = IEntityContainer.simplifyData(entity.saveWithoutId(new CompoundNBT()));
-        compound.remove(FLYING_DATA_PARAMETER_KEY);
-        compound.remove(DragonInventory.DATA_PARAMETER_KEY);
-        compound.remove("UUID");
-        compound.remove("AbsorptionAmount");
-        compound.remove("Age");
-        compound.remove("AgeLocked");
-        compound.remove("ArmorDropChances");
-        compound.remove("ArmorItems");
-        compound.remove("Attributes");
-        compound.remove("Brain");
-        compound.remove("ForcedAge");
-        compound.remove("HandDropChances");
-        compound.remove("HandItems");
-        compound.remove("Health");
-        compound.remove("LifeStage");
-        compound.remove("LoveCause");
-        compound.remove("ShearCooldown");
-        compound.remove("Sitting");
+        CompoundNBT tag = IEntityContainer.simplifyData(entity.saveWithoutId(new CompoundNBT()));
+        tag.remove(FLYING_DATA_PARAMETER_KEY);
+        tag.remove(DragonInventory.DATA_PARAMETER_KEY);
+        tag.remove("UUID");
+        tag.remove("AbsorptionAmount");
+        tag.remove("Age");
+        tag.remove("AgeLocked");
+        tag.remove("ArmorDropChances");
+        tag.remove("ArmorItems");
+        tag.remove("Attributes");
+        tag.remove("Brain");
+        tag.remove("ForcedAge");
+        tag.remove("HandDropChances");
+        tag.remove("HandItems");
+        tag.remove("Health");
+        tag.remove("LifeStage");
+        tag.remove("LoveCause");
+        tag.remove("ShearCooldown");
         LivingEntity owner = entity.getOwner();
-        if (owner != null) compound.putString("OwnerName", ITextComponent.Serializer.toJson(owner.getName()));
-        stack.setTag(compound);
+        if (owner != null) tag.putString("OwnerName", ITextComponent.Serializer.toJson(owner.getName()));
+        stack.setTag(tag);
         return stack;
+    }
+
+    @Override
+    public final Class<TameableDragonEntity> getContentType() {
+        return TameableDragonEntity.class;
     }
 
     @Nonnull
     @Override
-    public ServerDragonEntity spwanEntity(
+    public ServerDragonEntity loadEntity(
             ServerWorld level,
             @Nullable PlayerEntity player,
             @Nullable CompoundNBT tag,
@@ -163,20 +172,21 @@ public class DragonEssenceItem extends Item implements IDragonTypified, IEntityC
             boolean extraOffset
     ) {
         ServerDragonEntity dragon = new ServerDragonEntity(level);
-        if (tag != null) {
+        if (tag == null) {
+            finalizeSpawn(level, dragon, pos, reason, null, null, yOffset, extraOffset);
+            dragon.setDragonType(this.type, true);
+        } else {
             tag.remove("Passengers");
-            finalizeSpawn(level, dragon, pos, SpawnReason.EVENT, null, tag, false, false);
+            finalizeSpawn(level, dragon, pos, reason, null, tag, yOffset, extraOffset);
             dragon.load(dragon.saveWithoutId(new CompoundNBT()).merge(tag));
             dragon.setDragonType(this.type, false);
-        } else {
-            finalizeSpawn(level, dragon, pos, SpawnReason.EVENT, null, null, false, false);
-            dragon.setDragonType(this.type, true);
         }
+        dragon.setLifeStage(DragonLifeStage.NEWBORN, true, false);
         return dragon;
     }
 
     @Override
-    public boolean isEmpty(CompoundNBT tag) {
+    public boolean isEmpty(@Nullable CompoundNBT tag) {
         return false;
     }
 

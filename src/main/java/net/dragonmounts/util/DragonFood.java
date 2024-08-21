@@ -17,8 +17,11 @@ public class DragonFood implements IDragonFood {
     public static final DragonFood COOKED_MEAT = new DragonFood(2500, 3);
 
     public static final IDragonFood HONEY_BOTTLE = (dragon, player, stack, hand) -> {
+        boolean isOwner = dragon.isOwnedBy(player);
         if (dragon.isAgeLocked()) {
-            dragon.setAgeLocked(false);
+            if (isOwner) {
+                dragon.setAgeLocked(false);
+            }
         } else {
             dragon.ageUp(100, true);
         }
@@ -27,7 +30,7 @@ public class DragonFood implements IDragonFood {
             consume(player, hand, stack, new ItemStack(Items.GLASS_BOTTLE));
         }
         player.awardStat(Stats.ITEM_USED.get(Items.HONEY_BOTTLE));
-        if (dragon.isOwnedBy(player)) {
+        if (isOwner) {
             if (dragon.getLifeStage() == DragonLifeStage.ADULT && dragon.canFallInLove()) {
                 dragon.setInLove(player);
             }
@@ -38,12 +41,12 @@ public class DragonFood implements IDragonFood {
 
     public static final IDragonFood POISONOUS_POTATO = new IDragonFood() {
         @Override
-        public boolean isEatable(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand) {
+        public boolean canFeed(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand) {
             return dragon.isOwnedBy(player);
         }
 
         @Override
-        public void eat(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand) {
+        public void feed(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand) {
             if (!dragon.isAgeLocked()) {
                 dragon.setAgeLocked(true);
             }
@@ -84,8 +87,7 @@ public class DragonFood implements IDragonFood {
     }
 
     public static IDragonFood get(Item item) {
-        if (item instanceof IDragonFood) return (IDragonFood) item;
-        return REGISTRY.getOrDefault(item, UNKNOWN);
+        return item instanceof IDragonFood ? (IDragonFood) item : REGISTRY.getOrDefault(item, UNKNOWN);
     }
 
     public static boolean test(Item item) {
@@ -101,7 +103,7 @@ public class DragonFood implements IDragonFood {
     }
 
     @Override
-    public void eat(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand) {
+    public void feed(TameableDragonEntity dragon, PlayerEntity player, ItemStack stack, Hand hand) {
         Item item = stack.getItem();
         if (this.age != 0) dragon.ageUp(this.age, true);
         if (this.health != 0) dragon.setHealth(dragon.getHealth() + this.health);

@@ -25,6 +25,7 @@ import static net.minecraft.state.properties.BlockStateProperties.HORIZONTAL_FAC
 @OnlyIn(Dist.CLIENT)
 public class DragonCoreRenderer extends TileEntityRenderer<DragonCoreBlockEntity> {
     private static final ResourceLocation TEXTURE_LOCATION = makeId("textures/blocks/dragon_core.png");
+    private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(TEXTURE_LOCATION);
     private final ShulkerModel<?> model = new ShulkerModel<>();
 
     public DragonCoreRenderer(TileEntityRendererDispatcher dispatcher) {
@@ -32,18 +33,18 @@ public class DragonCoreRenderer extends TileEntityRenderer<DragonCoreBlockEntity
     }
 
     @Override
-    public void render(@Nonnull DragonCoreBlockEntity blockEntity, float partialTicks, @Nonnull MatrixStack matrices, @Nonnull IRenderTypeBuffer buffer, int light, int overlay) {
-        render(blockEntity.getBlockState().getValue(HORIZONTAL_FACING), this.model, blockEntity.getProgress(partialTicks), matrices, buffer, light, overlay);
+    public void render(@Nonnull DragonCoreBlockEntity core, float partialTicks, @Nonnull MatrixStack matrices, @Nonnull IRenderTypeBuffer buffer, int light, int overlay) {
+        render(core.getBlockState().getValue(HORIZONTAL_FACING), this.model, core.getProgress(partialTicks), matrices, buffer, light, overlay);
     }
 
     public static void render(Direction direction, ShulkerModel<?> model, float progress, @Nonnull MatrixStack matrices, @Nonnull IRenderTypeBuffer buffer, int light, int overlay) {
+        IVertexBuilder builder = buffer.getBuffer(RENDER_TYPE);
         matrices.pushPose();
         matrices.translate(0.5D, 0.5D, 0.5D);
         matrices.scale(0.9995F, 0.9995F, 0.9995F);
         matrices.scale(1.0F, -1.0F, -1.0F);
         matrices.translate(0.0D, -1.0D, 0.0D);
-        IVertexBuilder builder = buffer.getBuffer(RenderType.entityCutoutNoCull(TEXTURE_LOCATION));
-        matrices.mulPose(Vector3f.YP.rotationDegrees(-direction.toYRot()));
+        matrices.mulPose(Vector3f.YP.rotationDegrees(direction.toYRot()));
         model.getBase().render(matrices, builder, light, overlay);
         matrices.translate(0.0D, -progress * 0.5D, 0.0D);
         matrices.mulPose(Vector3f.YP.rotationDegrees(270.0F * progress));

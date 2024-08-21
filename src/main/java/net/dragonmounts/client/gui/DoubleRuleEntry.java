@@ -25,15 +25,15 @@ public class DoubleRuleEntry extends EditGamerulesScreen.ValueEntry {
                 this.input.setTextColor(16711680);
                 screen.markInvalid(this);
             }
-
         });
         this.children.add(this.input);
     }
 
-    public void render(@Nonnull MatrixStack matrixStack, int index, int top, int left, int width, int height, int x, int y, boolean isMouseOver, float partialTicks) {
-        this.renderLabel(matrixStack, top, left);
+    @Override
+    public void render(@Nonnull MatrixStack matrices, int index, int top, int left, int width, int height, int x, int y, boolean hovered, float partialTicks) {
+        this.renderLabel(matrices, top, left);
         this.input.x = left + width - 44;
         this.input.y = top;
-        this.input.render(matrixStack, x, y, partialTicks);
+        this.input.render(matrices, x, y, partialTicks);
     }
 }

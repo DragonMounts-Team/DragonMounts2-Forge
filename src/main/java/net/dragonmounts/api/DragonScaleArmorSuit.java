@@ -10,18 +10,26 @@ import javax.annotation.Nullable;
 import java.util.function.Function;
 
 import static net.dragonmounts.init.DMItemGroups.TOOL_TAB;
+import static net.minecraft.inventory.EquipmentSlotType.*;
 
-public class DragonScaleArmorSuit extends ArmorSuit<DragonScaleArmorItem, DragonScaleMaterial> implements IDragonTypified {
+public class DragonScaleArmorSuit extends ArmorSuit<DragonScaleArmorItem> implements IDragonTypified {
     public static final Function<EquipmentSlotType, Item.Properties> DRAGONMOUNTS_TOOL_TAB = $ -> new Item.Properties().tab(TOOL_TAB);
     public final IDragonScaleArmorEffect effect;
+    public final DragonType type;
 
-    public DragonScaleArmorSuit(@Nonnull DragonScaleMaterial material, @Nullable IDragonScaleArmorEffect effect, Function<EquipmentSlotType, Item.Properties> properties) {
-        super(material, new DragonScaleArmorItem(material, EquipmentSlotType.HEAD, effect, properties.apply(EquipmentSlotType.HEAD)), new DragonScaleArmorItem(material, EquipmentSlotType.CHEST, effect, properties.apply(EquipmentSlotType.CHEST)), new DragonScaleArmorItem(material, EquipmentSlotType.LEGS, effect, properties.apply(EquipmentSlotType.LEGS)), new DragonScaleArmorItem(material, EquipmentSlotType.FEET, effect, properties.apply(EquipmentSlotType.FEET)));
+    public DragonScaleArmorSuit(@Nonnull DragonScaleMaterial material, @Nullable IDragonScaleArmorEffect effect, Function<EquipmentSlotType, Item.Properties> factory) {
+        super(
+                new DragonScaleArmorItem(material, HEAD, effect, factory.apply(HEAD)),
+                new DragonScaleArmorItem(material, CHEST, effect, factory.apply(CHEST)),
+                new DragonScaleArmorItem(material, LEGS, effect, factory.apply(LEGS)),
+                new DragonScaleArmorItem(material, FEET, effect, factory.apply(FEET))
+        );
+        this.type = material.type;
         this.effect = effect;
     }
 
     @Override
     public DragonType getDragonType() {
-        return this.material.type;
+        return this.type;
     }
 }

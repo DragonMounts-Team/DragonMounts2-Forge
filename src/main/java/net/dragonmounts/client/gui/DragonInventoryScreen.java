@@ -3,6 +3,7 @@ package net.dragonmounts.client.gui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.dragonmounts.client.ClientDragonEntity;
+import net.dragonmounts.client.DragonRendererContext;
 import net.dragonmounts.inventory.DragonInventoryContainer;
 import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -40,15 +41,15 @@ public class DragonInventoryScreen extends DisplayEffectsScreen<DragonInventoryC
         this.minecraft.getTextureManager().bind(TEXTURE_LOCATION);
         //noinspection deprecation
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        int left = this.leftPos;
-        int top = this.topPos;
+        final int left = this.leftPos, top = this.topPos;
         this.blit(matrices, left, top, 0, 0, this.imageWidth, this.imageHeight);
         final ClientDragonEntity dragon = (ClientDragonEntity) this.menu.dragon;
         if (dragon.hasChest()) {
             this.blit(matrices, left + 7, top + 75, 7, 141, 162, 54);
         }
-        dragon.renderCrystalBeams = false;// to disable crystal beam
+        final DragonRendererContext context = dragon.context;
+        context.isInGUI = true;
         renderEntityInInventory(left + 60, top + 62, 5, left - x + 60F, top - y + 13F, dragon);
-        dragon.renderCrystalBeams = true;
+        context.isInGUI = false;
     }
 }

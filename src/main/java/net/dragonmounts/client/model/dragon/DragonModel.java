@@ -38,10 +38,10 @@ public class DragonModel extends EntityModel<ClientDragonEntity> {
         this.tail = new DragonTailModelPart(this);
         this.wing = new DragonWingModelPart(this);
         DragonLegConfig[] configs = new DragonLegConfig[]{DragonLegConfig.DEFAULT, DragonLegConfig.SKELETON};
-        this.foreLeftLeg = new ModelHolder<>(type -> new DragonLegModelPart.Fore(this, true, type), configs);
-        this.foreRightLeg = new ModelHolder<>(type -> new DragonLegModelPart.Fore(this, false, type), configs);
-        this.hindLeftLeg = new ModelHolder<>(type -> new DragonLegModelPart.Hind(this, true, type), configs);
-        this.hindRightLeg = new ModelHolder<>(type -> new DragonLegModelPart.Hind(this, false, type), configs);
+        this.foreLeftLeg = new ModelHolder<>((model, config) -> new DragonLegModelPart.Fore(model, true, config), this, configs);
+        this.foreRightLeg = new ModelHolder<>((model, config) -> new DragonLegModelPart.Fore(model, false, config), this, configs);
+        this.hindLeftLeg = new ModelHolder<>((model, config) -> new DragonLegModelPart.Hind(model, true, config), this, configs);
+        this.hindRightLeg = new ModelHolder<>((model, config) -> new DragonLegModelPart.Hind(model, false, config), this, configs);
     }
 
     @Override

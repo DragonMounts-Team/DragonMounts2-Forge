@@ -27,8 +27,8 @@ public class DMConfigScreen extends Screen {
     protected LazyBooleanConfigOption convergePitch;
     protected LazyBooleanConfigOption convergeYaw;
     protected LazyBooleanConfigOption hoverAnimation;
-    protected LazyBooleanConfigOption toggleDescent;
     protected LazyBooleanConfigOption redirectInventory;
+    protected LazyBooleanConfigOption toggleDescent;
 
     public DMConfigScreen(Minecraft minecraft, Screen parent) {
         super(new TranslationTextComponent("options.dragonmounts.config"));
@@ -45,8 +45,8 @@ public class DMConfigScreen extends Screen {
         this.convergePitch = new LazyBooleanConfigOption("options.dragonmounts.converge_pitch_angle", config.converge_pitch_angle, DEFAULT_STRINGIFY, null);
         this.convergeYaw = new LazyBooleanConfigOption("options.dragonmounts.converge_yaw_angle", config.converge_yaw_angle, DEFAULT_STRINGIFY, null);
         this.hoverAnimation = new LazyBooleanConfigOption("options.dragonmounts.hover_animation", config.hover_animation, DEFAULT_STRINGIFY, null);
-        this.toggleDescent = new LazyBooleanConfigOption("key.dragonmounts.descent", config.toggle_descent, TOGGLE_STRINGIFY, null);
         this.redirectInventory = new LazyBooleanConfigOption("options.dragonmounts.redirect_inventory", config.redirect_inventory, DEFAULT_STRINGIFY, new TranslationTextComponent("options.dragonmounts.redirect_inventory.note"));
+        this.toggleDescent = new LazyBooleanConfigOption("key.dragonmounts.descent", config.toggle_descent, TOGGLE_STRINGIFY, null);
         //noinspection DataFlowIssue
         this.list = new OptionsRowList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
         this.list.addBig(this.cameraDistance);
@@ -72,8 +72,8 @@ public class DMConfigScreen extends Screen {
         this.convergePitch.save();
         this.convergeYaw.save();
         this.hoverAnimation.save();
-        this.toggleDescent.save();
         this.redirectInventory.save();
+        this.toggleDescent.save();
     }
 
     @Override

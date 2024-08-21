@@ -20,11 +20,11 @@ public class DragonFollowOwnerGoal extends AbstractDragonGoal {
 
     @Override
     public boolean canUse() {
-        return !(this.dragon.isOrderedToSit() || this.dragon.isLeashed() || this.dragon.isPassenger() || (this.owner = this.dragon.getOwner()) == null || this.owner.isSpectator() || this.dragon.distanceToSqr(this.owner) < START_DISTANCE_SQUARE);
+        return !(this.dragon.isOrderedToSit() || this.dragon.isLeashed() || this.dragon.isPassenger() || this.dragon.getTarget() != null || (this.owner = this.dragon.getOwner()) == null || this.owner.isSpectator() || this.dragon.distanceToSqr(this.owner) < START_DISTANCE_SQUARE);
     }
 
     public boolean canContinueToUse() {
-        return !(this.dragon.isOrderedToSit() || this.dragon.isLeashed() || this.dragon.isPassenger() || (this.navigator = this.dragon.getNavigation()).isDone() || this.dragon.distanceToSqr(this.owner) <= STOP_DISTANCE_SQUARE);
+        return !(this.dragon.isOrderedToSit() || this.dragon.isLeashed() || this.dragon.isPassenger() || (this.navigator = this.dragon.getNavigation()).isDone() || this.owner == null || this.dragon.distanceToSqr(this.owner) <= STOP_DISTANCE_SQUARE);
     }
 
     public void start() {
@@ -40,7 +40,7 @@ public class DragonFollowOwnerGoal extends AbstractDragonGoal {
     public void tick() {
         this.dragon.getLookControl().setLookAt(this.owner, 10F, (float) this.dragon.getMaxHeadXRot());
         if (++this.pathTicks > 0) {
-            this.pathTicks = -10;
+            this.pathTicks = -20;
             this.navigator.moveTo(this.owner, 1D);
         }
     }

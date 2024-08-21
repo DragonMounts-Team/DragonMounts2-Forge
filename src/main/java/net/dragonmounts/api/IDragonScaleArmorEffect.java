@@ -26,25 +26,20 @@ public interface IDragonScaleArmorEffect extends IArmorEffect {
 
     class Advanced extends CooldownCategory implements IDragonScaleArmorEffect {
         public final int cooldown;
-        private String description;
+        protected String description;
 
         public Advanced(int cooldown) {
             this.cooldown = cooldown;
         }
 
-        protected String getOrCreateDescription() {
+        protected String getDescription() {
             if (this.description == null) {
                 this.description = Util.makeDescriptionId("tooltip.armor_effect", this.getSerializedName());
             }
             return this.description;
         }
 
-        protected String getDescription() {
-            return this.getOrCreateDescription();
-        }
-
-        public void appendCooldownInfo(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> tooltips) {
-            tooltips.add(new TranslationTextComponent(this.getDescription()));
+        public final void appendCooldownInfo(List<ITextComponent> tooltips) {
             int value = ArmorEffectManager.getLocalCooldown(this);
             if (value > 0) {
                 tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.armor_effect_remaining_cooldown", stringifyTick(value)));
@@ -57,7 +52,8 @@ public interface IDragonScaleArmorEffect extends IArmorEffect {
         public void appendHoverText(@Nonnull ItemStack stack, @Nullable World world, List<ITextComponent> tooltips) {
             tooltips.add(StringTextComponent.EMPTY);
             this.appendTriggerInfo(stack, world, tooltips);
-            this.appendCooldownInfo(stack, world, tooltips);
+            tooltips.add(new TranslationTextComponent(this.getDescription()));
+            this.appendCooldownInfo(tooltips);
         }
 
         public Advanced withRegistryName(String name) {

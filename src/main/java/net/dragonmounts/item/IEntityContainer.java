@@ -38,7 +38,7 @@ public interface IEntityContainer<T extends Entity> {
     }
 
     @Nullable
-    Entity spwanEntity(
+    Entity loadEntity(
             ServerWorld level,
             @Nullable PlayerEntity player,
             CompoundNBT tag,
@@ -51,7 +51,9 @@ public interface IEntityContainer<T extends Entity> {
 
     ItemStack saveEntity(T entity);
 
-    boolean isEmpty(CompoundNBT tag);
+    Class<T> getContentType();
+
+    boolean isEmpty(@Nullable CompoundNBT tag);
 
     default boolean canSetNbt(MinecraftServer server, Entity entity, @Nullable PlayerEntity player) {
         return !entity.onlyOpCanSetNbt() || player != null && server.getPlayerList().isOp(player.getGameProfile());

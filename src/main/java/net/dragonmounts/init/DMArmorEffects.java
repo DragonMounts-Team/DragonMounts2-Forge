@@ -6,6 +6,8 @@ import net.dragonmounts.capability.IArmorEffectManager;
 import net.dragonmounts.network.SRiposteEffectPacket;
 import net.dragonmounts.registry.CooldownCategory;
 import net.dragonmounts.util.Values;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -158,7 +160,8 @@ public class DMArmorEffects {
             tooltips.add(StringTextComponent.EMPTY);
             this.appendTriggerInfo(stack, world, tooltips);
             tooltips.add(new TranslationTextComponent(FISHING_LUCK));
-            this.appendCooldownInfo(stack, world, tooltips);
+            tooltips.add(new TranslationTextComponent(this.getDescription()));
+            this.appendCooldownInfo(tooltips);
         }
     }.withRegistryName(MOD_ID + ":forest");
 
@@ -204,7 +207,8 @@ public class DMArmorEffects {
             tooltips.add(StringTextComponent.EMPTY);
             this.appendTriggerInfo(stack, world, tooltips);
             tooltips.add(new TranslationTextComponent(FISHING_LUCK));
-            this.appendCooldownInfo(stack, world, tooltips);
+            tooltips.add(new TranslationTextComponent(this.getDescription()));
+            this.appendCooldownInfo(tooltips);
         }
     }.withRegistryName(MOD_ID + ":sunlight");
 
@@ -289,13 +293,27 @@ public class DMArmorEffects {
                 target.knockback(0.4F, 1, 1);
                 if (ice) {
                     addOrMergeEffect(target, Effects.MOVEMENT_SLOWDOWN, 200, 1, false, true, true);
+                    entity.invulnerableTime = 0;
                     entity.hurt(DamageSource.GENERIC, 1F);
                 }
-            } else if (ice) {
-                entity.hurt(DamageSource.GENERIC, 1F);
-            }
-            if (nether) {
-                entity.setSecondsOnFire(10);
+                if (nether) {
+                    int current = entity.getRemainingFireTicks();
+                    int level = EnchantmentHelper.getEnchantmentLevel(Enchantments.FIRE_PROTECTION, target);
+                    if (level > 0) {
+                        int time = 200 - 30 * level;
+
+                    }
+                    entity.setSecondsOnFire(10);
+                }
+            } else {
+                if (ice) {
+                    entity.invulnerableTime = 0;
+                    entity.hurt(DamageSource.GENERIC, 1F);
+                }
+                if (nether) {
+                    int current = entity.getRemainingFireTicks();
+                    entity.setRemainingFireTicks(current > 0 ? current + 200 : 200);
+                }
             }
         }
         if (ice) manager.setCooldown(DMArmorEffects.ICE, DMArmorEffects.ICE.cooldown);

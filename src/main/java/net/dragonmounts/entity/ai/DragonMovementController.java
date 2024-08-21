@@ -6,8 +6,11 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.controller.MovementController;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.vector.Vector3d;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DragonMovementController extends MovementController {
+    private static final Logger LOGGER = LogManager.getLogger();
     public final TameableDragonEntity dragon;
 
     public DragonMovementController(TameableDragonEntity dragon) {
@@ -18,6 +21,11 @@ public class DragonMovementController extends MovementController {
 
     @Override
     public void tick() {
+        if (this.dragon.isFlying()) return;
+        super.tick();
+    }
+
+    public void tick_1_12() {
         // original movement behavior if the entity isn't flying
         if (this.dragon.isFlying()) {
             Vector3d current = dragon.position();

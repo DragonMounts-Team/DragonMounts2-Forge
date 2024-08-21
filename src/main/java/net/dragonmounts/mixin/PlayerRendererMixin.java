@@ -1,6 +1,6 @@
 package net.dragonmounts.mixin;
 
-import net.dragonmounts.client.renderer.dragon.TamableDragonOnShoulderLayer;
+import net.dragonmounts.client.renderer.dragon.DragonOnShoulderLayer;
 import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.LivingRenderer;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerRendererMixin extends LivingRenderer<AbstractClientPlayerEntity, PlayerModel<AbstractClientPlayerEntity>> {
     @Inject(method = "<init>(Lnet/minecraft/client/renderer/entity/EntityRendererManager;)V", at = @At("TAIL"))
     public void addDragonLayer(EntityRendererManager $, CallbackInfo info) {
-        this.addLayer(new TamableDragonOnShoulderLayer<>(this));
+        this.addLayer(new DragonOnShoulderLayer<>(this));
     }
 
     private PlayerRendererMixin(EntityRendererManager a, PlayerModel<AbstractClientPlayerEntity> b, float c) {super(a, b, c);}

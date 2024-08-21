@@ -97,5 +97,8 @@ public class DMSoundDefinitionsProvider extends SoundDefinitionsProvider {
                         sound(makeId("item/whistle")),
                         sound(makeId("item/whistle1"))
                 ));
+        this.add(VARIANT_SWITCHER, definition()
+                .subtitle(TITLE_PREFIX + "variant_switcher")
+                .with(sound(makeId("item/variant_switcher"))));
     }
 }

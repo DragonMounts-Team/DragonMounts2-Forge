@@ -19,7 +19,6 @@ import static net.dragonmounts.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
 
 public class DragonScaleSwordItem extends SwordItem implements IDragonTypified {
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_scale_sword";
-
     public final DragonType type;
 
     public DragonScaleSwordItem(

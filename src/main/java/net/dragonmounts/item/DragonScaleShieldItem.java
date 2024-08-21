@@ -20,16 +20,11 @@ import static net.dragonmounts.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
 
 public class DragonScaleShieldItem extends ShieldItem implements IDragonTypified {
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_scale_shield";
-
     public final DragonScaleMaterial material;
 
     public DragonScaleShieldItem(DragonScaleMaterial material, Properties props) {
         super(props.defaultDurability(material.getDurabilityForShield()));
         this.material = material;
-    }
-
-    public DragonScaleMaterial getMaterial() {
-        return this.material;
     }
 
     @Override
@@ -39,7 +34,7 @@ public class DragonScaleShieldItem extends ShieldItem implements IDragonTypified
 
     @Override
     public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return this.material.getRepairIngredient().test(repair);
+        return this.material.repairIngredient.test(repair);
     }
 
     @Override

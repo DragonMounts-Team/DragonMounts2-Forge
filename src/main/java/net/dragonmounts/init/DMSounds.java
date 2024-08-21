@@ -25,6 +25,7 @@ public class DMSounds {
     public static final RegistryObject<SoundEvent> DRAGON_WHISTLE = createSoundEvent("item.whistle");
     public static final RegistryObject<SoundEvent> DRAGON_ROAR = createSoundEvent("mob.dragon.roar");
     public static final RegistryObject<SoundEvent> HATCHLING_DRAGON_ROAR = createSoundEvent("mob.dragon.hatchlingroar");
+    public static final RegistryObject<SoundEvent> VARIANT_SWITCHER = createSoundEvent("item.variant_switcher");
 
     private static RegistryObject<SoundEvent> createSoundEvent(final String name) {
         return SOUNDS.register(name, () -> new SoundEvent(makeId(name)));

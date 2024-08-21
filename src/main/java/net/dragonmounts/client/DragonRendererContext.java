@@ -24,7 +24,7 @@ import static net.dragonmounts.util.math.MathUtil.TO_RAD_FACTOR;
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class DragonAnimationContext {
+public class DragonRendererContext {
     // constants
     private static final int JAW_OPENING_TIME_FOR_ATTACK = 5;
     private static final float HEAD_TILT_DURING_BREATH = -0.1F;
@@ -50,7 +50,8 @@ public class DragonAnimationContext {
     private double prevRenderYawOffset;
     private double yawAbs;
     private boolean exhaling;
-    private boolean isSaddled;
+    public boolean isSaddled;
+    public boolean isInGUI;
 
     // timing vars
     private float animBase;
@@ -136,7 +137,7 @@ public class DragonAnimationContext {
     // Y rotation angles for air, thigh only
     private final float[] yAirAll = {-0.1F, 0.1F};
 
-    public DragonAnimationContext(ClientDragonEntity dragon) {
+    public DragonRendererContext(ClientDragonEntity dragon) {
         this.dragon = dragon;
         //just to avoid nullptr:
         this.appearance = (this.variant = dragon.getVariant()).getAppearance(VariantAppearances.ENDER_FEMALE);
@@ -217,7 +218,6 @@ public class DragonAnimationContext {
             this.pitchTrail.fill(this.getModelPitch(0F));
         }
         // update flags
-        this.isSaddled = this.dragon.isSaddled();
         boolean onGround = !this.dragon.isFlying();
         // don't move anything during death sequence
         if (this.dragon.isDeadOrDying()) {

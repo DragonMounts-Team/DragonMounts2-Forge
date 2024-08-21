@@ -6,7 +6,6 @@ import net.dragonmounts.network.SInitCooldownPacket;
 import net.dragonmounts.network.SSyncCooldownPacket;
 import net.dragonmounts.registry.CooldownCategory;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -80,9 +79,11 @@ public final class ArmorEffectManager implements IArmorEffectManager {
     public static void init(SInitCooldownPacket packet) {
         if (LOCAL_MANAGER == null) return;//?
         LOCAL_MANAGER.cdN = 0;
-        if (packet.size > LOCAL_MANAGER.cdMask) {
+        final int length = packet.size;
+        final int[] data = packet.data;
+        if (length > LOCAL_MANAGER.cdMask) {
             int size = LOCAL_MANAGER.cdRef.length << 1;
-            while (packet.size >= size) size <<= 1;
+            while (length >= size) size <<= 1;
             LOCAL_MANAGER.cdMask = size - 1;
             LOCAL_MANAGER.cdRef = new int[size];
             fill(LOCAL_MANAGER.cdKey = new int[size], -1);
@@ -90,9 +91,9 @@ public final class ArmorEffectManager implements IArmorEffectManager {
         } else {
             fill(LOCAL_MANAGER.cdKey, -1);
         }
-        for (int i = 0, j = 0, k; i < packet.size; ++i) {
-            if ((k = packet.data[i++]) >= 0) {
-                j = LOCAL_MANAGER.setCdImpl(k, packet.data[i], j);
+        for (int i = 0, j = 0, k; i < length; ++i) {
+            if ((k = data[i++]) >= 0) {
+                j = LOCAL_MANAGER.setCdImpl(k, data[i], j);
             }
         }
     }
@@ -126,13 +127,11 @@ public final class ArmorEffectManager implements IArmorEffectManager {
             } else if (key == category) {
                 if (cooldown > 0) {
                     cdDat[pos] = cooldown;
-                } else {
-                    for (int i = 0; i < this.cdN; ++i) {
-                        if (cdRef[i] == pos) {
-                            arraycopy(cdRef, i + 1, cdRef, i, --this.cdN - i);
-                            this.reassign(pos, i - 1);
-                            return cursor == pos ? pos + 1 : cursor;
-                        }
+                } else for (int i = 0; i < this.cdN; ++i) {
+                    if (cdRef[i] == pos) {
+                        arraycopy(cdRef, i + 1, cdRef, i, --this.cdN - i);
+                        this.reassign(pos, i - 1);
+                        return cursor == pos ? pos + 1 : cursor;
                     }
                 }
                 return cursor == pos ? pos + 1 : cursor;
@@ -163,28 +162,31 @@ public final class ArmorEffectManager implements IArmorEffectManager {
             this.setCdImpl(id, cooldown, 0);
         }
         if (!this.player.level.isClientSide) {
-            CHANNEL.send(PLAYER.with((Supplier) player::getEntity), new SSyncCooldownPacket(id, cooldown));
+            CHANNEL.send(PLAYER.with((Supplier) this.player::getEntity), new SSyncCooldownPacket(id, cooldown));
         }
     }
 
     @Override
     public CompoundNBT saveNBT() {
         final int[] cdRef = this.cdRef, cdKey = this.cdKey, cdDat = this.cdDat;
-        CompoundNBT compound = new CompoundNBT();
+        CompoundNBT tag = new CompoundNBT();
         for (int i = 0, j, v, n = this.cdN; i < n; ++i) {
             if ((v = cdDat[j = cdRef[i]]) > 0) {
-                compound.putInt(CooldownCategory.REGISTRY.getValue(cdKey[j]).getSerializedName().toString(), v);
+                CooldownCategory category = CooldownCategory.REGISTRY.getValue(cdKey[j]);
+                if (category != null) {
+                    tag.putInt(category.getSerializedName().toString(), v);
+                }
             }
         }
-        return compound;
+        return tag;
     }
 
 
     @Override
-    public void readNBT(CompoundNBT nbt) {
+    public void readNBT(CompoundNBT tag) {
         for (CooldownCategory category : CooldownCategory.REGISTRY) {
             String name = category.getSerializedName().toString();
-            if (nbt.contains(name)) {
+            if (tag.contains(name)) {
                 if (this.cdN == this.cdRef.length) {
                     final int[] ref = this.cdRef, key = this.cdKey, dat = this.cdDat;
                     final int n = this.cdN;
@@ -197,9 +199,9 @@ public final class ArmorEffectManager implements IArmorEffectManager {
                     for (int i = temp = 0, j; i < n; ++i) {//temp: cursor
                         temp = this.setCdImpl(key[j = ref[i]], dat[j], temp);
                     }
-                    this.setCdImpl(category.getId(), nbt.getInt(name), temp);
+                    this.setCdImpl(category.getId(), tag.getInt(name), temp);
                 } else {
-                    this.setCdImpl(category.getId(), nbt.getInt(name), 0);
+                    this.setCdImpl(category.getId(), tag.getInt(name), 0);
                 }
             }
         }
@@ -271,26 +273,28 @@ public final class ArmorEffectManager implements IArmorEffectManager {
     @Override
     public int setLevel(final IArmorEffect effect, final int level) {
         final IArmorEffect[] lvlKey = this.lvlKey;
-        for (int i = 0, n = this.lvlN; i < n; ++i) {
+        final int n = this.lvlN;
+        for (int i = 0; i < n; ++i) {
             if (lvlKey[i] == effect) {
                 return this.lvlDat[i] = level;
             }
         }
-        this.validateLvlSize();//may assign new array to this.lvlKey
-        this.lvlKey[this.lvlN] = effect;
+        this.validateLvlSize();//may assign new array to `this.lvlKey`
+        this.lvlKey[n] = effect;
         return this.lvlDat[this.lvlN++] = level;
     }
 
     @Override
     public int stackLevel(final IArmorEffect effect) {
         final IArmorEffect[] lvlKey = this.lvlKey;
-        for (int i = 0, n = this.lvlN; i < n; ++i) {
+        final int n = this.lvlN;
+        for (int i = 0; i < n; ++i) {
             if (lvlKey[i] == effect) {
                 return ++this.lvlDat[i];
             }
         }
-        this.validateLvlSize();//may assign new array to this.lvlKey
-        this.lvlKey[this.lvlN] = effect;
+        this.validateLvlSize();//may assign new array to `this.lvlKey`
+        this.lvlKey[n] = effect;
         return this.lvlDat[this.lvlN++] = 1;
     }
 
@@ -317,51 +321,44 @@ public final class ArmorEffectManager implements IArmorEffectManager {
                     return this.lvlDat[j];
                 }
             }
-        } else {
-            for (int i = 0, n = this.lvlN; i < n; ++i) {
-                if (lvlKey[i] == effect) {
-                    return this.lvlDat[i];
-                }
+        } else for (int i = 0, n = this.lvlN; i < n; ++i) {
+            if (lvlKey[i] == effect) {
+                return this.lvlDat[i];
             }
         }
         return 0;
     }
 
-    private void checkSlot(final EquipmentSlotType slot) {
-        final ItemStack stack = this.player.getItemBySlot(slot);
-        final Item item = stack.getItem();
-        if (item instanceof IArmorEffectSource) {
-            ((IArmorEffectSource) item).affect(this, this.player, stack);
-        }
-    }
-
     @Override
     public void tick() {
-        final int[] cdRef = this.cdRef, cdDat = this.cdDat;
+        final int[] cdRef = this.cdRef, cdDat = this.cdDat, lvlDat = this.lvlDat;
+        final PlayerEntity player = this.player;
         for (int i = 0, j; i < this.cdN; ++i) {
             if (--cdDat[j = cdRef[i]] < 1) {
                 arraycopy(cdRef, i + 1, cdRef, i, --this.cdN - i);
                 this.reassign(j, --i);
             }
         }
-        this.activeN = this.lvlN = 0;
-        this.checkSlot(EquipmentSlotType.HEAD);
-        this.checkSlot(EquipmentSlotType.CHEST);
-        this.checkSlot(EquipmentSlotType.LEGS);
-        this.checkSlot(EquipmentSlotType.FEET);
-        final IArmorEffect[] lvlKey = this.lvlKey;
-        final int[] lvlDat = this.lvlDat;
-        int[] lvlRef = this.lvlRef;
-        for (int i = 0, n = this.lvlN; i < n; ++i) {
-            final IArmorEffect effect = lvlKey[i];
-            if (effect.activate(this, this.player, lvlDat[i])) {
-                if (this.activeN == lvlRef.length) {
-                    arraycopy(this.lvlRef, 0, lvlRef = new int[this.activeN + 4], 0, this.activeN);
-                    this.lvlRef = lvlRef;
-                }
-                lvlRef[this.activeN++] = i;
+        int sum = this.activeN = this.lvlN = 0;
+        for (ItemStack stack : player.getArmorSlots()) {
+            Item item = stack.getItem();
+            if (item instanceof IArmorEffectSource) {
+                ((IArmorEffectSource) item).affect(this, player, stack);
             }
         }
+        final IArmorEffect[] lvlKey = this.lvlKey;
+        int[] lvlRef = this.lvlRef;
+        for (int i = 0, end = this.lvlN; i < end; ++i) {
+            final IArmorEffect effect = lvlKey[i];
+            if (effect.activate(this, player, lvlDat[i])) {
+                if (sum == lvlRef.length) {
+                    arraycopy(this.lvlRef, 0, lvlRef = new int[sum + 4], 0, sum);
+                    this.lvlRef = lvlRef;
+                }
+                lvlRef[sum++] = i;
+            }
+        }
+        this.activeN = sum;
     }
 
     public static class Storage implements Capability.IStorage<IArmorEffectManager> {
@@ -372,8 +369,8 @@ public final class ArmorEffectManager implements IArmorEffectManager {
         }
 
         @Override
-        public void readNBT(Capability<IArmorEffectManager> capability, IArmorEffectManager instance, Direction side, INBT nbt) {
-            instance.readNBT((CompoundNBT) nbt);
+        public void readNBT(Capability<IArmorEffectManager> capability, IArmorEffectManager instance, Direction side, INBT tag) {
+            instance.readNBT((CompoundNBT) tag);
         }
     }
 
@@ -390,8 +387,8 @@ public final class ArmorEffectManager implements IArmorEffectManager {
         }
 
         @Override
-        public void deserializeNBT(CompoundNBT nbt) {
-            ARMOR_EFFECT_MANAGER.getStorage().readNBT(ARMOR_EFFECT_MANAGER, this.host.dragonmounts$getManager(), null, nbt);
+        public void deserializeNBT(CompoundNBT tag) {
+            ARMOR_EFFECT_MANAGER.getStorage().readNBT(ARMOR_EFFECT_MANAGER, this.host.dragonmounts$getManager(), null, tag);
         }
 
         @Nonnull

@@ -15,22 +15,22 @@ import net.minecraft.util.text.TranslationTextComponent;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.function.Predicate;
 
-import static net.dragonmounts.command.DMCommand.*;
+import static net.dragonmounts.command.DMCommand.createClassCastException;
+import static net.dragonmounts.command.DMCommand.getSingleProfileOrException;
 
 public class FreeCommand {
-    public static LiteralArgumentBuilder<CommandSource> register() {
-        return Commands.literal("free")
-                .requires(HAS_PERMISSION_LEVEL_3)
-                .then(Commands.argument("targets", EntityArgument.entities())
-                        .executes(context -> free(context, EntityArgument.getEntities(context, "targets")))
-                        .then(Commands.argument("owner", GameProfileArgument.gameProfile())
-                                .executes(context -> free(context, EntityArgument.getEntities(context, "targets"), getSingleProfileOrException(context, "owner").getId()))
-                        )
-                        .then(Commands.argument("forced", BoolArgumentType.bool())
-                                .executes(context -> free(context, BoolArgumentType.getBool(context, "forced")))
-                        )
-                );
+    public static LiteralArgumentBuilder<CommandSource> register(Predicate<CommandSource> permission) {
+        return Commands.literal("free").requires(permission).then(Commands.argument("targets", EntityArgument.entities())
+                .executes(context -> free(context, EntityArgument.getEntities(context, "targets")))
+                .then(Commands.argument("owner", GameProfileArgument.gameProfile())
+                        .executes(context -> free(context, EntityArgument.getEntities(context, "targets"), getSingleProfileOrException(context, "owner").getId()))
+                )
+                .then(Commands.argument("forced", BoolArgumentType.bool())
+                        .executes(context -> free(context, BoolArgumentType.getBool(context, "forced")))
+                )
+        );
     }
 
     private static int free(CommandContext<CommandSource> context, Collection<? extends Entity> targets) throws CommandSyntaxException {
@@ -48,7 +48,7 @@ public class FreeCommand {
     public static int free(CommandContext<CommandSource> context, Collection<? extends Entity> targets, @Nullable UUID owner, boolean forced) {
         CommandSource source = context.getSource();
         Entity cache = null;
-        boolean flag = true;
+        boolean failed = true;
         int count = 0;
         for (Entity target : targets) {
             if (target instanceof TameableEntity) {
@@ -58,16 +58,15 @@ public class FreeCommand {
                     entity.setOwnerUUID(null);
                     ++count;
                 }
-                flag = false;
+                failed = false;
                 cache = entity;
             }
         }
-        if (flag) {
-            if (targets.size() == 1) {
-                source.sendFailure(createClassCastException(targets.iterator().next(), TameableEntity.class));
-            } else {
-                source.sendFailure(new TranslationTextComponent("commands.dragonmounts.free.multiple", count));
-            }
+        if (failed) {
+            source.sendFailure(targets.size() == 1
+                    ? createClassCastException(targets.iterator().next(), TameableEntity.class)
+                    : new TranslationTextComponent("commands.dragonmounts.free.multiple", count)
+            );
         } else if (count == 1) {
             source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.free.single", cache.getDisplayName()), true);
         } else {

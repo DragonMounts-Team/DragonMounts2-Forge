@@ -32,9 +32,9 @@ public class AerialDragonNestPiece extends DragonNestPiece {
         this.loadTemplate(template, pivot);
     }
 
-    public AerialDragonNestPiece(TemplateManager manager, CompoundNBT compound) {
-        super(DMFeatures.AERIAL_DRAGON_NEST_PIECE_TYPE, compound);
-        this.distance = compound.getInt("Distance");
+    public AerialDragonNestPiece(TemplateManager manager, CompoundNBT tag) {
+        super(DMFeatures.AERIAL_DRAGON_NEST_PIECE_TYPE, tag);
+        this.distance = tag.getInt("Distance");
         Template template = manager.getOrCreate(this.templateLocation);
         this.loadTemplate(template, new BlockPos(template.getSize().getX() >> 1, 0, template.getSize().getZ() >> 1));
     }
@@ -49,9 +49,9 @@ public class AerialDragonNestPiece extends DragonNestPiece {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putInt("Distance", this.distance);
+    protected void addAdditionalSaveData(CompoundNBT tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putInt("Distance", this.distance);
     }
 
     @Override

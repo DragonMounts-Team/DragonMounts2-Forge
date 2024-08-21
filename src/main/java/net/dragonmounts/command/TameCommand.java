@@ -17,22 +17,22 @@ import net.minecraft.world.server.ServerWorld;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.function.Predicate;
 
-import static net.dragonmounts.command.DMCommand.*;
+import static net.dragonmounts.command.DMCommand.createClassCastException;
+import static net.dragonmounts.command.DMCommand.getSingleProfileOrException;
 
 public class TameCommand {
-    public static LiteralArgumentBuilder<CommandSource> register() {
-        return Commands.literal("tame")
-                .requires(HAS_PERMISSION_LEVEL_3)
-                .then(Commands.argument("targets", EntityArgument.entities())
-                        .executes(context -> tame(context, EntityArgument.getEntities(context, "targets")))
-                        .then(Commands.argument("owner", GameProfileArgument.gameProfile())
-                                .executes(context -> tame(context, EntityArgument.getEntities(context, "targets"), getSingleProfileOrException(context, "owner")))
-                                .then(Commands.argument("forced", BoolArgumentType.bool()).executes(
-                                        context -> tame(context, BoolArgumentType.getBool(context, "forced"))
-                                ))
-                        ));
-
+    public static LiteralArgumentBuilder<CommandSource> register(Predicate<CommandSource> permission) {
+        return Commands.literal("tame").requires(permission).then(Commands.argument("targets", EntityArgument.entities())
+                .executes(context -> tame(context, EntityArgument.getEntities(context, "targets")))
+                .then(Commands.argument("owner", GameProfileArgument.gameProfile())
+                        .executes(context -> tame(context, EntityArgument.getEntities(context, "targets"), getSingleProfileOrException(context, "owner")))
+                        .then(Commands.argument("forced", BoolArgumentType.bool()).executes(
+                                context -> tame(context, BoolArgumentType.getBool(context, "forced"))
+                        ))
+                )
+        );
     }
 
     private static int tame(CommandContext<CommandSource> context, Collection<? extends Entity> targets) throws CommandSyntaxException {
@@ -53,40 +53,39 @@ public class TameCommand {
         UUID uuid = owner.getId();
         PlayerEntity player = level.getPlayerByUUID(uuid);
         Entity cache = null;
-        boolean flag = true;
+        boolean failed = true;
         int count = 0;
         if (player == null) {
             for (Entity target : targets) {
                 if (target instanceof TameableEntity) {
-                    TameableEntity entity = ((TameableEntity) target);
+                    TameableEntity entity = (TameableEntity) target;
                     if (forced || entity.getOwnerUUID() == null) {
                         entity.setTame(true);
                         entity.setOwnerUUID(uuid);
                         ++count;
                     }
-                    flag = false;
+                    failed = false;
                     cache = entity;
                 }
             }
         } else {
             for (Entity target : targets) {
                 if (target instanceof TameableEntity) {
-                    TameableEntity entity = ((TameableEntity) target);
+                    TameableEntity entity = (TameableEntity) target;
                     if (forced || entity.getOwnerUUID() == null) {
                         entity.tame(player);
                         ++count;
                     }
-                    flag = false;
+                    failed = false;
                     cache = entity;
                 }
             }
         }
-        if (flag) {
-            if (targets.size() == 1) {
-                source.sendFailure(createClassCastException(targets.iterator().next(), TameableEntity.class));
-            } else {
-                source.sendFailure(new TranslationTextComponent("commands.dragonmounts.tame.multiple", count, owner.getName()));
-            }
+        if (failed) {
+            source.sendFailure(targets.size() == 1
+                    ? createClassCastException(targets.iterator().next(), TameableEntity.class)
+                    : new TranslationTextComponent("commands.dragonmounts.tame.multiple", count, owner.getName())
+            );
         } else if (count == 1) {
             source.sendSuccess(new TranslationTextComponent("commands.dragonmounts.tame.single", cache.getDisplayName(), owner.getName()), true);
         } else {

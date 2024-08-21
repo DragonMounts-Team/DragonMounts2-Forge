@@ -10,7 +10,9 @@ import net.dragonmounts.util.DragonFood;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.SaddleItem;
+import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
@@ -26,21 +28,46 @@ import static net.dragonmounts.network.DMPacketHandler.CHANNEL;
 
 @ParametersAreNonnullByDefault
 public class ClientDragonEntity extends TameableDragonEntity {
-    public final DragonAnimationContext context = new DragonAnimationContext(this);
+    public final DragonRendererContext context = new DragonRendererContext(this);
     public boolean renderCrystalBeams = true;
-    private byte rideFlag = -1;
+    private int rideFlag = -1;
 
     public ClientDragonEntity(EntityType<? extends TameableDragonEntity> type, World world) {
         super(type, world);
     }
 
+    @Override
+    public void setSaddle(@Nonnull ItemStack stack, boolean sync) {
+        this.context.isSaddled = this.isSaddled = stack.getItem() instanceof SaddleItem;
+        if (!stack.isEmpty()) {
+            stack.setCount(1);
+        }
+        this.saddle = stack;
+    }
+
+    @Override
+    public void onSyncedDataUpdated(DataParameter<?> key) {
+        if (DATA_SADDLE_ITEM.equals(key)) {
+            this.saddle = this.entityData.get(DATA_SADDLE_ITEM);
+            this.context.isSaddled = this.isSaddled = this.saddle.getItem() instanceof SaddleItem;
+        } else if (DATA_ARMOR_ITEM.equals(key)) {
+            this.armor = this.entityData.get(DATA_ARMOR_ITEM);
+        } else if (DATA_CHEST_ITEM.equals(key)) {
+            this.chest = this.entityData.get(DATA_CHEST_ITEM);
+            this.hasChest = Tags.Items.CHESTS_WOODEN.contains(this.chest.getItem());
+        } else {
+            super.onSyncedDataUpdated(key);
+        }
+    }
+
     public void onWingsDown(float speed) {
         if (!this.isInWater()) {
+            Vector3d pos = this.position();
             // play wing sounds
             this.level.playLocalSound(
-                    this.getX(),
-                    this.getY(),
-                    this.getZ(),
+                    pos.x,
+                    pos.y,
+                    pos.z,
                     SoundEvents.ENDER_DRAGON_FLAP,
                     SoundCategory.VOICE,
                     (1 - speed) * this.getVoicePitch(),
@@ -58,7 +85,6 @@ public class ClientDragonEntity extends TameableDragonEntity {
             this.checkCrystals();
         }
         super.aiStep();
-        this.context.tick(this.firstTick);
         if (!this.isAgeLocked()) {
             if (this.age < 0) {
                 ++this.age;
@@ -66,6 +92,7 @@ public class ClientDragonEntity extends TameableDragonEntity {
                 --this.age;
             }
         }
+        this.context.tick(this.firstTick);
     }
 
     @Override

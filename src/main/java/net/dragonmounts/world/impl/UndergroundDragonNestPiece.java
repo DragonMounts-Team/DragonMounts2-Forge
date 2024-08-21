@@ -31,8 +31,8 @@ public class UndergroundDragonNestPiece extends DragonNestPiece {
         this.loadTemplate(template, pivot);
     }
 
-    public UndergroundDragonNestPiece(TemplateManager manager, CompoundNBT compound) {
-        super(DMFeatures.UNDERGROUND_DRAGON_NEST_PIECE_TYPE, compound);
+    public UndergroundDragonNestPiece(TemplateManager manager, CompoundNBT tag) {
+        super(DMFeatures.UNDERGROUND_DRAGON_NEST_PIECE_TYPE, tag);
         Template template = manager.getOrCreate(this.templateLocation);
         this.loadTemplate(template, new BlockPos(template.getSize().getX() >> 1, 0, template.getSize().getZ() >> 1));
     }

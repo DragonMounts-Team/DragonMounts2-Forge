@@ -1,10 +1,11 @@
 package net.dragonmounts.entity.dragon;
 
 import net.dragonmounts.api.IDragonFood;
-import net.dragonmounts.block.entity.DragonCoreBlockEntity;
+import net.dragonmounts.block.DragonCoreBlock;
 import net.dragonmounts.config.ServerConfig;
 import net.dragonmounts.data.tag.DMItemTags;
 import net.dragonmounts.entity.ai.DragonFollowOwnerGoal;
+import net.dragonmounts.entity.ai.DragonHurtByTargetGoal;
 import net.dragonmounts.entity.ai.PlayerControlledGoal;
 import net.dragonmounts.init.DMBlocks;
 import net.dragonmounts.init.DMEntities;
@@ -13,12 +14,14 @@ import net.dragonmounts.init.DragonTypes;
 import net.dragonmounts.inventory.DragonInventory;
 import net.dragonmounts.inventory.LimitedSlot;
 import net.dragonmounts.item.DragonEssenceItem;
+import net.dragonmounts.network.CRideDragonPacket;
 import net.dragonmounts.network.SFeedDragonPacket;
 import net.dragonmounts.network.SSyncDragonAgePacket;
 import net.dragonmounts.registry.DragonType;
 import net.dragonmounts.registry.DragonVariant;
 import net.dragonmounts.util.DragonFood;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -32,10 +35,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SaddleItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.potion.Effects;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
@@ -47,6 +50,9 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import static net.dragonmounts.network.DMPacketHandler.CHANNEL;
@@ -58,10 +64,41 @@ import static net.minecraftforge.fml.network.PacketDistributor.TRACKING_ENTITY;
 
 public class ServerDragonEntity extends TameableDragonEntity {
     public final PlayerControlledGoal playerControlledGoal;
+    public final DragonFollowOwnerGoal followOwnerGoal;
+    protected ServerPlayerEntity controller;
+    protected boolean climbing;
+    protected boolean descending;
+    protected boolean convergePitch;
+    protected boolean convergeYaw;
 
-    public ServerDragonEntity(EntityType<? extends TameableDragonEntity> type, World world) {
-        super(type, world);
+    public ServerDragonEntity(EntityType<? extends TameableDragonEntity> type, World level) {
+        super(type, level);
         this.goalSelector.addGoal(0, this.playerControlledGoal = new PlayerControlledGoal(this));
+        this.goalSelector.addGoal(1, new SitGoal(this));
+        this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, true));
+        this.goalSelector.addGoal(3, this.followOwnerGoal = new DragonFollowOwnerGoal(this));
+        this.goalSelector.addGoal(4, new LookAtGoal(this, PlayerEntity.class, 8.0F));
+        this.goalSelector.addGoal(4, new LookRandomlyGoal(this));
+        this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+        this.targetSelector.addGoal(3, new DragonHurtByTargetGoal(this));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, false, false, entity -> entity instanceof IMob));
+    }
+
+    @Override
+    public void setSaddle(@Nonnull ItemStack stack, boolean sync) {
+        boolean original = this.isSaddled;
+        this.isSaddled = stack.getItem() instanceof SaddleItem;
+        if (!stack.isEmpty()) {
+            stack.setCount(1);
+        }
+        this.saddle = stack;
+        if (!original && this.isSaddled) {
+            this.playSound(SoundEvents.HORSE_SADDLE, 0.5F, 1.0F);
+        }
+        if (sync) {
+            this.entityData.set(DATA_SADDLE_ITEM, stack.copy());
+        }
     }
 
     public ServerDragonEntity(World world) {
@@ -80,87 +117,73 @@ public class ServerDragonEntity extends TameableDragonEntity {
     }
 
     @Override
-    protected void registerGoals() {
-        this.goalSelector.addGoal(1, new SitGoal(this));
-        this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, true));
-        this.goalSelector.addGoal(3, new DragonFollowOwnerGoal(this));
-        this.goalSelector.addGoal(4, new LookAtGoal(this, PlayerEntity.class, 8.0F));
-        this.goalSelector.addGoal(4, new LookRandomlyGoal(this));
-        this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this)).setAlertOthers());
-        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, false, false, entity -> entity instanceof IMob));
-    }
-
-    @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString(DragonVariant.DATA_PARAMETER_KEY, this.getVariant().getSerializedName().toString());
-        compound.putString(DragonLifeStage.DATA_PARAMETER_KEY, this.stage.getSerializedName());
-        compound.putBoolean(AGE_LOCKED_DATA_PARAMETER_KEY, this.isAgeLocked());
-        compound.putInt(SHEARED_DATA_PARAMETER_KEY, this.isSheared() ? this.shearCooldown : 0);
+    public void addAdditionalSaveData(CompoundNBT tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putString(DragonVariant.DATA_PARAMETER_KEY, this.getVariant().getSerializedName().toString());
+        tag.putString(DragonLifeStage.DATA_PARAMETER_KEY, this.stage.getSerializedName());
+        tag.putBoolean(AGE_LOCKED_DATA_PARAMETER_KEY, this.isAgeLocked());
+        tag.putInt(SHEARED_DATA_PARAMETER_KEY, this.isSheared() ? this.shearCooldown : 0);
         ListNBT items = this.inventory.createTag();
         if (!items.isEmpty()) {
-            compound.put(DragonInventory.DATA_PARAMETER_KEY, items);
+            tag.put(DragonInventory.DATA_PARAMETER_KEY, items);
         }
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundNBT tag) {
         int age = this.age;
         DragonLifeStage stage = this.stage;
-        if (compound.contains(DragonLifeStage.DATA_PARAMETER_KEY)) {
-            this.setLifeStage(DragonLifeStage.byName(compound.getString(DragonLifeStage.DATA_PARAMETER_KEY)), false, false);
+        if (tag.contains(DragonLifeStage.DATA_PARAMETER_KEY)) {
+            this.setLifeStage(DragonLifeStage.byName(tag.getString(DragonLifeStage.DATA_PARAMETER_KEY)), false, false);
         }
-        super.readAdditionalSaveData(compound);
+        super.readAdditionalSaveData(tag);
         if (!this.firstTick && (this.age != age || stage != this.stage)) {
             CHANNEL.send(TRACKING_ENTITY.with(this::getEntity), new SSyncDragonAgePacket(this));
         }
-        if (compound.contains(DragonVariant.DATA_PARAMETER_KEY)) {
-            this.setVariant(DragonVariant.byName(compound.getString(DragonVariant.DATA_PARAMETER_KEY)));
-        } else if (compound.contains(DragonType.DATA_PARAMETER_KEY)) {
-            this.setVariant(DragonType.byName(compound.getString(DragonType.DATA_PARAMETER_KEY)).variants.draw(this.random, null));
+        if (tag.contains(DragonVariant.DATA_PARAMETER_KEY)) {
+            this.setVariant(DragonVariant.byName(tag.getString(DragonVariant.DATA_PARAMETER_KEY)));
+        } else if (tag.contains(DragonType.DATA_PARAMETER_KEY)) {
+            this.setVariant(DragonType.byName(tag.getString(DragonType.DATA_PARAMETER_KEY)).variants.draw(this.random, null));
         }
-        if (compound.contains(SADDLE_DATA_PARAMETER_KEY)) {
-            this.setSaddle(ItemStack.of(compound.getCompound(SADDLE_DATA_PARAMETER_KEY)), true);
+        if (tag.contains(SADDLE_DATA_PARAMETER_KEY)) {
+            this.setSaddle(ItemStack.of(tag.getCompound(SADDLE_DATA_PARAMETER_KEY)), true);
         }
-        if (compound.contains(SHEARED_DATA_PARAMETER_KEY)) {
-            this.setSheared(compound.getInt(SHEARED_DATA_PARAMETER_KEY));
+        if (tag.contains(SHEARED_DATA_PARAMETER_KEY)) {
+            this.setSheared(tag.getInt(SHEARED_DATA_PARAMETER_KEY));
         }
-        if (compound.contains(AGE_LOCKED_DATA_PARAMETER_KEY)) {
-            this.setAgeLocked(compound.getBoolean(AGE_LOCKED_DATA_PARAMETER_KEY));
+        if (tag.contains(AGE_LOCKED_DATA_PARAMETER_KEY)) {
+            this.setAgeLocked(tag.getBoolean(AGE_LOCKED_DATA_PARAMETER_KEY));
         }
-        if (compound.contains(DragonInventory.DATA_PARAMETER_KEY)) {
-            this.inventory.fromTag(compound.getList(DragonInventory.DATA_PARAMETER_KEY, 10));
+        if (tag.contains(DragonInventory.DATA_PARAMETER_KEY)) {
+            this.inventory.fromTag(tag.getList(DragonInventory.DATA_PARAMETER_KEY, 10));
         }
     }
 
-    /**
-     * Causes this entity to lift off if it can fly.
-     */
     public void liftOff() {
         if (!this.isBaby()) {
             boolean flag = this.isVehicle() && (this.isInLava() || this.isInWaterOrBubble());
             this.hasImpulse = true;
+            Vector3d current = this.getDeltaMovement();
             // stronger jump for an easier lift-off
-            this.setDeltaMovement(this.getDeltaMovement().add(0, flag ? 0.7 : 6, 0));
-            this.flightTicks += flag ? 3 : 4;
+            this.setDeltaMovement(current.x, current.y + (flag ? 0.7 : 6), current.z);
         }
     }
 
     public void spawnEssence(ItemStack stack) {
         BlockPos pos = this.blockPosition();
-        if (this.level.isEmptyBlock(pos)) {
-            BlockState state = DMBlocks.DRAGON_CORE.defaultBlockState().setValue(HORIZONTAL_FACING, this.getDirection());
-            if (this.level.setBlock(pos, state, 3)) {
-                TileEntity entity = this.level.getBlockEntity(pos);
-                if (entity instanceof DragonCoreBlockEntity) {
-                    ((DragonCoreBlockEntity) entity).setItem(0, stack);
+        World level = this.level;
+        BlockState state = DMBlocks.DRAGON_CORE.defaultBlockState().setValue(HORIZONTAL_FACING, this.getDirection());
+        if (!DragonCoreBlock.tryPlaceAt(level, pos, state, stack)) {
+            int y = pos.getY(), max = Math.min(y + 5, level.getMaxBuildHeight());
+            BlockPos.Mutable mutable = pos.mutable();
+            while (++y < max) {
+                mutable.setY(y);
+                if (DragonCoreBlock.tryPlaceAt(level, mutable, state, stack)) {
                     return;
                 }
             }
-        }
-        this.level.addFreshEntity(new ItemEntity(this.level, this.getX(), this.getY(), this.getZ(), stack));
+        } else return;
+        level.addFreshEntity(new ItemEntity(level, this.getX(), this.getY(), this.getZ(), stack));
     }
 
     @Override
@@ -215,8 +238,8 @@ public class ServerDragonEntity extends TameableDragonEntity {
         Item item = stack.getItem();
         IDragonFood food = DragonFood.get(item);
         if (food != IDragonFood.UNKNOWN) {
-            if (!food.isEatable(this, player, stack, hand)) return ActionResultType.FAIL;
-            food.eat(this, player, stack, hand);
+            if (!food.canFeed(this, player, stack, hand)) return ActionResultType.FAIL;
+            food.feed(this, player, stack, hand);
             CHANNEL.send(TRACKING_ENTITY.with(this::getEntity), new SFeedDragonPacket(this, item));
         } else if (!this.isOwnedBy(player)) {
             return ActionResultType.PASS;
@@ -244,7 +267,7 @@ public class ServerDragonEntity extends TameableDragonEntity {
             } else if (this.isSaddled) {
                 player.yRot = this.yRot;
                 player.xRot = this.xRot;
-                player.startRiding(this);
+                player.startRiding(this, false);
             } else {
                 this.openInventory((ServerPlayerEntity) player);
             }
@@ -282,24 +305,26 @@ public class ServerDragonEntity extends TameableDragonEntity {
 
     @Override
     public void setLifeStage(DragonLifeStage stage, boolean reset, boolean sync) {
-        ModifiableAttributeInstance attribute = this.getAttribute(Attributes.MAX_HEALTH);
-        if (attribute != null) {
-            double temp = attribute.getValue();
-            attribute.removeModifier(AGE_MODIFIER_UUID);
-            attribute.addTransientModifier(new AttributeModifier(
-                    AGE_MODIFIER_UUID,
-                    "DragonAgeBonus",
-                    Math.max(DragonLifeStage.getSizeAverage(stage), 0.1F),
-                    AttributeModifier.Operation.MULTIPLY_TOTAL
-            ));
-            temp = attribute.getValue() - temp;
-            this.setHealth(temp > 0 ? this.getHealth() + (float) temp : this.getHealth());
-        }
-        if (this.stage == stage) return;
-        this.stage = stage;
+        AttributeModifier modifier = stage.modifier;
+        ModifiableAttributeInstance health = this.getAttribute(Attributes.MAX_HEALTH);
+        ModifiableAttributeInstance damage = this.getAttribute(Attributes.ATTACK_DAMAGE);
+        ModifiableAttributeInstance armor = this.getAttribute(Attributes.ARMOR);
+        assert health != null && damage != null && armor != null;
+        double temp = health.getValue();
+        health.removeModifier(STAGE_MODIFIER_UUID);
+        health.addTransientModifier(modifier);
+        temp = health.getValue() - temp;
+        this.setHealth(temp > 0 ? this.getHealth() + (float) temp : this.getHealth());
+        damage.removeModifier(STAGE_MODIFIER_UUID);
+        damage.addTransientModifier(modifier);
+        armor.removeModifier(STAGE_MODIFIER_UUID);
+        armor.addTransientModifier(modifier);
         if (reset) {
+            this.stage = stage;
             this.refreshAge();
-        }
+        } else if (this.stage != stage) {
+            this.stage = stage;
+        } else return;
         this.reapplyPosition();
         this.refreshDimensions();
         if (sync) {
@@ -317,6 +342,11 @@ public class ServerDragonEntity extends TameableDragonEntity {
     }
 
     @Override
+    public boolean isControlledByLocalInstance() {
+        return false;
+    }
+
+    @Override
     public void setAge(int age) {
         if (this.age == age) return;
         if (this.age < 0 && age >= 0 || this.age > 0 && age <= 0) {
@@ -330,4 +360,55 @@ public class ServerDragonEntity extends TameableDragonEntity {
     public final void openInventory(ServerPlayerEntity player) {
         NetworkHooks.openGui(player, this.inventory, this::writeId);
     }
+
+    @Override
+    public void setOwnerUUID(@Nullable UUID uuid) {
+        super.setOwnerUUID(uuid);
+        this.followOwnerGoal.stop();
+    }
+
+    @Nullable
+    @Override
+    public Entity getControllingPassenger() {
+        // In most cases, the controlling passenger would be the player
+        return this.controller == null ? super.getControllingPassenger() : this.controller;
+    }
+
+    @Nullable
+    @Override
+    public ServerPlayerEntity getControllingPlayer() {
+        return this.controller;
+    }
+
+    @Override
+    protected void addPassenger(Entity entity) {
+        super.addPassenger(entity);
+        if (this.controller == null && entity instanceof ServerPlayerEntity) {
+            this.controller = (ServerPlayerEntity) entity;
+            this.setOrderedToSit(false);
+            this.getNavigation().stop();
+        }
+    }
+
+    @Override
+    protected void removePassenger(Entity entity) {
+        super.removePassenger(entity);
+        List<Entity> passengers = this.getPassengers();
+        if (passengers.isEmpty()) {
+            this.controller = null;
+        } else if (entity == this.controller) {
+            Entity candidate = passengers.get(0);
+            this.controller = candidate instanceof ServerPlayerEntity ? (ServerPlayerEntity) candidate : null;
+        }
+    }
+
+    public void updateInput(CRideDragonPacket packet) {
+        int flag = packet.flag;
+        this.climbing = (flag & 0b0001) == 0b0001;
+        this.descending = (flag & 0b0010) == 0b0010;
+        this.convergePitch = (flag & 0b0100) == 0b0100;
+        this.convergeYaw = (flag & 0b1000) == 0b1000;
+        LOGGER.info("updateInput {}", flag);
+    }
+
 }

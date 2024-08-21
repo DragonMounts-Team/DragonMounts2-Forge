@@ -15,14 +15,12 @@ public class DragonHeadBlockEntity extends TileEntity implements ITickableTileEn
     private int ticks;
     private boolean active;
 
+    @SuppressWarnings("AssignmentUsedAsCondition")
     @Override
     public void tick() {
         //noinspection DataFlowIssue
-        if (this.level.hasNeighborSignal(this.worldPosition)) {
-            this.active = true;
+        if (this.active /*--> */ = /* <--*/ this.level.hasNeighborSignal(this.worldPosition)) {
             ++this.ticks;
-        } else {
-            this.active = false;
         }
     }
 

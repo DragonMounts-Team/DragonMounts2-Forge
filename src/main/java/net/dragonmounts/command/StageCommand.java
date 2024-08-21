@@ -13,14 +13,15 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 
-import static net.dragonmounts.command.DMCommand.HAS_PERMISSION_LEVEL_3;
+import java.util.function.Predicate;
+
 import static net.dragonmounts.command.DMCommand.createClassCastException;
 import static net.dragonmounts.entity.dragon.DragonLifeStage.EGG_TRANSLATION_KEY;
 import static net.dragonmounts.entity.dragon.TameableDragonEntity.AGE_DATA_PARAMETER_KEY;
 
 public class StageCommand {
-    public static LiteralArgumentBuilder<CommandSource> register() {
-        return Commands.literal("stage").requires(HAS_PERMISSION_LEVEL_3).then(
+    public static LiteralArgumentBuilder<CommandSource> register(Predicate<CommandSource> permission) {
+        return Commands.literal("stage").requires(permission).then(
                 DragonLifeStage.applyValues(Commands.argument("target", EntityArgument.entity()))
                         .executes(context -> get(context.getSource(), EntityArgument.getEntity(context, "target")))
         );
@@ -32,9 +33,9 @@ public class StageCommand {
             HatchableDragonEggEntity egg = new HatchableDragonEggEntity(level);
             TameableDragonEntity dragon = (TameableDragonEntity) target;
             dragon.inventory.dropContents(false, 1.25);
-            CompoundNBT compound = dragon.saveWithoutId(new CompoundNBT());
-            compound.remove(AGE_DATA_PARAMETER_KEY);
-            egg.load(compound);
+            CompoundNBT tag = dragon.saveWithoutId(new CompoundNBT());
+            tag.remove(AGE_DATA_PARAMETER_KEY);
+            egg.load(tag);
             egg.setDragonType(dragon.getDragonType(), false);
             level.removeEntity(dragon, false);
             level.addFreshEntity(egg);
@@ -62,8 +63,7 @@ public class StageCommand {
 
     public static int set(CommandSource source, Entity target, DragonLifeStage stage) {
         if (target instanceof TameableDragonEntity) {
-            TameableDragonEntity dragon = (TameableDragonEntity) target;
-            dragon.setLifeStage(stage, true, true);
+            ((TameableDragonEntity) target).setLifeStage(stage, true, true);
         } else if (target instanceof HatchableDragonEggEntity) {
             ServerWorld level = source.getLevel();
             ServerDragonEntity dragon = new ServerDragonEntity((HatchableDragonEggEntity) target, stage);

@@ -1,6 +1,5 @@
 package net.dragonmounts.command;
 
-import com.google.common.base.Joiner;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -8,16 +7,15 @@ import com.mojang.brigadier.context.CommandContext;
 import net.dragonmounts.config.ServerConfig;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.ForgeConfigSpec;
 
+import java.util.Iterator;
 import java.util.function.BiFunction;
-
-import static net.dragonmounts.command.DMCommand.HAS_PERMISSION_LEVEL_3;
-
+import java.util.function.Predicate;
 
 public class ConfigCommand {
-    private static final Joiner DOT_JOINER = Joiner.on(".");
     public static final String OPEN_CONFIG_SCREEN = "/dragonmounts config client";
 
     public static <T> LiteralArgumentBuilder<CommandSource> create(
@@ -25,7 +23,13 @@ public class ConfigCommand {
             ArgumentType<T> type,
             BiFunction<CommandContext<CommandSource>, String, T> function
     ) {
-        String name = DOT_JOINER.join(config.getPath());
+        Iterator<String> iterator = config.getPath().iterator();
+        if (!iterator.hasNext()) throw new NullPointerException();
+        StringBuilder builder = new StringBuilder(iterator.next());
+        while (iterator.hasNext()) {
+            builder.append('.').append(iterator.next());
+        }
+        String name = builder.toString();
         return Commands.literal(name)
                 .executes(context -> {
                     context.getSource().sendSuccess(new TranslationTextComponent("commands.dragonmounts.config.query", name, config.get()), true);
@@ -39,11 +43,9 @@ public class ConfigCommand {
                 }));
     }
 
-    public static LiteralArgumentBuilder<CommandSource> register(Commands.EnvironmentType environment) {
-        LiteralArgumentBuilder<CommandSource> builder = Commands.literal("config").then(Commands.literal("server")
-                .requires(HAS_PERMISSION_LEVEL_3)
-                .then(create(ServerConfig.INSTANCE.debug, BoolArgumentType.bool(), BoolArgumentType::getBool))
-        );
-        return environment == Commands.EnvironmentType.INTEGRATED ? builder.then(Commands.literal("client")) : builder;
+    public static LiteralArgumentBuilder<CommandSource> register(Predicate<CommandSource> permission) {
+        return Commands.literal("config")
+                .then(Commands.literal("client").requires(source -> source.getEntity() instanceof ServerPlayerEntity))
+                .then(Commands.literal("server").requires(permission).then(create(ServerConfig.INSTANCE.debug, BoolArgumentType.bool(), BoolArgumentType::getBool)));
     }
 }

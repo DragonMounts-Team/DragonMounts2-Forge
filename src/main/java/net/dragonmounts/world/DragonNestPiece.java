@@ -27,19 +27,19 @@ public abstract class DragonNestPiece extends TemplateStructurePiece {
         this.mirror = mirror;
     }
 
-    public DragonNestPiece(IStructurePieceType type, CompoundNBT compound) {
-        super(type, compound);
-        this.rotation = Rotation.valueOf(compound.getString("Rotation"));
-        this.templateLocation = new ResourceLocation(compound.getString("Template"));
-        this.mirror = Mirror.valueOf(compound.getString("Mirror"));
+    public DragonNestPiece(IStructurePieceType type, CompoundNBT tag) {
+        super(type, tag);
+        this.rotation = Rotation.valueOf(tag.getString("Rotation"));
+        this.templateLocation = new ResourceLocation(tag.getString("Template"));
+        this.mirror = Mirror.valueOf(tag.getString("Mirror"));
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString("Template", this.templateLocation.toString());
-        compound.putString("Rotation", this.rotation.name());
-        compound.putString("Mirror", this.mirror.name());
+    protected void addAdditionalSaveData(CompoundNBT tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putString("Template", this.templateLocation.toString());
+        tag.putString("Rotation", this.rotation.name());
+        tag.putString("Mirror", this.mirror.name());
     }
 
     @Override

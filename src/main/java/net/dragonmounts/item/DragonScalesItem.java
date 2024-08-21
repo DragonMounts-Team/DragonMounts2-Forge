@@ -18,7 +18,6 @@ import static net.dragonmounts.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
 
 public class DragonScalesItem extends Item implements IDragonTypified {
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_scales";
-
     public final DragonType type;
 
     public DragonScalesItem(DragonType type, Properties props) {

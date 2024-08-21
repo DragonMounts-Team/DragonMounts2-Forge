@@ -1,7 +1,9 @@
 package net.dragonmounts.registry;
 
+import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableMultimap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import net.dragonmounts.api.PassengerLocator;
 import net.dragonmounts.entity.dragon.HatchableDragonEggEntity;
 import net.dragonmounts.init.DragonTypes;
 import net.minecraft.block.Block;
@@ -13,7 +15,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -23,7 +24,8 @@ import net.minecraftforge.registries.RegistryBuilder;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static net.dragonmounts.DragonMounts.MOD_ID;
@@ -32,26 +34,6 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
     public static final String DATA_PARAMETER_KEY = "DragonType";
     public static final ResourceLocation DEFAULT_KEY = new ResourceLocation(MOD_ID, "ender");
     public static final DeferredRegistry<DragonType> REGISTRY = new DeferredRegistry<>(MOD_ID, "dragon_type", DragonType.class, new RegistryBuilder<DragonType>().setDefaultKey(DEFAULT_KEY));
-    public static final Predicate<HatchableDragonEggEntity> DEFAULT_ENVIRONMENT_PREDICATE = egg -> false;
-    public static final BiFunction<Integer, Boolean, Vector3d> DEFAULT_PASSENGER_OFFSET = (index, sitting) -> {
-        double yOffset = sitting ? 3.4 : 4.4;
-        double yOffset2 = sitting ? 2.1 : 2.5; // maybe not needed
-        // dragon position is the middle of the model, and the saddle is on
-        // the shoulders, so move player forwards on Z axis relative to the
-        // dragon's rotation to fix that
-        switch (index) {
-            case 1:
-                return new Vector3d(0.6, yOffset, 0.1);
-            case 2:
-                return new Vector3d(-0.6, yOffset, 0.1);
-            case 3:
-                return new Vector3d(1.6, yOffset2, 0.2);
-            case 4:
-                return new Vector3d(-1.6, yOffset2, 0.2);
-            default:
-                return new Vector3d(0, yOffset, 2.2);
-        }
-    };
 
     public static DragonType byName(String name) {
         DragonType type = REGISTRY.getValue(new ResourceLocation(name));
@@ -63,7 +45,7 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
     public final boolean isSkeleton;
     public final ImmutableMultimap<Attribute, AttributeModifier> attributes;
     public final Predicate<HatchableDragonEggEntity> isHabitatEnvironment;
-    public final BiFunction<Integer, Boolean, Vector3d> passengerOffset;
+    public final PassengerLocator passengerLocator;
     public final IParticleData sneezeParticle;
     public final IParticleData eggParticle;
     public final DragonVariant.Manager variants = new DragonVariant.Manager(this);
@@ -85,11 +67,10 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
         this.attributes = props.attributes.build();
         this.immunities = new HashSet<>(props.immunities);
         this.blocks = new HashSet<>(props.blocks);
-        this.biomes = new ArrayList<>();
-        this.biomes.addAll(props.biomes);
+        this.biomes = new ArrayList<>(props.biomes);
         this.sneezeParticle = props.sneezeParticle;
         this.eggParticle = props.eggParticle;
-        this.passengerOffset = props.passengerOffset;
+        this.passengerLocator = props.passengerLocator;
         this.isHabitatEnvironment = props.isHabitatEnvironment;
     }
 
@@ -142,6 +123,21 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
         return clazz.cast(this.map.getOrDefault(clazz, defaultValue));
     }
 
+    public <T> void ifPresent(Class<T> clazz, Consumer<? super T> consumer) {
+        Object value = this.map.get(clazz);
+        if (value != null) {
+            consumer.accept(clazz.cast(value));
+        }
+    }
+
+    public <T, V> V ifPresent(Class<T> clazz, Function<? super T, V> function, V defaultValue) {
+        Object value = this.map.get(clazz);
+        if (value != null) {
+            return function.apply(clazz.cast(value));
+        }
+        return defaultValue;
+    }
+
     public static class Properties {
         protected static final UUID MODIFIER_UUID = UUID.fromString("12e4cc82-db6d-5676-afc5-86498f0f6464");
         public final ImmutableMultimap.Builder<Attribute, AttributeModifier> attributes = ImmutableMultimap.builder();
@@ -153,8 +149,8 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
         public boolean isSkeleton = false;
         public IParticleData sneezeParticle = ParticleTypes.LARGE_SMOKE;
         public IParticleData eggParticle = ParticleTypes.MYCELIUM;
-        public BiFunction<Integer, Boolean, Vector3d> passengerOffset = DragonType.DEFAULT_PASSENGER_OFFSET;
-        public Predicate<HatchableDragonEggEntity> isHabitatEnvironment = DragonType.DEFAULT_ENVIRONMENT_PREDICATE;
+        public PassengerLocator passengerLocator = PassengerLocator.DEFAULT;
+        public Predicate<HatchableDragonEggEntity> isHabitatEnvironment = Predicates.alwaysFalse();
 
         public Properties(int color) {
             this.color = color;
@@ -208,8 +204,8 @@ public class DragonType extends ForgeRegistryEntry<DragonType> {
             return this;
         }
 
-        public Properties setPassengerOffset(BiFunction<Integer, Boolean, Vector3d> passengerOffset) {
-            this.passengerOffset = passengerOffset;
+        public Properties setPassengerLocator(PassengerLocator locator) {
+            this.passengerLocator = locator;
             return this;
         }
 

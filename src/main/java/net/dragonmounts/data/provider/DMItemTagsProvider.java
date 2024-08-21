@@ -18,6 +18,7 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 public class DMItemTagsProvider extends ItemTagsProvider {
     public DMItemTagsProvider(DataGenerator generator, BlockTagsProvider blockTagsProvider, @Nullable ExistingFileHelper existingFileHelper) {
@@ -38,13 +39,11 @@ public class DMItemTagsProvider extends ItemTagsProvider {
                 .addTag(Tags.Items.BONES)
                 .add(Items.BAMBOO);
         this.copy(DMBlockTags.DRAGON_EGGS, DMItemTags.DRAGON_EGGS);
-        Builder<Item> tagBow = this.tag(DMItemTags.DRAGON_SCALE_BOWS);
-        Builder<Item> tagScales = this.tag(DMItemTags.DRAGON_SCALES);
+        Consumer<Item> addToBows = this.tag(DMItemTags.DRAGON_SCALE_BOWS)::add;
+        Consumer<Item> addToScales = this.tag(DMItemTags.DRAGON_SCALES)::add;
         for (DragonType type : DragonType.REGISTRY) {
-            DragonScaleBowItem bow = type.getInstance(DragonScaleBowItem.class, null);
-            if (bow != null) tagBow.add(bow);
-            DragonScalesItem scales = type.getInstance(DragonScalesItem.class, null);
-            if (scales != null) tagScales.add(scales);
+            type.ifPresent(DragonScaleBowItem.class, addToBows);
+            type.ifPresent(DragonScalesItem.class, addToScales);
         }
     }
 }

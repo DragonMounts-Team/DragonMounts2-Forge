@@ -35,15 +35,15 @@ public abstract class AbstractArrowEntityMixin extends Entity implements IDMArro
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
-    public void saveData(CompoundNBT compound, CallbackInfo info) {
+    public void saveData(CompoundNBT tag, CallbackInfo info) {
         if (this.dragonmounts$hasChanneling) {
-            compound.putBoolean(CHANNELING, true);
+            tag.putBoolean(CHANNELING, true);
         }
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-    public void readData(CompoundNBT compound, CallbackInfo info) {
-        this.dragonmounts$hasChanneling = compound.getBoolean(CHANNELING);
+    public void readData(CompoundNBT tag, CallbackInfo info) {
+        this.dragonmounts$hasChanneling = tag.getBoolean(CHANNELING);
     }
 
     @Inject(

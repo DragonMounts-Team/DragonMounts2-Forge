@@ -13,33 +13,25 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public final class CRideDragonPacket {
-    public static byte getFlag(boolean a, boolean b, boolean c, boolean d) {
-        return (byte) ((a ? 0b0001 : 0) | (b ? 0b0010 : 0) | (c ? 0b0100 : 0) | (d ? 0b1000 : 0));
+    public static int getFlag(boolean a, boolean b, boolean c, boolean d) {
+        return (a ? 0b0001 : 0) | (b ? 0b0010 : 0) | (c ? 0b0100 : 0) | (d ? 0b1000 : 0);
     }
     public final int id;
-    public final byte flag;
-    public final boolean climbing;
-    public final boolean descending;
-    public final boolean convergePitch;
-    public final boolean convergeYaw;
+    public final int flag;
 
     public CRideDragonPacket(int id) {
         this.id = id;
         this.flag = getFlag(
-                this.climbing = Minecraft.getInstance().options.keyJump.isDown(),
-                this.descending = DMKeyBindings.DESCENT.isDown(),
-                this.convergePitch = ClientConfig.INSTANCE.converge_pitch_angle.get(),
-                this.convergeYaw = ClientConfig.INSTANCE.converge_yaw_angle.get()
+                Minecraft.getInstance().options.keyJump.isDown(),
+                DMKeyBindings.DESCENT.isDown(),
+                ClientConfig.INSTANCE.converge_pitch_angle.get(),
+                ClientConfig.INSTANCE.converge_yaw_angle.get()
         );
     }
 
     public CRideDragonPacket(PacketBuffer buffer) {
         this.id = buffer.readVarInt();
         this.flag = buffer.readByte();
-        this.climbing = (this.flag & 0b0001) == 0b0001;
-        this.descending = (this.flag & 0b0010) == 0b0010;
-        this.convergePitch = (this.flag & 0b0100) == 0b0100;
-        this.convergeYaw = (this.flag & 0b1000) == 0b1000;
     }
 
     public void encode(PacketBuffer buffer) {
@@ -53,7 +45,7 @@ public final class CRideDragonPacket {
             if (handler instanceof ServerPlayNetHandler) {
                 Entity entity = ((ServerPlayNetHandler) handler).player.level.getEntity(this.id);
                 if (entity instanceof ServerDragonEntity) {
-                    ((ServerDragonEntity) entity).playerControlledGoal.handlePacket(this);
+                    ((ServerDragonEntity) entity).updateInput(this);
                 }
             }
         });

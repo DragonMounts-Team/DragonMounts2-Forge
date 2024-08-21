@@ -3,6 +3,8 @@ package net.dragonmounts.util;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.block.Block;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -27,20 +29,20 @@ public class EntityUtil extends EntityType<Entity> {//to access protected method
     }
 
     public static void finalizeSpawn(ServerWorld level, Entity entity, BlockPos pos, SpawnReason reason, @Nullable ILivingEntityData data, @Nullable CompoundNBT tag, boolean yOffset, boolean extraOffset) {
-        double offset;
+        double offset, x = pos.getX() + 0.5D, y = pos.getY(), z = pos.getZ() + 0.5D;
         if (yOffset) {
-            entity.setPos(pos.getX() + 0.5D, (pos.getY() + 1), pos.getZ() + 0.5D);
+            entity.setPos(x, y + 1.0D, z);
             offset = getYOffset(level, pos, extraOffset, entity.getBoundingBox());
         } else {
             offset = 0.0D;
         }
-        entity.moveTo(pos.getX() + 0.5D, pos.getY() + offset, pos.getZ() + 0.5D, MathHelper.wrapDegrees(level.random.nextFloat() * 360.0F), 0.0F);
+        entity.moveTo(x, y + offset, z, MathHelper.wrapDegrees(level.random.nextFloat() * 360.0F), 0.0F);
         if (entity instanceof MobEntity) {
-            MobEntity mobentity = (MobEntity) entity;
-            mobentity.yHeadRot = mobentity.yRot;
-            mobentity.yBodyRot = mobentity.yRot;
-            mobentity.finalizeSpawn(level, level.getCurrentDifficultyAt(mobentity.blockPosition()), reason, data, tag);
-            mobentity.playAmbientSound();
+            MobEntity mob = (MobEntity) entity;
+            mob.yHeadRot = mob.yRot;
+            mob.yBodyRot = mob.yRot;
+            mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), reason, data, tag);
+            mob.playAmbientSound();
         }
     }
 
@@ -56,6 +58,11 @@ public class EntityUtil extends EntityType<Entity> {//to access protected method
         return entity.addEffect(new EffectInstance(effect, duration, amplifier, ambient, visible, showIcon, null));
     }
 
+    public static void applyTransientModifier(ModifiableAttributeInstance instance, AttributeModifier modifier) {
+        instance.removeModifier(modifier.getId());
+        instance.addTransientModifier(modifier);
+    }
+
     public static ItemStack consume(PlayerEntity player, Hand hand, ItemStack stack, @Nullable ItemStack result) {
         stack.shrink(1);
         if (result != null) {
@@ -69,7 +76,7 @@ public class EntityUtil extends EntityType<Entity> {//to access protected method
         return stack;
     }
 
-    public static CompoundNBT saveScoreboard(Entity entity, CompoundNBT compound) {
+    public static CompoundNBT saveScoreboard(Entity entity, CompoundNBT tag) {
         Scoreboard scoreboard = entity.level.getScoreboard();
         String scoreboardName = entity.getScoreboardName();
         ScorePlayerTeam team = scoreboard.getPlayersTeam(scoreboardName);
@@ -87,19 +94,19 @@ public class EntityUtil extends EntityType<Entity> {//to access protected method
                 }
             }
             if (!scoresTag.isEmpty()) {
-                compound.put("Scores", scoresTag);
+                tag.put("Scores", scoresTag);
             }
             if (!lockedScoresTag.isEmpty()) {
-                compound.put("LockedScores", lockedScoresTag);
+                tag.put("LockedScores", lockedScoresTag);
             }
             if (team != null) {
-                compound.putString("Team", team.getName());
+                tag.putString("Team", team.getName());
             }
         }
-        return compound;
+        return tag;
     }
 
-    public static <T extends Entity> T loadScores(T entity, CompoundNBT compound) {
+    public static <T extends Entity> T loadScores(T entity, CompoundNBT tag) {
         World level = entity.level;
         Scoreboard scoreboard = level.getScoreboard();
         String scoreboardName = entity.getScoreboardName();
@@ -107,8 +114,8 @@ public class EntityUtil extends EntityType<Entity> {//to access protected method
         CompoundNBT scores;
         ScoreObjective objective;
         Score score;
-        if (compound.contains("Scores")) {
-            scores = compound.getCompound("Scores");
+        if (tag.contains("Scores")) {
+            scores = tag.getCompound("Scores");
             for (String name : scores.getAllKeys()) {
                 objective = scoreboard.getOrCreateObjective(name);
                 if (!existingScores.containsKey(objective)) {
@@ -118,8 +125,8 @@ public class EntityUtil extends EntityType<Entity> {//to access protected method
                 }
             }
         }
-        if (compound.contains("LockedScores")) {
-            scores = compound.getCompound("LockedScores");
+        if (tag.contains("LockedScores")) {
+            scores = tag.getCompound("LockedScores");
             for (String name : scores.getAllKeys()) {
                 objective = scoreboard.getOrCreateObjective(name);
                 if (!existingScores.containsKey(objective)) {
@@ -131,7 +138,7 @@ public class EntityUtil extends EntityType<Entity> {//to access protected method
         return entity;
     }
 
-    public static <T extends Entity> T loadScoreboard(T entity, CompoundNBT compound) {
+    public static <T extends Entity> T loadScoreboard(T entity, CompoundNBT tag) {
         World level = entity.level;
         Scoreboard scoreboard = level.getScoreboard();
         String scoreboardName = entity.getScoreboardName();
@@ -140,11 +147,11 @@ public class EntityUtil extends EntityType<Entity> {//to access protected method
         ScoreObjective objective;
         Score score;
         // net.minecraft.entity.LivingEntity.readAdditionalSaveData
-        if (compound.contains("Team", 8)) {
-            scoreboard.addPlayerToTeam(scoreboardName, level.getScoreboard().getPlayerTeam(compound.getString("Team")));
+        if (tag.contains("Team", 8)) {
+            scoreboard.addPlayerToTeam(scoreboardName, level.getScoreboard().getPlayerTeam(tag.getString("Team")));
         }
-        if (compound.contains("Scores")) {
-            scores = compound.getCompound("Scores");
+        if (tag.contains("Scores")) {
+            scores = tag.getCompound("Scores");
             for (String name : scores.getAllKeys()) {
                 objective = scoreboard.getOrCreateObjective(name);
                 if (!existingScores.containsKey(objective)) {
@@ -154,8 +161,8 @@ public class EntityUtil extends EntityType<Entity> {//to access protected method
                 }
             }
         }
-        if (compound.contains("LockedScores")) {
-            scores = compound.getCompound("LockedScores");
+        if (tag.contains("LockedScores")) {
+            scores = tag.getCompound("LockedScores");
             for (String name : scores.getAllKeys()) {
                 objective = scoreboard.getOrCreateObjective(name);
                 if (!existingScores.containsKey(objective)) {

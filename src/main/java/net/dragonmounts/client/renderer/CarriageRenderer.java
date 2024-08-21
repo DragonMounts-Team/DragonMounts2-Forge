@@ -17,8 +17,8 @@ import javax.annotation.Nonnull;
 public class CarriageRenderer extends EntityRenderer<CarriageEntity> {
     protected final CarriageModel model = new CarriageModel();
 
-    public CarriageRenderer(EntityRendererManager entityRenderDispatcher) {
-        super(entityRenderDispatcher);
+    public CarriageRenderer(EntityRendererManager dispatcher) {
+        super(dispatcher);
         this.shadowRadius = 0.2F;
     }
 

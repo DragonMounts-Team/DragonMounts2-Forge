@@ -5,7 +5,6 @@ import net.dragonmounts.entity.dragon.ServerDragonEntity;
 import net.dragonmounts.entity.dragon.TameableDragonEntity;
 import net.dragonmounts.init.DMItems;
 import net.dragonmounts.registry.DragonType;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -50,7 +49,7 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
     public final DragonType type;
 
     public DragonAmuletItem(DragonType type, Properties props) {
-        super(props);
+        super(TameableDragonEntity.class, props);
         this.type = type;
     }
 
@@ -58,17 +57,18 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
     @Override
     public ActionResultType interactLivingEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
         if (target instanceof TameableDragonEntity) {
-            if (player.level.isClientSide) return ActionResultType.SUCCESS;
+            World level = target.level;
+            if (level.isClientSide) return ActionResultType.SUCCESS;
             TameableDragonEntity dragon = (TameableDragonEntity) target;
             if (dragon.isOwnedBy(player)) {
                 DragonAmuletItem amulet = dragon.getDragonType().getInstance(DragonAmuletItem.class, null);
                 if (amulet == null) return ActionResultType.FAIL;
-                player.level.addFreshEntity(this.spwanEntity(
-                        (ServerWorld) player.level,
+                level.addFreshEntity(this.loadEntity(
+                        (ServerWorld) level,
                         player,
                         stack.getTag(),
                         target.blockPosition(),
-                        SpawnReason.EVENT,
+                        SpawnReason.BUCKET,
                         null,
                         false,
                         false
@@ -89,79 +89,70 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
     @Nonnull
     @Override
     public ActionResultType useOn(ItemUseContext context) {
-        ItemStack stack = context.getItemInHand();
         World level = context.getLevel();
-        if (level.isClientSide) {
-            return ActionResultType.SUCCESS;
-        } else {
-            PlayerEntity player = context.getPlayer();
-            BlockPos clickedPos = context.getClickedPos();
-            Direction direction = context.getClickedFace();
-            BlockState state = level.getBlockState(clickedPos);
-            BlockPos spawnPos = state.getCollisionShape(level, clickedPos).isEmpty() ? clickedPos : clickedPos.relative(direction);
-            level.addFreshEntity(this.spwanEntity(
-                    (ServerWorld) level,
-                    player,
-                    stack.getTag(),
-                    spawnPos,
-                    SpawnReason.EVENT,
-                    null,
-                    true,
-                    !Objects.equals(clickedPos, spawnPos) && direction == Direction.UP
-            ));
-            if (player != null) {
-                consume(player, context.getHand(), stack, new ItemStack(DMItems.AMULET));
-                player.awardStat(Stats.ITEM_USED.get(this));
-            }
-            return ActionResultType.CONSUME;
+        if (level.isClientSide) return ActionResultType.SUCCESS;
+        ItemStack stack = context.getItemInHand();
+        PlayerEntity player = context.getPlayer();
+        BlockPos pos = context.getClickedPos();
+        Direction direction = context.getClickedFace();
+        BlockPos spawnPos = level.getBlockState(pos).getCollisionShape(level, pos).isEmpty() ? pos : pos.relative(direction);
+        level.addFreshEntity(this.loadEntity(
+                (ServerWorld) level,
+                player,
+                stack.getTag(),
+                spawnPos,
+                SpawnReason.BUCKET,
+                null,
+                true,
+                !Objects.equals(pos, spawnPos) && direction == Direction.UP
+        ));
+        if (player != null) {
+            consume(player, context.getHand(), stack, new ItemStack(DMItems.AMULET));
+            player.awardStat(Stats.ITEM_USED.get(this));
         }
+        return ActionResultType.CONSUME;
     }
 
     @Nonnull
     @Override
     public ActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
-        BlockRayTraceResult result = getPlayerPOVHitResult(level, player, RayTraceContext.FluidMode.SOURCE_ONLY);
         ItemStack stack = player.getItemInHand(hand);
-        if (result.getType() != RayTraceResult.Type.BLOCK) {
-            return ActionResult.pass(stack);
-        } else if (level.isClientSide) {
-            return ActionResult.success(stack);
-        } else {
-            BlockPos pos = result.getBlockPos();
-            if (!(level.getBlockState(pos).getBlock() instanceof FlowingFluidBlock)) {
-                return ActionResult.pass(stack);
-            } else if (level.mayInteract(player, pos) && player.mayUseItemAt(pos, result.getDirection(), stack)) {
-                level.addFreshEntity(this.spwanEntity(
-                        (ServerWorld) level,
-                        player,
-                        stack.getTag(),
-                        pos,
-                        SpawnReason.EVENT,
-                        null,
-                        false,
-                        false
-                ));
-                player.awardStat(Stats.ITEM_USED.get(this));
-                return ActionResult.success(consume(player, hand, stack, new ItemStack(DMItems.AMULET)));
-            }
-            return ActionResult.fail(stack);
+        BlockRayTraceResult result = getPlayerPOVHitResult(level, player, RayTraceContext.FluidMode.SOURCE_ONLY);
+        if (result.getType() != RayTraceResult.Type.BLOCK) return ActionResult.pass(stack);
+        if (level.isClientSide) return ActionResult.success(stack);
+        BlockPos pos = result.getBlockPos();
+        if (!(level.getBlockState(pos).getBlock() instanceof FlowingFluidBlock)) return ActionResult.pass(stack);
+        if (level.mayInteract(player, pos) && player.mayUseItemAt(pos, result.getDirection(), stack)) {
+            level.addFreshEntity(this.loadEntity(
+                    (ServerWorld) level,
+                    player,
+                    stack.getTag(),
+                    pos,
+                    SpawnReason.BUCKET,
+                    null,
+                    false,
+                    false
+            ));
+            player.awardStat(Stats.ITEM_USED.get(this));
+            return ActionResult.success(consume(player, hand, stack, new ItemStack(DMItems.AMULET)));
         }
+        return ActionResult.fail(stack);
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltips, ITooltipFlag flag) {
-        CompoundNBT compound = stack.getTag();
+        CompoundNBT tag = stack.getTag();
         tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.type", this.type.getName()).withStyle(TextFormatting.GRAY));
-        if (compound != null) {
+        if (tag != null) {
             try {
-                String string = compound.getString("CustomName");
+                String string = tag.getString("CustomName");
                 if (!string.isEmpty()) {
                     tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.custom_name", ITextComponent.Serializer.fromJson(string)).withStyle(TextFormatting.GRAY));
                 }
-                tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.health", new StringTextComponent(Float.toString(compound.getFloat("Health"))).withStyle(TextFormatting.GREEN)).withStyle(TextFormatting.GRAY));
-                if (compound.hasUUID("Owner")) {
-                    string = compound.getString("OwnerName");
+                tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.health", new StringTextComponent(Float.toString(tag.getFloat("Health"))).withStyle(TextFormatting.GREEN)).withStyle(TextFormatting.GRAY));
+                if (tag.hasUUID("Owner")) {
+                    string = tag.getString("OwnerName");
                     if (!string.isEmpty()) {
                         tooltips.add(new TranslationTextComponent("tooltip.dragonmounts.owner_name", ITextComponent.Serializer.fromJson(string)).withStyle(TextFormatting.GRAY));
                     }
@@ -178,20 +169,20 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
     public ItemStack saveEntity(TameableDragonEntity entity) {
         ItemStack stack = new ItemStack(this);
         entity.ejectPassengers();
-        CompoundNBT compound = IEntityContainer.simplifyData(entity.saveWithoutId(new CompoundNBT()));
-        compound.remove(FLYING_DATA_PARAMETER_KEY);
-        compound.remove("UUID");
+        CompoundNBT tag = IEntityContainer.simplifyData(entity.saveWithoutId(new CompoundNBT()));
+        tag.remove(FLYING_DATA_PARAMETER_KEY);
+        tag.remove("UUID");
         LivingEntity owner = entity.getOwner();
         if (owner != null) {
-            compound.putString("OwnerName", ITextComponent.Serializer.toJson(owner.getName()));
+            tag.putString("OwnerName", ITextComponent.Serializer.toJson(owner.getName()));
         }
-        stack.setTag(saveScoreboard(entity, compound));
+        stack.setTag(saveScoreboard(entity, tag));
         return stack;
     }
 
     @Nonnull
     @Override
-    public ServerDragonEntity spwanEntity(
+    public ServerDragonEntity loadEntity(
             ServerWorld level,
             @Nullable PlayerEntity player,
             @Nullable CompoundNBT tag,
@@ -202,31 +193,26 @@ public class DragonAmuletItem extends AmuletItem<TameableDragonEntity> implement
             boolean extraOffset
     ) {
         ServerDragonEntity dragon = new ServerDragonEntity(level);
-        if (tag != null) {
+        if (tag == null) {
+            finalizeSpawn(level, dragon, pos, reason, null, null, yOffset, extraOffset);
+            dragon.setDragonType(this.type, true);
+        } else {
             tag.remove("Passengers");
-            finalizeSpawn(level, dragon, pos, SpawnReason.EVENT, null, tag, false, false);
+            finalizeSpawn(level, dragon, pos, reason, null, tag, yOffset, extraOffset);
             dragon.load(dragon.saveWithoutId(new CompoundNBT()).merge(tag));
             loadScores(dragon, tag).setDragonType(this.type, false);
-        } else {
-            finalizeSpawn(level, dragon, pos, SpawnReason.EVENT, null, null, false, false);
-            dragon.setDragonType(this.type, true);
         }
         return dragon;
     }
 
     @Override
-    public boolean isEmpty(CompoundNBT tag) {
+    public boolean isEmpty(@Nullable CompoundNBT tag) {
         return false;
     }
 
     @Override
     public boolean canSetNbt(MinecraftServer server, Entity entity, @Nullable PlayerEntity player) {
         return true;
-    }
-
-    @Override
-    public int getEntityLifespan(ItemStack itemStack, World world) {
-        return 12000;//10 minutes, Nether Star
     }
 
     @Override

@@ -1,7 +1,6 @@
 package net.dragonmounts.item;
 
 import net.dragonmounts.entity.dragon.TameableDragonEntity;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,10 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.stats.Stats;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
@@ -21,6 +17,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,20 +25,23 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static net.dragonmounts.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
+import static net.dragonmounts.entity.dragon.TameableDragonEntity.FLYING_DATA_PARAMETER_KEY;
 import static net.dragonmounts.util.EntityUtil.consume;
 import static net.dragonmounts.util.EntityUtil.finalizeSpawn;
 
 
 public class AmuletItem<T extends Entity> extends Item implements IEntityContainer<T> {
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_amulet";
+    public final Class<T> contentType;
 
-    public AmuletItem(Properties props) {
+    public AmuletItem(Class<T> contentType, Properties props) {
         super(props.stacksTo(1));
+        this.contentType = contentType;
     }
 
     @Nullable
     @Override
-    public Entity spwanEntity(
+    public Entity loadEntity(
             ServerWorld level,
             @Nullable PlayerEntity player,
             CompoundNBT tag,
@@ -51,16 +51,16 @@ public class AmuletItem<T extends Entity> extends Item implements IEntityContain
             boolean yOffset,
             boolean extraOffset
     ) {
-        CompoundNBT compound = tag.getCompound("EntityTag");
-        if (compound.contains("id", 8)) {
-            EntityType<? extends Entity> type = EntityType.byString(compound.getString("id")).orElse(null);
+        CompoundNBT info = tag.getCompound("EntityTag");
+        if (info.contains("id", 8)) {
+            EntityType<? extends Entity> type = ForgeRegistries.ENTITIES.getValue(ResourceLocation.tryParse(info.getString("id")));
             if (type == null) return null;
             Entity entity = type.create(level);
             if (entity != null) {
                 finalizeSpawn(level, entity, pos, reason, data, tag, yOffset, extraOffset);
                 if (this.canSetNbt(level.getServer(), entity, player)) {
                     UUID uuid = entity.getUUID();
-                    entity.load(entity.saveWithoutId(new CompoundNBT()).merge(compound));
+                    entity.load(entity.saveWithoutId(new CompoundNBT()).merge(info));
                     entity.setUUID(uuid);
                 }
                 return entity;
@@ -71,41 +71,54 @@ public class AmuletItem<T extends Entity> extends Item implements IEntityContain
 
     @Override
     public ItemStack saveEntity(T entity) {
-        ItemStack stack = new ItemStack(this);
-        CompoundNBT tag = new CompoundNBT();
-        entity.ejectPassengers();
-        entity.saveAsPassenger(tag);
-        stack.setTag(IEntityContainer.simplifyData(tag));
-        return stack;
+        EntityType<?> type = entity.getType();
+        if (type.canSerialize()) {
+            CompoundNBT root = new CompoundNBT();
+            CompoundNBT tag = entity.saveWithoutId(new CompoundNBT());
+            tag.putString("id", EntityType.getKey(type).toString());
+            tag.remove(FLYING_DATA_PARAMETER_KEY);
+            tag.remove("UUID");
+            root.put("EntityTag", IEntityContainer.simplifyData(tag));
+            ItemStack stack = new ItemStack(this);
+            stack.setTag(root);
+            return stack;
+        }
+        return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean isEmpty(CompoundNBT tag) {
-        return !tag.contains("EntityTag", 10);
+    public final Class<T> getContentType() {
+        return this.contentType;
+    }
+
+    @Override
+    public boolean isEmpty(@Nullable CompoundNBT tag) {
+        return tag == null || !tag.contains("EntityTag", 10);
     }
 
     @Nonnull
     @Override
     public ActionResultType interactLivingEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
         if (target instanceof TameableDragonEntity) {
-            if (player.level.isClientSide) return ActionResultType.SUCCESS;
+            World level = target.level;
+            if (level.isClientSide) return ActionResultType.SUCCESS;
             TameableDragonEntity dragon = (TameableDragonEntity) target;
             if (dragon.isOwnedBy(player)) {
                 DragonAmuletItem amulet = dragon.getDragonType().getInstance(DragonAmuletItem.class, null);
                 if (amulet == null) return ActionResultType.FAIL;
                 CompoundNBT tag = stack.getTag();
                 if (tag != null && !this.isEmpty(tag)) {
-                    Entity entity = this.spwanEntity(
-                            (ServerWorld) player.level,
+                    Entity entity = this.loadEntity(
+                            (ServerWorld) level,
                             player,
                             tag,
                             target.blockPosition(),
-                            SpawnReason.EVENT,
+                            SpawnReason.BUCKET,
                             null,
                             false,
                             false
                     );
-                    if (entity != null) player.level.addFreshEntity(entity);
+                    if (entity != null) level.addFreshEntity(entity);
                 }
                 dragon.inventory.dropContents(true, 0);
                 consume(player, hand, stack, amulet.saveEntity(dragon));
@@ -128,23 +141,22 @@ public class AmuletItem<T extends Entity> extends Item implements IEntityContain
         if (tag == null || this.isEmpty(tag)) return ActionResultType.PASS;
         World level = context.getLevel();
         if (level.isClientSide) return ActionResultType.SUCCESS;
-        ServerWorld world = (ServerWorld) level;
         PlayerEntity player = context.getPlayer();
-        BlockPos clickedPos = context.getClickedPos();
+        BlockPos pos = context.getClickedPos();
         Direction direction = context.getClickedFace();
-        BlockState state = world.getBlockState(clickedPos);
-        BlockPos spawnPos = state.getCollisionShape(world, clickedPos).isEmpty() ? clickedPos : clickedPos.relative(direction);
-        Entity entity = this.spwanEntity(world,
+        BlockPos spawnPos = level.getBlockState(pos).getCollisionShape(level, pos).isEmpty() ? pos : pos.relative(direction);
+        Entity entity = this.loadEntity(
+                (ServerWorld) level,
                 player,
                 tag,
                 spawnPos,
-                SpawnReason.EVENT,
+                SpawnReason.BUCKET,
                 null,
                 true,
-                !Objects.equals(clickedPos, spawnPos) && direction == Direction.UP
+                !Objects.equals(pos, spawnPos) && direction == Direction.UP
         );
         if (entity != null) {
-            world.addFreshEntity(entity);
+            level.addFreshEntity(entity);
             if (player != null) {
                 consume(player, context.getHand(), stack, new ItemStack(this));
                 player.awardStat(Stats.ITEM_USED.get(this));
@@ -161,14 +173,13 @@ public class AmuletItem<T extends Entity> extends Item implements IEntityContain
         if (tag == null || this.isEmpty(tag)) return ActionResult.pass(stack);
         BlockRayTraceResult result = getPlayerPOVHitResult(level, player, RayTraceContext.FluidMode.SOURCE_ONLY);
         if (result.getType() != RayTraceResult.Type.BLOCK) return ActionResult.pass(stack);
-        else if (level.isClientSide) return ActionResult.success(stack);
+        if (level.isClientSide) return ActionResult.success(stack);
         BlockPos pos = result.getBlockPos();
         if (!(level.getBlockState(pos).getBlock() instanceof FlowingFluidBlock)) return ActionResult.pass(stack);
-        else if (level.mayInteract(player, pos) && player.mayUseItemAt(pos, result.getDirection(), stack)) {
-            ServerWorld world = (ServerWorld) level;
-            Entity entity = this.spwanEntity(world, player, tag, pos, SpawnReason.EVENT, null, false, false);
+        if (level.mayInteract(player, pos) && player.mayUseItemAt(pos, result.getDirection(), stack)) {
+            Entity entity = this.loadEntity((ServerWorld) level, player, tag, pos, SpawnReason.BUCKET, null, false, false);
             if (entity == null) return ActionResult.pass(stack);
-            world.addFreshEntity(entity);
+            level.addFreshEntity(entity);
             player.awardStat(Stats.ITEM_USED.get(this));
             return ActionResult.success(consume(player, hand, stack, new ItemStack(this)));
         }

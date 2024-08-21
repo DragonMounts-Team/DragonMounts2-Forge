@@ -41,7 +41,7 @@ import static net.dragonmounts.DragonMounts.ITEM_TRANSLATION_KEY_PREFIX;
 
 public final class DragonSpawnEggItem extends ForgeSpawnEggItem implements IDragonTypified {
     private static final String TRANSLATION_KEY = ITEM_TRANSLATION_KEY_PREFIX + "dragon_spawn_egg";
-    private final DragonType type;
+    public final DragonType type;
 
     public DragonSpawnEggItem(DragonType type, int background, int highlight, Properties props) {
         super(DMEntities.TAMEABLE_DRAGON, background, highlight, props);
@@ -99,7 +99,8 @@ public final class DragonSpawnEggItem extends ForgeSpawnEggItem implements IDrag
                 if (!player.abilities.instabuild) stack.shrink(1);
                 player.awardStat(Stats.ITEM_USED.get(this));
                 return ActionResult.consume(stack);
-            } else return ActionResult.fail(stack);
+            }
+            return ActionResult.fail(stack);
         }
         return ActionResult.success(stack);
     }

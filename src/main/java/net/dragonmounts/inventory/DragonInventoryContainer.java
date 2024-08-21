@@ -29,7 +29,7 @@ public class DragonInventoryContainer extends Container {
         return null;
     }
 
-    private final DragonInventory inventory;
+    public final DragonInventory inventory;
     public final TameableDragonEntity dragon;
 
     public DragonInventoryContainer(int containerId, PlayerInventory playerInventory, DragonInventory dragonInventory, TameableDragonEntity dragon) {
@@ -59,11 +59,9 @@ public class DragonInventoryContainer extends Container {
     @Nonnull
     @Override
     public ItemStack quickMoveStack(@Nonnull PlayerEntity player, int index) {
-        ItemStack result = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (slot != null && slot.hasItem()) {
-            ItemStack stack = slot.getItem();
-            result = stack.copy();
+            ItemStack stack = slot.getItem(), copy = stack.copy();
             if (index < INVENTORY_SIZE) {
                 if (!this.moveItemStackTo(stack, INVENTORY_SIZE, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
@@ -82,31 +80,26 @@ public class DragonInventoryContainer extends Container {
                 }
             } else if (!this.dragon.hasChest() || !this.moveItemStackTo(stack, 3, INVENTORY_SIZE, false)) {
                 if (index >= PLAYER_INVENTORY_SIZE) {
-                    if (!this.moveItemStackTo(stack, INVENTORY_SIZE, PLAYER_INVENTORY_SIZE, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else if (!this.moveItemStackTo(stack, PLAYER_INVENTORY_SIZE, PLAYER_HOTBAR_SIZE, false)) {
-                    return ItemStack.EMPTY;
+                    this.moveItemStackTo(stack, INVENTORY_SIZE, PLAYER_INVENTORY_SIZE, false);
+                } else {
+                    this.moveItemStackTo(stack, PLAYER_INVENTORY_SIZE, PLAYER_HOTBAR_SIZE, false);
                 }
                 return ItemStack.EMPTY;
             }
-            if (result.isEmpty()) {
+            if (stack.isEmpty()) {
                 slot.set(ItemStack.EMPTY);
             } else {
                 slot.setChanged();
             }
+            return copy;
         }
-        return result;
+        return ItemStack.EMPTY;
     }
 
     @Override
     public void removed(@Nonnull PlayerEntity player) {
         super.removed(player);
         this.inventory.stopOpen(player);
-    }
-
-    public DragonInventory getInventory() {
-        return this.inventory;
     }
 
     @Override

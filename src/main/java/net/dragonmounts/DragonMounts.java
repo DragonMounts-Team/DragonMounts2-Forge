@@ -66,7 +66,7 @@ public class DragonMounts {
         forgeBus.addGenericListener(Entity.class, DMCapabilities::attachCapabilities);
         forgeBus.addListener(DragonMounts::onPlayerClone);
         forgeBus.addListener(DragonMounts::registerCommands);
-        DMItems.subscribeEvents();
+        DMItems.subscribeEvents(forgeBus);
     }
 
     public static void registerDataSerializers(RegistryEvent.Register<DataSerializerEntry> event) {
@@ -78,7 +78,7 @@ public class DragonMounts {
     }
 
     public static void registerCommands(RegisterCommandsEvent event) {
-        DMCommand.register(event.getDispatcher(), event.getEnvironment());
+        DMCommand.register(event.getDispatcher());
     }
 
     public static <B extends IForgeRegistryEntry<B>> DeferredRegister<B> create(IForgeRegistry<B> reg) {

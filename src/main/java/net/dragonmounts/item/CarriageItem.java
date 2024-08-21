@@ -41,9 +41,7 @@ public class CarriageItem extends Item {
     public ActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
         RayTraceResult rayTraceResult = getPlayerPOVHitResult(level, player, RayTraceContext.FluidMode.NONE);
-        if (rayTraceResult.getType() == RayTraceResult.Type.MISS) {
-            return ActionResult.pass(itemstack);
-        } else {
+        if (rayTraceResult.getType() != RayTraceResult.Type.MISS) {
             Vector3d vector3d = player.getViewVector(1.0F);
             List<Entity> list = level.getEntities(player, player.getBoundingBox().expandTowards(vector3d.scale(5.0D)).inflate(1.0D), ENTITY_PREDICATE);
             if (!list.isEmpty()) {
@@ -60,9 +58,7 @@ public class CarriageItem extends Item {
                 CarriageEntity entity = new CarriageEntity(level, vector.x, vector.y, vector.z);
                 entity.setCarriageType(this.type);
                 entity.yRot = player.yRot;
-                if (!level.noCollision(entity, entity.getBoundingBox().inflate(-0.1D))) {
-                    return ActionResult.fail(itemstack);
-                } else {
+                if (level.noCollision(entity, entity.getBoundingBox().inflate(-0.1D))) {
                     if (!level.isClientSide) {
                         level.addFreshEntity(entity);
                         if (!player.abilities.instabuild) {
@@ -72,9 +68,9 @@ public class CarriageItem extends Item {
                     player.awardStat(Stats.ITEM_USED.get(this));
                     return ActionResult.sidedSuccess(itemstack, level.isClientSide());
                 }
-            } else {
-                return ActionResult.pass(itemstack);
+                return ActionResult.fail(itemstack);
             }
         }
+        return ActionResult.pass(itemstack);
     }
 }

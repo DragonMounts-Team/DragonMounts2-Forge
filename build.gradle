@@ -27,7 +27,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
 
-    mappings channel: 'parchment', version: '2021.10.17-1.16.5'
+    mappings channel: 'parchment', version: '2022.03.06-1.16.5'
     
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -98,8 +98,7 @@ jar {
 }
 
 mixin {
-    // MixinGradle Settings
-    add sourceSets.main, 'dragonmounts.mixins.refmap.json'
+    add sourceSets.main, 'dragonmounts.refmap.json'
     config 'dragonmounts.mixins.json'
 }
 

@@ -1,12 +1,16 @@
-Dragon Mounts 3 [![Discord](https://img.shields.io/discord/934116457149784124?label=Discord)](https://discord.gg/RKHpyRr6yx) [![Curse Forge](http://cf.way2muchnoise.eu/full_581402_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/dragon-mounts-3)
+Dragon Knights [![Discord](https://img.shields.io/discord/934116457149784124?label=Discord)](https://discord.gg/RKHpyRr6yx) [![Curse Forge](http://cf.way2muchnoise.eu/full_581402_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/dragon-mounts-3)
 ===============
 ![LOGO](src/main/resources/logo.png)
 
-This is the git of the Dragon Mounts 3 mod for Forge.
+This is the git of the Dragon Knights mod for Forge.
 
 ## License
 
-All assets unless otherwise stated default to our [MIT-CR LICENSE](LICENSE).
+The mods binaries, as well as its textures and code are licensed under the GPLv3 license.
+
+Feel free to use the mod in any modpacks. You are allowed to use it, you do not need to ask for permission, in fact permission requests will usually be ignored. When using the mod, please use the Curse/Curseforge, Modrinth, or GitHub download and do not rehost the files.
+
+Any modpack which uses Dragon Mounts 2 takes full responsibility for user support queries. For anyone else, we only support official builds from Curse/Curseforge, Modrinth, and GitHub, not custom built jars. We also do not take bug reports for outdated builds of Minecraft.
 
 ## Contact
 
